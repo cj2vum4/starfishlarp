@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劇本殺總覽 - 探索無限可能</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #581c87 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* 動態背景效果 */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(147, 51, 234, 0.3), rgba(59, 130, 246, 0.3));
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .floating-orb:nth-child(1) { width: 100px; height: 100px; top: 20%; left: 10%; animation-delay: 0s; }
+        .floating-orb:nth-child(2) { width: 150px; height: 150px; top: 60%; right: 20%; animation-delay: 3s; }
+        .floating-orb:nth-child(3) { width: 80px; height: 80px; bottom: 30%; left: 30%; animation-delay: 6s; }
+        .floating-orb:nth-child(4) { width: 120px; height: 120px; top: 40%; right: 40%; animation-delay: 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-30px) scale(1.1); opacity: 0.6; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(147, 51, 234, 0.8);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: #fff;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #a855f7;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* 篩選區域 */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .filter-title {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-label {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            background: rgba(147, 51, 234, 0.2);
+            border: 1px solid rgba(147, 51, 234, 0.5);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        .filter-select option {
+            background: #2d1b69;
+            color: #fff;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #dc2626, #dc267f);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 38, 127, 0.4);
+        }
+
+        /* 劇本網格 */
+        .scripts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .script-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out forwards;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .script-card:nth-child(1) { animation-delay: 0.5s; }
+        .script-card:nth-child(2) { animation-delay: 0.7s; }
+        .script-card:nth-child(3) { animation-delay: 0.9s; }
+
+        .script-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(147, 51, 234, 0.4);
+            border-color: rgba(147, 51, 234, 0.6);
+        }
+
+        .script-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .script-card:hover::before {
+            left: 100%;
+        }
+
+        .script-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(147, 51, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .script-card:hover .script-image {
+            border-color: rgba(147, 51, 234, 0.6);
+            transform: scale(1.05);
+        }
+
+        .script-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(147, 51, 234, 0.5);
+        }
+
+        .script-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-badge {
+            background: rgba(147, 51, 234, 0.3);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(147, 51, 234, 0.4);
+        }
+
+        .script-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .type-tag {
+            background: linear-gradient(45deg, #a855f7, #3b82f6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .detail-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #9333ea, #3b82f6);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(147, 51, 234, 0.3);
+        }
+
+        .detail-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(147, 51, 234, 0.5);
+        }
+
+        .no-results {
+            text-align: center;
+            color: #fff;
+            font-size: 1.2rem;
+            margin: 50px 0;
+            opacity: 0.8;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .scripts-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .script-card {
+                padding: 20px;
+            }
+        }
+
+        /* 主題特定樣式 */
+        .script-card[data-theme="space"] {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .script-card[data-theme="horror"] {
+            background: rgba(220, 38, 127, 0.1);
+            border-color: rgba(220, 38, 127, 0.3);
+        }
+
+        .script-card[data-theme="history"] {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-orb"></div>
+        <div class="floating-orb"></div>
+        <div class="floating-orb"></div>
+        <div class="floating-orb"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">劇本殺總覽</h1>
+            <p class="subtitle">探索精彩故事，體驗不同人生</p>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalScripts">3</div>
+                    <div class="stat-label">精選劇本</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalTypes">8</div>
+                    <div class="stat-label">劇本類型</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="avgTime">4.3</div>
+                    <div class="stat-label">平均時長(小時)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h2 class="filter-title">🔍 劇本篩選</h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label class="filter-label">👥 遊戲人數</label>
+                    <select id="playerFilter" class="filter-select">
+                        <option value="">全部人數</option>
+                        <option value="6">6人</option>
+                        <option value="7">7人</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">🎭 劇本類型</label>
+                    <select id="typeFilter" class="filter-select">
+                        <option value="">全部類型</option>
+                        <option value="歡樂">歡樂</option>
+                        <option value="推理">推理</option>
+                        <option value="情感">情感</option>
+                        <option value="機制">機制</option>
+                        <option value="沉浸">沉浸</option>
+                        <option value="微恐">微恐</option>
+                        <option value="還原">還原</option>
+                        <option value="新手">新手</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">⭐ 推理難度</label>
+                    <select id="difficultyFilter" class="filter-select">
+                        <option value="">全部難度</option>
+                        <option value="2">2星 - 簡單</option>
+                        <option value="3">3星 - 中等</option>
+                        <option value="4">4星 - 困難</option>
+                    </select>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button class="reset-btn" onclick="resetFilters()">重置篩選</button>
+            </div>
+        </div>
+
+        <div class="scripts-grid" id="scriptsGrid">
+            <!-- 北國之春 -->
+            <div class="script-card" data-theme="history" data-players="6" data-types="歡樂,推理,新手,情感" data-difficulty="3">
+                <img src="https://i.postimg.cc/yNWMsNFR/01.jpg" alt="北國之春" class="script-image">
+                <h3 class="script-title">北國之春</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">新手</span>
+                    <span class="type-tag">情感</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('beiguo')">查看詳細介紹</button>
+            </div>
+
+            <!-- 群星 -->
+            <div class="script-card" data-theme="space" data-players="6" data-types="機制,情感,沉浸,太空" data-difficulty="2">
+                <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="群星" class="script-image">
+                <h3 class="script-title">群星</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 5小時</span>
+                    <span class="info-badge">⭐ 2星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">太空</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('qunxing')">查看詳細介紹</button>
+            </div>
+
+            <!-- 病嬌男孩的精分日記 -->
+            <div class="script-card" data-theme="horror" data-players="7" data-types="微恐,還原,推理,沉浸" data-difficulty="4">
+                <img src="https://i.postimg.cc/RZYbc6pZ/1.jpg" alt="病嬌男孩的精分日記" class="script-image">
+                <h3 class="script-title">病嬌男孩的精分日記</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 7人不限</span>
+                    <span class="info-badge">⏰ 4-5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">沉浸</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('bingjiao')">查看詳細介紹</button>
+            </div>
+        </div>
+
+        <div class="no-results hidden" id="noResults">
+            <p>😔 找不到符合篩選條件的劇本</p>
+            <p>試試調整篩選條件或重置篩選</p>
+        </div>
+    </div>
+
+    <script>
+        // 劇本資料
+        const scripts = [
+            {
+                id: 'beiguo',
+                name: '北國之春',
+                players: 6,
+                types: ['歡樂', '推理', '新手', '情感'],
+                difficulty: 3,
+                theme: 'history'
+            },
+            {
+                id: 'qunxing',
+                name: '群星',
+                players: 6,
+                types: ['機制', '情感', '沉浸', '太空'],
+                difficulty: 2,
+                theme: 'space'
+            },
+            {
+                id: 'bingjiao',
+                name: '病嬌男孩的精分日記',
+                players: 7,
+                types: ['微恐', '還原', '推理', '沉浸'],
+                difficulty: 4,
+                theme: 'horror'
+            }
+        ];
+
+        // 篩選功能
+        function filterScripts() {
+            const playerFilter = document.getElementById('playerFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            
+            const scriptCards = document.querySelectorAll('.script-card');
+            let visibleCount = 0;
+
+            scriptCards.forEach(card => {
+                const players = card.dataset.players;
+                const types = card.dataset.types.split(',');
+                const difficulty = card.dataset.difficulty;
+
+                let shouldShow = true;
+
+                if (playerFilter && players !== playerFilter) {
+                    shouldShow = false;
+                }
+
+                if (typeFilter && !types.includes(typeFilter)) {
+                    shouldShow = false;
+                }
+
+                if (difficultyFilter && difficulty !== difficultyFilter) {
+                    shouldShow = false;
+                }
+
+                if (shouldShow) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // 顯示/隱藏無結果訊息
+            const noResults = document.getElementById('noResults');
+            if (visibleCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        // 重置篩選
+        function resetFilters() {
+            document.getElementById('playerFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('difficultyFilter').value = '';
+            
+            const scriptCards = document.querySelectorAll('.script-card');
+            scriptCards.forEach(card => {
+                card.classList.remove('hidden');
+            });
+            
+            document.getElementById('noResults').classList.add('hidden');
+        }
+
+        // 跳轉到劇本詳細頁面
+        function goToScript(scriptId) {
+            switch(scriptId) {
+                case 'beiguo':
+                    window.location.href = '北國之春.html';
+                    break;
+                case 'qunxing':
+                    window.location.href = '群星.html';
+                    break;
+                case 'bingjiao':
+                    window.location.href = '病嬌1.html';
+                    break;
+                default:
+                    alert('頁面建置中，敬請期待！');
+            }
+        }
+
+        // 綁定篩選事件
+        document.getElementById('playerFilter').addEventListener('change', filterScripts);
+        document.getElementById('typeFilter').addEventListener('change', filterScripts);
+        document.getElementById('difficultyFilter').addEventListener('change', filterScripts);
+
+        // 卡片懸停效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.script-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-15px) scale(1.02)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+
+        // 統計數據動畫
+        function animateNumbers() {
+            const totalScripts = document.getElementById('totalScripts');
+            const totalTypes = document.getElementById('totalTypes');
+            const avgTime = document.getElementById('avgTime');
+
+            animateNumber(totalScripts, 3, 1000);
+            animateNumber(totalTypes, 8, 1200);
+            animateNumber(avgTime, 4.3, 1400, true);
+        }
+
+        function animateNumber(element, target, duration, isDecimal = false) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = isDecimal ? target.toFixed(1) : Math.floor(target);
+                    clearInterval(timer);
+                } else {
+                    element.textContent = isDecimal ? start.toFixed(1) : Math.floor(start);
+                }
+            }, 16);
+        }
+
+        // 頁面載入時啟動動畫
+        window.addEventListener('load', () => {
+            setTimeout(animateNumbers, 500);
+        });
+    </script>
+</body>
+</html>
