@@ -20,6 +20,47 @@
             position: relative;
         }
 
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(147, 51, 234, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(147, 51, 234, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(147, 51, 234, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(147, 51, 234, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(147, 51, 234, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         /* 星空背景動畫 */
         .stars {
             position: fixed;
@@ -346,17 +387,29 @@
                 gap: 5px;
             }
 
-            @media (max-width: 768px) {
-                .poster-section div {
-                    flex-direction: column;
-                    align-items: center;
-                }
-                
-                .poster-section .poster-image {
-                    max-width: 90% !important;
-                    min-width: unset !important;
-                    margin-bottom: 15px;
-                }
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
             }
         }
 
@@ -431,6 +484,12 @@
     </style>
 </head>
 <body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
     <div class="stars">
         <div class="star"></div>
         <div class="star"></div>
@@ -510,6 +569,7 @@
                         <span class="tag">情感</span>
                         <span class="tag">沉浸</span>
                         <span class="tag">太空</span>
+			<span class="tag">新手</span>
                     </div>
                 </div>
             </div>
