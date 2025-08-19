@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晴天神社 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3548 30%, #4a5568 60%, #718096 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        /* 櫻花飄落效果 */
+        .sakura-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sakura-petal {
+            position: absolute;
+            color: rgba(255, 182, 193, 0.8);
+            user-select: none;
+            pointer-events: none;
+            animation: sakurafall 12s linear infinite;
+            font-size: 1.2rem;
+        }
+
+        .sakura-petal:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .sakura-petal:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .sakura-petal:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .sakura-petal:nth-child(4) { left: 40%; animation-delay: 6s; }
+        .sakura-petal:nth-child(5) { left: 50%; animation-delay: 8s; }
+        .sakura-petal:nth-child(6) { left: 60%; animation-delay: 1s; }
+        .sakura-petal:nth-child(7) { left: 70%; animation-delay: 3s; }
+        .sakura-petal:nth-child(8) { left: 80%; animation-delay: 5s; }
+        .sakura-petal:nth-child(9) { left: 90%; animation-delay: 7s; }
+
+        @keyframes sakurafall {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.8), 0 0 60px rgba(255, 105, 180, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #FF69B4, #FFB6C1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .shrine-quote {
+            font-size: 1.1rem;
+            color: rgba(255, 105, 180, 0.9);
+            margin: 20px 0;
+            text-align: center;
+            line-height: 1.6;
+            font-family: '微軟正黑體', serif;
+            font-style: italic;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(139, 69, 19, 0.4), 0 0 80px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(139, 69, 19, 0.5), 0 0 100px rgba(255, 105, 180, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 105, 180, 0.3);
+            border-color: rgba(255, 105, 180, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #FF69B4;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 105, 180, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 105, 180, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #FF69B4, #FFB6C1);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 105, 180, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #FF69B4, #FFB6C1);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.4), 0 0 40px rgba(255, 105, 180, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 14s ease-in-out infinite;
+            color: rgba(255, 105, 180, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 10s;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 105, 180, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 105, 180, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 105, 180, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(255, 105, 180, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #FF69B4;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(2deg); }
+            66% { transform: translateY(-40px) rotate(-2deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="sakura-effects">
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+        <div class="sakura-petal">🌸</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">⛩️</div>
+        <div class="floating-element">🏮</div>
+        <div class="floating-element">🌸</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">晴天神社</h1>
+            <div class="shrine-quote">
+                「爺爺，為什麼你總是在屋簷上掛一個晴天娃娃呢？」<br>
+                「因為奶奶有嚴重的近視，如果有雲或是下雨的話，她就不能更好地找到我們所在的方向啦……」
+            </div>
+            <p class="subtitle">向樹林更深處走去，便是晴天神社</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/QMd81msL/image.png" alt="晴天神社劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/LXrmdMPR/2.jpg" alt="晴天神社劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">⛩️ 劇本名稱</span>
+                    <span class="info-value">晴天神社</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>4男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>2女</span>
+                        </div>
+                        <span style="color: #FF69B4; font-size: 0.8rem; margin-left: 10px; text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);">（不能反串）</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">情感</span>
+                        <span class="tag">日式</span>
+                        <span class="tag">沉浸</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">無兇手</span>
+                        <span class="tag">新手</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Z5T4zHW9/image.jpg" alt="木村聖也" class="character-image">
+                        <div class="character-name">木村聖也</div>
+                        <div class="character-info">問題少女<br>騎摩托車愛打架</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/wBMz7Bcg/image.jpg" alt="清水琉奈" class="character-image">
+                        <div class="character-name">清水琉奈</div>
+                        <div class="character-info">高中老師<br>被稱為「冬天老師」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/g2Ndzhhg/image.jpg" alt="秋元英樹" class="character-image">
+                        <div class="character-name">秋元英樹</div>
+                        <div class="character-info">美少年<br>熱衷箭道和讀書</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/02GP4FyR/image.jpg" alt="長澤龍之介" class="character-image">
+                        <div class="character-name">長澤龍之介</div>
+                        <div class="character-info">美少年<br>運動神經一流，熱血開朗</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/J4CRPMm5/image.jpg" alt="小野光夫" class="character-image">
+                        <div class="character-name">小野光夫</div>
+                        <div class="character-info">神社老闆<br>溫柔穩重，擅長精緻</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/9X7Wdr3f/image.jpg" alt="木村一郎" class="character-image">
+                        <div class="character-name">木村一郎</div>
+                        <div class="character-info">神社工作人員<br>害羞拘謹，有些木訥</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    <span class="highlight">晴天神社</span>座落在樹林深處，是一個充滿靈驗傳說的神聖之地。聽說這間神社靈驗得很，來求籤祈福的人總是絡繹不絕。
+                    <br><br>
+                    神社外也是<span class="highlight">賞櫻聖地</span>，每年三月，這裡都會舉辦盛大的櫻花祭。人們在樹下擺滿便當，飲著冰鎮的平庭高原啤酒，將心意放入寄託為名的御守中，祈禱著這份愛永不消逝。
+                    <br><br>
+                    今年櫻花祭不同以往，來自東京學習音樂歸來的少女<span class="highlight">鈴木櫻</span>，在晴天神社舉辦了一場以「告白」為主題的小型演唱會。為了回饋給愛她的人，與小櫻關係密切的諸位，全部都收到了她寄來的邀請函。
+                    <br><br>
+                    然而，演唱會進行到中途，卻發生了一件<span class="highlight">不可思議的事</span>...在這個被櫻花環繞的神聖之地，究竟隱藏著什麼樣的秘密？
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《晴天神社》是一部以<span class="highlight">日式情感</span>為核心的沉浸式劇本殺。這不是一個傳統的推理破案故事，而是一場關於愛情、友情與成長的溫馨敘事。
+                    <br><br>
+                    劇本採用<span class="highlight">無兇手設定</span>，讓玩家能夠專注於角色間的情感交流與故事還原，而非緊張的推理對抗。每個角色都有著豐富的背景故事和複雜的人際關係，需要玩家細心體會角色的內心世界。
+                    <br><br>
+                    在這個以「告白」為主題的演唱會中，六個性格迥異的角色將展開一段<span class="highlight">青春回憶</span>的旅程。從問題少女到嚴肅老師，從運動健將到文藝青年，每個人都有著不為人知的過去和真摯的感情。
+                    <br><br>
+                    這是一個適合所有經驗層次玩家的劇本，無論你是劇本殺新手還是資深玩家，都能在這個溫暖的故事中找到感動和共鳴。在櫻花飛舞的神社裡，體驗一場<span class="highlight">純真而美好</span>的情感之旅。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#FF69B4';
+                            s.style.textShadow = '0 0 15px rgba(255, 105, 180, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(255, 105, 180, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 105, 180, 0.25) 0%, rgba(0,0,0,0.4) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.4)';
+                });
+            });
+
+            // 櫻花花瓣互動效果
+            const sakuraPetals = document.querySelectorAll('.sakura-petal');
+            sakuraPetals.forEach(petal => {
+                petal.addEventListener('click', () => {
+                    petal.style.animation = 'none';
+                    petal.style.transform = 'scale(1.5) rotate(180deg)';
+                    petal.style.opacity = '0';
+                    setTimeout(() => {
+                        petal.style.animation = 'sakurafall 12s linear infinite';
+                        petal.style.transform = '';
+                        petal.style.opacity = '';
+                    }, 1000);
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const sakura = document.querySelector('.sakura-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (sakura) sakura.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // 神社鐘聲效果（模擬）
+        function playBellSound() {
+            // 創建視覺鐘聲效果
+            const bellEffect = document.createElement('div');
+            bellEffect.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100px;
+                height: 100px;
+                border: 3px solid rgba(255, 105, 180, 0.8);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                animation: bellRing 2s ease-out forwards;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes bellRing {
+                    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+                    100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(bellEffect);
+            
+            setTimeout(() => {
+                document.body.removeChild(bellEffect);
+                document.head.removeChild(style);
+            }, 2000);
+        }
+
+        // 點擊神社標題觸發鐘聲效果
+        document.querySelector('.title').addEventListener('click', playBellSound);
