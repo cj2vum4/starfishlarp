@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陰緣 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '華文楷體', 'KaiTi', 'SimKai', serif;
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 30%, #3c2414 60%, #4a2c1a 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 滴血效果 */
+        .blood-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .blood-drop {
+            position: absolute;
+            user-select: none;
+            pointer-events: none;
+            animation: bloodfall 8s linear infinite;
+            font-size: 0.8rem;
+            width: 6px;
+            height: 20px;
+            background: linear-gradient(180deg, #8B0000 0%, #DC143C 30%, #8B0000 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 8px rgba(139, 0, 0, 0.8), inset 0 0 3px rgba(220, 20, 60, 0.6);
+        }
+
+        .blood-drop::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 1px;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .blood-drop:nth-child(1) { left: 15%; animation-delay: 0s; transform: scale(1.2); }
+        .blood-drop:nth-child(2) { left: 30%; animation-delay: 2s; transform: scale(0.8); }
+        .blood-drop:nth-child(3) { left: 45%; animation-delay: 4s; transform: scale(1.1); }
+        .blood-drop:nth-child(4) { left: 60%; animation-delay: 6s; transform: scale(0.9); }
+        .blood-drop:nth-child(5) { left: 75%; animation-delay: 1s; transform: scale(1.3); }
+        .blood-drop:nth-child(6) { left: 90%; animation-delay: 3s; transform: scale(0.7); }
+
+        @keyframes bloodfall {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 0.9;
+            }
+            90% {
+                opacity: 0.9;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(20deg);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: #f5e6d3;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(205, 133, 133, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #f5e6d3;
+            text-shadow: 0 0 30px rgba(205, 133, 133, 0.8), 0 0 60px rgba(205, 133, 133, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #f5e6d3, #cd8585, #8b4513);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: '華文楷體', 'KaiTi', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(245, 230, 211, 0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(205, 133, 133, 0.5);
+            font-family: '華文楷體', 'KaiTi', serif;
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(205, 133, 133, 0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(205, 133, 133, 0.5);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 50px rgba(205, 133, 133, 0.5);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(44, 24, 16, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(205, 133, 133, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(205, 133, 133, 0.3);
+            border-color: rgba(205, 133, 133, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #f5e6d3;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #cd8585;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(205, 133, 133, 0.5);
+            font-family: '華文楷體', 'KaiTi', serif;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(205, 133, 133, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(205, 133, 133, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(205, 133, 133, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(205, 133, 133, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f5e6d3;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #f5e6d3;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #cd8585;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #4a2c1a;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #cd8585, #8b4513);
+            color: #f5e6d3;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(205, 133, 133, 0.3);
+            box-shadow: 0 4px 15px rgba(205, 133, 133, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(205, 133, 133, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(205, 133, 133, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(205, 133, 133, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(205, 133, 133, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(205, 133, 133, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(205, 133, 133, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(205, 133, 133, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(205, 133, 133, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(205, 133, 133, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #f5e6d3;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(205, 133, 133, 0.5);
+            font-family: '華文楷體', 'KaiTi', serif;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f5e6d3;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f5e6d3;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            font-family: '華文楷體', 'KaiTi', serif;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(205, 133, 133, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #f5e6d3;
+            text-shadow: 0 0 10px rgba(205, 133, 133, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #cd8585, #8b4513);
+            color: #f5e6d3;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(205, 133, 133, 0.4), 0 0 40px rgba(205, 133, 133, 0.2);
+            border: 2px solid rgba(245, 230, 211, 0.2);
+            font-family: '華文楷體', 'KaiTi', serif;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(205, 133, 133, 0.5), 0 0 60px rgba(205, 133, 133, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 12s ease-in-out infinite;
+            color: rgba(205, 133, 133, 0.6);
+            font-size: 2.5rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 15%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 20%;
+            animation-delay: 8s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.8rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #cd8585;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(205, 133, 133, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        /* 古風裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #cd8585, transparent);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "❋";
+            position: absolute;
+            top: -8px;
+            color: #cd8585;
+            font-size: 1.2rem;
+        }
+
+        .decorative-line::before {
+            left: 20%;
+        }
+
+        .decorative-line::after {
+            right: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="#" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="blood-effects">
+        <div class="blood-drop"></div>
+        <div class="blood-drop"></div>
+        <div class="blood-drop"></div>
+        <div class="blood-drop"></div>
+        <div class="blood-drop"></div>
+        <div class="blood-drop"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🏮</div>
+        <div class="floating-element">🌙</div>
+        <div class="floating-element">🏛️</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">陰緣</h1>
+            <div class="decorative-line"></div>
+            <p class="subtitle">明朝古風中的詭異變化與深埋的秘密</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/qqp3BtDL/image.jpg" alt="陰緣劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/26QWfdGy/image.jpg" alt="陰緣劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">陰緣</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">古風</span>
+                        <span class="tag">情感</span>
+                        <span class="tag">恐怖</span>
+                        <span class="tag">沉浸</span>
+                        <span class="tag">雙主持</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/022wLww5/image.jpg" alt="李天青" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-image" style="display: none; background: linear-gradient(45deg, #cd8585, #8b4513); align-items: center; justify-content: center; font-size: 2rem; color: #f5e6d3;">👨‍💼</div>
+                        <div class="character-name">李天青</div>
+                        <div class="character-info">男性角色<br>約47歲，神色冷峻，內斂沈穩</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/c1c39m65/image.jpg" alt="李康節" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-image" style="display: none; background: linear-gradient(45deg, #cd8585, #8b4513); align-items: center; justify-content: center; font-size: 2rem; color: #f5e6d3;">👨‍⚕️</div>
+                        <div class="character-name">李康節</div>
+                        <div class="character-info">男性角色<br>約45歲，身形消瘦，雙眼有神</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/SxnzKbdw/image.jpg" alt="程遠常" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-image" style="display: none; background: linear-gradient(45deg, #cd8585, #8b4513); align-items: center; justify-content: center; font-size: 2rem; color: #f5e6d3;">📚</div>
+                        <div class="character-name">程遠常</div>
+                        <div class="character-info">男性角色<br>約27歲，面容俊朗，氣質陰鬱</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/7ZjJGtQb/image.jpg" alt="程小宛" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-image" style="display: none; background: linear-gradient(45deg, #cd8585, #8b4513); align-items: center; justify-content: center; font-size: 2rem; color: #f5e6d3;">💊</div>
+                        <div class="character-name">程小宛</div>
+                        <div class="character-info">女性角色<br>約28歲，生性溫婉，容貌清麗</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/fT29ZRcc/image.jpg" alt="海棠" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-image" style="display: none; background: linear-gradient(45deg, #cd8585, #8b4513); align-items: center; justify-content: center; font-size: 2rem; color: #f5e6d3;">🎭</div>
+                        <div class="character-name">海棠</div>
+                        <div class="character-info">女性角色<br>約27歲，長相嫵媚，保養有方</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/J0KBs19W/image.jpg" alt="夏雲煙" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-image" style="display: none; background: linear-gradient(45deg, #cd8585, #8b4513); align-items: center; justify-content: center; font-size: 2rem; color: #f5e6d3;">🌸</div>
+                        <div class="character-name">夏雲煙</div>
+                        <div class="character-info">女性角色<br>約25歲，模樣清純，機靈俏皮</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    <span class="highlight">明朝萬曆末年</span>，南京李家歷經200多年而不衰。李家上代家主病逝後，長子李天青繼承家主之位，在他的日夜操持下，李家生意蒸蒸日上。
+                    <br><br>
+                    李天青迎娶了<span class="highlight">教坊司舞伎海棠</span>，生下女兒夏雲煙。次子李康節則娶了女醫程小宛，生下兒子程遠常。一家和睦其樂融融，然而隨著某些神秘人物的到來，平靜的生活開始出現裂痕。
+                    <br><br>
+                    <span class="highlight">天啟七年（1627）的冬天</span>，魏忠賢的勢力延伸到了李家，致使這個商賈世家陷入前所未有的危機。冬天過後，春暖花開，李家卻發生了詭異變化：<span class="highlight">奇怪的磨盤聲、飄盪的屍臭味、月光下掛在樹梢的屍體</span>......所有人竟不以為意。
+                    <br><br>
+                    多年過去，當眾人再次聚首，真相也將在這一刻揭曉...每個人心中都埋藏著無法言喻的秘密，而這些秘密正是解開謎團的關鍵。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《陰緣》是一部充滿<span class="highlight">明朝古風韻味</span>的情感恐怖劇本。故事以南京李家為背景，巧妙地融合了歷史背景與超自然元素，為玩家帶來深度的沉浸體驗。
+                    <br><br>
+                    劇本的最大特色在於<span class="highlight">詭異的氛圍營造</span>和深刻的情感刻畫。每個角色都有著複雜的人際關係和隱藏的秘密，而那些看似平常的日常生活中，卻潛藏著令人不安的異象。
+                    <br><br>
+                    這是一個注重<span class="highlight">情感共鳴</span>的劇本，玩家將在古風雅致的氛圍中體驗愛恨情仇的糾葛。每個角色背後都有著刻骨銘心的情感故事，或是深埋心底的遺憾，或是無法言喻的愛戀，或是背負一生的愧疚。
+                    <br><br>
+                    透過<span class="highlight">雙主持</span>的精心引導，玩家將在推理真相的同時，也深度體驗角色內心的情感世界，感受那些跨越時空的人性光輝與陰暗。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ff6b6b';
+                        } else {
+                            s.style.color = '#cd8585';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#cd8585';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 15px 35px rgba(205, 133, 133, 0.5)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(205, 133, 133, 0.25) 0%, rgba(44, 24, 16, 0.7) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(44, 24, 16, 0.7)';
+                });
+            });
+
+            // 血滴下落效果增強
+            const bloodDrops = document.querySelectorAll('.blood-drop');
+            setInterval(() => {
+                const randomDrop = bloodDrops[Math.floor(Math.random() * bloodDrops.length)];
+                randomDrop.style.animationDuration = (Math.random() * 5 + 6) + 's';
+                randomDrop.style.opacity = Math.random() * 0.5 + 0.7;
+            }, 2000);
+
+            // 標題古風閃爍效果
+            const title = document.querySelector('.title');
+            setInterval(() => {
+                title.style.textShadow = '0 0 50px rgba(205, 133, 133, 1), 0 0 100px rgba(205, 133, 133, 0.8)';
+                setTimeout(() => {
+                    title.style.textShadow = '0 0 30px rgba(205, 133, 133, 0.8), 0 0 60px rgba(205, 133, 133, 0.6)';
+                }, 1000);
+            }, 6000);
+
+            // 裝飾線條動畫
+            const decorativeLines = document.querySelectorAll('.decorative-line');
+            decorativeLines.forEach(line => {
+                line.addEventListener('mouseenter', () => {
+                    line.style.background = 'linear-gradient(90deg, transparent, #f5e6d3, transparent)';
+                });
+                
+                line.addEventListener('mouseleave', () => {
+                    line.style.background = 'linear-gradient(90deg, transparent, #cd8585, transparent)';
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const blood = document.querySelector('.blood-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (blood) blood.style.transform = `translateY(${scrolled * 0.03}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.08}px)`;
+        });
+
+        // 古風音效控制
+        let audioContext;
+        let windSound;
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playWindSound() {
+            if (audioContext) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(80, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(40, audioContext.currentTime + 2);
+                
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 2);
+            }
+        }
+
+        // 點擊任意地方初始化音效
+        document.addEventListener('click', function() {
+            if (!audioContext) {
+                initAudio();
+            }
+        }, { once: true });
+
+        // 定期播放風聲
+        setInterval(() => {
+            if (Math.random() < 0.2) {
+                playWindSound();
+            }
+        }, 12000);
+
+        // 古風打字機效果（可選）
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // 為故事背景添加打字機效果（滑鼠懸停時觸發）
+        const storyElements = document.querySelectorAll('.description-text');
+        storyElements.forEach(element => {
+            const originalText = element.innerHTML;
+            element.addEventListener('mouseenter', function() {
+                if (!this.hasTyped) {
+                    this.hasTyped = true;
+                    // typeWriter(this, originalText, 30);
+                }
+            });
+        });
+    </script>
+
+    <audio id="bgm" src="陰緣.mp3" autoplay loop muted></audio>
+<script>
+  // 點擊頁面解除靜音
+  document.addEventListener('click', function(){
+    document.getElementById('bgm').muted = false;
+  }, {once:true});
+</script>
+
+
+</body>
+</html>

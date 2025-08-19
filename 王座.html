@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王座 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 60%, #0f3460 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 雷電閃爍效果 */
+        .thunder-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .lightning {
+            position: absolute;
+            color: rgba(255, 223, 0, 0.7);
+            user-select: none;
+            pointer-events: none;
+            animation: lightning 8s linear infinite;
+            font-size: 2rem;
+        }
+
+        .lightning:nth-child(1) { left: 15%; animation-delay: 0s; }
+        .lightning:nth-child(2) { left: 35%; animation-delay: 3s; }
+        .lightning:nth-child(3) { left: 55%; animation-delay: 6s; }
+        .lightning:nth-child(4) { left: 75%; animation-delay: 2s; }
+        .lightning:nth-child(5) { left: 85%; animation-delay: 5s; }
+
+        @keyframes lightning {
+            0%, 90%, 100% { opacity: 0; }
+            1%, 3%, 5% { opacity: 1; }
+            2%, 4% { opacity: 0.3; }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(184, 134, 11, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(184, 134, 11, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(184, 134, 11, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(184, 134, 11, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 223, 0, 0.8), 0 0 60px rgba(255, 223, 0, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #ffdf00, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 223, 0, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(255, 223, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 223, 0, 0.5);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 50px rgba(255, 223, 0, 0.5);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 223, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 223, 0, 0.3);
+            border-color: rgba(255, 223, 0, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ffdf00;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 223, 0, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 223, 0, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 223, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 223, 0, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 223, 0, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #ffdf00;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #4a5568;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #ffdf00, #b8860b);
+            color: #1a1a1a;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 223, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 223, 0, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 223, 0, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 223, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 223, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 223, 0, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 223, 0, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 223, 0, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 223, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(255, 223, 0, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 223, 0, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(255, 223, 0, 0.5);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 223, 0, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 223, 0, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffdf00, #b8860b);
+            color: #1a1a1a;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 223, 0, 0.4), 0 0 40px rgba(255, 223, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 223, 0, 0.5), 0 0 60px rgba(255, 223, 0, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 10s ease-in-out infinite;
+            color: rgba(255, 223, 0, 0.6);
+            font-size: 2.5rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 8s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.8rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #ffdf00;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 223, 0, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="#" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="thunder-effects">
+        <div class="lightning">⚡</div>
+        <div class="lightning">⚡</div>
+        <div class="lightning">⚡</div>
+        <div class="lightning">⚡</div>
+        <div class="lightning">⚡</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">👑</div>
+        <div class="floating-element">⚔️</div>
+        <div class="floating-element">🏰</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">王座</h1>
+            <p class="subtitle">神話傳說中的權力爭奪與諸神黃昏</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/d0cKpGxL/2021-11-13-195627.jpg" alt="王座劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/YqjkWrFq/2021-11-13-195637.jpg" alt="王座劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">王座</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4.5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>4男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">神話</span>
+                        <span class="tag">陣營</span>
+                        <span class="tag">機制</span>
+                        <span class="tag">新手</span>
+                        <span class="tag">身份轉換</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/PrcHbgbb/2021-11-13-195640.jpg" alt="巨狼芬里爾" class="character-image">
+                        <div class="character-name">巨狼芬里爾</div>
+                        <div class="character-info">男性角色<br>毀滅之狼，諸神黃昏的預言者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/RZHBggGk/2021-11-13-195644.jpg" alt="守護神海姆達爾" class="character-image">
+                        <div class="character-name">守護神海姆達爾</div>
+                        <div class="character-info">男性角色<br>彩虹橋守護者，擁有敏銳視聽</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/ydv4DtYZ/2021-11-13-195646.jpg" alt="神后弗麗嘉" class="character-image">
+                        <div class="character-name">神后弗麗嘉</div>
+                        <div class="character-info">女性角色<br>奧丁之妻，預言與保護女神</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/76xrYwD4/2021-11-13-195654.jpg" alt="雷神托爾" class="character-image">
+                        <div class="character-name">雷神托爾</div>
+                        <div class="character-info">男性角色<br>雷電之神，力量與勇氣的象徵</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/s2PRr1kK/2021-11-13-195656.jpg" alt="詭計之神洛基" class="character-image">
+                        <div class="character-name">詭計之神洛基</div>
+                        <div class="character-info">男性角色<br>火神與詭計之神，變化莫測</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/ZnnkpHCD/2021-11-13-195659.jpg" alt="女武神瓦基里" class="character-image">
+                        <div class="character-name">女武神瓦基里</div>
+                        <div class="character-info">女性角色<br>戰場上的使者，引導英靈</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/rsPBJ44y/2021-11-13-195701.jpg" alt="青春女神希芙" class="character-image">
+                        <div class="character-name">青春女神希芙</div>
+                        <div class="character-info">女性角色<br>青春與美麗之神，托爾之妻</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    在<span class="highlight">阿斯嘉德的風雪夜</span>，維京民族的極寒籠罩著整個神域。空蕩蕩的<span class="highlight">冰封王座</span>靜靜地佇立在大殿中央，等待著一位真正的主人。
+                    <br><br>
+                    點亮星空的火炬在皓月當空下燃燒，殊不知最終的神賜予的才是權力。<span class="highlight">即為神，何來上天之賞賜？</span>諸神的未來，由手中的武器決定。
+                    <br><br>
+                    擁有是屍橫血漫山野的<span class="highlight">金色黃昏</span>，還是會靜寂無聲惆悵的<span class="highlight">血色黑夜</span>，終將激動人心的神靈。在人們懷著卑微之心仰望的時刻，所有的犧牲與死亡都變得值得。
+                    <br><br>
+                    <span class="highlight">窺探王座，諸神即將到來。</span>巨狼芬里爾的咆哮聲響徹天際，海姆達爾守護著彩虹橋，而洛基的詭計正在暗中醞釀著更大的陰謀。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《王座》是一部以<span class="highlight">北歐神話</span>為背景的陣營機制劇本。在這個神祇雲集的世界中，每個角色都擁有著神聖的力量和複雜的關係網。
+                    <br><br>
+                    這是一個<span class="highlight">身份轉換</span>的遊戲，玩家需要根據場上的局勢和其他角色的行動來調整自己的策略。劇本融合了<span class="highlight">陣營對抗</span>和<span class="highlight">機制推理</span>的元素，讓玩家在神話的世界中體驗權謀與智慧的較量。
+                    <br><br>
+                    作為一個<span class="highlight">新手友好</span>的劇本，《王座》在保持遊戲深度的同時，也確保了良好的遊戲體驗。無論你是劇本殺的新手還是老手，都能在這個充滿神話色彩的世界中找到屬於自己的樂趣。
+                    <br><br>
+                    <span class="highlight">計算利弊，身份轉換，諸神的命運由你掌控。</span>在這個最終的夜晚，誰將成為真正的王者？
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ff6b6b';
+                        } else {
+                            s.style.color = '#ffdf00';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffdf00';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 15px 35px rgba(255, 223, 0, 0.5)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 223, 0, 0.25) 0%, rgba(0,0,0,0.6) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.6)';
+                });
+            });
+
+            // 雷電效果增強
+            const lightningElements = document.querySelectorAll('.lightning');
+            setInterval(() => {
+                const randomLightning = lightningElements[Math.floor(Math.random() * lightningElements.length)];
+                randomLightning.style.opacity = '1';
+                setTimeout(() => {
+                    randomLightning.style.opacity = '0';
+                }, 200);
+            }, 3000);
+
+            // 王座閃爍效果
+            const title = document.querySelector('.title');
+            setInterval(() => {
+                title.style.textShadow = '0 0 50px rgba(255, 223, 0, 1), 0 0 100px rgba(255, 223, 0, 0.8)';
+                setTimeout(() => {
+                    title.style.textShadow = '0 0 30px rgba(255, 223, 0, 0.8), 0 0 60px rgba(255, 223, 0, 0.6)';
+                }, 500);
+            }, 5000);
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const thunder = document.querySelector('.thunder-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (thunder) thunder.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // 音效控制
+        let audioContext;
+        let thunderSound;
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playThunderSound() {
+            if (audioContext) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.5);
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+        }
+
+        // 點擊任意地方初始化音效
+        document.addEventListener('click', function() {
+            if (!audioContext) {
+                initAudio();
+            }
+        }, { once: true });
+
+        // 定期播放雷聲
+        setInterval(() => {
+            if (Math.random() < 0.3) {
+                playThunderSound();
+            }
+        }, 8000);
+    </script>
+
+
+    <audio id="bgm" src="王座.mp3" autoplay loop muted></audio>
+<script>
+  // 點擊頁面解除靜音
+  document.addEventListener('click', function(){
+    document.getElementById('bgm').muted = false;
+  }, {once:true});
+</script>
+
+
+
+</body>
+</html>

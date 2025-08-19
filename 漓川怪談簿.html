@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漓川怪談簿 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #533a71 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 鬼火背景動畫 */
+        .spirit-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .spirit-fire {
+            position: absolute;
+            background: radial-gradient(circle, rgba(139, 69, 19, 0.8) 0%, rgba(218, 165, 32, 0.6) 30%, transparent 70%);
+            border-radius: 50%;
+            animation: spirit-float 6s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .spirit-fire:nth-child(1) { width: 8px; height: 12px; left: 15%; top: 20%; animation-delay: 0s; animation-duration: 8s; }
+        .spirit-fire:nth-child(2) { width: 6px; height: 10px; left: 25%; top: 60%; animation-delay: 2s; animation-duration: 7s; }
+        .spirit-fire:nth-child(3) { width: 10px; height: 15px; left: 70%; top: 30%; animation-delay: 4s; animation-duration: 9s; }
+        .spirit-fire:nth-child(4) { width: 7px; height: 11px; left: 80%; top: 70%; animation-delay: 1s; animation-duration: 8s; }
+        .spirit-fire:nth-child(5) { width: 5px; height: 8px; left: 50%; top: 10%; animation-delay: 3s; animation-duration: 6s; }
+        .spirit-fire:nth-child(6) { width: 9px; height: 13px; left: 90%; top: 50%; animation-delay: 5s; animation-duration: 10s; }
+
+        @keyframes spirit-float {
+            0%, 100% { 
+                transform: translateY(0px) translateX(0px) rotate(0deg);
+                opacity: 0.3;
+            }
+            25% { 
+                transform: translateY(-20px) translateX(10px) rotate(90deg);
+                opacity: 0.7;
+            }
+            50% { 
+                transform: translateY(-10px) translateX(-15px) rotate(180deg);
+                opacity: 0.5;
+            }
+            75% { 
+                transform: translateY(-30px) translateX(5px) rotate(270deg);
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(139, 69, 19, 0.8), 0 0 40px rgba(139, 69, 19, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #daa520, #8b4513);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 10px rgba(139, 69, 19, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(139, 69, 19, 0.3), 0 0 80px rgba(139, 69, 19, 0.2);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(139, 69, 19, 0.4), 0 0 100px rgba(139, 69, 19, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(139, 69, 19, 0.3);
+            border-color: rgba(139, 69, 19, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #daa520;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(139, 69, 19, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(139, 69, 19, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f4f4f4;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #8b4513, #daa520);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f4f4f4;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(139, 69, 19, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(139, 69, 19, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #8b4513, #daa520);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.4), 0 0 40px rgba(139, 69, 19, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(139, 69, 19, 0.5), 0 0 60px rgba(139, 69, 19, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.2;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(139, 69, 19, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-15px) rotate(5deg); }
+            66% { transform: translateY(-25px) rotate(-5deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .character-card {
+            background: rgba(139, 69, 19, 0.15);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .character-card:hover {
+            background: rgba(139, 69, 19, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(139, 69, 19, 0.4);
+            border-color: rgba(139, 69, 19, 0.5);
+        }
+
+        .character-image {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(218, 165, 32, 0.6);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(218, 165, 32, 0.9);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .character-role {
+            font-size: 0.85rem;
+            color: #daa520;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #daa520;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
+            line-height: 1.4;
+        }
+
+        .world-description {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .world-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #daa520;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .world-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .world-item {
+            background: rgba(139, 69, 19, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .world-item-title {
+            font-weight: 600;
+            color: #daa520;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .world-item-desc {
+            font-size: 0.9rem;
+            color: #f4f4f4;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="spirit-effects">
+        <div class="spirit-fire"></div>
+        <div class="spirit-fire"></div>
+        <div class="spirit-fire"></div>
+        <div class="spirit-fire"></div>
+        <div class="spirit-fire"></div>
+        <div class="spirit-fire"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">👹</div>
+        <div class="floating-element">🏮</div>
+        <div class="floating-element">⛩️</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">漓川怪談簿</h1>
+            <p class="subtitle">若隱若現的蜃氣樓，無人能渡的常世湖</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/KvyQtdnC/海报.jpg" alt="漓川怪談簿劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/W15nLzQP/简介.jpg" alt="漓川怪談簿劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">👹 劇本名稱</span>
+                    <span class="info-value">漓川怪談簿</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4.5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <span class="info-value">7人（3男4女，可反串）</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">日式</span>
+                        <span class="tag">硬核推理</span>
+                        <span class="tag">精怪</span>
+                        <span class="tag">密室</span>
+                        <span class="tag">進階</span>
+                        <span class="tag">還原</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="quote">"世代身為守護者的家族，不知何時會突然找上你的精怪......"</div>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/RZLY3vyP/人物_(3).jpg" alt="青衣女子" class="character-image">
+                        <div class="character-name">青衣女子</div>
+                        <div class="character-role">女，40歲。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/8zS3P7KJ/人物_(4).jpg" alt="紅衣女子" class="character-image">
+                        <div class="character-name">紅衣女子</div>
+                        <div class="character-role">女，40歲。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/66ZY29Gd/人物_(5).jpg" alt="黑衣少年" class="character-image">
+                        <div class="character-name">黑衣少年</div>
+                        <div class="character-role">男，18歲。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/6Q1YRq0h/人物_(6).jpg" alt="衣衫襤褸的老人" class="character-image">
+                        <div class="character-name">衣衫襤褸的老人</div>
+                        <div class="character-role">男，80歲。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/3wrcmPH3/人物_(2).jpg" alt="白衣少女" class="character-image">
+                        <div class="character-name">白衣少女</div>
+                        <div class="character-role">女，18歲。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/k5jhcfnK/人物_(1).jpg" alt="繃帶怪人" class="character-image">
+                        <div class="character-name">繃帶怪人</div>
+                        <div class="character-role">男，？歲。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/63kcjPF2/人物_(7).jpg" alt="小女孩" class="character-image">
+                        <div class="character-name">小女孩</div>
+                        <div class="character-role">女，11歲。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    <span class="highlight">「常世」</span>是這片土地的名字，也是土地中心那片詭異湖泊的名字。傳說，這裡的水土不僅滋養了生活在這裡的百姓，也孕育出了無數怪談故事中的精怪們。
+                    <br><br>
+                    它們非人非鬼，是受到常世湖湖水影響而妖異化的產物。它們也不像話本裡傳的那樣天生邪惡，但只要它們出現，就一定離不開各種<span class="highlight">「光怪陸離」</span>。
+                    <br><br>
+                    在這片湖泊的中心，還有著一個叫做<span class="highlight">「蜃氣樓」</span>的建築，像一艘大船，徹底地懸於湖上，始終都和水面保持著固定的距離。大家都對蜃氣樓感到好奇，卻沒人能夠真的進去。
+                    <br><br>
+                    所有人都知道，那裡是<span class="highlight">平將門大人</span>的居所，禁止任何人的通行。但今天，睜開雙眼後，你們忽然發現自己居然正身處在這棟神秘的建築裡，而平將門大人則慘死在了他緊鎖的房間當中......
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《漓川怪談簿》是一部<span class="highlight">日式硬核推理劇本</span>，由知名的灰燼工作室出品。故事巧妙地融合了日本神話傳說和民間怪談，特別是以古日本四大怨靈之一的平將門為背景。
+                    <br><br>
+                    本劇本採用<span class="highlight">雙層嵌套式解密</span>設計，人類世界（常世）和精怪世界（漓川）互為鏡像，每個角色都有著複雜的身份和關係。玩家需要在密室殺人的謎團中，揭開兩個世界之間的秘密。
+                    <br><br>
+                    作者文筆細膩，氣氛渲染到位，情節流畅且代入性極強。結合了<span class="highlight">密室詭計、變格推理</span>等元素，被譽為2021年最火的推理本之一。
+                    <br><br>
+                    <span class="highlight">警告：此劇本屬於硬核推理，建議有一定劇本殺經驗的玩家遊玩。文字量較大，需要清醒的頭腦來理清複雜的人物關係。</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#8b4513';
+                            s.style.textShadow = '0 0 15px rgba(139, 69, 19, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(139, 69, 19, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(139, 69, 19, 0.3) 0%, rgba(26, 26, 46, 0.8) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(26, 26, 46, 0.8)';
+                });
+            });
+
+            // 世界介紹項目懸停效果
+            const worldItems = document.querySelectorAll('.world-item');
+            worldItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    item.style.background = 'rgba(139, 69, 19, 0.35)';
+                    item.style.transform = 'scale(1.02)';
+                    item.style.borderColor = 'rgba(139, 69, 19, 0.5)';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    item.style.background = 'rgba(139, 69, 19, 0.2)';
+                    item.style.transform = 'scale(1)';
+                    item.style.borderColor = 'rgba(139, 69, 19, 0.3)';
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const spiritEffects = document.querySelector('.spirit-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (spiritEffects) spiritEffects.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // 鬼火重新開始動畫
+        setInterval(() => {
+            const spiritFires = document.querySelectorAll('.spirit-fire');
+            spiritFires.forEach(fire => {
+                fire.style.animationDelay = Math.random() * 4 + 's';
+            });
+        }, 12000);
+    </script>
+
+    <audio id="bgm" src="漓川怪談簿.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+</body>
+</html>
