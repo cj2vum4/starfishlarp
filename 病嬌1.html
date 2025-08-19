@@ -20,6 +20,47 @@
             position: relative;
         }
 
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(220, 38, 127, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(220, 38, 127, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(220, 38, 127, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(220, 38, 127, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 127, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         /* 陰暗氛圍動畫 */
         .shadow-effects {
             position: fixed;
@@ -339,17 +380,29 @@
                 gap: 5px;
             }
 
-            @media (max-width: 768px) {
-                .poster-section div {
-                    flex-direction: column;
-                    align-items: center;
-                }
-                
-                .poster-section .poster-image {
-                    max-width: 90% !important;
-                    min-width: unset !important;
-                    margin-bottom: 15px;
-                }
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
             }
         }
 
@@ -413,6 +466,12 @@
     </style>
 </head>
 <body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
     <div class="shadow-effects">
         <div class="shadow"></div>
         <div class="shadow"></div>
@@ -526,7 +585,7 @@
                 <div class="description-text">
                     我叫<span class="highlight">蕭何</span>。我一生的時間，是別人的七分之一，生命的厚度，卻是別人的七倍，因為這具身體裡住著七個「我」。
                     <br><br>
-                    但別誤會，我們可不像電影裡那些暴戾不可理喻的分裂人格。為了能更好的同處，我們分別取名<span class="highlight">星期一至星期日</span>。事實上，我們也是按照一周七天輪流出現，擁有自己獨立的生活。
+                    但別誤會，我們可不像電影裡那些暴戾不可理喻的分裂人格。為了能更好的共處，我們分別取名<span class="highlight">星期一至星期日</span>。事實上，我們也是按照一週七天輪流出現，擁有自己獨立的生活。
                     <br><br>
                     便利貼上的文字，是我們溝通的唯一途徑。每個人都有一本日記，記錄著自己的小秘密。總之，我有七個我，我便擁有了更豐盈的生命，和更孤單的生活。<span class="highlight">熱鬧是我的，孤獨也是我的⋯⋯</span>
                 </div>
