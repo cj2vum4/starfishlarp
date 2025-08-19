@@ -729,33 +729,18 @@
             if (sandstorm) sandstorm.style.transform = `translateY(${scrolled * 0.05}px)`;
             if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
         });
+
+
+    </script>
+    <audio id="bgm" src="孤城.mp3" autoplay loop muted></audio>
+    <script>
+      // 點擊頁面解除靜音
+      document.addEventListener('click', function(){
+        document.getElementById('bgm').muted = false;
+      }, {once:true});
     </script>
 
-</script>
-    <audio id="bgm" src="孤城.mp3" autoplay loop muted></audio>
-<script>
-  // 點擊頁面解除靜音
-  document.addEventListener('click', function(){
-    document.getElementById('bgm').muted = false;
-  }, {once:true});
-</script>
 
 
 </body>
-</html> => {
-                    card.style.boxShadow = 'none';
-                });
-            });
-
-            // 卡片懸停時的光效
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(218, 165, 32, 0.25) 0%, rgba(0,0,0,0.3) 100%)`;
-                });
-
-                card.addEventListener('mouseleave', ()
+</html>
