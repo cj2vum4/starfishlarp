@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>賣快樂的人 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #533483 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        /* 雪花飄落效果 */
+        .snow-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.8);
+            user-select: none;
+            pointer-events: none;
+            animation: snowfall 15s linear infinite;
+        }
+
+        .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; font-size: 1.2em; }
+        .snowflake:nth-child(2) { left: 20%; animation-delay: 3s; font-size: 0.9em; }
+        .snowflake:nth-child(3) { left: 30%; animation-delay: 6s; font-size: 1.4em; }
+        .snowflake:nth-child(4) { left: 40%; animation-delay: 9s; font-size: 1.1em; }
+        .snowflake:nth-child(5) { left: 50%; animation-delay: 12s; font-size: 1.3em; }
+        .snowflake:nth-child(6) { left: 60%; animation-delay: 2s; font-size: 0.8em; }
+        .snowflake:nth-child(7) { left: 70%; animation-delay: 5s; font-size: 1.5em; }
+        .snowflake:nth-child(8) { left: 80%; animation-delay: 8s; font-size: 1em; }
+        .snowflake:nth-child(9) { left: 90%; animation-delay: 11s; font-size: 1.2em; }
+
+        @keyframes snowfall {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(138, 43, 226, 0.8), 0 0 60px rgba(138, 43, 226, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #9370DB, #8A2BE2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .shop-quote {
+            font-size: 1.1rem;
+            color: rgba(147, 112, 219, 0.9);
+            margin: 20px 0;
+            text-align: center;
+            line-height: 1.6;
+            font-family: '微軟正黑體', serif;
+            font-style: italic;
+            max-width: 700px;
+            margin: 20px auto;
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(139, 69, 19, 0.4), 0 0 80px rgba(138, 43, 226, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(138, 43, 226, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(139, 69, 19, 0.5), 0 0 100px rgba(138, 43, 226, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(138, 43, 226, 0.3);
+            border-color: rgba(138, 43, 226, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #9370DB;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(138, 43, 226, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(138, 43, 226, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #9370DB, #8A2BE2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(138, 43, 226, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #9370DB, #8A2BE2);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4), 0 0 40px rgba(138, 43, 226, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(138, 43, 226, 0.5), 0 0 60px rgba(138, 43, 226, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 16s ease-in-out infinite;
+            color: rgba(138, 43, 226, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 6s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 12s;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(138, 43, 226, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(138, 43, 226, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(138, 43, 226, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(138, 43, 226, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #9370DB;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(2deg); }
+            66% { transform: translateY(-40px) rotate(-2deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="snow-effects">
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🏪</div>
+        <div class="floating-element">🎭</div>
+        <div class="floating-element">✨</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">賣快樂的人</h1>
+            <div class="shop-quote">
+                傳說，東京有一家名為「快樂店」的地方<br>
+                在那裡，老闆只出售快樂，凡是內心愁苦，想要獲得快樂之人就會不自覺地來到這家快樂店
+            </div>
+            <p class="subtitle">每年新年之際，快樂店都會燃放起辭舊迎新的煙火，意為和所有的煩惱說再見</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/8zDnCPgc/image.jpg" alt="賣快樂的人劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/6p0b4JB0/image.jpg" alt="賣快樂的人劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🏪 劇本名稱</span>
+                    <span class="info-value">賣快樂的人</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>2男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                        <span style="color: #9370DB; font-size: 0.8rem; margin-left: 10px; text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);">（不可反串）</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">情感</span>
+                        <span class="tag">新手</span>
+                        <span class="tag">沉浸</span>
+                        <span class="tag">立意</span>
+                        <span class="tag">現代</span>
+                        <span class="tag">無兇手</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/pT76VfPM/2.jpg" alt="偷月亮的人" class="character-image">
+                        <div class="character-name">偷月亮的人</div>
+                        <div class="character-info">男性角色<br>神秘而詩意的存在</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Df9MtPCq/4.jpg" alt="靜止的人" class="character-image">
+                        <div class="character-name">靜止的人</div>
+                        <div class="character-info">男性角色<br>內心深沉的靈魂</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/prF1mmdh/1.jpg" alt="藍色的人" class="character-image">
+                        <div class="character-name">藍色的人</div>
+                        <div class="character-info">女性角色<br>憂鬱而美麗的心境</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/CLbQYnt9/5.jpg" alt="霧氣騰騰的人" class="character-image">
+                        <div class="character-name">霧氣騰騰的人</div>
+                        <div class="character-info">女性角色<br>朦朧而溫柔的靈魂</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/MZMLPFY6/3.jpg" alt="踩影子的人" class="character-image">
+                        <div class="character-name">踩影子的人</div>
+                        <div class="character-info">女性角色<br>追尋自我的旅人</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    在東京的某個角落，隱藏著一家神秘的<span class="highlight">「快樂店」</span>。這家店只出售快樂，凡是內心愁苦、想要獲得快樂的人，都會不自覺地被吸引到這裡。
+                    <br><br>
+                    店裡的老闆常年戴著面具，沒有人見過他的真面目，客人們都只稱他為<span class="highlight">「賣快樂的人」</span>。至今還沒有人知道這家店販賣的快樂究竟是什麼，但每一個來到這裡的人，都帶著各自的故事和煩惱。
+                    <br><br>
+                    每年新年之際，快樂店都會燃放起<span class="highlight">辭舊迎新的煙火</span>，意為和所有的煩惱說再見，正如這家店的名字一樣。漫天大雪紛紛揚揚而落，快樂店隱匿於雪中，等待著與之有羈絆的人如約而至。
+                    <br><br>
+                    今天，快樂店又迎來了五位客人...每個人都有著不同的故事，不同的憂愁，但都在尋找著同一樣東西——<span class="highlight">快樂</span>。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《賣快樂的人》是一部充滿<span class="highlight">詩意和哲學思考</span>的情感劇本。這不是傳統的推理故事，而是一場關於人生、快樂與自我反思的深度體驗。
+                    <br><br>
+                    劇本以<span class="highlight">細膩的文筆</span>滲出淡淡哀愁，通過簡單的故事帶出深層的立意。每個角色都有著詩意的名字和獨特的人生故事，玩家將在扮演中體驗不同的人生感悟。
+                    <br><br>
+                    這是一個<span class="highlight">新手友好</span>的情感劇本，推理難度極低，讓玩家能夠專注於角色的內心世界和情感表達。劇本鼓勵玩家毋忘初心，反思現實中的自我，探討什麼是真正的快樂。
+                    <br><br>
+                    在這個被雪花環繞的神秘小店裡，五個迷失的靈魂將展開一場關於<span class="highlight">尋找快樂</span>的心靈之旅。這不僅是一次角色扮演的體驗，更是一次對內心深處的探索和療癒。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#9370DB';
+                            s.style.textShadow = '0 0 15px rgba(138, 43, 226, 0.8)';
