@@ -714,5 +714,13 @@
             if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
         });
     </script>
+    <audio id="bgm" src="test.mp3" autoplay loop muted></audio>
+<script>
+  // 點擊頁面解除靜音
+  document.addEventListener('click', function(){
+    document.getElementById('bgm').muted = false;
+  }, {once:true});
+</script>
+
 </body>
 </html>
