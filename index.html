@@ -219,6 +219,10 @@
         .script-card:nth-child(14) { animation-delay: 3.1s; }
         .script-card:nth-child(15) { animation-delay: 3.3s; }
         .script-card:nth-child(16) { animation-delay: 3.5s; }
+        .script-card:nth-child(17) { animation-delay: 3.7s; }
+        .script-card:nth-child(18) { animation-delay: 3.9s; }
+        .script-card:nth-child(19) { animation-delay: 4.1s; }
+
 
         .script-card:hover {
             transform: translateY(-15px) scale(1.02);
@@ -432,7 +436,7 @@
             
             <div class="stats">
                 <div class="stat-item">
-                    <div class="stat-number" id="totalScripts">16</div>
+                    <div class="stat-number" id="totalScripts">19</div>
                     <div class="stat-label">精選劇本</div>
                 </div>
                 <div class="stat-item">
@@ -480,6 +484,7 @@
                         <option value="立意">立意</option>
                         <option value="古風">古風</option>
                         <option value="恐怖">恐怖</option>
+                        <option value="驚悚">驚悚</option>
                         <option value="身份轉換">身份轉換</option>
                         <option value="神話">神話</option>
                         <option value="雙主持">雙主持</option>
@@ -501,6 +506,8 @@
                         <option value="燒腦">燒腦</option>
                         <option value="科技">科技</option>
                         <option value="演繹">演繹</option>
+                        <option value="病態">病態</option>
+                        <option value="繁體">繁體</option>
                     </select>
                 </div>
                 
@@ -634,7 +641,7 @@
                 <img src="https://i.postimg.cc/qqp3BtDL/image.jpg" alt="陰緣" class="script-image">
                 <h3 class="script-title">陰緣</h3>
                 <div class="script-info">
-                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">  3男3女</span>
                     <span class="info-badge">⏰ 4小時</span>
                     <span class="info-badge">⭐ 2星</span>
                 </div>
@@ -799,6 +806,64 @@
                 <button class="detail-btn" onclick="goToScript('anjian')">查看詳細介紹</button>
             </div>
 
+            <!-- New Scripts Start -->
+            <div class="script-card" data-theme="horror" data-players="6" data-types="日式推理,變格,硬核,進階,微恐怖,繁體" data-difficulty="5">
+                <img src="https://i.postimg.cc/W3dHNnnx/image.jpg" alt="瘋子2" class="script-image">
+                <h3 class="script-title">瘋子2：我將在18歲後分裂成很多人</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 6小時</span>
+                    <span class="info-badge">⭐ 5星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">日式推理</span>
+                    <span class="type-tag">變格</span>
+                    <span class="type-tag">硬核</span>
+                    <span class="type-tag">進階</span>
+                    <span class="type-tag">微恐怖</span>
+                    <span class="type-tag">繁體</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('fengzi2')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="horror" data-players="6" data-types="古風,驚悚,變格,進階,還原" data-difficulty="4">
+                <img src="https://i.postimg.cc/YqYXV9qH/1742108932-138599662-g-l.jpg" alt="瘋囚於妄念之終" class="script-image">
+                <h3 class="script-title">瘋囚於妄念之終</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">古風</span>
+                    <span class="type-tag">驚悚</span>
+                    <span class="type-tag">變格</span>
+                    <span class="type-tag">進階</span>
+                    <span class="type-tag">還原</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('fengqiu')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="modern" data-players="7" data-types="懸疑,病態,還原,歡樂,荒誕,新手,無兇手" data-difficulty="5">
+                <img src="https://i.postimg.cc/gjX9pHjJ/image.jpg" alt="純白少年的慢性死亡" class="script-image">
+                <h3 class="script-title">純白少年的慢性死亡</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男4女</span>
+                    <span class="info-badge">⏰ 4.5小時</span>
+                    <span class="info-badge">⭐ 0星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">懸疑</span>
+                    <span class="type-tag">病態</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">新手</span>
+                    <span class="type-tag">無兇手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('chunbai')">查看詳細介紹</button>
+            </div>
+            <!-- New Scripts End -->
+
         </div>
 
         <div class="no-results hidden" id="noResults">
@@ -959,6 +1024,36 @@
             theme: 'modern',
             time: 4.5,
             file: '案件重演.html'
+        },
+        {
+            id: 'fengzi2',
+            name: '瘋子2：我將在18歲後分裂成很多人',
+            players: 6,
+            types: ['日式推理', '變格', '硬核', '進階', '微恐怖', '繁體'],
+            difficulty: 5,
+            theme: 'horror',
+            time: 6,
+            file: '瘋子2.html'
+        },
+        {
+            id: 'fengqiu',
+            name: '瘋囚於妄念之終',
+            players: 6,
+            types: ['古風', '驚悚', '變格', '進階', '還原'],
+            difficulty: 4,
+            theme: 'horror',
+            time: 5,
+            file: '瘋囚於妄念之終.html'
+        },
+        {
+            id: 'chunbai',
+            name: '純白少年的慢性死亡',
+            players: 7,
+            types: ['懸疑', '病態', '還原', '歡樂', '荒誕', '新手', '無兇手'],
+            difficulty: 0,
+            theme: 'modern',
+            time: 4.5,
+            file: '純白少年的慢性死亡.html'
         }
     ];
 
@@ -1052,3 +1147,4 @@
     </script>
 </body>
 </html>
+ 
