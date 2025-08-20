@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劇本殺榮譽牆 (數據連動版)</title>
+    <style>
+        /* --- 網頁整體樣式 --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- 容器樣式 --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* --- 新增按鈕區塊 --- */
+        .header-actions {
+            margin-bottom: 1.5rem;
+        }
+
+        .add-record-btn {
+            display: inline-block;
+            padding: 10px 18px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .add-record-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- 標題樣式 --- */
+        .main-title {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 165, 0, 0.4);
+        }
+        
+        /* --- 玩家選擇區 --- */
+        .player-selector-container {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .player-selector-container label {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            color: #ccc;
+        }
+
+        #playerSelector {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        /* --- 榮譽牆網格排版 --- */
+        .honor-wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        /* --- 單一劇本卡片 --- */
+        .script-card {
+            background: #2b2b2b;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .script-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        /* --- 卡片圖片區域 --- */
+        .image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 141.4%; 
+            background-color: #333;
+        }
+
+        .script-card img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: filter 0.4s ease;
+        }
+        
+        /* --- 卡片資訊區塊 --- */
+        .script-info {
+            padding: 15px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 讓標題垂直置中 */
+        }
+
+        .script-title {
+            margin: 0;
+            font-size: 1.25em;
+            color: #ffffff;
+            min-height: 2.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* --- 當卡片被標記為 "played" 時的樣式變化 --- */
+        .script-card.played .image-container img {
+            filter: grayscale(50%) brightness(0.8);
+        }
+        
+        /* --- 印章疊加層 (容器) --- */
+        .stamp-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        /* --- 參考圖紋理橡皮章風格 --- */
+        .stamp-content {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            box-sizing: border-box;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            
+            color: #a9844f; /* 復古棕金色 */
+            background-color: #fdfbf5; /* 米白紙基底 */
+            /* 模擬紙張紋理 */
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4"%3E%3Cpath fill="%23d2c9b7" fill-opacity="0.05" d="M1 3h1v1H1V3zm2-2h1v1H3V1z"%3E%3C/path%3E%3C/svg%3E');
+            
+            border-radius: 50%; /* 圓形 */
+            
+            /* 使用 box-shadow 創造雙圈效果 */
+            border: 3px solid #a9844f;
+            box-shadow: 0 0 0 5px #fdfbf5, 0 0 0 8px #a9844f;
+
+            /* 動畫初始狀態 */
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.8);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .stamp-character {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .stamp-date {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .stamp-rating {
+            font-size: 1rem;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        
+        /* 印章分隔線 */
+        .stamp-divider {
+            width: 60%;
+            height: 2px;
+            background-color: #a9844f;
+            margin: 6px 0;
+            /* 模擬墨水斑駁感 */
+            background-image: linear-gradient(90deg, #a9844f 70%, transparent 70%, transparent 80%, #a9844f 80%);
+            background-size: 10px 100%;
+        }
+
+        /* 當卡片有 .played 類別時，觸發蓋章動畫 */
+        .script-card.played .stamp-content {
+            opacity: 0.9;
+            transform: translate(-50%, -50%) scale(1); /* 恢復正常大小 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- 新增的按鈕區塊 -->
+        <div class="header-actions">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSd3U-nLaHB5xKx3jrB4SHYiuLqqoFWEVAkKYWCNRb_aA3UXDg/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="add-record-btn">新增玩本記錄</a>
+        </div>
+
+        <h1 class="main-title">劇本殺榮譽牆</h1>
+
+        <div class="player-selector-container">
+            <label for="playerSelector">選擇玩家:</label>
+            <select id="playerSelector">
+                <option value="">-- 讀取資料中 --</option>
+            </select>
+        </div>
+
+        <div class="honor-wall" id="honorWall">
+            <!-- 劇本卡片將由 JavaScript 動態生成 -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            
+            // --- 資料區 ---
+            const scriptsData = [
+                // 原有劇本
+                { id: '北國之春', title: '北國之春', imgSrc: 'https://i.postimg.cc/yNWMsNFR/01.jpg' },
+                { id: '群星', title: '群星', imgSrc: 'https://i.postimg.cc/G3DGXBM5/image.jpg' },
+                { id: '病嬌男孩的精分日記', title: '病嬌男孩的精分日記', imgSrc: 'https://i.postimg.cc/RZYbc6pZ/1.jpg' },
+                { id: '孤城', title: '孤城', imgSrc: 'https://i.postimg.cc/cCsdmcGG/b644a7b3-c9a4-4d08-b36d-c69cc70a0b39-S.png' },
+                { id: '奉天1928', title: '奉天1928', imgSrc: 'https://i.postimg.cc/W3Z7nM68/image.jpg' },
+                { id: '晴天神社', title: '晴天神社', imgSrc: 'https://i.postimg.cc/QMd81msL/image.png' },
+                { id: '賣快樂的人', title: '賣快樂的人', imgSrc: 'https://i.postimg.cc/8zDnCPgc/image.jpg' },
+                { id: '別來無恙', title: '別來無恙', imgSrc: 'https://i.postimg.cc/ZR8GbTTx/组织者手册封面.jpg' },
+                { id: '誰動了我的奶酪', title: '誰動了我的奶酪', imgSrc: 'https://i.postimg.cc/hjP711CF/封面.jpg' },
+                // 新增劇本
+                { id: '木夕僧之戲', title: '木夕僧之戲', imgSrc: 'https://i.postimg.cc/5twZZZz7/11dacc07-b497-4e5a-9862-9d7cfd0cc80e-S_木夕僧之戲.png' },
+                { id: '案件重演', title: '案件重演', imgSrc: 'https://i.postimg.cc/gJJH0V1F/海报.jpg' },
+                { id: '沸騰跨世紀', title: '沸騰跨世紀', imgSrc: 'https://i.postimg.cc/fyw0htb3/IMG_7198.jpg' },
+                { id: '漓川怪談簿', title: '漓川怪談簿', imgSrc: 'https://i.postimg.cc/KvyQtdnC/海报.jpg' },
+                { id: '王座', title: '王座', imgSrc: 'https://i.postimg.cc/d0cKpGxL/2021-11-13_195627.jpg' },
+                { id: '瘋囚於妄念之終', title: '瘋囚於妄念之終', imgSrc: 'https://i.postimg.cc/YqYXV9qH/1742108932-138599662-g_l.jpg' },
+                { id: '瘋子2我將在18歲分裂成很多人', title: '瘋子2我將在18歲分裂成很多人', imgSrc: 'https://i.postimg.cc/W3dHNnnx/封面.jpg' },
+                { id: '純白少年的慢性死亡', title: '純白少年的慢性死亡', imgSrc: 'https://i.postimg.cc/gjX9pHjJ/主海报.jpg' },
+                { id: '陰緣', title: '陰緣', imgSrc: 'https://i.postimg.cc/qqp3BtDL/封面.jpg' }
+            ];
+            
+            const PROXY_URL = 'https://corsproxy.io/?';
+            const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
+            const CSV_URL = PROXY_URL + encodeURIComponent(GOOGLE_SHEET_URL);
+
+
+            // --- DOM 元素 ---
+            const honorWall = document.getElementById('honorWall');
+            const playerSelector = document.getElementById('playerSelector');
+
+            // --- 函式區 ---
+
+            // 1. 從 Google Sheet 獲取並解析 CSV 資料
+            async function fetchPlayData() {
+                try {
+                    const response = await fetch(CSV_URL, { cache: 'no-store' });
+                    if (!response.ok) {
+                        throw new Error(`網路回應錯誤: ${response.statusText}`);
+                    }
+                    const csvText = await response.text();
+                    
+                    if (csvText.trim().startsWith('<')) {
+                        throw new Error('讀取到的檔案格式不符，請確認 Google Sheet 是否已正確「發布到網路」為 CSV 格式。');
+                    }
+
+                    const rows = csvText.trim().split(/\r?\n/).slice(1);
+                    
+                    const playRecords = {};
+                    const playerNames = new Set();
+
+                    rows.forEach(row => {
+                        if (!row) return;
+                        
+                        const parts = row.split(',');
+                        if (parts.length < 6) return; // 時間戳記, 名字, 日期, 劇本, 評價, 角色
+                        
+                        const name = parts[1].trim();
+                        const date = parts[2].trim();
+                        const script = parts[3].trim();
+                        const rating = parts[4].trim();
+                        const character = parts.slice(5).join(',').trim().replace(/^"|"$/g, '');
+
+                        if (name && script) {
+                            playerNames.add(name);
+                            if (!playRecords[name]) {
+                                playRecords[name] = {};
+                            }
+                            if (!playRecords[name][script]) {
+                                playRecords[name][script] = [];
+                            }
+                            playRecords[name][script].push({ date, character, rating });
+                        }
+                    });
+
+                    return { playRecords, playerNames: Array.from(playerNames).sort() };
+                } catch (error) {
+                    console.error('無法獲取劇本資料:', error);
+                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${error.message}</p>`;
+                    playerSelector.innerHTML = '<option value="">讀取失敗</option>';
+                    return { playRecords: {}, playerNames: [] };
+                }
+            }
+
+            // 2. 根據資料生成卡片 HTML
+            function createScriptCard(script) {
+                const card = document.createElement('div');
+                card.className = 'script-card';
+                card.dataset.scriptId = script.id;
+
+                const placeholderUrl = `https://placehold.co/400x566/2b2b2b/eeeeee?text=${encodeURIComponent(script.title)}`;
+                const imageOnError = `this.onerror=null; this.src='${placeholderUrl}';`;
+
+                card.innerHTML = `
+                    <div class="image-container">
+                        <img src="${script.imgSrc}" alt="${script.title} 劇本封面" loading="lazy" onerror="${imageOnError}">
+                        <div class="stamp-overlay">
+                            <!-- 印章將會動態生成於此 -->
+                        </div>
+                    </div>
+                    <div class="script-info">
+                        <h3 class="script-title">${script.title}</h3>
+                    </div>
+                `;
+                return card;
+            }
+            
+            // 輔助函式：產生星星字串
+            function generateStars(ratingStr) {
+                const rating = parseInt(ratingStr, 10);
+                if (isNaN(rating) || rating < 1 || rating > 5) {
+                    return '無評價';
+                }
+                const filled = '★'.repeat(rating);
+                const empty = '☆'.repeat(5 - rating);
+                return filled + empty;
+            }
+
+            // 3. 根據選擇的玩家更新榮譽牆
+            function updateWallForPlayer(selectedPlayer, playRecords) {
+                const stampPositions = [
+                    { top: '35%', left: '35%', rotate: -18 },
+                    { top: '65%', left: '65%', rotate: 15 },
+                    { top: '35%', left: '65%', rotate: 10 },
+                    { top: '65%', left: '35%', rotate: -12 },
+                    { top: '50%', left: '50%', rotate: 5 }
+                ];
+
+                const allCards = document.querySelectorAll('.script-card');
+                allCards.forEach(card => {
+                    const scriptId = card.dataset.scriptId;
+                    const playerRecords = playRecords[selectedPlayer] || {};
+                    const records = playerRecords[scriptId] || [];
+                    
+                    const stampOverlay = card.querySelector('.stamp-overlay');
+                    stampOverlay.innerHTML = ''; 
+
+                    if (records.length > 0) {
+                        card.classList.add('played');
+                        
+                        records.forEach((record, index) => {
+                            const stamp = document.createElement('div');
+                            stamp.className = 'stamp-content';
+                            
+                            // *** 修正 ***: 加入分隔線
+                            stamp.innerHTML = `
+                                <span class="stamp-character">${record.character}</span>
+                                <div class="stamp-divider"></div>
+                                <div class="stamp-rating">${generateStars(record.rating)}</div>
+                                <div class="stamp-divider"></div>
+                                <span class="stamp-date">${record.date}</span>
+                            `;
+                            
+                            const pos = stampPositions[index % stampPositions.length];
+                            
+                            setTimeout(() => {
+                                stamp.style.top = pos.top;
+                                stamp.style.left = pos.left;
+                                stamp.style.transform = `translate(-50%, -50%) scale(1) rotate(${pos.rotate}deg)`;
+                            }, index * 120);
+
+                            stampOverlay.appendChild(stamp);
+                        });
+
+                    } else {
+                        card.classList.remove('played');
+                    }
+                });
+            }
+
+            // --- 初始化 ---
+            
+            // A. 動態生成所有劇本卡片
+            scriptsData.forEach(script => {
+                const cardElement = createScriptCard(script);
+                honorWall.appendChild(cardElement);
+            });
+
+            // B. 獲取資料並設定互動功能
+            const { playRecords, playerNames } = await fetchPlayData();
+
+            // C. 填充玩家下拉選單
+            if (playerNames.length > 0) {
+                playerSelector.innerHTML = '<option value="">-- 請選擇玩家 --</option>';
+                playerNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    playerSelector.appendChild(option);
+                });
+            } else if (playerSelector.textContent.includes('讀取中')) {
+                playerSelector.innerHTML = '<option value="">無玩家資料</option>';
+            }
+
+            // D. 監聽下拉選單的變化
+            playerSelector.addEventListener('change', (event) => {
+                const selectedPlayer = event.target.value;
+                updateWallForPlayer(selectedPlayer, playRecords);
+            });
+        });
+    </script>
+
+</body>
+</html>
