@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>木夕僧之戲 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 30%, #3d1a1a 60%, #4a0e0e 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 陰森的霧氣和陰影效果 */
+        .mist-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .mist {
+            position: absolute;
+            user-select: none;
+            pointer-events: none;
+            animation: mistFloat 20s ease-in-out infinite;
+            font-size: 1.5rem;
+            opacity: 0.6;
+            color: #666;
+        }
+
+        .mist:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+        .mist:nth-child(2) { left: 80%; top: 30%; animation-delay: 5s; }
+        .mist:nth-child(3) { left: 50%; top: 60%; animation-delay: 10s; }
+        .mist:nth-child(4) { left: 20%; top: 70%; animation-delay: 15s; }
+        .mist:nth-child(5) { left: 70%; top: 80%; animation-delay: 2s; }
+
+        @keyframes mistFloat {
+            0%, 100% {
+                transform: translateX(0px) translateY(0px);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translateX(50px) translateY(-30px);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateX(-30px) translateY(-60px);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translateX(-50px) translateY(-20px);
+                opacity: 0.7;
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(26, 26, 26, 0.9);
+            color: #8B0000;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 0, 0, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #8B0000;
+            text-shadow: 0 0 30px rgba(139, 0, 0, 0.8), 0 0 60px rgba(139, 0, 0, 0.6), 2px 2px 4px rgba(0,0,0,0.8);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #8B0000, #660000, #330000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(139, 0, 0, 0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .japanese-quote {
+            font-size: 1.1rem;
+            color: rgba(139, 0, 0, 0.9);
+            margin: 20px 0;
+            text-align: center;
+            line-height: 1.6;
+            font-family: '微軟正黑體', serif;
+            font-style: italic;
+            max-width: 700px;
+            margin: 20px auto;
+            border-left: 3px solid #8B0000;
+            padding-left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px 20px;
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 80px rgba(139, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(139, 0, 0, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 100px rgba(139, 0, 0, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(26, 26, 26, 0.85);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(139, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(139, 0, 0, 0.3);
+            border-color: rgba(139, 0, 0, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #8B0000;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #8B0000;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(139, 0, 0, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(139, 0, 0, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #ccc;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #8B0000;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #8B0000;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(26, 26, 26, 0.5);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(139, 0, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #8B0000, #660000);
+            color: #ccc;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ccc;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #8B0000;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #8B0000, #660000);
+            color: #ccc;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.4), 0 0 40px rgba(139, 0, 0, 0.2);
+            border: 2px solid rgba(139, 0, 0, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.5), 0 0 60px rgba(139, 0, 0, 0.3);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(139, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 2px solid rgba(139, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(139, 0, 0, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(139, 0, 0, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(139, 0, 0, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #ccc;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #888;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #8B0000;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.3);
+        };
+            font-size: 1rem;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #DEB887;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #CD853F;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(205, 133, 63, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 14s ease-in-out infinite;
+            color: rgba(139, 0, 0, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 10s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(2deg); }
+            66% { transform: translateY(-40px) rotate(-2deg); }
+        }
+
+        /* 裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #8B0000, transparent);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "⋆";
+            position: absolute;
+            top: -8px;
+            color: #8B0000;
+            font-size: 1.2rem;
+        }
+
+        .decorative-line::before {
+            left: 20%;
+        }
+
+        .decorative-line::after {
+            right: 20%;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="mist-effects">
+        <div class="mist">💀</div>
+        <div class="mist">👻</div>
+        <div class="mist">🌫️</div>
+        <div class="mist">💀</div>
+        <div class="mist">🌫️</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🪆</div>
+        <div class="floating-element">⚰️</div>
+        <div class="floating-element">🔮</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">木夕僧之戲</h1>
+            <div class="decorative-line"></div>
+            <p class="subtitle">日式硬核推理本天花板</p>
+            <div class="japanese-quote">
+                「吾乃高僧大名，遠方之國亦知吾名……<br>
+                今打磨一木偶，贈卿邀汝一戲。」
+            </div>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/5twZZZz7/11dacc07-b497-4e5a-9862-9d7cfd0cc80e-S.png" alt="木夕僧之戲劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/wTjgDTN6/1625557115-3096406862-g-n.jpg" alt="木夕僧之戲劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">木夕僧之戲</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">5-7 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>4男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">日式</span>
+                        <span class="tag">硬核</span>
+                        <span class="tag">變格</span>
+                        <span class="tag">燒腦</span>
+                        <span class="tag">機制</span>
+                        <span class="tag">推理</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/P5BHGWRx/5094349c-0342-4b88-ae57-d111e8152be1-C.png" alt="月讀千鶴" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">🎨</div>
+                        <div class="character-name">月讀千鶴</div>
+                        <div class="character-info">女，30歲<br>身著魔女洛麗塔連衣裙<br>身材嬌小的漫畫家</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/4N2ZPkvp/038304fb-3c4d-4442-b7fd-0e8d11fddce8-C.png" alt="般若彌生" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">🌺</div>
+                        <div class="character-name">般若彌生</div>
+                        <div class="character-info">男，20歲<br>身著夏威夷花襯衫<br>自由職業者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/gcNPcFT1/913f14a3-6d9c-4ef1-bd85-9406f3e33aaa-C.png" alt="不破秋波" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">😷</div>
+                        <div class="character-name">不破秋波</div>
+                        <div class="character-info">女，28歲<br>長髮主婦，戴著醫用口罩<br>穿著優雅的裙裝</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/VvGyKntz/0d0100f0-71ca-4e14-8d43-ea97d4f5bf7c-C.png" alt="天照櫻和" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👘</div>
+                        <div class="character-name">天照櫻和</div>
+                        <div class="character-info">女，30歲<br>身著櫻花紋樣的名貴和服<br>知名律師</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/ZYcJ9yC7/d447209c-143a-4c03-a040-d3c3e7a7742b-C.png" alt="明智春光" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">🔍</div>
+                        <div class="character-name">明智春光</div>
+                        <div class="character-info">男，35歲<br>沉穩內斂的偵探<br>擅長推理分析</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/3xyhbS9V/1223d444-4961-43d6-9348-429ab6feeb03-C.png" alt="大塚敬公" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">💼</div>
+                        <div class="character-name">大塚敬公</div>
+                        <div class="character-info">男，40歲<br>商界精英<br>城府深沉的商人</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/yxvK22M4/6e44f3d5-5f93-4d4e-b9e7-623318e62cfc-C.png" alt="安倍偵探" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">🔮</div>
+                        <div class="character-name">安倍偵探</div>
+                        <div class="character-info">男，年齡不詳<br>神秘的陰陽師<br>掌握古老法術</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    某個<span class="highlight">蟬鳴聒噪的夏日</span>，一行七人被莫名聚集在古老的木夕神社。他們被邀請來參與一場莫名其妙的遊戲。而邀請他們前來此處的，正是那個<span class="highlight">身著玄色僧袍的和尚</span>……
+                    <br><br>
+                    蟬鳴陣陣中，似有人在他們耳邊呢喃，聲音深遠悠長——「吾乃高僧大名，遠方之國亦知吾名……今打磨一木偶，贈卿邀汝一戲。」
+                    <br><br>
+                    在這個<span class="highlight">日本古代陰陽師的世界</span>中，妖怪與人類的界限變得模糊。酒吞童子、雪女、二口女等著名妖怪形象，它們都以木偶的形式存在，結合連環殺人案，讓人又驚又奇，十分精妙。
+                    <br><br>
+                    這不是普通的推理遊戲，而是一場關於<span class="highlight">生死、復仇與救贖</span>的終極考驗。每個人都帶著自己的秘密來到這裡，而這些秘密將成為解開謎團的關鍵……
+                </div>
+            </div>
+        </div>
+
+        <div class="card description" style="background: rgba(26, 26, 26, 0.9); border: 2px solid rgba(139, 0, 0, 0.4); margin-top: 40px;">
+            <h2 class="card-title" style="color: #8B0000; border-bottom-color: #8B0000;">劇本介紹</h2>
+            <div class="decorative-line" style="background: linear-gradient(90deg, transparent, #8B0000, transparent);"></div>
+            <div class="description-text" style="color: #ccc;">
+                <span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">《木夕僧之戲》</span>是一部日式變格硬核推理本，被譽為<span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">硬核本天花板</span>，從推出就火爆至今，幾乎無差評。很多小夥伴在體驗過後只給了聚聚四個字——<span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">玩就對了！</span>
+                <br><br>
+                本劇本<span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">推理難度極高</span>，不適合新手體驗，非常適合推土機玩家上車。劇本的核詭和密室都比較複雜，<span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">比較吃玩家，適合喜歡硬核推理、全程在線的玩家</span>。
+                <br><br>
+                這是為數不多<span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">越盤越帶勁的本</span>，品質不輸優秀城限本。分幕較多，需要消化的線索不少，考驗玩家細節提取能力。故事體量較大，人物關係複雜，你以為的真相不一定是真相。
+                <br><br>
+                劇本擁有<span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">獨立的世界觀以及時間線</span>，充滿著玄幻色彩，諸如牛鬼蛇神之類的設定。玩家在遊戲過程中要理解劇本設定才可以進行還原和盤凶。沒有什麼實錘線索，是通過一點點的邏輯推理以及還原故事來達到找到真相、抓出凶手的目的。
+                <br><br>
+                劇本中包含許多<span class="highlight" style="color: #8B0000; background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.3) 50%, transparent 100%);">日本妖怪傳說相關的內容</span>，如酒吞童子、二口女、雪女等，它們都以木偶的形式存在，結合連環殺人案，讓人又驚又奇，十分精妙。對日本文化感興趣的玩家會是不錯的體驗。
+                <br><br>
+                <span class="highlight" style="color: #FF6347; background: linear-gradient(120deg, transparent 0%, rgba(255, 99, 71, 0.3) 50%, transparent 100%);">警告：此劇本可能引起強烈情感反應，建議有一定經歷的玩家遊玩。</span>
+            </div>
+        </div>
+<div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+<audio id="bgm" src="沸騰跨世紀.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+</body>
+</html>

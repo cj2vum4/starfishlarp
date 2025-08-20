@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沸騰跨世紀 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFD700 0%, #FF6B35 30%, #8A2BE2 60%, #DC143C 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 煙花爆竹效果 */
+        .fireworks-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .firework {
+            position: absolute;
+            user-select: none;
+            pointer-events: none;
+            animation: fireworkBurst 3s ease-out infinite;
+            font-size: 1.5rem;
+        }
+
+        .firework:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+        .firework:nth-child(2) { left: 80%; top: 30%; animation-delay: 1s; }
+        .firework:nth-child(3) { left: 50%; top: 15%; animation-delay: 2s; }
+        .firework:nth-child(4) { left: 20%; top: 50%; animation-delay: 0.5s; }
+        .firework:nth-child(5) { left: 70%; top: 60%; animation-delay: 1.5s; }
+        .firework:nth-child(6) { left: 40%; top: 70%; animation-delay: 2.5s; }
+
+        @keyframes fireworkBurst {
+            0% {
+                opacity: 0;
+                transform: scale(0.1) rotate(0deg);
+            }
+            25% {
+                opacity: 1;
+                transform: scale(1.2) rotate(90deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5) rotate(180deg);
+            }
+            75% {
+                opacity: 0.8;
+                transform: scale(2) rotate(270deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.5) rotate(360deg);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(220, 20, 60, 0.9);
+            color: #FFD700;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(220, 20, 60, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #FFD700, #FF6B35, #DC143C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .year-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #FFD700, #FF6B35);
+            color: #fff;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(220, 20, 60, 0.4), 0 0 80px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(220, 20, 60, 0.5), 0 0 100px rgba(255, 215, 0, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #DC143C;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #FFD700;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #8A2BE2;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #DC143C;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #FFD700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(138, 43, 226, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #FF6B35, #DC143C);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 215, 0, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #8A2BE2;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #FF6B35, #DC143C);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4), 0 0 40px rgba(255, 107, 53, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.5), 0 0 60px rgba(255, 107, 53, 0.3);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(255, 215, 0, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #8A2BE2;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #333;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #DC143C;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 14s ease-in-out infinite;
+            color: rgba(255, 215, 0, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 10s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(2deg); }
+            66% { transform: translateY(-40px) rotate(-2deg); }
+        }
+
+        /* 裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FFD700, transparent);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "⋆";
+            position: absolute;
+            top: -8px;
+            color: #FFD700;
+            font-size: 1.2rem;
+        }
+
+        .decorative-line::before {
+            left: 20%;
+        }
+
+        .decorative-line::after {
+            right: 20%;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="fireworks-effects">
+        <div class="firework">🎆</div>
+        <div class="firework">🎇</div>
+        <div class="firework">✨</div>
+        <div class="firework">🎊</div>
+        <div class="firework">🎉</div>
+        <div class="firework">💫</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🥂</div>
+        <div class="floating-element">🍾</div>
+        <div class="floating-element">💎</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">沸騰跨世紀</h1>
+            <div class="year-badge">1999 → 2000 千禧年跨越</div>
+            <div class="decorative-line"></div>
+            <p class="subtitle">帶你穿越22年，領略上一次跨越千年的精彩時刻</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/fyw0htb3/IMG-7198.jpg" alt="沸騰跨世紀劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/4y5VKv0b/2-S.jpg" alt="沸騰跨世紀劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">沸騰跨世紀</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">3.5-4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">歡樂</span>
+                        <span class="tag">新手</span>
+                        <span class="tag">機制</span>
+                        <span class="tag">懷舊</span>
+                        <span class="tag">團建</span>
+                        <span class="tag">無兇手</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/J4rjfgyT/IMG-7204.jpg" alt="包義峰" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👨‍💼</div>
+                        <div class="character-name">包義峰</div>
+                        <div class="character-info">發型炫酷的男傭人<br>忠誠可靠的得力助手</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/SNgckrCm/IMG-7202.jpg" alt="吳麗" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">🎭</div>
+                        <div class="character-name">吳麗</div>
+                        <div class="character-info">青春美麗的女演員<br>光鮮亮麗的明星夢想</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/HLyM01KL/IMG-7201.jpg" alt="劉洪濤" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">💼</div>
+                        <div class="character-name">劉洪濤</div>
+                        <div class="character-info">首富女兒的男朋友<br>年輕有為的商業精英</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/qBL3xLm2/IMG-7199.jpg" alt="高巧燕" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">🎓</div>
+                        <div class="character-name">高巧燕</div>
+                        <div class="character-info">品學兼優的女高中生<br>聰明伶俐的優等生</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/0jcK5k6V/IMG-7200.jpg" alt="馬占山" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">🕴️</div>
+                        <div class="character-name">馬占山</div>
+                        <div class="character-info">剛刑滿釋放的帥氣大叔<br>滄桑歷練的神秘過往</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/g2r8JZH8/IMG-7203.jpg" alt="張雲娟" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👩‍🍳</div>
+                        <div class="character-name">張雲娟</div>
+                        <div class="character-info">成熟性感的餐廳老闆娘<br>風韻猶存的商界女強人</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    <span class="highlight">1999年12月31日</span>，這是個神聖且莊嚴的日子，這是從公元紀年以來第二個千年的最後一天。在這一天，大街小巷都提前做好了裝潢，張燈結彩，滿是迎接千禧年的歡騰景象。
+                    <br><br>
+                    <span class="highlight">麗水市</span>這座旅遊小城市的大街小巷也都是一片熱鬧歡慶的場面。為了迎接新千年的到來，麗水市的首富劉越，也決定在<span class="highlight">「沸騰往事」包間</span>主持一場不一樣的跨世紀活動。
+                    <br><br>
+                    名叫「沸騰往事」的包間內，麗水市首富劉越號召舉辦的跨年活動正如火如荼的舉行，參與者全都摩拳擦掌、躍躍欲試，希望能在新千年到來前，收穫<span class="highlight">「金錢」</span>所帶來的快樂。
+                    <br><br>
+                    <span class="highlight">大哥大、BB機、喇叭褲配小皮衣，桑塔納、老虎機、卡拉OK遊戲廳</span>...在遊戲中我們極力爭取或輕鬆收穫的東西，在上個世紀九十年代可都是閃閃發光、令人羨慕的存在。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《沸騰跨世紀》是一部<span class="highlight">歡樂機制本</span>，劇情詼諧無厘頭，過程幽默爆笑，超能歡脫。如果你看過周星馳的喜劇電影，就不難理解此劇本的爆點，就像電影《整蠱專家》，它的內容在各種因素的作用下，很容易就使人的情緒「燃」起來，並激升至沸點。
+                    <br><br>
+                    對於普通玩家來說唯一的要求就是——<span class="highlight">放得開</span>，只有這樣才能深度沉浸在它的快樂之中。不過「社恐」玩家也不必太過擔心，隨著劇本的深入，所有人都會自然而然的融入到歡騰的氣氛之中，這就是《沸騰跨世紀》的魅力。
+                    <br><br>
+                    劇本中會涉及到一些<span class="highlight">經典的喝酒聚會遊戲</span>，以及一系列遊藝項目。在整個過程中，玩家如果能做到自行發揮，自由創造，或許會觸發隱藏彩蛋，獲得更NICE的體驗。
+                    <br><br>
+                    這是一部非常適合<span class="highlight">社交天才組團炸場</span>的劇本，同時也歡迎新手玩家，劇本上手難度低，故事易於理解，呈現效果非同凡響。作品意在「帶你穿越22年，領略上一次跨越千年」的精彩時刻。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#FF6B35';
+                            s.style.textShadow = '0 0 15px rgba(255, 107, 53, 0.8)';
+                        } else {
+                            s.style.color = '#FFD700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#FFD700';
+                        s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(255, 215, 0, 0.4)';
+                    const image = card.querySelector('.character-image');
+                    const emoji = card.querySelector('.character-emoji');
+                    if (image && image.style.display !== 'none') {
+                        image.style.transform = 'scale(1.2) rotate(10deg)';
+                    } else if (emoji) {
+                        emoji.style.transform = 'scale(1.2) rotate(10deg)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                    const image = card.querySelector('.character-image');
+                    const emoji = card.querySelector('.character-emoji');
+                    if (image && image.style.display !== 'none') {
+                        image.style.transform = 'scale(1) rotate(0deg)';
+                    } else if (emoji) {
+                        emoji.style.transform = 'scale(1) rotate(0deg)';
+                    }
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 215, 0, 0.3) 0%, rgba(255, 255, 255, 0.85) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(255, 255, 255, 0.85)';
+                });
+            });
+
+            // 煙花互動效果
+            const fireworks = document.querySelectorAll('.firework');
+            fireworks.forEach(firework => {
+                firework.addEventListener('click', () => {
+                    firework.style.animation = 'none';
+                    firework.style.transform = 'scale(3) rotate(720deg)';
+                    firework.style.opacity = '0';
+                    setTimeout(() => {
+                        firework.style.animation = 'fireworkBurst 3s ease-out infinite';
+                        firework.style.transform = '';
+                        firework.style.opacity = '';
+                    }, 1500);
+                });
+            });
+
+            // 千禧年倒數特效
+            function createCountdownEffect() {
+                const countdown = document.createElement('div');
+                countdown.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 8rem;
+                    font-weight: bold;
+                    pointer-events: none;
+                    z-index: 9999;
+                    animation: countdownEffect 4s ease-out forwards;
+                    background: linear-gradient(45deg, #FFD700, #FF6B35, #DC143C);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    text-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+                `;
+                
+                let count = 3;
+                countdown.textContent = count;
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes countdownEffect {
+                        0% { 
+                            transform: translate(-50%, -50%) scale(0);
+                            opacity: 1;
+                        }
+                        25% {
+                            transform: translate(-50%, -50%) scale(1.2);
+                            opacity: 1;
+                        }
+                        75% {
+                            transform: translate(-50%, -50%) scale(1);
+                            opacity: 1;
+                        }
+                        100% { 
+                            transform: translate(-50%, -50%) scale(0);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+                document.body.appendChild(countdown);
+                
+                const interval = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        countdown.textContent = count;
+                    } else {
+                        countdown.textContent = '2000!';
+                        clearInterval(interval);
+                    }
+                }, 1000);
+                
+                setTimeout(() => {
+                    document.body.removeChild(countdown);
+                    document.head.removeChild(style);
+                    createFireworksShow();
+                }, 4000);
+            }
+
+            // 煙花秀特效
+            function createFireworksShow() {
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const firework = document.createElement('div');
+                        firework.style.cssText = `
+                            position: fixed;
+                            top: ${Math.random() * 100}%;
+                            left: ${Math.random() * 100}%;
+                            font-size: 2rem;
+                            pointer-events: none;
+                            z-index: 9999;
+                            animation: fireworkShow 2s ease-out forwards;
+                        `;
+                        firework.textContent = ['🎆', '🎇', '✨', '🎊', '🎉', '💫'][Math.floor(Math.random() * 6)];
+                        
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            @keyframes fireworkShow {
+                                0% { 
+                                    opacity: 1;
+                                    transform: scale(0);
+                                }
+                                50% {
+                                    opacity: 1;
+                                    transform: scale(2);
+                                }
+                                100% { 
+                                    opacity: 0;
+                                    transform: scale(0);
+                                }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                        document.body.appendChild(firework);
+                        
+                        setTimeout(() => {
+                            document.body.removeChild(firework);
+                            document.head.removeChild(style);
+                        }, 2000);
+                    }, i * 100);
+                }
+            }
+
+            // 點擊標題觸發千禧年倒數特效
+            document.querySelector('.title').addEventListener('click', createCountdownEffect);
+
+            // 年代音效模擬
+            function playRetroSound() {
+                // 創建復古音效視覺化
+                const soundWaves = [];
+                for (let i = 0; i < 5; i++) {
+                    const wave = document.createElement('div');
+                    wave.style.cssText = `
+                        position: fixed;
+                        top: 20%;
+                        left: ${20 + i * 15}%;
+                        width: 50px;
+                        height: 5px;
+                        background: linear-gradient(45deg, #FFD700, #FF6B35);
+                        animation: soundWave 1s ease-in-out infinite;
+                        animation-delay: ${i * 0.1}s;
+                        pointer-events: none;
+                        z-index: 9999;
+                    `;
+                    soundWaves.push(wave);
+                    document.body.appendChild(wave);
+                }
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes soundWave {
+                        0%, 100% { 
+                            height: 5px;
+                            opacity: 0.5;
+                        }
+                        50% {
+                            height: 30px;
+                            opacity: 1;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                setTimeout(() => {
+                    soundWaves.forEach(wave => document.body.removeChild(wave));
+                    document.head.removeChild(style);
+                }, 2000);
+            }
+
+            // 點擊CTA按鈕觸發復古音效
+            document.querySelector('.cta-button').addEventListener('click', (e) => {
+                playRetroSound();
+            });
+
+            // 年代徽章旋轉效果
+            const yearBadge = document.querySelector('.year-badge');
+            yearBadge.addEventListener('click', () => {
+                yearBadge.style.animation = 'none';
+                yearBadge.style.transform = 'rotate(720deg) scale(1.2)';
+                setTimeout(() => {
+                    yearBadge.style.animation = 'pulse 2s ease-in-out infinite';
+                    yearBadge.style.transform = '';
+                }, 1000);
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const fireworks = document.querySelector('.fireworks-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (fireworks) fireworks.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // 角色名稱跳動效果
+        const characterNames = document.querySelectorAll('.character-name');
+        characterNames.forEach(name => {
+            name.addEventListener('mouseenter', () => {
+                name.style.animation = 'bounce 0.6s ease-in-out';
+            });
+            
+            name.addEventListener('animationend', () => {
+                name.style.animation = '';
+            });
+        });
+
+        // 添加彈跳動畫
+        const bounceStyle = document.createElement('style');
+        bounceStyle.textContent = `
+            @keyframes bounce {
+                0%, 20%, 60%, 100% {
+                    transform: translateY(0);
+                }
+                40% {
+                    transform: translateY(-10px);
+                }
+                80% {
+                    transform: translateY(-5px);
+                }
+            }
+        `;
+        document.head.appendChild(bounceStyle);
+    </script>
+
+    <audio id="bgm" src="沸騰跨世紀.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+</body>
+</html>
