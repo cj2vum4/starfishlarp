@@ -215,6 +215,10 @@
         .script-card:nth-child(10) { animation-delay: 2.3s; }
         .script-card:nth-child(11) { animation-delay: 2.5s; }
         .script-card:nth-child(12) { animation-delay: 2.7s; }
+        .script-card:nth-child(13) { animation-delay: 2.9s; }
+        .script-card:nth-child(14) { animation-delay: 3.1s; }
+        .script-card:nth-child(15) { animation-delay: 3.3s; }
+        .script-card:nth-child(16) { animation-delay: 3.5s; }
 
         .script-card:hover {
             transform: translateY(-15px) scale(1.02);
@@ -428,15 +432,15 @@
             
             <div class="stats">
                 <div class="stat-item">
-                    <div class="stat-number" id="totalScripts">12</div>
+                    <div class="stat-number" id="totalScripts">16</div>
                     <div class="stat-label">精選劇本</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="totalTypes">25</div>
+                    <div class="stat-number" id="totalTypes">38</div>
                     <div class="stat-label">劇本類型</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="avgTime">4.3</div>
+                    <div class="stat-number" id="avgTime">4.5</div>
                     <div class="stat-label">平均時長(小時)</div>
                 </div>
             </div>
@@ -485,6 +489,18 @@
                         <option value="進階">進階</option>
                         <option value="童話">童話</option>
                         <option value="輕鬆">輕鬆</option>
+                        <option value="愛情">愛情</option>
+                        <option value="校園">校園</option>
+                        <option value="遺憾">遺憾</option>
+                        <option value="軍閥">軍閥</option>
+                        <option value="家國">家國</option>
+                        <option value="謀戰">謀戰</option>
+                        <option value="懷舊">懷舊</option>
+                        <option value="團建">團建</option>
+                        <option value="變格">變格</option>
+                        <option value="燒腦">燒腦</option>
+                        <option value="科技">科技</option>
+                        <option value="演繹">演繹</option>
                     </select>
                 </div>
                 
@@ -497,6 +513,7 @@
                         <option value="2">2星 - 簡單</option>
                         <option value="3">3星 - 中等</option>
                         <option value="4">4星 - 困難</option>
+                        <option value="5">5星 - 極難</option>
                     </select>
                 </div>
             </div>
@@ -506,7 +523,6 @@
         </div>
 
         <div class="scripts-grid" id="scriptsGrid">
-            <!-- 王座 -->
             <div class="script-card" data-theme="mytho" data-players="7" data-types="神話,陣營,機制,新手,身份轉換" data-difficulty="2">
                 <img src="https://i.postimg.cc/d0cKpGxL/2021-11-13-195627.jpg" alt="王座" class="script-image">
                 <h3 class="script-title">王座</h3>
@@ -525,7 +541,6 @@
                 <button class="detail-btn" onclick="goToScript('wangzuo')">查看詳細介紹</button>
             </div>
 
-            <!-- 北國之春 -->
             <div class="script-card" data-theme="history" data-players="6" data-types="歡樂,推理,新手,情感" data-difficulty="3">
                 <img src="https://i.postimg.cc/yNWMsNFR/01.jpg" alt="北國之春" class="script-image">
                 <h3 class="script-title">北國之春</h3>
@@ -543,7 +558,6 @@
                 <button class="detail-btn" onclick="goToScript('beiguo')">查看詳細介紹</button>
             </div>
 
-            <!-- 別來無恙 -->
             <div class="script-card" data-theme="love" data-players="6" data-types="情感,現代,新手,愛情,校園,遺憾" data-difficulty="1">
                 <img src="https://i.postimg.cc/ZR8GbTTx/image.jpg" alt="別來無恙" class="script-image">
                 <h3 class="script-title">別來無恙</h3>
@@ -563,7 +577,6 @@
                 <button class="detail-btn" onclick="goToScript('bielai')">查看詳細介紹</button>
             </div>
 
-            <!-- 奉天1928 -->
             <div class="script-card" data-theme="history" data-players="5" data-types="情感,民國,軍閥,家國,沉浸" data-difficulty="3">
                 <img src="https://i.postimg.cc/W3Z7nM68/image.jpg" alt="奉天1928" class="script-image">
                 <h3 class="script-title">奉天1928</h3>
@@ -582,7 +595,6 @@
                 <button class="detail-btn" onclick="goToScript('fengtian')">查看詳細介紹</button>
             </div>
 
-            <!-- 孤城 -->
             <div class="script-card" data-theme="desert" data-players="7" data-types="陣營,機制,情感,民國,謀戰" data-difficulty="2">
                 <img src="https://i.postimg.cc/cCsdmcGG/b644a7b3-c9a4-4d08-b36d-c69cc70a0b39-S.png" alt="孤城" class="script-image">
                 <h3 class="script-title">孤城</h3>
@@ -601,7 +613,6 @@
                 <button class="detail-btn" onclick="goToScript('gucheng')">查看詳細介紹</button>
             </div>
 
-            <!-- 病嬌男孩的精分日記 -->
             <div class="script-card" data-theme="horror" data-players="7" data-types="微恐,還原,推理,沉浸" data-difficulty="4">
                 <img src="https://i.postimg.cc/RZYbc6pZ/1.jpg" alt="病嬌男孩的精分日記" class="script-image">
                 <h3 class="script-title">病嬌男孩的精分日記</h3>
@@ -619,7 +630,6 @@
                 <button class="detail-btn" onclick="goToScript('bingjiao')">查看詳細介紹</button>
             </div>
 
-            <!-- 陰緣 -->
             <div class="script-card" data-theme="ancient" data-players="6" data-types="古風,情感,恐怖,沉浸,雙主持" data-difficulty="2">
                 <img src="https://i.postimg.cc/qqp3BtDL/image.jpg" alt="陰緣" class="script-image">
                 <h3 class="script-title">陰緣</h3>
@@ -638,7 +648,6 @@
                 <button class="detail-btn" onclick="goToScript('yinyuan')">查看詳細介紹</button>
             </div>
 
-            <!-- 晴天神社 -->
             <div class="script-card" data-theme="shrine" data-players="6" data-types="情感,日式,沉浸,還原,無兇手,新手" data-difficulty="0">
                 <img src="https://i.postimg.cc/QMd81msL/image.png" alt="晴天神社" class="script-image">
                 <h3 class="script-title">晴天神社</h3>
@@ -658,26 +667,6 @@
                 <button class="detail-btn" onclick="goToScript('qingtian')">查看詳細介紹</button>
             </div>
 
-            <!-- 群星 -->
-            <div class="script-card" data-theme="space" data-players="6" data-types="機制,情感,沉浸,太空,新手" data-difficulty="2">
-                <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="群星" class="script-image">
-                <h3 class="script-title">群星</h3>
-                <div class="script-info">
-                    <span class="info-badge">👥 3男3女</span>
-                    <span class="info-badge">⏰ 5小時</span>
-                    <span class="info-badge">⭐ 2星</span>
-                </div>
-                <div class="script-types">
-                    <span class="type-tag">機制</span>
-                    <span class="type-tag">情感</span>
-                    <span class="type-tag">沉浸</span>
-                    <span class="type-tag">太空</span>
-                    <span class="type-tag">新手</span>
-                </div>
-                <button class="detail-btn" onclick="goToScript('qunxing')">查看詳細介紹</button>
-            </div>
-
-            <!-- 漓川怪談簿 -->
             <div class="script-card" data-theme="mystery" data-players="7" data-types="日式,硬核推理,精怪,密室,進階,還原" data-difficulty="4">
                 <img src="https://i.postimg.cc/KvyQtdnC/海報.jpg" alt="漓川怪談簿" class="script-image">
                 <h3 class="script-title">漓川怪談簿</h3>
@@ -697,7 +686,6 @@
                 <button class="detail-btn" onclick="goToScript('lichuan')">查看詳細介紹</button>
             </div>
 
-            <!-- 誰動了我的奶酪 -->
             <div class="script-card" data-theme="happy" data-players="6" data-types="歡樂,新手,童話,推理,輕鬆" data-difficulty="3">
                 <img src="https://i.postimg.cc/hjP711CF/image.jpg" alt="誰動了我的奶酪" class="script-image">
                 <h3 class="script-title">誰動了我的奶酪</h3>
@@ -716,7 +704,6 @@
                 <button class="detail-btn" onclick="goToScript('nairao')">查看詳細介紹</button>
             </div>
 
-            <!-- 賣快樂的人 -->
             <div class="script-card" data-theme="modern" data-players="5" data-types="情感,新手,沉浸,立意,日式,現代,無兇手" data-difficulty="1">
                 <img src="https://i.postimg.cc/8zDnCPgc/image.jpg" alt="賣快樂的人" class="script-image">
                 <h3 class="script-title">賣快樂的人</h3>
@@ -736,6 +723,82 @@
                 </div>
                 <button class="detail-btn" onclick="goToScript('kuaile')">查看詳細介紹</button>
             </div>
+
+            <div class="script-card" data-theme="happy" data-players="6" data-types="歡樂,新手,機制,懷舊,團建,無兇手" data-difficulty="0">
+                <img src="https://i.postimg.cc/fyw0htb3/IMG-7198.jpg" alt="沸騰跨世紀" class="script-image">
+                <h3 class="script-title">沸騰跨世紀</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 0星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">新手</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">懷舊</span>
+                    <span class="type-tag">團建</span>
+                    <span class="type-tag">無兇手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('feiteng')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="horror" data-players="7" data-types="日式,硬核,變格,燒腦,機制,推理" data-difficulty="5">
+                <img src="https://i.postimg.cc/5twZZZz7/11dacc07-b497-4e5a-9862-9d7cfd0cc80e-S.png" alt="木夕僧之戲" class="script-image">
+                <h3 class="script-title">木夕僧之戲</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 4男3女</span>
+                    <span class="info-badge">⏰ 6小時</span>
+                    <span class="info-badge">⭐ 5星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">日式</span>
+                    <span class="type-tag">硬核</span>
+                    <span class="type-tag">變格</span>
+                    <span class="type-tag">燒腦</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">推理</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('muxi')">查看詳細介紹</button>
+            </div>
+            
+            <div class="script-card" data-theme="space" data-players="6" data-types="機制,情感,沉浸,太空,新手" data-difficulty="2">
+                <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="群星" class="script-image">
+                <h3 class="script-title">群星</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 5小時</span>
+                    <span class="info-badge">⭐ 2星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">太空</span>
+                    <span class="type-tag">新手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('qunxing')">查看詳細介紹</button>
+            </div>
+            
+            <div class="script-card" data-theme="modern" data-players="7" data-types="科技,演繹,推理,機制,歡樂,還原" data-difficulty="3">
+                <img src="https://i.postimg.cc/gJJH0V1F/image.jpg" alt="案件重演" class="script-image">
+                <h3 class="script-title">案件重演</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 4男3女</span>
+                    <span class="info-badge">⏰ 4.5小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">科技</span>
+                    <span class="type-tag">演繹</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">還原</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('anjian')">查看詳細介紹</button>
+            </div>
+
         </div>
 
         <div class="no-results hidden" id="noResults">
@@ -828,16 +891,6 @@
             file: '晴天神社.html'
         },
         {
-            id: 'qunxing',
-            name: '群星',
-            players: 6,
-            types: ['機制', '情感', '沉浸', '太空', '新手'],
-            difficulty: 2,
-            theme: 'space',
-            time: 5,
-            file: '群星.html'
-        },
-        {
             id: 'lichuan',
             name: '漓川怪談簿',
             players: 7,
@@ -866,6 +919,46 @@
             theme: 'modern',
             time: 5,
             file: '賣快樂的人.html'
+        },
+        {
+            id: 'feiteng',
+            name: '沸騰跨世紀',
+            players: 6,
+            types: ['歡樂', '新手', '機制', '懷舊', '團建', '無兇手'],
+            difficulty: 0,
+            theme: 'happy',
+            time: 4,
+            file: '沸騰跨世紀.html'
+        },
+        {
+            id: 'muxi',
+            name: '木夕僧之戲',
+            players: 7,
+            types: ['日式', '硬核', '變格', '燒腦', '機制', '推理'],
+            difficulty: 5,
+            theme: 'horror',
+            time: 6,
+            file: '木夕僧之戲.html'
+        },
+        {
+            id: 'qunxing',
+            name: '群星',
+            players: 6,
+            types: ['機制', '情感', '沉浸', '太空', '新手'],
+            difficulty: 2,
+            theme: 'space',
+            time: 5,
+            file: '群星.html'
+        },
+        {
+            id: 'anjian',
+            name: '案件重演',
+            players: 7,
+            types: ['科技', '演繹', '推理', '機制', '歡樂', '還原'],
+            difficulty: 3,
+            theme: 'modern',
+            time: 4.5,
+            file: '案件重演.html'
         }
     ];
 
