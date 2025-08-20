@@ -311,7 +311,8 @@
                         const date = parts[2].trim();
                         const script = parts[3].trim();
                         const rating = parts[4].trim();
-                        const character = parts.slice(5).join(',').trim().replace(/^"|"$/g, '');
+                        // *** 修正 ***: 過濾掉角色欄位後方的空值，避免產生多餘的逗號
+                        const character = parts.slice(5).filter(p => p.trim()).join(',').trim().replace(/^"|"$/g, '');
 
                         if (name && script) {
                             playerNames.add(name);
@@ -394,7 +395,6 @@
                             const stamp = document.createElement('div');
                             stamp.className = 'stamp-content';
                             
-                            // *** 修正 ***: 加入分隔線
                             stamp.innerHTML = `
                                 <span class="stamp-character">${record.character}</span>
                                 <div class="stamp-divider"></div>
