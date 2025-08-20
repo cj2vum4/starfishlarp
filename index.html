@@ -211,6 +211,10 @@
         .script-card:nth-child(6) { animation-delay: 1.5s; }
         .script-card:nth-child(7) { animation-delay: 1.7s; }
         .script-card:nth-child(8) { animation-delay: 1.9s; }
+        .script-card:nth-child(9) { animation-delay: 2.1s; }
+        .script-card:nth-child(10) { animation-delay: 2.3s; }
+        .script-card:nth-child(11) { animation-delay: 2.5s; }
+        .script-card:nth-child(12) { animation-delay: 2.7s; }
 
         .script-card:hover {
             transform: translateY(-15px) scale(1.02);
@@ -382,6 +386,31 @@
             background: rgba(138, 43, 226, 0.1);
             border-color: rgba(138, 43, 226, 0.3);
         }
+
+        .script-card[data-theme="love"] {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: rgba(52, 152, 219, 0.3);
+        }
+
+        .script-card[data-theme="ancient"] {
+            background: rgba(205, 133, 133, 0.1);
+            border-color: rgba(205, 133, 133, 0.3);
+        }
+
+        .script-card[data-theme="happy"] {
+            background: rgba(255, 165, 0, 0.1);
+            border-color: rgba(255, 165, 0, 0.3);
+        }
+
+        .script-card[data-theme="mystery"] {
+            background: rgba(139, 69, 19, 0.1);
+            border-color: rgba(139, 69, 19, 0.3);
+        }
+
+        .script-card[data-theme="mytho"] {
+            background: rgba(255, 223, 0, 0.1);
+            border-color: rgba(255, 223, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -399,15 +428,15 @@
             
             <div class="stats">
                 <div class="stat-item">
-                    <div class="stat-number" id="totalScripts">7</div>
+                    <div class="stat-number" id="totalScripts">12</div>
                     <div class="stat-label">精選劇本</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="totalTypes">15</div>
+                    <div class="stat-number" id="totalTypes">25</div>
                     <div class="stat-label">劇本類型</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="avgTime">4.1</div>
+                    <div class="stat-number" id="avgTime">4.3</div>
                     <div class="stat-label">平均時長(小時)</div>
                 </div>
             </div>
@@ -445,6 +474,17 @@
                         <option value="日式">日式</option>
                         <option value="現代">現代</option>
                         <option value="立意">立意</option>
+                        <option value="古風">古風</option>
+                        <option value="恐怖">恐怖</option>
+                        <option value="身份轉換">身份轉換</option>
+                        <option value="神話">神話</option>
+                        <option value="雙主持">雙主持</option>
+                        <option value="硬核推理">硬核推理</option>
+                        <option value="精怪">精怪</option>
+                        <option value="密室">密室</option>
+                        <option value="進階">進階</option>
+                        <option value="童話">童話</option>
+                        <option value="輕鬆">輕鬆</option>
                     </select>
                 </div>
                 
@@ -466,6 +506,25 @@
         </div>
 
         <div class="scripts-grid" id="scriptsGrid">
+            <!-- 王座 -->
+            <div class="script-card" data-theme="mytho" data-players="7" data-types="神話,陣營,機制,新手,身份轉換" data-difficulty="2">
+                <img src="https://i.postimg.cc/d0cKpGxL/2021-11-13-195627.jpg" alt="王座" class="script-image">
+                <h3 class="script-title">王座</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 4男3女</span>
+                    <span class="info-badge">⏰ 4.5小時</span>
+                    <span class="info-badge">⭐ 2星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">神話</span>
+                    <span class="type-tag">陣營</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">新手</span>
+                    <span class="type-tag">身份轉換</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('wangzuo')">查看詳細介紹</button>
+            </div>
+
             <!-- 北國之春 -->
             <div class="script-card" data-theme="history" data-players="6" data-types="歡樂,推理,新手,情感" data-difficulty="3">
                 <img src="https://i.postimg.cc/yNWMsNFR/01.jpg" alt="北國之春" class="script-image">
@@ -484,41 +543,24 @@
                 <button class="detail-btn" onclick="goToScript('beiguo')">查看詳細介紹</button>
             </div>
 
-            <!-- 群星 -->
-            <div class="script-card" data-theme="space" data-players="6" data-types="機制,情感,沉浸,太空,新手" data-difficulty="2">
-                <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="群星" class="script-image">
-                <h3 class="script-title">群星</h3>
+            <!-- 別來無恙 -->
+            <div class="script-card" data-theme="love" data-players="6" data-types="情感,現代,新手,愛情,校園,遺憾" data-difficulty="1">
+                <img src="https://i.postimg.cc/ZR8GbTTx/image.jpg" alt="別來無恙" class="script-image">
+                <h3 class="script-title">別來無恙</h3>
                 <div class="script-info">
                     <span class="info-badge">👥 3男3女</span>
-                    <span class="info-badge">⏰ 5小時</span>
-                    <span class="info-badge">⭐ 2星</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 1星</span>
                 </div>
                 <div class="script-types">
-                    <span class="type-tag">機制</span>
                     <span class="type-tag">情感</span>
-                    <span class="type-tag">沉浸</span>
-                    <span class="type-tag">太空</span>
+                    <span class="type-tag">現代</span>
                     <span class="type-tag">新手</span>
+                    <span class="type-tag">愛情</span>
+                    <span class="type-tag">校園</span>
+                    <span class="type-tag">遺憾</span>
                 </div>
-                <button class="detail-btn" onclick="goToScript('qunxing')">查看詳細介紹</button>
-            </div>
-
-            <!-- 病嬌男孩的精分日記 -->
-            <div class="script-card" data-theme="horror" data-players="7" data-types="微恐,還原,推理,沉浸" data-difficulty="4">
-                <img src="https://i.postimg.cc/RZYbc6pZ/1.jpg" alt="病嬌男孩的精分日記" class="script-image">
-                <h3 class="script-title">病嬌男孩的精分日記</h3>
-                <div class="script-info">
-                    <span class="info-badge">👥 7人不限</span>
-                    <span class="info-badge">⏰ 4-5小時</span>
-                    <span class="info-badge">⭐ 4星</span>
-                </div>
-                <div class="script-types">
-                    <span class="type-tag">微恐</span>
-                    <span class="type-tag">還原</span>
-                    <span class="type-tag">推理</span>
-                    <span class="type-tag">沉浸</span>
-                </div>
-                <button class="detail-btn" onclick="goToScript('bingjiao')">查看詳細介紹</button>
+                <button class="detail-btn" onclick="goToScript('bielai')">查看詳細介紹</button>
             </div>
 
             <!-- 奉天1928 -->
@@ -559,6 +601,43 @@
                 <button class="detail-btn" onclick="goToScript('gucheng')">查看詳細介紹</button>
             </div>
 
+            <!-- 病嬌男孩的精分日記 -->
+            <div class="script-card" data-theme="horror" data-players="7" data-types="微恐,還原,推理,沉浸" data-difficulty="4">
+                <img src="https://i.postimg.cc/RZYbc6pZ/1.jpg" alt="病嬌男孩的精分日記" class="script-image">
+                <h3 class="script-title">病嬌男孩的精分日記</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 7人不限</span>
+                    <span class="info-badge">⏰ 4-5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">沉浸</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('bingjiao')">查看詳細介紹</button>
+            </div>
+
+            <!-- 陰緣 -->
+            <div class="script-card" data-theme="ancient" data-players="6" data-types="古風,情感,恐怖,沉浸,雙主持" data-difficulty="2">
+                <img src="https://i.postimg.cc/qqp3BtDL/image.jpg" alt="陰緣" class="script-image">
+                <h3 class="script-title">陰緣</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 2星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">古風</span>
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">恐怖</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">雙主持</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('yinyuan')">查看詳細介紹</button>
+            </div>
+
             <!-- 晴天神社 -->
             <div class="script-card" data-theme="shrine" data-players="6" data-types="情感,日式,沉浸,還原,無兇手,新手" data-difficulty="0">
                 <img src="https://i.postimg.cc/QMd81msL/image.png" alt="晴天神社" class="script-image">
@@ -579,8 +658,66 @@
                 <button class="detail-btn" onclick="goToScript('qingtian')">查看詳細介紹</button>
             </div>
 
+            <!-- 群星 -->
+            <div class="script-card" data-theme="space" data-players="6" data-types="機制,情感,沉浸,太空,新手" data-difficulty="2">
+                <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="群星" class="script-image">
+                <h3 class="script-title">群星</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 5小時</span>
+                    <span class="info-badge">⭐ 2星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">太空</span>
+                    <span class="type-tag">新手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('qunxing')">查看詳細介紹</button>
+            </div>
+
+            <!-- 漓川怪談簿 -->
+            <div class="script-card" data-theme="mystery" data-players="7" data-types="日式,硬核推理,精怪,密室,進階,還原" data-difficulty="4">
+                <img src="https://i.postimg.cc/KvyQtdnC/海報.jpg" alt="漓川怪談簿" class="script-image">
+                <h3 class="script-title">漓川怪談簿</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男4女</span>
+                    <span class="info-badge">⏰ 4.5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">日式</span>
+                    <span class="type-tag">硬核推理</span>
+                    <span class="type-tag">精怪</span>
+                    <span class="type-tag">密室</span>
+                    <span class="type-tag">進階</span>
+                    <span class="type-tag">還原</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('lichuan')">查看詳細介紹</button>
+            </div>
+
+            <!-- 誰動了我的奶酪 -->
+            <div class="script-card" data-theme="happy" data-players="6" data-types="歡樂,新手,童話,推理,輕鬆" data-difficulty="3">
+                <img src="https://i.postimg.cc/hjP711CF/image.jpg" alt="誰動了我的奶酪" class="script-image">
+                <h3 class="script-title">誰動了我的奶酪</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 6人劇本</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">新手</span>
+                    <span class="type-tag">童話</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">輕鬆</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('nairao')">查看詳細介紹</button>
+            </div>
+
             <!-- 賣快樂的人 -->
-            <div class="script-card" data-theme="modern" data-players="5" data-types="情感,新手,沉浸,立意,現代,無兇手" data-difficulty="1">
+            <div class="script-card" data-theme="modern" data-players="5" data-types="情感,新手,沉浸,立意,日式,現代,無兇手" data-difficulty="1">
                 <img src="https://i.postimg.cc/8zDnCPgc/image.jpg" alt="賣快樂的人" class="script-image">
                 <h3 class="script-title">賣快樂的人</h3>
                 <div class="script-info">
@@ -593,6 +730,7 @@
                     <span class="type-tag">新手</span>
                     <span class="type-tag">沉浸</span>
                     <span class="type-tag">立意</span>
+                    <span class="type-tag">日式</span>
                     <span class="type-tag">現代</span>
                     <span class="type-tag">無兇手</span>
                 </div>
@@ -610,6 +748,16 @@
     // 劇本資料
     const scripts = [
         {
+            id: 'wangzuo',
+            name: '王座',
+            players: 7,
+            types: ['神話', '陣營', '機制', '新手', '身份轉換'],
+            difficulty: 2,
+            theme: 'mytho',
+            time: 4.5,
+            file: '王座.html'
+        },
+        {
             id: 'beiguo',
             name: '北國之春',
             players: 6,
@@ -617,27 +765,17 @@
             difficulty: 3,
             theme: 'history',
             time: 4,
-            file: '北國之春.html' // 假設檔名與劇本名相同
+            file: '北國之春.html'
         },
         {
-            id: 'qunxing',
-            name: '群星',
+            id: 'bielai',
+            name: '別來無恙',
             players: 6,
-            types: ['機制', '情感', '沉浸', '太空', '新手'],
-            difficulty: 2,
-            theme: 'space',
-            time: 5,
-            file: '群星.html'
-        },
-        {
-            id: 'bingjiao',
-            name: '病嬌男孩的精分日記',
-            players: 7,
-            types: ['微恐', '還原', '推理', '沉浸'],
-            difficulty: 4,
-            theme: 'horror',
-            time: 4.5,
-            file: '病嬌男孩的精分日記.html' // [修正] 建議檔名保持一致性
+            types: ['情感', '現代', '新手', '愛情', '校園', '遺憾'],
+            difficulty: 1,
+            theme: 'love',
+            time: 4,
+            file: '別來無恙.html'
         },
         {
             id: 'fengtian',
@@ -660,6 +798,26 @@
             file: '孤城.html'
         },
         {
+            id: 'bingjiao',
+            name: '病嬌男孩的精分日記',
+            players: 7,
+            types: ['微恐', '還原', '推理', '沉浸'],
+            difficulty: 4,
+            theme: 'horror',
+            time: 4.5,
+            file: '病嬌男孩的精分日記.html'
+        },
+        {
+            id: 'yinyuan',
+            name: '陰緣',
+            players: 6,
+            types: ['古風', '情感', '恐怖', '沉浸', '雙主持'],
+            difficulty: 2,
+            theme: 'ancient',
+            time: 4,
+            file: '陰緣.html'
+        },
+        {
             id: 'qingtian',
             name: '晴天神社',
             players: 6,
@@ -670,10 +828,40 @@
             file: '晴天神社.html'
         },
         {
+            id: 'qunxing',
+            name: '群星',
+            players: 6,
+            types: ['機制', '情感', '沉浸', '太空', '新手'],
+            difficulty: 2,
+            theme: 'space',
+            time: 5,
+            file: '群星.html'
+        },
+        {
+            id: 'lichuan',
+            name: '漓川怪談簿',
+            players: 7,
+            types: ['日式', '硬核推理', '精怪', '密室', '進階', '還原'],
+            difficulty: 4,
+            theme: 'mystery',
+            time: 4.5,
+            file: '漓川怪談簿.html'
+        },
+        {
+            id: 'nairao',
+            name: '誰動了我的奶酪',
+            players: 6,
+            types: ['歡樂', '新手', '童話', '推理', '輕鬆'],
+            difficulty: 3,
+            theme: 'happy',
+            time: 4,
+            file: '誰動了我的奶酪.html'
+        },
+        {
             id: 'kuaile',
             name: '賣快樂的人',
             players: 5,
-            types: ['情感', '新手', '沉浸', '立意', '現代', '無兇手'],
+            types: ['情感', '新手', '沉浸', '立意', '日式', '現代', '無兇手'],
             difficulty: 1,
             theme: 'modern',
             time: 5,
@@ -681,18 +869,18 @@
         }
     ];
 
-    // [新增] DOM載入後執行的初始化函式
+    // DOM載入後執行的初始化函式
     document.addEventListener('DOMContentLoaded', () => {
-        // [新增] 綁定篩選事件監聽
+        // 綁定篩選事件監聽
         document.getElementById('playerFilter').addEventListener('change', filterScripts);
         document.getElementById('typeFilter').addEventListener('change', filterScripts);
         document.getElementById('difficultyFilter').addEventListener('change', filterScripts);
         
-        // [優化] 動態更新統計數據
+        // 動態更新統計數據
         updateStats();
     });
     
-    // [優化] 動態計算並更新統計數據的函式
+    // 動態計算並更新統計數據的函式
     function updateStats() {
         // 總劇本數
         const totalScripts = scripts.length;
@@ -704,7 +892,7 @@
 
         // 平均時長
         const totalTime = scripts.reduce((sum, script) => sum + script.time, 0);
-        const avgTime = (totalTime / totalScripts).toFixed(1); // 計算到小數點後一位
+        const avgTime = (totalTime / totalScripts).toFixed(1);
         document.getElementById('avgTime').textContent = avgTime;
     }
 
@@ -742,7 +930,7 @@
             }
         });
 
-        // [修正] 根據 visibleCount 決定是否顯示 "查無結果"
+        // 根據 visibleCount 決定是否顯示 "查無結果"
         if (visibleCount === 0) {
             noResultsEl.classList.remove('hidden');
         } else {
@@ -750,22 +938,24 @@
         }
     }
 
-    // [新增] 重置篩選函式
+    // 重置篩選函式
     function resetFilters() {
         document.getElementById('playerFilter').value = '';
         document.getElementById('typeFilter').value = '';
         document.getElementById('difficultyFilter').value = '';
-        filterScripts(); // 重置後要重新執行一次篩選，以顯示所有劇本
+        filterScripts();
     }
 
-    // [新增] 前往劇本詳細頁面的函式
+    // 前往劇本詳細頁面的函式
     function goToScript(scriptId) {
         const script = scripts.find(s => s.id === scriptId);
         if (script && script.file) {
-            window.location.href = script.file; // 跳轉到對應的HTML檔案
+            window.location.href = script.file;
         } else {
             console.error('找不到ID為 ' + scriptId + ' 的劇本檔案。');
             alert('抱歉，找不到該劇本的詳細介紹頁面。');
         }
     }
-</script>
+    </script>
+</body>
+</html>
