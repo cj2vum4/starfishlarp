@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件重演 - 劇本殺</title>
+    <title>瘋囚於妄念之終 - 劇本殺</title>
     <style>
         * {
             margin: 0;
@@ -13,15 +13,15 @@
 
         body {
             font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #1e3c72 100%);
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c1e 30%, #6b3a28 60%, #8b4a33 100%);
             min-height: 100vh;
             color: #333;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* 科技掃描線特效 */
-        .tech-effects {
+        /* 陰暗閃爍特效 */
+        .shadow-effects {
             position: fixed;
             top: 0;
             left: 0;
@@ -31,62 +31,64 @@
             z-index: 0;
         }
 
-        .scan-line {
+        .flicker-light {
             position: absolute;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #00ffff, transparent);
-            animation: scanMove 4s linear infinite;
-            opacity: 0.6;
-            box-shadow: 0 0 10px #00ffff;
+            background: linear-gradient(90deg, transparent, #ff6b47, transparent);
+            animation: flicker 3s ease-in-out infinite;
+            opacity: 0.4;
+            box-shadow: 0 0 15px #ff6b47;
         }
 
-        .scan-line:nth-child(1) { animation-delay: 0s; }
-        .scan-line:nth-child(2) { animation-delay: 1s; }
-        .scan-line:nth-child(3) { animation-delay: 2s; }
+        .flicker-light:nth-child(1) { animation-delay: 0s; top: 20%; }
+        .flicker-light:nth-child(2) { animation-delay: 1s; top: 60%; }
+        .flicker-light:nth-child(3) { animation-delay: 2s; top: 80%; }
 
-        @keyframes scanMove {
-            0% {
-                top: -2px;
-                opacity: 0;
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 0.2;
+                transform: scaleX(0.8);
             }
-            10% {
-                opacity: 1;
+            25% {
+                opacity: 0.8;
+                transform: scaleX(1.2);
             }
-            90% {
-                opacity: 1;
+            50% {
+                opacity: 0.1;
+                transform: scaleX(0.6);
             }
-            100% {
-                top: 100%;
-                opacity: 0;
+            75% {
+                opacity: 0.9;
+                transform: scaleX(1.1);
             }
         }
 
-        /* 數據流效果 */
-        .data-stream {
+        /* 陰影文字流動 */
+        .shadow-text {
             position: absolute;
-            color: #00ffff;
+            color: #ff6b47;
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 14px;
             opacity: 0.3;
-            animation: dataFlow 6s linear infinite;
+            animation: shadowDrift 8s linear infinite;
             white-space: nowrap;
         }
 
-        .data-stream:nth-child(4) { left: 10%; animation-delay: 0s; }
-        .data-stream:nth-child(5) { left: 50%; animation-delay: 2s; }
-        .data-stream:nth-child(6) { left: 80%; animation-delay: 4s; }
+        .shadow-text:nth-child(4) { left: 5%; animation-delay: 0s; }
+        .shadow-text:nth-child(5) { left: 40%; animation-delay: 3s; }
+        .shadow-text:nth-child(6) { left: 75%; animation-delay: 6s; }
 
-        @keyframes dataFlow {
+        @keyframes shadowDrift {
             0% {
                 top: -20px;
                 opacity: 0;
             }
-            10% {
-                opacity: 0.5;
+            15% {
+                opacity: 0.6;
             }
-            90% {
-                opacity: 0.5;
+            85% {
+                opacity: 0.6;
             }
             100% {
                 top: 100vh;
@@ -106,26 +108,26 @@
         }
 
         .back-btn {
-            background: rgba(30, 60, 114, 0.9);
-            color: #00ffff;
+            background: rgba(139, 74, 51, 0.9);
+            color: #ff6b47;
             padding: 12px 20px;
             border-radius: 25px;
             text-decoration: none;
             font-weight: 600;
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 255, 255, 0.5);
+            border: 1px solid rgba(255, 107, 71, 0.5);
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
-            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+            box-shadow: 0 5px 15px rgba(139, 74, 51, 0.3);
         }
 
         .back-btn:hover {
-            background: rgba(30, 60, 114, 1);
+            background: rgba(139, 74, 51, 1);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 107, 71, 0.5);
         }
 
         @keyframes slideInLeft {
@@ -155,9 +157,9 @@
             font-size: 4rem;
             font-weight: 700;
             color: #fff;
-            text-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 0 60px rgba(0, 255, 255, 0.6);
+            text-shadow: 0 0 30px rgba(255, 107, 71, 0.8), 0 0 60px rgba(255, 107, 71, 0.6);
             margin-bottom: 15px;
-            background: linear-gradient(45deg, #00ffff, #1e3c72, #0f3460);
+            background: linear-gradient(45deg, #ff6b47, #8b4a33, #6b3a28);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -168,20 +170,20 @@
             font-size: 1.3rem;
             color: rgba(255,255,255,0.9);
             font-weight: 300;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            text-shadow: 0 0 15px rgba(255, 107, 71, 0.5);
             margin-bottom: 20px;
         }
 
         .year-badge {
             display: inline-block;
-            background: linear-gradient(45deg, #00ffff, #1e3c72);
+            background: linear-gradient(45deg, #ff6b47, #8b4a33);
             color: #fff;
             padding: 10px 30px;
             border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
             margin: 15px 0;
-            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.4);
+            box-shadow: 0 5px 20px rgba(255, 107, 71, 0.4);
             animation: pulse 2s ease-in-out infinite;
         }
 
@@ -203,14 +205,14 @@
             height: auto;
             max-height: 600px;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.4), 0 0 80px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(255, 107, 71, 0.4), 0 0 80px rgba(255, 107, 71, 0.3);
             transition: all 0.3s ease;
-            border: 3px solid rgba(0, 255, 255, 0.4);
+            border: 3px solid rgba(255, 107, 71, 0.4);
         }
 
         .poster-image:hover {
             transform: scale(1.02);
-            box-shadow: 0 30px 60px rgba(0, 255, 255, 0.5), 0 0 100px rgba(0, 255, 255, 0.4);
+            box-shadow: 0 30px 60px rgba(255, 107, 71, 0.5), 0 0 100px rgba(255, 107, 71, 0.4);
         }
 
         .main-content {
@@ -221,12 +223,12 @@
         }
 
         .card {
-            background: rgba(26, 26, 46, 0.85);
+            background: rgba(44, 24, 16, 0.85);
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             backdrop-filter: blur(15px);
-            border: 2px solid rgba(0, 255, 255, 0.3);
+            border: 2px solid rgba(255, 107, 71, 0.3);
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(50px);
@@ -235,8 +237,8 @@
 
         .card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0, 255, 255, 0.3);
-            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 30px 60px rgba(255, 107, 71, 0.3);
+            border-color: rgba(255, 107, 71, 0.5);
         }
 
         .card:nth-child(2) {
@@ -246,11 +248,11 @@
         .card-title {
             font-size: 1.8rem;
             font-weight: 600;
-            color: #00ffff;
+            color: #ff6b47;
             margin-bottom: 20px;
-            border-bottom: 3px solid #00ffff;
+            border-bottom: 3px solid #ff6b47;
             padding-bottom: 10px;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            text-shadow: 0 0 10px rgba(255, 107, 71, 0.3);
         }
 
         .info-item {
@@ -259,16 +261,16 @@
             align-items: center;
             margin-bottom: 15px;
             padding: 12px 15px;
-            background: rgba(0, 255, 255, 0.1);
+            background: rgba(255, 107, 71, 0.1);
             border-radius: 10px;
             transition: all 0.3s ease;
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(255, 107, 71, 0.3);
         }
 
         .info-item:hover {
-            background: rgba(0, 255, 255, 0.2);
+            background: rgba(255, 107, 71, 0.2);
             transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 107, 71, 0.3);
         }
 
         .info-label {
@@ -278,7 +280,7 @@
 
         .info-value {
             font-weight: 500;
-            color: #00ffff;
+            color: #ff6b47;
         }
 
         .stars-rating {
@@ -287,19 +289,19 @@
         }
 
         .star-rating {
-            color: #00ffff;
+            color: #ff6b47;
             font-size: 1.2rem;
             transition: all 0.3s ease;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            text-shadow: 0 0 10px rgba(255, 107, 71, 0.5);
         }
 
         .star-rating.empty {
-            color: rgba(0, 255, 255, 0.3);
+            color: rgba(255, 107, 71, 0.3);
         }
 
         .star-rating:hover {
             transform: scale(1.2);
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            text-shadow: 0 0 15px rgba(255, 107, 71, 0.8);
         }
 
         .tags {
@@ -309,7 +311,7 @@
         }
 
         .tag {
-            background: linear-gradient(45deg, #0f3460, #1e3c72);
+            background: linear-gradient(45deg, #6b3a28, #8b4a33);
             color: white;
             padding: 6px 12px;
             border-radius: 20px;
@@ -317,13 +319,13 @@
             font-weight: 500;
             transition: all 0.3s ease;
             cursor: pointer;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(255, 107, 71, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 107, 71, 0.3);
         }
 
         .tag:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 107, 71, 0.5);
         }
 
         .description {
@@ -342,12 +344,12 @@
         }
 
         .highlight {
-            background: linear-gradient(120deg, transparent 0%, rgba(0, 255, 255, 0.4) 50%, transparent 100%);
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 107, 71, 0.4) 50%, transparent 100%);
             padding: 2px 4px;
             border-radius: 4px;
             font-weight: 600;
-            color: #00ffff;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            color: #ff6b47;
+            text-shadow: 0 0 10px rgba(255, 107, 71, 0.5);
         }
 
         .cta-section {
@@ -360,7 +362,7 @@
 
         .cta-button {
             display: inline-block;
-            background: linear-gradient(45deg, #0f3460, #1e3c72);
+            background: linear-gradient(45deg, #6b3a28, #8b4a33);
             color: white;
             padding: 15px 40px;
             border-radius: 50px;
@@ -368,88 +370,77 @@
             font-size: 1.1rem;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
-            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 107, 71, 0.4), 0 0 40px rgba(255, 107, 71, 0.2);
+            border: 2px solid rgba(255, 107, 71, 0.3);
         }
 
         .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(255, 107, 71, 0.5), 0 0 60px rgba(255, 107, 71, 0.3);
         }
 
         .characters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
             margin-top: 15px;
         }
 
         .character-card {
-            background: rgba(0, 255, 255, 0.1);
+            background: rgba(255, 107, 71, 0.1);
             border-radius: 15px;
-            padding: 20px 15px;
+            padding: 25px 20px;
             text-align: center;
-            border: 2px solid rgba(0, 255, 255, 0.3);
+            border: 2px solid rgba(255, 107, 71, 0.3);
             transition: all 0.3s ease;
             overflow: hidden;
+            position: relative;
         }
 
         .character-card:hover {
-            background: rgba(0, 255, 255, 0.2);
+            background: rgba(255, 107, 71, 0.2);
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+            box-shadow: 0 10px 25px rgba(255, 107, 71, 0.4);
         }
 
         .character-emoji {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 15px;
             margin: 0 auto 15px;
-            border: 3px solid rgba(0, 255, 255, 0.5);
+            border: 3px solid rgba(255, 107, 71, 0.5);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 107, 71, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            background: linear-gradient(45deg, #0f3460, #1e3c72);
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #6b3a28, #8b4a33);
         }
 
-        .character-card:hover .character-image {
-            border-color: rgba(0, 255, 255, 0.8);
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.5);
-        }
-
-        .character-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 15px;
-            margin: 0 auto 15px;
-            border: 3px solid rgba(0, 255, 255, 0.5);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        .character-card img.character-emoji {
             object-fit: cover;
+            font-size: inherit;
         }
 
         .character-card:hover .character-emoji {
-            border-color: rgba(0, 255, 255, 0.8);
+            border-color: rgba(255, 107, 71, 0.8);
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 107, 71, 0.5);
         }
 
         .character-name {
             font-weight: 600;
-            color: #00ffff;
-            margin-bottom: 8px;
-            font-size: 1rem;
+            color: #ff6b47;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
         }
 
         .character-info {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #fff;
-            opacity: 0.8;
-            line-height: 1.3;
+            opacity: 0.9;
+            line-height: 1.4;
         }
 
         .gender-icons {
@@ -463,9 +454,9 @@
             align-items: center;
             gap: 5px;
             font-size: 0.9rem;
-            color: #00ffff;
+            color: #ff6b47;
             font-weight: 600;
-            text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            text-shadow: 0 0 5px rgba(255, 107, 71, 0.3);
         }
 
         .icon {
@@ -486,7 +477,7 @@
             position: absolute;
             opacity: 0.4;
             animation: float 14s ease-in-out infinite;
-            color: rgba(0, 255, 255, 0.6);
+            color: rgba(255, 107, 71, 0.6);
             font-size: 2rem;
         }
 
@@ -525,7 +516,7 @@
         .decorative-line {
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            background: linear-gradient(90deg, transparent, #ff6b47, transparent);
             margin: 20px 0;
             position: relative;
         }
@@ -535,7 +526,7 @@
             content: "◆";
             position: absolute;
             top: -8px;
-            color: #00ffff;
+            color: #ff6b47;
             font-size: 1.2rem;
         }
 
@@ -580,6 +571,21 @@
                 padding: 10px 15px;
                 font-size: 0.8rem;
             }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .character-card {
+                padding: 20px 15px;
+            }
+
+            .character-emoji {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -590,33 +596,33 @@
         </a>
     </div>
 
-    <div class="tech-effects">
-        <div class="scan-line"></div>
-        <div class="scan-line"></div>
-        <div class="scan-line"></div>
-        <div class="data-stream">01101001 01110101 01110100</div>
-        <div class="data-stream">神探儀掃描中...</div>
-        <div class="data-stream">CASE_ANALYSIS_RUNNING</div>
+    <div class="shadow-effects">
+        <div class="flicker-light"></div>
+        <div class="flicker-light"></div>
+        <div class="flicker-light"></div>
+        <div class="shadow-text">疯于皮囊之始...</div>
+        <div class="shadow-text">囚于妄念之终...</div>
+        <div class="shadow-text">画皮精怪...</div>
     </div>
 
     <div class="floating-elements">
-        <div class="floating-element">🔍</div>
-        <div class="floating-element">⚖️</div>
+        <div class="floating-element">👹</div>
         <div class="floating-element">🎭</div>
+        <div class="floating-element">💀</div>
     </div>
 
     <div class="container">
         <div class="header">
-            <h1 class="title">案件重演</h1>
-            <div class="year-badge">2026 神探儀時代</div>
+            <h1 class="title">瘋囚於妄念之終</h1>
+            <div class="year-badge">畫皮精怪的古風傳說</div>
             <div class="decorative-line"></div>
-            <p class="subtitle">突破傳統推理界限，用演技還原真相的未來科技劇本</p>
+            <p class="subtitle">世間眾人，皆以皮相示人，對於它的美醜善惡自是格外在意</p>
         </div>
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="https://i.postimg.cc/gJJH0V1F/image.jpg" alt="案件重演劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="https://i.postimg.cc/Z5xQBLsC/image.png" alt="案件重演劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/YqYXV9qH/1742108932-138599662-g-l.jpg" alt="瘋囚於妄念之終劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/Ls6Nn3k9/008svvpbly1i3lbbbkw9kj30u016gtor.jpg" alt="瘋囚於妄念之終劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -626,12 +632,12 @@
                 
                 <div class="info-item">
                     <span class="info-label">🎭 劇本名稱</span>
-                    <span class="info-value">案件重演</span>
+                    <span class="info-value">瘋囚於妄念之終</span>
                 </div>
 
                 <div class="info-item">
                     <span class="info-label">⏰ 遊戲時間</span>
-                    <span class="info-value">4-5 小時</span>
+                    <span class="info-value">5 小時</span>
                 </div>
 
                 <div class="info-item">
@@ -639,11 +645,15 @@
                     <div class="gender-icons">
                         <div class="gender-icon">
                             <span class="icon">👨</span>
-                            <span>4男</span>
+                            <span>3男</span>
                         </div>
                         <div class="gender-icon">
                             <span class="icon">👩</span>
                             <span>3女</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">🎭</span>
+                            <span>可反串</span>
                         </div>
                     </div>
                 </div>
@@ -654,7 +664,7 @@
                         <span class="star-rating">★</span>
                         <span class="star-rating">★</span>
                         <span class="star-rating">★</span>
-                        <span class="star-rating empty">★</span>
+                        <span class="star-rating">★</span>
                         <span class="star-rating empty">★</span>
                     </div>
                 </div>
@@ -662,12 +672,12 @@
                 <div class="info-item">
                     <span class="info-label">🏷️ 劇本標籤</span>
                     <div class="tags">
-                        <span class="tag">科技</span>
-                        <span class="tag">演繹</span>
-                        <span class="tag">推理</span>
-                        <span class="tag">機制</span>
-                        <span class="tag">歡樂</span>
+                        <span class="tag">古風</span>
+                        <span class="tag">驚悚</span>
+                        <span class="tag">變格</span>
+                        <span class="tag">進階</span>
                         <span class="tag">還原</span>
+                        <span class="tag">畫皮</span>
                     </div>
                 </div>
             </div>
@@ -676,46 +686,34 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/bwVB9v8h/3.png" alt="劉天宇" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="character-emoji" style="display: none;">👮‍♂️</div>
-                        <div class="character-name">劉天宇</div>
-                        <div class="character-info">男性，52歲<br>警察出身<br>原刑偵大隊長</div>
+                        <img src="https://i.postimg.cc/dV95sxyN/image.jpg" alt="烏顏" class="character-emoji" style="object-fit: cover; border-radius: 15px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👤</div>
+                        <div class="character-name">烏顏</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/L85y5MP0/4.png" alt="梁良" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="character-emoji" style="display: none;">🕵️‍♂️</div>
-                        <div class="character-name">梁　良</div>
-                        <div class="character-info">男性，32歲<br>專業偵探<br>推理能力出眾</div>
+                        <img src="https://i.postimg.cc/rmRGrnDk/image.jpg" alt="唐小冉" class="character-emoji" style="object-fit: cover; border-radius: 15px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👤</div>
+                        <div class="character-name">唐小冉</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/vT6YbKz1/1.png" alt="白鷺" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="character-emoji" style="display: none;">👩‍💼</div>
-                        <div class="character-name">白　鷺</div>
-                        <div class="character-info">女性，33歲<br>企業家<br>經營玩具公司</div>
+                        <img src="https://i.postimg.cc/L8SyMpnZ/image.jpg" alt="宋清秋" class="character-emoji" style="object-fit: cover; border-radius: 15px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👤</div>
+                        <div class="character-name">宋清秋</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/sDkz9KJm/5.png" alt="霍長生" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="character-emoji" style="display: none;">💰</div>
-                        <div class="character-name">霍長生</div>
-                        <div class="character-info">男性，28歲<br>富二代<br>家境優渥</div>
+                        <img src="https://i.postimg.cc/cJbM6y4h/image.jpg" alt="沈煥" class="character-emoji" style="object-fit: cover; border-radius: 15px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👤</div>
+                        <div class="character-name">沈煥</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/pT6Y59t9/6.png" alt="唐琪" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="character-emoji" style="display: none;">⚕️</div>
-                        <div class="character-name">唐　琪</div>
-                        <div class="character-info">女性，29歲<br>法醫<br>專業鑑識技能</div>
+                        <img src="https://i.postimg.cc/tCN3WV4Y/image.jpg" alt="鄭學林" class="character-emoji" style="object-fit: cover; border-radius: 15px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👤</div>
+                        <div class="character-name">鄭學林</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/vDRrXpTb/7.png" alt="謝思妍" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="character-emoji" style="display: none;">🎭</div>
-                        <div class="character-name">謝思妍</div>
-                        <div class="character-info">女性，24歲<br>演員<br>表演天賦出眾</div>
-                    </div>
-                    <div class="character-card">
-                        <img src="https://i.postimg.cc/bw5m2FHY/2.png" alt="盧峰" class="character-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="character-emoji" style="display: none;">👨‍🍳</div>
-                        <div class="character-name">盧　峰</div>
-                        <div class="character-info">男性，33歲<br>廚師<br>專業烹飪技能</div>
+                        <img src="https://i.postimg.cc/7P7MPRv1/image.jpg" alt="顧青杉" class="character-emoji" style="object-fit: cover; border-radius: 15px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="character-emoji" style="display: none;">👤</div>
+                        <div class="character-name">顧青杉</div>
                     </div>
                 </div>
             </div>
@@ -724,13 +722,13 @@
                 <h2 class="card-title">故事背景</h2>
                 <div class="decorative-line"></div>
                 <div class="description-text">
-                    <span class="highlight">2026年</span>，一項革命性的科技產品「神探儀」正式問世。這個逆天儀器能夠通過掃描死者或兇器，瞬間鎖定兇手的位置，讓傳統的刑事偵查工作發生了翻天覆地的變化。
+                    <span class="highlight">世間眾人，皆以皮相示人</span>，對於它的美醜善惡自是格外在意。今天我要說的故事，就是關於自身皮囊的過往。
                     <br><br>
-                    然而，神探儀雖然強大，但也有其局限性——它只能確定兇手是誰，卻無法找出定罪所需的關鍵證據。於是，一個全新的職業因此誕生：<span class="highlight">「罪演師」</span>。
+                    可我忘記了原本的名字。只記得<span class="highlight">十里紅妝的盛大婚宴</span>、喜食人心的畫皮精怪、歲月磨滅的星霜古城，永世沉淪的痴心妄念。還有，那六具被我剝皮挖心的血肉之軀......
                     <br><br>
-                    罪演師以神探儀確定的嫌疑人為基礎，通過<span class="highlight">案件模擬推演</span>的方式，最大程度地還原案發時嫌疑人與被害者的一舉一動，從而找出那些隱藏起來的證據，為嫌疑人的定罪提供關鍵支撐。
+                    <span class="highlight">「瘋於皮囊之始，囚於妄念之終」</span>——這是一個關於皮相與真我、美醜與善惡的古風傳說。在這個充滿詭異色彩的故事中，畫皮精怪以人皮為裝，遊走於人間，尋找著屬於自己的歸宿。
                     <br><br>
-                    這種全新的破案方式不僅需要邏輯推理能力，更需要出色的<span class="highlight">演技和共情能力</span>。只有真正理解角色的內心世界，才能準確還原案發經過，找到真相。
+                    當虛假的皮囊遇上真實的情感，當妄念深種於心底，誰能分清真假？誰又能逃脫命運的羅網？
                 </div>
             </div>
 
@@ -738,27 +736,15 @@
                 <h2 class="card-title">劇本特色</h2>
                 <div class="decorative-line"></div>
                 <div class="description-text">
-                    《案件重演》是一部<span class="highlight">創新機制推理劇本</span>，打破了傳統劇本殺只能坐著討論的限制。在這個劇本中，玩家需要真正站起來，通過身體力行的方式模擬嫌疑人與被害者的案發經過。
+                    《瘋囚於妄念之終》是一部<span class="highlight">純還原本</span>，由多個小還原組成的大還原，後期穿插部分的軟邏輯推理。這個劇本的最大特色在於其<span class="highlight">古風驚悚</span>的獨特氛圍營造。
                     <br><br>
-                    劇本的核心特色在於<span class="highlight">「演技推理」</span>——玩家不僅要動腦思考，更要動身體演出。通過模擬行為、還原場景，玩家將在演技中發現邏輯漏洞，在表演中尋找關鍵證據。
+                    劇本以<span class="highlight">畫皮鬼的故事</span>為核心，融合了中國古典志怪小說的精髓，創造出屬於中式的驚悚感。從開頭到中間再到結尾，劇本總能在玩家感到疲憊時重新點燃興奮感，讓人欲罷不能。
                     <br><br>
-                    這是一個<span class="highlight">歡樂機制本</span>，融合了科技元素與傳統推理，既有燒腦的邏輯思考，也有輕鬆的互動體驗。劇本設計巧妙地將「神探儀」這一科幻概念與現實推理相結合，讓玩家體驗到前所未有的遊戲樂趣。
+                    時間線改版後加入了<span class="highlight">恐搜環節</span>，大大增加了劇本的驚悚感和互動樂趣。雖然沒有「髒嚇」，但仍然相當刺激，採用「一人失敗全員重來」的機制，真正考驗團隊合作精神。
                     <br><br>
-                    適合喜歡<span class="highlight">創新玩法</span>的玩家，也適合想要嘗試不同劇本殺體驗的新手。劇本難度適中，重點不在於複雜的邏輯鏈條，而在於通過演技和互動來發現真相，是一次「用身體思考」的獨特推理之旅。
-                </div>
-            </div>
-
-            <div class="card description">
-                <h2 class="card-title">遊戲機制</h2>
-                <div class="decorative-line"></div>
-                <div class="description-text">
-                    《案件重演》採用了革命性的<span class="highlight">「站立式推理」</span>機制，徹底顛覆傳統劇本殺的圓桌討論模式。在遊戲中，玩家將扮演專業的罪演師，參與一檔名為《案件重演》的直播節目。
+                    後半段的<span class="highlight">單人大演繹</span>環節相當炸裂，不僅增加了遊戲的可玩性，也為DM帶來了更多創作空間。整個故事越推越精神，越來越變態，讓人一整個愛住了！
                     <br><br>
-                    遊戲流程包括：<span class="highlight">案件資料研讀</span> → <span class="highlight">角色分析討論</span> → <span class="highlight">現場演技推演</span> → <span class="highlight">證據發現環節</span> → <span class="highlight">真相還原階段</span>。每個環節都需要玩家的積極參與和精彩演出。
-                    <br><br>
-                    特別的是，劇本中設置了<span class="highlight">「神探儀掃描」</span>環節，玩家需要根據科技設定來推進劇情。同時，還有<span class="highlight">「觀眾投票」</span>機制，讓每位玩家都能體驗到真人秀節目的緊張刺激感。
-                    <br><br>
-                    這種創新的遊戲方式不僅考驗玩家的推理能力，更考驗表演天賦和團隊協作精神，是一次集<span class="highlight">腦力、體力、演技</span>於一體的全方位體驗。
+                    作為一部力作，這部劇本成功地將傳統紙面閱讀與多種互動元素相結合，為玩家打造了一個<span class="highlight">悬疑迭起、氛圍緊張</span>的遊戲環境。
                 </div>
             </div>
         </div>
@@ -777,10 +763,10 @@
                 star.addEventListener('mouseenter', () => {
                     stars.forEach((s, i) => {
                         if (i <= index) {
-                            s.style.color = '#00ffff';
-                            s.style.textShadow = '0 0 15px rgba(0, 255, 255, 0.8)';
+                            s.style.color = '#ff6b47';
+                            s.style.textShadow = '0 0 15px rgba(255, 107, 71, 0.8)';
                         } else {
-                            s.style.color = 'rgba(0, 255, 255, 0.3)';
+                            s.style.color = 'rgba(255, 107, 71, 0.3)';
                         }
                     });
                 });
@@ -788,8 +774,8 @@
                 star.addEventListener('mouseleave', () => {
                     stars.forEach(s => {
                         if (!s.classList.contains('empty')) {
-                            s.style.color = '#00ffff';
-                            s.style.textShadow = '0 0 10px rgba(0, 255, 255, 0.5)';
+                            s.style.color = '#ff6b47';
+                            s.style.textShadow = '0 0 10px rgba(255, 107, 71, 0.5)';
                         }
                     });
                 });
@@ -810,24 +796,26 @@
             const characterCards = document.querySelectorAll('.character-card');
             characterCards.forEach(card => {
                 card.addEventListener('mouseenter', () => {
-                    card.style.boxShadow = '0 10px 25px rgba(0, 255, 255, 0.4)';
-                    const image = card.querySelector('.character-image');
+                    card.style.boxShadow = '0 10px 25px rgba(255, 107, 71, 0.4)';
                     const emoji = card.querySelector('.character-emoji');
-                    if (image && image.style.display !== 'none') {
-                        image.style.transform = 'scale(1.2) rotate(10deg)';
-                    } else if (emoji) {
+                    if (emoji) {
                         emoji.style.transform = 'scale(1.2) rotate(10deg)';
+                    }
+                    const img = card.querySelector('img.character-emoji');
+                    if (img && img.style.display !== 'none') {
+                        img.style.transform = 'scale(1.2) rotate(10deg)';
                     }
                 });
 
                 card.addEventListener('mouseleave', () => {
                     card.style.boxShadow = 'none';
-                    const image = card.querySelector('.character-image');
                     const emoji = card.querySelector('.character-emoji');
-                    if (image && image.style.display !== 'none') {
-                        image.style.transform = 'scale(1) rotate(0deg)';
-                    } else if (emoji) {
+                    if (emoji) {
                         emoji.style.transform = 'scale(1) rotate(0deg)';
+                    }
+                    const img = card.querySelector('img.character-emoji');
+                    if (img && img.style.display !== 'none') {
+                        img.style.transform = 'scale(1) rotate(0deg)';
                     }
                 });
             });
@@ -840,35 +828,35 @@
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
                     
-                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(0, 255, 255, 0.2) 0%, rgba(26, 26, 46, 0.85) 100%)`;
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 107, 71, 0.2) 0%, rgba(44, 24, 16, 0.85) 100%)`;
                 });
 
                 card.addEventListener('mouseleave', () => {
-                    card.style.background = 'rgba(26, 26, 46, 0.85)';
+                    card.style.background = 'rgba(44, 24, 16, 0.85)';
                 });
             });
 
-            // 科技掃描效果增強
-            function createTechEffect() {
-                const techContainer = document.querySelector('.tech-effects');
-                const pulse = document.createElement('div');
-                pulse.style.cssText = `
+            // 陰影爆發效果
+            function createShadowBurst() {
+                const shadowContainer = document.querySelector('.shadow-effects');
+                const burst = document.createElement('div');
+                burst.style.cssText = `
                     position: fixed;
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
                     width: 100px;
                     height: 100px;
-                    border: 2px solid #00ffff;
+                    border: 2px solid #ff6b47;
                     border-radius: 50%;
-                    animation: techPulse 2s ease-out forwards;
+                    animation: shadowPulse 2s ease-out forwards;
                     pointer-events: none;
                     z-index: 9999;
                 `;
                 
                 const style = document.createElement('style');
                 style.textContent = `
-                    @keyframes techPulse {
+                    @keyframes shadowPulse {
                         0% { 
                             width: 100px;
                             height: 100px;
@@ -882,38 +870,38 @@
                     }
                 `;
                 document.head.appendChild(style);
-                techContainer.appendChild(pulse);
+                shadowContainer.appendChild(burst);
                 
                 setTimeout(() => {
-                    techContainer.removeChild(pulse);
+                    shadowContainer.removeChild(burst);
                     document.head.removeChild(style);
                 }, 2000);
             }
 
-            // 點擊標題觸發科技效果
-            document.querySelector('.title').addEventListener('click', createTechEffect);
+            // 點擊標題觸發陰影效果
+            document.querySelector('.title').addEventListener('click', createShadowBurst);
 
-            // 數據流動畫增強
-            function createDataStream() {
-                const techContainer = document.querySelector('.tech-effects');
-                const streams = ['ANALYZING...', 'PROCESSING...', 'EVIDENCE_FOUND', 'CASE_SOLVED'];
+            // 陰影流動畫增強
+            function createShadowStream() {
+                const shadowContainer = document.querySelector('.shadow-effects');
+                const streams = ['皮囊...', '妄念...', '畫皮...', '精怪...'];
                 
                 streams.forEach((text, index) => {
                     setTimeout(() => {
                         const stream = document.createElement('div');
-                        stream.className = 'data-stream';
+                        stream.className = 'shadow-text';
                         stream.textContent = text;
                         stream.style.left = Math.random() * 80 + 10 + '%';
-                        stream.style.color = '#00ffff';
-                        stream.style.fontSize = '14px';
+                        stream.style.color = '#ff6b47';
+                        stream.style.fontSize = '16px';
                         stream.style.fontWeight = 'bold';
-                        techContainer.appendChild(stream);
+                        shadowContainer.appendChild(stream);
                         
                         setTimeout(() => {
-                            if (techContainer.contains(stream)) {
-                                techContainer.removeChild(stream);
+                            if (shadowContainer.contains(stream)) {
+                                shadowContainer.removeChild(stream);
                             }
-                        }, 6000);
+                        }, 8000);
                     }, index * 500);
                 });
             }
@@ -923,22 +911,22 @@
             yearBadge.addEventListener('click', () => {
                 yearBadge.style.animation = 'none';
                 yearBadge.style.transform = 'rotate(720deg) scale(1.2)';
-                createDataStream();
+                createShadowStream();
                 setTimeout(() => {
                     yearBadge.style.animation = 'pulse 2s ease-in-out infinite';
                     yearBadge.style.transform = '';
                 }, 1000);
             });
 
-            // 掃描線互動效果
-            const scanLines = document.querySelectorAll('.scan-line');
-            scanLines.forEach(line => {
-                line.addEventListener('click', () => {
-                    line.style.background = 'linear-gradient(90deg, transparent, #ff0080, transparent)';
-                    line.style.boxShadow = '0 0 15px #ff0080';
+            // 閃爍燈光互動效果
+            const flickerLights = document.querySelectorAll('.flicker-light');
+            flickerLights.forEach(light => {
+                light.addEventListener('click', () => {
+                    light.style.background = 'linear-gradient(90deg, transparent, #8b4a33, transparent)';
+                    light.style.boxShadow = '0 0 20px #8b4a33';
                     setTimeout(() => {
-                        line.style.background = 'linear-gradient(90deg, transparent, #00ffff, transparent)';
-                        line.style.boxShadow = '0 0 10px #00ffff';
+                        light.style.background = 'linear-gradient(90deg, transparent, #ff6b47, transparent)';
+                        light.style.boxShadow = '0 0 15px #ff6b47';
                     }, 1000);
                 });
             });
@@ -947,14 +935,14 @@
         // 添加滾動視差效果
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
-            const techEffects = document.querySelector('.tech-effects');
+            const shadowEffects = document.querySelector('.shadow-effects');
             const floating = document.querySelector('.floating-elements');
             
-            if (techEffects) techEffects.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (shadowEffects) shadowEffects.style.transform = `translateY(${scrolled * 0.05}px)`;
             if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
         });
 
-        // 科技音效模擬
+        // 恐怖音效模擬
         let audioContext;
 
         function initAudio() {
@@ -965,7 +953,7 @@
             }
         }
 
-        function playTechSound() {
+        function playHorrorSound() {
             if (audioContext) {
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
@@ -973,14 +961,14 @@
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
                 
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.5);
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.8);
                 
                 gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
                 
                 oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.5);
+                oscillator.stop(audioContext.currentTime + 0.8);
             }
         }
 
@@ -991,62 +979,62 @@
             }
         }, { once: true });
 
-        // CTA按鈕科技效果
+        // CTA按鈕恐怖效果
         document.querySelector('.cta-button').addEventListener('click', (e) => {
-            playTechSound();
-            createTechEffect();
+            playHorrorSound();
+            createShadowBurst();
         });
 
-        // 動態背景效果
-        function createBackgroundParticles() {
+        // 動態背景粒子
+        function createBackgroundShadows() {
             const container = document.querySelector('.floating-elements');
-            for (let i = 0; i < 3; i++) {
-                const particle = document.createElement('div');
-                particle.style.cssText = `
+            for (let i = 0; i < 2; i++) {
+                const shadow = document.createElement('div');
+                shadow.style.cssText = `
                     position: absolute;
-                    width: 2px;
-                    height: 2px;
-                    background: #00ffff;
+                    width: 3px;
+                    height: 3px;
+                    background: #ff6b47;
                     border-radius: 50%;
-                    box-shadow: 0 0 6px #00ffff;
-                    animation: particleFloat ${8 + Math.random() * 4}s ease-in-out infinite;
+                    box-shadow: 0 0 10px #ff6b47;
+                    animation: shadowFloat ${10 + Math.random() * 4}s ease-in-out infinite;
                     top: ${Math.random() * 100}%;
                     left: ${Math.random() * 100}%;
                 `;
-                container.appendChild(particle);
+                container.appendChild(shadow);
                 
                 setTimeout(() => {
-                    if (container.contains(particle)) {
-                        container.removeChild(particle);
+                    if (container.contains(shadow)) {
+                        container.removeChild(shadow);
                     }
-                }, 12000);
+                }, 14000);
             }
         }
 
-        // 添加粒子動畫樣式
-        const particleStyle = document.createElement('style');
-        particleStyle.textContent = `
-            @keyframes particleFloat {
+        // 添加陰影浮動動畫樣式
+        const shadowStyle = document.createElement('style');
+        shadowStyle.textContent = `
+            @keyframes shadowFloat {
                 0%, 100% { 
                     transform: translateY(0px) translateX(0px);
                     opacity: 0;
                 }
                 50% {
-                    transform: translateY(-50px) translateX(20px);
+                    transform: translateY(-40px) translateX(30px);
                     opacity: 1;
                 }
             }
         `;
-        document.head.appendChild(particleStyle);
+        document.head.appendChild(shadowStyle);
 
-        // 定期創建背景粒子
-        setInterval(createBackgroundParticles, 3000);
+        // 定期創建背景陰影
+        setInterval(createBackgroundShadows, 3000);
 
-        // 角色名稱跳動效果
+        // 角色名稱詭異跳動效果
         const characterNames = document.querySelectorAll('.character-name');
         characterNames.forEach(name => {
             name.addEventListener('mouseenter', () => {
-                name.style.animation = 'bounce 0.6s ease-in-out';
+                name.style.animation = 'eerieBounce 0.6s ease-in-out';
             });
             
             name.addEventListener('animationend', () => {
@@ -1054,32 +1042,31 @@
             });
         });
 
-        // 添加彈跳動畫
-        const bounceStyle = document.createElement('style');
-        bounceStyle.textContent = `
-            @keyframes bounce {
+        // 添加詭異彈跳動畫
+        const eerieStyle = document.createElement('style');
+        eerieStyle.textContent = `
+            @keyframes eerieBounce {
                 0%, 20%, 60%, 100% {
                     transform: translateY(0);
                 }
                 40% {
-                    transform: translateY(-10px);
+                    transform: translateY(-12px) rotate(3deg);
                 }
                 80% {
-                    transform: translateY(-5px);
+                    transform: translateY(-6px) rotate(-2deg);
                 }
             }
         `;
-        document.head.appendChild(bounceStyle);
+        document.head.appendChild(eerieStyle);
     </script>
 
-<audio id="bgm" src="案件重演.mp3" autoplay loop muted></audio>
+<audio id="bgm" src="瘋囚於妄念之終.mp3" autoplay loop muted></audio>
     <script>
         // 點擊頁面解除靜音
         document.addEventListener('click', function(){
             document.getElementById('bgm').muted = false;
         }, {once:true});
     </script>
-
 
 </body>
 </html>

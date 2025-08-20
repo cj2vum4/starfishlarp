@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>純白少年的慢性死亡 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 30%, #d8d8d8 60%, #c8c8c8 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 花瓣飄落特效 */
+        .petal-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .petal {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 240, 0.7) 100%);
+            border-radius: 50% 0 50% 0;
+            animation: petalFall 10s linear infinite;
+            opacity: 0.8;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+        }
+
+        .petal:nth-child(1) { left: 10%; animation-delay: 0s; transform: scale(1.2); }
+        .petal:nth-child(2) { left: 25%; animation-delay: 2s; transform: scale(0.8); }
+        .petal:nth-child(3) { left: 40%; animation-delay: 4s; transform: scale(1.1); }
+        .petal:nth-child(4) { left: 55%; animation-delay: 6s; transform: scale(0.9); }
+        .petal:nth-child(5) { left: 70%; animation-delay: 1s; transform: scale(1.3); }
+        .petal:nth-child(6) { left: 85%; animation-delay: 3s; transform: scale(0.7); }
+
+        @keyframes petalFall {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(120, 120, 120, 0.9);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(150, 150, 150, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(120, 120, 120, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(120, 120, 120, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(120, 120, 120, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #333;
+            text-shadow: 0 0 30px rgba(100, 100, 100, 0.8), 0 0 60px rgba(150, 150, 150, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #444, #666, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(80, 80, 80, 0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(150, 150, 150, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .year-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #e0e0e0, #c0c0c0);
+            color: #555;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            box-shadow: 0 5px 20px rgba(180, 180, 180, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(180, 180, 180, 0.4), 0 0 80px rgba(200, 200, 200, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(180, 180, 180, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(180, 180, 180, 0.5), 0 0 100px rgba(200, 200, 200, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(180, 180, 180, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(180, 180, 180, 0.3);
+            border-color: rgba(150, 150, 150, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #bbb;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(150, 150, 150, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(240, 240, 240, 0.6);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(180, 180, 180, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(230, 230, 230, 0.8);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(180, 180, 180, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #444;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #bbb;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(180, 180, 180, 0.5);
+        }
+
+        .star-rating.filled {
+            color: #999;
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(150, 150, 150, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #d0d0d0, #b0b0b0);
+            color: #555;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(150, 150, 150, 0.3);
+            box-shadow: 0 4px 15px rgba(180, 180, 180, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(180, 180, 180, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(200, 200, 200, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #555;
+            text-shadow: 0 0 10px rgba(150, 150, 150, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #d0d0d0, #b0b0b0);
+            color: #555;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(180, 180, 180, 0.4), 0 0 40px rgba(200, 200, 200, 0.2);
+            border: 2px solid rgba(150, 150, 150, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(180, 180, 180, 0.5), 0 0 60px rgba(200, 200, 200, 0.3);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(245, 245, 245, 0.8);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 2px solid rgba(180, 180, 180, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card:hover {
+            background: rgba(235, 235, 235, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(180, 180, 180, 0.4);
+        }
+
+        .character-emoji {
+            width: 100%;
+            height: 120px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(180, 180, 180, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(180, 180, 180, 0.3);
+            object-fit: cover;
+            display: block;
+        }
+
+        .character-card:hover .character-emoji {
+            border-color: rgba(120, 120, 120, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(180, 180, 180, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .character-info {
+            font-size: 0.9rem;
+            color: #666;
+            opacity: 0.9;
+            line-height: 1.4;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .character-gender {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(200, 200, 200, 0.8);
+            color: #555;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(180, 180, 180, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 14s ease-in-out infinite;
+            color: rgba(180, 180, 180, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 10s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(2deg); }
+            66% { transform: translateY(-40px) rotate(-2deg); }
+        }
+
+        /* 裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #bbb, transparent);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "❀";
+            position: absolute;
+            top: -8px;
+            color: #bbb;
+            font-size: 1.2rem;
+        }
+
+        .decorative-line::before {
+            left: 20%;
+        }
+
+        .decorative-line::after {
+            right: 20%;
+        }
+
+        /* 顏色主題區塊 */
+        .color-theme {
+            background: rgba(250, 250, 250, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #bbb;
+        }
+
+        .color-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(240, 240, 240, 0.6);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .color-item:hover {
+            background: rgba(230, 230, 230, 0.8);
+            transform: translateX(5px);
+        }
+
+        .color-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(120, 120, 120, 0.3);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .color-dot.red { background: #ff6b6b; }
+        .color-dot.orange { background: #ffa726; }
+        .color-dot.yellow { background: #ffee58; }
+        .color-dot.green { background: #66bb6a; }
+        .color-dot.cyan { background: #26c6da; }
+        .color-dot.blue { background: #42a5f5; }
+        .color-dot.purple { background: #ab47bc; }
+        .color-dot.white { background: #ffffff; border-color: #999; }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .color-list {
+                grid-template-columns: 1fr;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 15px;
+            }
+
+            .character-card {
+                padding: 20px 15px;
+            }
+
+            .character-emoji {
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="petal-effects">
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🏰</div>
+        <div class="floating-element">🤍</div>
+        <div class="floating-element">🌸</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">純白少年的慢性死亡</h1>
+            <div class="year-badge">哈爾城堡的顏色傳說</div>
+            <div class="decorative-line"></div>
+            <p class="subtitle">在虛無空洞的白色中，探尋純潔、愛情與死亡的真相</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/gjX9pHjJ/image.jpg" alt="純白少年的慢性死亡 海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/hvHktQQ0/image.jpg" alt="純白少年的慢性死亡 海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">純白少年的慢性死亡</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4.5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>4女</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">🎭</span>
+                            <span>可反串</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">懸疑</span>
+                        <span class="tag">病態</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">歡樂</span>
+                        <span class="tag">荒誕</span>
+                        <span class="tag">新手友善</span>
+                        <span class="tag">無兇手</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/gJ0FSWP3/image.jpg" alt="紅色角色" class="character-emoji">
+                        <div class="character-name">紅色</div>
+                        <div class="character-info">童話女巫的蘋果</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Nj83QMs1/image.jpg" alt="橙色角色" class="character-emoji">
+                        <div class="character-name">橙色</div>
+                        <div class="character-info">夏日魔法的氣泡</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/GhD0SK6g/image.jpg" alt="黃色角色" class="character-emoji">
+                        <div class="character-name">黃色</div>
+                        <div class="character-info">掌心飛逝的沙礫</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/44qk5q2h/image.jpg" alt="綠色角色" class="character-emoji">
+                        <div class="character-name">綠色</div>
+                        <div class="character-info">枝蔓纏繞的廢墟</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/MTrkgFWN/image.jpg" alt="青色角色" class="character-emoji">
+                        <div class="character-name">青色</div>
+                        <div class="character-info">雲中墜落的煙雨</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Jh190L0S/image.jpg" alt="藍色角色" class="character-emoji">
+                        <div class="character-name">藍色</div>
+                        <div class="character-info">星空深處的夢境</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/XY0MMFbj/image.jpg" alt="紫色角色" class="character-emoji">
+                        <div class="character-name">紫色</div>
+                        <div class="character-info">隨風而去的晚霞</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    我叫<span class="highlight">顧詩</span>，曾經生活在名為「哈爾城堡」的地方。它像極了童話故事裡公主的囚籠，幾經輾轉，鹹濕的海風早已捲走了所有的喧囂，僅剩下古樸華麗的外殼，空寂且落寞。
+                    <br><br>
+                    城堡裡所有的孩子，都會被賦予一個專屬的<span class="highlight">「顏色」</span>。每一種顏色都代表著不同的命運與性格，成為孩子們身份的象徵。而我，被賦予了虛無空洞的白色，代表了純潔、愛情和死亡。
+                    <br><br>
+                    在這個神秘的城堡中，每個顏色都有其獨特的故事和意義。當這些色彩交織在一起時，會發生什麼樣的故事呢？在歡聲笑語的背後，又隱藏著什麼樣的真相？
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《純白少年的慢性死亡》是一部融合了<span class="highlight">懸疑、荒誕與歡樂</span>元素的獨特劇本。故事以童話般的城堡為背景，但在美麗的外表下，隱藏著令人不安的真相。
+                    <br><br>
+                    這是一個<span class="highlight">新手友善</span>的劇本，推理難度適中，更注重角色扮演和情感體驗。推理主打軟邏輯，案件和還原佔比為3:7，在歡樂的氛圍中，玩家將逐步揭開一個關於純潔與墮落、愛情與死亡的深刻故事。
+                    <br><br>
+                    劇本巧妙地平衡了<span class="highlight">病態美學</span>與歡樂元素，讓玩家在享受推理樂趣的同時，也能感受到深層的情感共鳴。開篇以四對情侶分手作為破冰，一步一步抽絲剝繭找到分手的真正原因。
+                    <br><br>
+                    作為斐然老師的開年新作，風格上繼承了『病嬌男孩精分日記』的獵奇和變態，同時加入了更多治愈元素，創造出獨特的遊戲體驗。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">顏色象徵系統</h2>
+                <div class="decorative-line"></div>
+                <div class="color-theme">
+                    <div class="description-text">
+                        《純白少年的慢性死亡》最大的特色是其獨特的<span class="highlight">顏色象徵系統</span>。每個角色都被賦予一種專屬顏色，這不僅是身份標識，更代表著性格、命運和內心世界。
+                    </div>
+                    <div class="color-list">
+                        <div class="color-item">
+                            <div class="color-dot red"></div>
+                            <span><strong>紅色</strong> - 童話女巫的蘋果</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-dot orange"></div>
+                            <span><strong>橙色</strong> - 夏日魔法的氣泡</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-dot yellow"></div>
+                            <span><strong>黃色</strong> - 掌心飛逝的沙礫</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-dot green"></div>
+                            <span><strong>綠色</strong> - 枝蔓纏繞的廢墟</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-dot cyan"></div>
+                            <span><strong>青色</strong> - 雲中墜落的煙雨</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-dot blue"></div>
+                            <span><strong>藍色</strong> - 星空深處的夢境</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-dot purple"></div>
+                            <span><strong>紫色</strong> - 隨風而去的晚霞</span>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-dot white"></div>
+                            <span><strong>白色</strong> - 虛無空洞，純潔、愛情與死亡</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating.filled');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#888';
+                            s.style.textShadow = '0 0 15px rgba(150, 150, 150, 0.8)';
+                        } else {
+                            s.style.color = '#bbb';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        if (s.classList.contains('filled')) {
+                            s.style.color = '#999';
+                            s.style.textShadow = '0 0 10px rgba(180, 180, 180, 0.5)';
+                        }
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(180, 180, 180, 0.4)';
+                    const emoji = card.querySelector('.character-emoji');
+                    if (emoji) {
+                        emoji.style.transform = 'scale(1.2) rotate(10deg)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                    const emoji = card.querySelector('.character-emoji');
+                    if (emoji) {
+                        emoji.style.transform = 'scale(1) rotate(0deg)';
+                    }
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(220, 220, 220, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(255, 255, 255, 0.9)';
+                });
+            });
+
+            // 花瓣爆發效果
+            function createPetalEffect() {
+                const petalContainer = document.querySelector('.petal-effects');
+                const petal = document.createElement('div');
+                petal.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 50px;
+                    height: 50px;
+                    background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 240, 0.7) 100%);
+                    border-radius: 50% 0 50% 0;
+                    animation: petalBurst 3s ease-out forwards;
+                    pointer-events: none;
+                    z-index: 9999;
+                `;
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes petalBurst {
+                        0% { 
+                            width: 50px;
+                            height: 50px;
+                            opacity: 1;
+                        }
+                        100% { 
+                            width: 200px;
+                            height: 200px;
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+                petalContainer.appendChild(petal);
+                
+                setTimeout(() => {
+                    petalContainer.removeChild(petal);
+                    document.head.removeChild(style);
+                }, 3000);
+            }
+
+            // 點擊標題觸發花瓣效果
+            document.querySelector('.title').addEventListener('click', createPetalEffect);
+
+            // 顏色主題動畫
+            const colorItems = document.querySelectorAll('.color-item');
+            colorItems.forEach((item, index) => {
+                item.addEventListener('mouseenter', () => {
+                    const dot = item.querySelector('.color-dot');
+                    dot.style.transform = 'scale(1.3)';
+                    dot.style.boxShadow = '0 0 15px rgba(120, 120, 120, 0.5)';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    const dot = item.querySelector('.color-dot');
+                    dot.style.transform = 'scale(1)';
+                    dot.style.boxShadow = 'none';
+                });
+            });
+
+            // 主題徽章旋轉效果
+            const yearBadge = document.querySelector('.year-badge');
+            yearBadge.addEventListener('click', () => {
+                yearBadge.style.animation = 'none';
+                yearBadge.style.transform = 'rotate(720deg) scale(1.2)';
+                setTimeout(() => {
+                    yearBadge.style.animation = 'pulse 2s ease-in-out infinite';
+                    yearBadge.style.transform = '';
+                }, 1000);
+            });
+
+            // 花瓣互動效果
+            const petals = document.querySelectorAll('.petal');
+            petals.forEach(petal => {
+                petal.addEventListener('click', () => {
+                    petal.style.animation = 'none';
+                    petal.style.transform = 'scale(3) rotate(720deg)';
+                    petal.style.opacity = '0';
+                    setTimeout(() => {
+                        petal.style.animation = 'petalFall 10s linear infinite';
+                        petal.style.transform = '';
+                        petal.style.opacity = '';
+                    }, 1500);
+                });
+            });
+
+            // 數據流動畫增強
+            function createDataStream() {
+                const petalContainer = document.querySelector('.petal-effects');
+                const streams = ['純白...', '愛情...', '死亡...', '城堡...'];
+                
+                streams.forEach((text, index) => {
+                    setTimeout(() => {
+                        const stream = document.createElement('div');
+                        stream.style.cssText = `
+                            position: absolute;
+                            color: rgba(150, 150, 150, 0.8);
+                            font-size: 14px;
+                            font-weight: bold;
+                            left: ${Math.random() * 80 + 10}%;
+                            top: -20px;
+                            animation: petalFall 6s linear forwards;
+                            pointer-events: none;
+                            z-index: 5;
+                        `;
+                        stream.textContent = text;
+                        petalContainer.appendChild(stream);
+                        
+                        setTimeout(() => {
+                            if (petalContainer.contains(stream)) {
+                                petalContainer.removeChild(stream);
+                            }
+                        }, 6000);
+                    }, index * 500);
+                });
+            }
+
+            // 年代徽章點擊觸發數據流
+            yearBadge.addEventListener('click', createDataStream);
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const petalEffects = document.querySelector('.petal-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (petalEffects) petalEffects.style.transform = `translateY(${scrolled * 0.03}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.08}px)`;
+        });
+
+        // 溫和音效模擬
+        let audioContext;
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playGentleSound() {
+            if (audioContext) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 1);
+                
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1);
+            }
+        }
+
+        // 點擊任意地方初始化音效
+        document.addEventListener('click', function() {
+            if (!audioContext) {
+                initAudio();
+            }
+        }, { once: true });
+
+        // CTA按鈕溫和效果
+        document.querySelector('.cta-button').addEventListener('click', (e) => {
+            playGentleSound();
+            createPetalEffect();
+        });
+
+        // 動態背景粒子
+        function createBackgroundSparkles() {
+            const container = document.querySelector('.floating-elements');
+            for (let i = 0; i < 3; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.style.cssText = `
+                    position: absolute;
+                    width: 4px;
+                    height: 4px;
+                    background: rgba(200, 200, 200, 0.8);
+                    border-radius: 50%;
+                    box-shadow: 0 0 8px rgba(200, 200, 200, 0.6);
+                    animation: sparkleFloat ${6 + Math.random() * 4}s ease-in-out infinite;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100}%;
+                `;
+                container.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    if (container.contains(sparkle)) {
+                        container.removeChild(sparkle);
+                    }
+                }, 10000);
+            }
+        }
+
+        // 添加閃爍動畫樣式
+        const sparkleStyle = document.createElement('style');
+        sparkleStyle.textContent = `
+            @keyframes sparkleFloat {
+                0%, 100% { 
+                    transform: translateY(0px) translateX(0px);
+                    opacity: 0;
+                }
+                50% {
+                    transform: translateY(-30px) translateX(15px);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(sparkleStyle);
+
+        // 定期創建背景閃爍
+        setInterval(createBackgroundSparkles, 4000);
+
+        // 角色名稱柔和跳動效果
+        const characterNames = document.querySelectorAll('.character-name');
+        characterNames.forEach(name => {
+            name.addEventListener('mouseenter', () => {
+                name.style.animation = 'gentleBounce 0.8s ease-in-out';
+            });
+            
+            name.addEventListener('animationend', () => {
+                name.style.animation = '';
+            });
+        });
+
+        // 添加柔和彈跳動畫
+        const gentleBounceStyle = document.createElement('style');
+        gentleBounceStyle.textContent = `
+            @keyframes gentleBounce {
+                0%, 20%, 60%, 100% {
+                    transform: translateY(0);
+                }
+                40% {
+                    transform: translateY(-8px);
+                }
+                80% {
+                    transform: translateY(-4px);
+                }
+            }
+        `;
+        document.head.appendChild(gentleBounceStyle);
+    </script>
+
+<audio id="bgm" src="純白少年的慢性死亡.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+
+</body>
+</html>
