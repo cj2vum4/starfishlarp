@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>劇本殺榮譽牆 (數據連動版)</title>
+    <!-- 引入 Tone.js 用於音效 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -11,7 +13,7 @@
             background-color: #1a1a1a;
             color: #e0e0e0;
             margin: 0;
-            padding: 2rem;
+            padding: 1rem; /* 手機版優化 */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -91,7 +93,9 @@
             border: 1px solid #555;
             background-color: #333;
             color: #fff;
-            min-width: 200px;
+            min-width: 180px; /* 手機版優化 */
+            flex-grow: 1; /* 手機版優化 */
+            max-width: 250px;
         }
         
         #playerSelector {
@@ -221,8 +225,8 @@
         /* --- 榮譽牆網格排版 --- */
         .honor-wall {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 手機版優化 */
+            gap: 15px; /* 手機版優化 */
         }
 
         /* --- 單一劇本卡片 --- */
@@ -239,6 +243,12 @@
         .script-card:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+        }
+        
+        /* 卡片點擊特效 */
+        .script-card.clicked {
+            transform: scale(0.98);
+            transition: transform 0.1s ease;
         }
 
         /* --- 卡片圖片區域 --- */
@@ -273,7 +283,7 @@
 
         .script-title {
             margin: 0;
-            font-size: 1.25em;
+            font-size: 1.1em; /* 手機版優化 */
             color: #ffffff;
             min-height: 2.5em;
             display: flex;
@@ -299,8 +309,8 @@
         /* --- 參考圖紋理橡皮章風格 --- */
         .stamp-content {
             position: absolute;
-            width: 150px;
-            height: 150px;
+            width: 120px; /* 手機版優化 */
+            height: 120px; /* 手機版優化 */
             box-sizing: border-box;
             
             display: flex;
@@ -318,8 +328,8 @@
             border-radius: 50%; /* 圓形 */
             
             /* 使用 box-shadow 創造雙圈效果 */
-            border: 3px solid #a9844f;
-            box-shadow: 0 0 0 5px #fdfbf5, 0 0 0 8px #a9844f;
+            border: 2px solid #a9844f;
+            box-shadow: 0 0 0 4px #fdfbf5, 0 0 0 6px #a9844f;
 
             /* 動畫初始狀態 */
             opacity: 0;
@@ -328,18 +338,18 @@
         }
         
         .stamp-character {
-            font-size: 1.5rem;
+            font-size: 1.2rem; /* 手機版優化 */
             font-weight: 600;
             line-height: 1.2;
         }
 
         .stamp-date {
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* 手機版優化 */
             font-weight: 500;
         }
         
         .stamp-rating {
-            font-size: 1rem;
+            font-size: 0.9rem; /* 手機版優化 */
             letter-spacing: 1px;
             font-weight: 500;
         }
@@ -349,8 +359,7 @@
             width: 60%;
             height: 2px;
             background-color: #a9844f;
-            margin: 6px 0;
-            /* 模擬墨水斑駁感 */
+            margin: 4px 0; /* 手機版優化 */
             background-image: linear-gradient(90deg, #a9844f 70%, transparent 70%, transparent 80%, #a9844f 80%);
             background-size: 10px 100%;
         }
@@ -396,6 +405,23 @@
         @keyframes floatUp {
             to {
                 transform: translateY(-120vh);
+            }
+        }
+        
+        /* 泡泡破裂粒子特效 */
+        .pop-particle {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 1;
+            animation: pop-out 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes pop-out {
+            to {
+                transform: scale(2);
+                opacity: 0;
             }
         }
 
@@ -496,6 +522,26 @@
             const leaderboardHeader = document.querySelector('.leaderboard-header');
             const leaderboardSearch = document.getElementById('leaderboardSearch');
             const commentBubbleContainer = document.getElementById('commentBubbleContainer');
+            
+            // --- 音效設定 ---
+            let isToneStarted = false;
+            const clickSound = new Tone.MembraneSynth({
+                pitchDecay: 0.01,
+                octaves: 2,
+                envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
+            }).toDestination();
+
+            const popSound = new Tone.Synth({
+                oscillator: { type: 'sine' },
+                envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+            }).toDestination();
+
+            async function startAudio() {
+                if (!isToneStarted) {
+                    await Tone.start();
+                    isToneStarted = true;
+                }
+            }
 
             // --- 函式區 ---
 
@@ -702,11 +748,29 @@
                     bubble.style.height = `${size}px`;
                     bubble.style.left = `${Math.random() * (window.innerWidth - size)}px`;
                     
-                    const duration = Math.random() * 10 + 15;
+                    const duration = Math.random() * 5 + 7.5; // 7.5s to 12.5s
                     bubble.style.animationDuration = `${duration}s`;
                     bubble.style.animationDelay = `${Math.random() * 5}s`;
 
-                    bubble.addEventListener('click', () => {
+                    bubble.addEventListener('click', (e) => {
+                        startAudio();
+                        popSound.triggerAttackRelease('C5', '8n');
+                        
+                        // 泡泡破裂特效
+                        for (let i = 0; i < 5; i++) {
+                            const p = document.createElement('div');
+                            p.className = 'pop-particle';
+                            p.style.backgroundColor = color.border;
+                            p.style.left = `${e.clientX}px`;
+                            p.style.top = `${e.clientY}px`;
+                            const angle = Math.random() * 360;
+                            const distance = Math.random() * 50 + 50;
+                            p.style.setProperty('--x', `${Math.cos(angle * Math.PI / 180) * distance}px`);
+                            p.style.setProperty('--y', `${Math.sin(angle * Math.PI / 180) * distance}px`);
+                            document.body.appendChild(p);
+                            setTimeout(() => p.remove(), 500);
+                        }
+
                         bubble.classList.add('popped');
                         setTimeout(() => bubble.remove(), 200);
                     });
@@ -754,13 +818,21 @@
             
             // F. 監聽排行榜標題的點擊事件
             leaderboardHeader.addEventListener('click', () => {
+                startAudio();
                 leaderboardContainer.classList.toggle('collapsed');
             });
 
             // G. 為所有卡片圖片加上點擊事件以顯示評論
             document.querySelectorAll('.image-container').forEach(container => {
                 container.addEventListener('click', () => {
-                    const scriptId = container.closest('.script-card').dataset.scriptId;
+                    startAudio();
+                    clickSound.triggerAttackRelease('C2', '8n');
+                    
+                    const card = container.closest('.script-card');
+                    card.classList.add('clicked');
+                    setTimeout(() => card.classList.remove('clicked'), 200);
+
+                    const scriptId = card.dataset.scriptId;
                     showComments(scriptId, playRecords);
                 });
             });
