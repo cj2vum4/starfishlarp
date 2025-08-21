@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>海星｜劇本殺主持人・交大電機碩士生</title>
+    <meta name="title" content="海星｜劇本殺主持人・交大電機碩士生">
+    <meta name="description" content="海星——交大電機碩士生、資深劇本殺主持人。提供台北/南港/新竹與到場主持服務，友善新手、沉浸帶入、推理節奏拿捏穩健。支援公司團建與校園社團。">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://example.com/"> <!-- TODO: Replace with actual URL -->
+    <meta property="og:title" content="海星｜劇本殺主持人・交大電機碩士生">
+    <meta property="og:description" content="海星——交大電機碩士生、資深劇本殺主持人。提供台北/南港/新竹與到場主持服務，友善新手、沉浸帶入、推理節奏拿捏穩健。支援公司團建與校園社團。">
+    <meta property="og:image" content="https://i.postimg.cc/d355z7tR/1940326-0.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://example.com/"> <!-- TODO: Replace with actual URL -->
+    <meta property="twitter:title" content="海星｜劇本殺主持人・交大電機碩士生">
+    <meta property="twitter:description" content="海星——交大電機碩士生、資深劇本殺主持人。提供台北/南港/新竹與到場主持服務，友善新手、沉浸帶入、推理節奏拿捏穩健。支援公司團建與校園社團。">
+    <meta property="twitter:image" content="https://i.postimg.cc/d355z7tR/1940326-0.jpg">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animate On Scroll (AOS) Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --border-color: rgba(139, 148, 158, 0.2);
+            --accent-cyan: #22d3ee;
+            --accent-glow: 0 0 15px rgba(34, 211, 238, 0.4), 0 0 30px rgba(34, 211, 238, 0.2);
+        }
+        h1, h2, h3 {
+            font-family: 'Noto Serif TC', serif;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-dark);
+            color: #e6edf3;
+        }
+        .nav-link.active {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #a5b4fc, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        /* Image Slider Styles */
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 4px solid var(--border-color);
+        }
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slider-slide {
+            flex: 0 0 100%;
+            width: 100%;
+        }
+        .slider-slide img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            aspect-ratio: 3/4;
+        }
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0,0,0,0.4);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .slider-button:hover {
+            background-color: rgba(0,0,0,0.7);
+        }
+        .slider-button.prev { left: 0.5rem; }
+        .slider-button.next { right: 0.5rem; }
+    </style>
+
+    <!-- SEO Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "name": "海星",
+          "jobTitle": "劇本殺主持人",
+          "alumniOf": {
+            "@type": "CollegeOrUniversity",
+            "name": "國立陽明交通大學",
+            "sameAs": "https://www.nycu.edu.tw/"
+          }
+        },
+        {
+          "@type": "LocalBusiness",
+          "name": "海星｜劇本殺主持人",
+          "description": "提供台北、南港、新竹地區的劇本殺主持服務，以及到場主持。適合新手玩家、企業團建與校園活動。",
+          "image": "https://i.postimg.cc/d355z7tR/1940326-0.jpg",
+          "address": [{"@type": "PostalAddress", "addressLocality": "台北市", "addressCountry": "TW"}, {"@type": "PostalAddress", "addressLocality": "新竹市", "addressCountry": "TW"}],
+          "provider": {"@type": "Person", "name": "海星"},
+          "areaServed": [{"@type": "City", "name": "台北"}, {"@type": "City", "name": "新竹"}],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "劇本殺主持服務",
+            "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": "劇本殺主持"}}, {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "到場劇本殺主持"}}]
+          }
+        }
+      ]
+    }
+    </script>
+</head>
+<body class="antialiased">
+
+    <!-- Home Button -->
+    <a href="index.html" class="fixed top-4 left-4 z-50 bg-black/30 backdrop-blur-lg text-white font-bold p-3 rounded-full transition duration-300 hover:bg-cyan-500/50 flex items-center space-x-2 border border-gray-800/50" title="回到主頁">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+    </a>
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-black/30 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-800/50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold gradient-text">海星｜劇本殺主持人</a>
+            <nav class="hidden md:flex space-x-6 items-center">
+                <a href="#about" class="nav-link text-gray-400 hover:text-white transition-colors">關於我</a>
+                <a href="#philosophy" class="nav-link text-gray-400 hover:text-white transition-colors">主持理念</a>
+                <a href="#services" class="nav-link text-gray-400 hover:text-white transition-colors">服務與場地</a>
+                <a href="#recommendations" class="nav-link text-gray-400 hover:text-white transition-colors">推薦本單</a>
+                <a href="#experience" class="nav-link text-gray-400 hover:text-white transition-colors">主持經驗</a>
+                <a href="#testimonials" class="nav-link text-gray-400 hover:text-white transition-colors">玩家回饋</a>
+                <a href="#faq" class="nav-link text-gray-400 hover:text-white transition-colors">常見問題</a>
+                <a href="#contact" class="nav-link text-gray-400 hover:text-white transition-colors">聯絡與訂位</a>
+            </nav>
+            <a href="#contact" class="hidden md:inline-block bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)]">立即訂位</a>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-400 hover:bg-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 border-t border-gray-800/50">
+            <a href="#about" class="block py-2 text-gray-300 hover:text-cyan-400">關於我</a>
+            <a href="#philosophy" class="block py-2 text-gray-300 hover:text-cyan-400">主持理念</a>
+            <a href="#services" class="block py-2 text-gray-300 hover:text-cyan-400">服務與場地</a>
+            <a href="#recommendations" class="block py-2 text-gray-300 hover:text-cyan-400">推薦本單</a>
+            <a href="#experience" class="block py-2 text-gray-300 hover:text-cyan-400">主持經驗</a>
+            <a href="#testimonials" class="block py-2 text-gray-300 hover:text-cyan-400">玩家回饋</a>
+            <a href="#faq" class="block py-2 text-gray-300 hover:text-cyan-400">常見問題</a>
+            <a href="#contact" class="block py-2 text-gray-300 hover:text-cyan-400">聯絡與訂位</a>
+            <a href="#contact" class="mt-4 w-full text-center bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)]">立即訂位</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1. Hero Section -->
+        <section id="hero" class="relative h-screen flex items-center justify-center text-white text-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1554189097-94974345de6e?q=80&w=2940&auto=format&fit=crop');">
+            <div class="absolute inset-0 bg-black/60"></div>
+            <div class="relative z-10 p-6" data-aos="fade-up">
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-4" style="text-shadow: 0 0 20px rgba(0,0,0,0.5)">海星｜劇本殺主持人</h1>
+                <p class="text-lg md:text-2xl max-w-2xl mx-auto mb-8 text-gray-300">用理性鋪陳節奏，用感性承接故事。<br>讓每一場，都成為只屬於你的結局。</p>
+                <div class="space-x-4">
+                    <a href="#contact" class="bg-cyan-500 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-cyan-600 transition-transform hover:scale-105 shadow-[0_0_20px_rgba(34,211,238,0.5)]">立即訂位</a>
+                    <a href="#philosophy" class="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-white/20 transition-transform hover:scale-105">看看怎麼玩</a>
+                </div>
+            </div>
+            <div class="absolute bottom-10 animate-bounce">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </section>
+
+        <!-- Container for content sections -->
+        <div class="container mx-auto px-6 py-20 md:py-28 space-y-28 md:space-y-36">
+
+            <!-- 2. About Section -->
+            <section id="about" class="grid md:grid-cols-5 gap-12 items-center">
+                <div class="md:col-span-2" data-aos="fade-right">
+                    <div class="slider-container shadow-2xl">
+                        <div class="slider-wrapper">
+                            <div class="slider-slide"><img src="https://i.postimg.cc/d355z7tR/1940326-0.jpg" alt="海星個人照 1"></div>
+                            <div class="slider-slide"><img src="https://i.postimg.cc/W36WwWBH/1944120-0.jpg" alt="海星個人照 2"></div>
+                            <div class="slider-slide"><img src="https://i.postimg.cc/Znbf7PZK/1944121-0.jpg" alt="海星個人照 3"></div>
+                        </div>
+                        <button class="slider-button prev">&lt;</button>
+                        <button class="slider-button next">&gt;</button>
+                    </div>
+                </div>
+                <div class="md:col-span-3" data-aos="fade-left">
+                    <h2 class="text-4xl font-bold mb-6 gradient-text">關於海星</h2>
+                    <div class="space-y-4 text-lg text-gray-300">
+                        <p>我是海星，目前就讀交大電機碩，同時也是一名劇本殺主持人。2022 年第一次接觸《津門疑雲》《別來無恙》，一玩就愛上；至今已累積超過 100 本的遊玩與帶場經驗。</p>
+                        <p>主持對我而言不只是工作，而是熱情：我相信每位玩家的選擇，都能開出不同的支線與結局；而我想做的，就是提供一個被好好接住、勇敢做決定的舞台。</p>
+                        <p><strong>個性：</strong>開朗、活潑、熱情。<br><strong>興趣：</strong>衝浪、溯溪、露營、登山。<br>把自然的能量帶回每一場遊戲。</p>
+                        <p class="bg-cyan-900/30 border-l-4 border-cyan-500 p-4 rounded-r-lg text-cyan-200">
+                            <strong>小秘密：</strong>我正在籌備一個鯛魚燒夜市攤位——歡迎到時候來攤位打卡換免費鯛魚燒😉
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Philosophy Section -->
+            <section id="philosophy" class="text-center">
+                <h2 class="text-4xl font-bold mb-16 gradient-text" data-aos="fade-up">主持理念</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Card 1 -->
+                    <div class="card p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="100">
+                        <div class="inline-block text-cyan-400 p-4 rounded-full mb-4 ring-2 ring-cyan-400/30" style="box-shadow: var(--accent-glow);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><circle cx="12" cy="12" r="10"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 text-white">節奏與帶入</h3>
+                        <p class="text-gray-400">我用理性控節奏、鋪線索，讓每個人都能跟上；再用感性引導共鳴，讓故事留在你心裡。</p>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
+                        <div class="inline-block text-cyan-400 p-4 rounded-full mb-4 ring-2 ring-cyan-400/30" style="box-shadow: var(--accent-glow);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><path d="M12 20h4"/><path d="M12 4H8"/><path d="M20 12h-2"/><path d="M4 12H2"/><path d="M20 20h-2"/><path d="M4 4H2"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 text-white">新手友好</h3>
+                        <p class="text-gray-400">第一次玩也不用怕。清楚的規則解說、適時提醒與安全感，讓你從觀望者變成主角。</p>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="card p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="300">
+                        <div class="inline-block text-cyan-400 p-4 rounded-full mb-4 ring-2 ring-cyan-400/30" style="box-shadow: var(--accent-glow);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z"/><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/><path d="M12 12a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 text-white">認真對待</h3>
+                        <p class="text-gray-400">為了每次的體驗，我買了許多的燈光道具，為了讓大家可以花少少的錢有完整的劇本體驗。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Services & Locations Section -->
+            <section id="services" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-6 gradient-text">我在哪裡主持</h2>
+                <div class="text-lg text-gray-300 max-w-3xl">
+                    <p class="mb-4">主要服務地區與場地如下：</p>
+                    <ul class="list-disc list-inside space-y-2 mb-8 text-gray-200">
+                        <li><strong>台北車站</strong> Y17 出口 附近</li>
+                        <li><strong>南港車站</strong> 附近</li>
+                        <li><strong>新竹｜國立陽明交通大學</strong> 教室</li>
+                        <li><strong>指定場地：</strong>若你有自己的空間，我也可以到場主持</li>
+                    </ul>
+                    <div class="bg-gray-800/50 border border-gray-700 p-6 rounded-lg">
+                        <h4 class="font-bold text-white mb-2">人數建議、場地建議與器材：</h4>
+                        <ul class="list-disc list-inside text-gray-400">
+                            <li>6–8 人最佳（依劇本而異）</li>
+                            <li>安靜室內空間、桌椅充足</li>
+                            <li>投影/白板可加分（非必須）</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Recommendations Section -->
+            <section id="recommendations" class="text-center">
+                <h2 class="text-4xl font-bold mb-16 gradient-text" data-aos="fade-up">推薦本單 (For First-Timers)</h2>
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                    <!-- Rec 1 -->
+                    <div class="card rounded-2xl overflow-hidden group" data-aos="fade-up" data-aos-delay="100">
+                        <img src="https://i.postimg.cc/yNWMsNFR/01.jpg" alt="劇本殺《北國之春》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-white">《北國之春》</h3>
+                            <p class="text-gray-400">歡樂又具有立意的體驗，適合第一次接觸劇本殺的你。</p>
+                        </div>
+                    </div>
+                    <!-- Rec 2 -->
+                    <div class="card rounded-2xl overflow-hidden group" data-aos="fade-up" data-aos-delay="200">
+                        <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="劇本殺《群星》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-white">《群星》</h3>
+                            <p class="text-gray-400">沉浸式敘事與群像視角，讓你看見選擇如何交織命運。</p>
+                        </div>
+                    </div>
+                    <!-- Rec 3 -->
+                    <div class="card rounded-2xl overflow-hidden group" data-aos="fade-up" data-aos-delay="300">
+                        <img src="https://i.postimg.cc/RZYbc6pZ/1.jpg" alt="劇本殺《病嬌男孩的精分日記》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-white">《病嬌男孩的精分日記》</h3>
+                            <p class="text-gray-400">細絲極恐又充滿沉浸的劇本，看的到我精彩演藝。</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="#contact" class="bg-gray-700/50 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600/50 border border-gray-600 transition-colors" data-aos="fade-up">還想更客製？</a>
+            </section>
+
+            <!-- 6. Experience Section -->
+            <section id="experience">
+                <h2 class="text-4xl font-bold mb-16 text-center gradient-text" data-aos="fade-up">主持經驗與里程碑</h2>
+                <div class="relative max-w-2xl mx-auto">
+                    <!-- The vertical line -->
+                    <div class="absolute left-3 top-0 h-full w-1 bg-gray-800 rounded-full"></div>
+                    <!-- Timeline Items -->
+                    <div class="space-y-12">
+                        <!-- Item 1 -->
+                        <div class="relative pl-12" data-aos="fade-left">
+                            <div class="absolute left-0 top-1 w-6 h-6 bg-gray-700 border-4 border-cyan-500 rounded-full" style="box-shadow: var(--accent-glow);"></div>
+                            <div class="card p-6 rounded-xl">
+                                <h3 class="font-bold text-xl mb-1 text-cyan-400">2022｜初入坑</h3>
+                                <p class="text-gray-400">第一次玩《津門疑雲》《別來無恙》，從玩家到主持人的旅程啟動。</p>
+                            </div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="relative pl-12" data-aos="fade-left" data-aos-delay="100">
+                            <div class="absolute left-0 top-1 w-6 h-6 bg-gray-700 border-4 border-cyan-500 rounded-full" style="box-shadow: var(--accent-glow);"></div>
+                            <div class="card p-6 rounded-xl">
+                                <h3 class="font-bold text-xl mb-1 text-cyan-400">2023–2024｜百本經驗</h3>
+                                <p class="text-gray-400">累積超過 100 本遊玩/帶場；逐步形成「新手友好、情感帶入、穩健節奏」風格。</p>
+                            </div>
+                        </div>
+                        <!-- Item 3 -->
+                        <div class="relative pl-12" data-aos="fade-left" data-aos-delay="200">
+                            <div class="absolute left-0 top-1 w-6 h-6 bg-gray-700 border-4 border-cyan-500 rounded-full" style="box-shadow: var(--accent-glow);"></div>
+                            <div class="card p-6 rounded-xl">
+                                <h3 class="font-bold text-xl mb-1 text-cyan-400">2023-2024 | 拉普星球旗艦店</h3>
+                                <p class="text-gray-400">在店家兼職的時間，讓我對於音樂、燈光、控場有了更精準的認識。也吸取許多主持經驗。</p>
+                            </div>
+                        </div>
+                        <!-- Item 4 -->
+                        <div class="relative pl-12" data-aos="fade-left" data-aos-delay="300">
+                            <div class="absolute left-0 top-1 w-6 h-6 bg-gray-700 border-4 border-cyan-500 rounded-full" style="box-shadow: var(--accent-glow);"></div>
+                            <div class="card p-6 rounded-xl">
+                                <h3 class="font-bold text-xl mb-1 text-cyan-400">亮點瞬間｜《晴天神社》</h3>
+                                <p class="text-gray-400">玩家藉著劇本向剛過世的爺爺說出心底話；我在旁見證，深受觸動——我確信：劇本殺能承載真實情感。</p>
+                            </div>
+                        </div>
+                        <!-- Item 5 -->
+                        <div class="relative pl-12" data-aos="fade-left" data-aos-delay="400">
+                             <div class="absolute left-0 top-1 w-6 h-6 bg-gray-700 border-4 border-cyan-500 rounded-full" style="box-shadow: var(--accent-glow);"></div>
+                            <div class="card p-6 rounded-xl">
+                                <h3 class="font-bold text-xl mb-1 text-cyan-400">現在進行式｜行動主持</h3>
+                                <p class="text-gray-400">台北/南港/新竹固定據點 + 到場主持，支援團建、校園與私人包場。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. Testimonials Section -->
+            <section id="testimonials" class="relative">
+                <h2 class="text-4xl font-bold mb-16 text-center gradient-text" data-aos="fade-up">玩家回饋</h2>
+                <div id="testimonial-slider" class="relative w-full max-w-3xl mx-auto h-52 overflow-hidden" data-aos="fade-up">
+                    <!-- Testimonials will be dynamically populated here -->
+                </div>
+                 <!-- Slider controls -->
+                <button id="prev-testimonial" class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors shadow-md backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button id="next-testimonial" class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors shadow-md backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </section>
+
+            <!-- 8. FAQ Section -->
+            <section id="faq">
+                <h2 class="text-4xl font-bold mb-16 text-center gradient-text" data-aos="fade-up">常見問題</h2>
+                <div class="max-w-3xl mx-auto space-y-4" data-aos="fade-up">
+                    <!-- FAQ Item 1 -->
+                    <div class="faq-item card rounded-xl overflow-hidden">
+                        <button class="faq-question w-full text-left p-6 font-bold text-lg flex justify-between items-center text-white hover:bg-gray-800/50 transition-colors">
+                            <span>第一次玩會不會太難？</span>
+                            <svg class="faq-icon w-5 h-5 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p class="p-6 pt-0 text-gray-400">不會。我最喜歡主持新手場，一定會很用心於開場說明規則與注意事項，中途也會適時提醒，新手友好是我的基本盤。</p>
+                        </div>
+                    </div>
+                    <!-- FAQ Item 2 -->
+                    <div class="faq-item card rounded-xl overflow-hidden">
+                        <button class="faq-question w-full text-left p-6 font-bold text-lg flex justify-between items-center text-white hover:bg-gray-800/50 transition-colors">
+                            <span>人數/時長怎麼抓？</span>
+                            <svg class="faq-icon w-5 h-5 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p class="p-6 pt-0 text-gray-400">劇本人數時常都已經標明，但不包含復盤時間，若有趕時間可以提前告知。</p>
+                        </div>
+                    </div>
+                    <!-- FAQ Item 3 -->
+                    <div class="faq-item card rounded-xl overflow-hidden">
+                        <button class="faq-question w-full text-left p-6 font-bold text-lg flex justify-between items-center text-white hover:bg-gray-800/50 transition-colors">
+                            <span>可以到我指定的場地嗎？</span>
+                            <svg class="faq-icon w-5 h-5 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p class="p-6 pt-0 text-gray-400">可以，只要空間安靜、桌椅夠、光線足即可；投影/白板更好，但不是必備。</p>
+                        </div>
+                    </div>
+                    <!-- FAQ Item 4 -->
+                    <div class="faq-item card rounded-xl overflow-hidden">
+                        <button class="faq-question w-full text-left p-6 font-bold text-lg flex justify-between items-center text-white hover:bg-gray-800/50 transition-colors">
+                            <span>收費與檔期如何？</span>
+                            <svg class="faq-icon w-5 h-5 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p class="p-6 pt-0 text-gray-400">依劇本、人數與場地而異。基本上費用一律500$，請用下方表單或line告訴我你的場次資訊，我會盡快回覆。</p>
+                        </div>
+                    </div>
+                    <!-- FAQ Item 5 -->
+                    <div class="faq-item card rounded-xl overflow-hidden">
+                        <button class="faq-question w-full text-left p-6 font-bold text-lg flex justify-between items-center text-white hover:bg-gray-800/50 transition-colors">
+                            <span>有企業團建或校園活動方案嗎？</span>
+                            <svg class="faq-icon w-5 h-5 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p class="p-6 pt-0 text-gray-400">有。可依人數/目標（破冰、合作、溝通）客製流程與本單。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 9. Contact & Booking Section -->
+            <section id="contact" class="card p-8 md:p-12 rounded-2xl" data-aos="zoom-in">
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h2 class="text-4xl font-bold mb-4 gradient-text">讓我們一起開場吧</h2>
+                        <p class="text-gray-400 mb-6">告訴我你想要的日期、地點與人數，我會回覆適合的本單與時長建議；若你有想嘗試的主題，也歡迎提出，我會提供無雷引導。</p>
+                        <div class="space-y-3 text-gray-300">
+                            <p><strong>也可來信或加好友：</strong></p>
+                            <p><strong>Email:</strong> starfishlarp@gmail.com</p>
+                            <p><strong>Line:</strong> <a href="https://line.me/ti/p/hd2PUy6C3c" target="_blank" class="text-cyan-400 hover:underline">點此加好友</a></p>
+                        </div>
+                    </div>
+                    <div>
+                        <form id="booking-form" class="space-y-4" action="https://formspree.io/f/YOUR_FORM_ID" method="POST"> <!-- Replace YOUR_FORM_ID with your Formspree ID -->
+                            <!-- Form fields are restyled for dark theme -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-400">姓名</label>
+                                <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-400">聯絡 Email</label>
+                                <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                             <div>
+                                <label for="script-choice" class="block text-sm font-medium text-gray-400">想玩的劇本</label>
+                                <input type="text" id="script-choice" name="想玩的劇本" class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label for="attendees" class="block text-sm font-medium text-gray-400">預計人數</label>
+                                <select id="attendees" name="attendees" required class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500">
+                                    <option>4</option><option>5</option><option selected>6</option><option>7</option><option>8</option><option>9+</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="datetime" class="block text-sm font-medium text-gray-400">希望日期與時間</label>
+                                <input type="datetime-local" id="datetime" name="datetime" required class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500" style="color-scheme: dark;">
+                            </div>
+                            <div>
+                                <label for="location" class="block text-sm font-medium text-gray-400">希望地點</label>
+                                <select id="location" name="location" required class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500">
+                                    <option>台北車站 Y17</option><option>南港車站</option><option>新竹交大</option><option value="custom">指定場地</option>
+                                </select>
+                            </div>
+                            <div id="custom-location-wrapper" class="hidden">
+                                <label for="custom-location" class="block text-sm font-medium text-gray-400">指定場地地址</label>
+                                <input type="text" id="custom-location" name="custom-location" class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <button type="submit" class="w-full bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)]">送出訂位需求</button>
+                        </form>
+                        <div id="form-success-message" class="hidden mt-4 p-4 bg-green-900/50 text-green-300 border-l-4 border-green-500 rounded-r-lg">
+                            <p><strong>收到你的訊息囉！</strong></p>
+                            <p>我會在 24–48 小時內以 Email 回覆（也歡迎直接加 Line）。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 10. Sticky CTA -->
+    <div id="sticky-cta" class="fixed bottom-0 left-0 right-0 bg-black/30 backdrop-blur-lg p-4 z-40 transform translate-y-full transition-transform duration-500 border-t border-gray-800/50">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <p class="text-white hidden md:block">想好你的隊友了嗎？現在就預約一場屬於你的結局。</p>
+            <p class="text-white text-center w-full md:hidden">立即預約你的專屬劇本殺</p>
+            <a href="#contact" class="bg-cyan-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)] flex-shrink-0">立即訂位</a>
+        </div>
+    </div>
+
+    <!-- 11. Footer -->
+    <footer id="footer" class="bg-black/30 text-gray-400 py-12 border-t border-gray-800/50">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-lg text-white mb-4">© 海星。劇本殺主持人｜也許也是你的脫單月老</p>
+            <div class="flex justify-center flex-wrap gap-x-4 gap-y-2 mb-6">
+                <a href="#about" class="hover:text-white">關於我</a>
+                <a href="#philosophy" class="hover:text-white">主持理念</a>
+                <a href="#services" class="hover:text-white">服務與場地</a>
+                <a href="#recommendations" class="hover:text-white">推薦本單</a>
+                <a href="#faq" class="hover:text-white">常見問題</a>
+                <a href="#contact" class="hover:text-white">聯絡與訂位</a>
+            </div>
+            <div class="flex justify-center space-x-6 mb-8">
+                 <a href="https://www.instagram.com/larp_starfish?igsh=MTYxd3UycjNtZ3dyNw==" target="_blank" class="hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+                 <a href="https://line.me/ti/p/hd2PUy6C3c" target="_blank" class="hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16.22,10.32c-1.3,0-2.36,1.06-2.36,2.36s1.06,2.36,2.36,2.36s2.36-1.06,2.36-2.36S17.52,10.32,16.22,10.32z M8.1,10.32 c-1.3,0-2.36,1.06-2.36,2.36s1.06,2.36,2.36,2.36s2.36-1.06,2.36-2.36S9.4,10.32,8.1,10.32z M22.96,8.21 c-0.23-0.81-0.66-1.55-1.25-2.14c-0.6-0.6-1.34-1.02-2.14-1.25C18.44,4.5,18.06,4.5,17.2,4.5H7.12 c-0.86,0-1.24,0-2.37,0.32c-0.81,0.23-1.55,0.66-2.14,1.25c-0.6,0.6-1.02,1.34-1.25,2.14C1,9.34,1,9.72,1,10.58v3.16 c0,0.86,0,1.24,0.32,2.37c0.23,0.81,0.66,1.55,1.25,2.14c0.6,0.6,1.34,1.02,2.14,1.25c1.13,0.32,1.51,0.32,2.37,0.32h10.08 c0.86,0,1.24,0,2.37-0.32c0.81-0.23,1.55-0.66,2.14-1.25c0.6-0.6,1.02-1.34,1.25-2.14C23.32,15,23.32,14.62,23.32,13.76v-3.16 C23.32,9.72,23.32,9.34,22.96,8.21z M21.39,15.2c-0.14,0.5-0.39,0.95-0.79,1.35c-0.4,0.4-0.85,0.66-1.35,0.79 c-1.03,0.29-1.37,0.29-2.17,0.29H7.24c-0.8,0-1.14,0-2.17-0.29c-0.5-0.14-0.95-0.39-1.35-0.79c-0.4-0.4-0.66-0.85-0.79-1.35 C2.64,14.17,2.64,13.83,2.64,13v-2.68c0-0.8,0-1.14,0.29-2.17c0.14-0.5,0.39-0.95,0.79-1.35c0.4-0.4,0.85-0.66,1.35-0.79 C6.1,5.72,6.44,5.72,7.24,5.72h9.84c0.8,0,1.14,0,2.17,0.29c0.5,0.14,0.95,0.39,1.35,0.79c0.4,0.4,0.66,0.85,0.79,1.35 c0.29,1.03,0.29,1.37,0.29,2.17V13C21.68,13.83,21.68,14.17,21.39,15.2z"></path></svg></a>
+            </div>
+            <p class="text-xs text-gray-500">本頁所有劇本名稱為原著所有，活動內容不含任何劇情洩漏。</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize AOS
+            AOS.init({ duration: 800, once: true, offset: 50 });
+
+            // --- Mobile Menu ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+            // --- Active Nav Link Highlighting on Scroll ---
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) link.classList.add('active');
+                        });
+                    }
+                });
+            }, { root: null, rootMargin: '0px', threshold: 0.4 });
+            sections.forEach(section => observer.observe(section));
+
+            // --- About Me Image Slider ---
+            const sliderWrapper = document.querySelector('.slider-wrapper');
+            const slides = document.querySelectorAll('.slider-slide');
+            const prevBtn = document.querySelector('.slider-button.prev');
+            const nextBtn = document.querySelector('.slider-button.next');
+            let currentIndex = 0;
+            function updateSlider() {
+                if(sliderWrapper) sliderWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
+            if(nextBtn) nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateSlider();
+            });
+            if(prevBtn) prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                updateSlider();
+            });
+
+            // --- Testimonial Slider ---
+            const testimonials = [
+                { name: 'Kenny', quote: '第一次玩就愛上。規則講解很清楚，過程完全不尷尬，收尾還被故事戳中眼淚。' },
+                { name: '李立', quote: '節奏拿捏剛剛好，推理與情感都能兼顧；朋友玩完當場敲下一場。' },
+                { name: '怡霓', quote: '海星很會看桌，知道何時推、何時收。原來我的選擇真的能改變結局。' },
+                { name: 'Zoe', quote: '燈光跟音樂都很到位，跟外面店家一樣的體驗，但價格便宜很多！' },
+                { name: '萌卉', quote: '情感本的演繹超強，氣氛烘托得很好，害我哭得像個水龍頭！' },
+                { name: 'Wenwen', quote: '新手大推薦！海星會一步步引導，完全不會有壓力，只會覺得超好玩！' },
+                { name: 'Sinsin', quote: '控場能力一流，就算是歡樂本也不會失控，每個人都有發揮空間。' },
+                { name: 'Mumu', quote: '道具跟場景佈置都很用心，沉浸感直接拉滿，CP值超高！' },
+                { name: 'Wade', quote: '不只是帶本，更像是在跟一個懂故事的朋友一起玩，體驗很舒服。' },
+                { name: 'Na菜', quote: '復盤環節很精彩，能聽到很多我們沒盤到的細節，學到很多。' },
+                { name: '思澔', quote: '海星的演繹真的沒話說，NPC一出場就讓人瞬間入戲！' },
+                { name: '子媛', quote: '很會照顧邊緣玩家，確保每個人都能參與到故事核心，超貼心！' }
+            ];
+            const testimonialSlider = document.getElementById('testimonial-slider');
+            testimonials.forEach((t, index) => {
+                const item = document.createElement('div');
+                item.className = `testimonial-item absolute w-full h-full transition-opacity duration-500 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+                item.innerHTML = `
+                    <div class="card p-8 rounded-2xl text-center h-full flex flex-col justify-center">
+                        <p class="text-lg text-gray-300 italic mb-4">“${t.quote}”</p>
+                        <p class="font-bold text-gray-500">— ${t.name}</p>
+                    </div>`;
+                testimonialSlider.appendChild(item);
+            });
+            
+            const testimonialItems = document.querySelectorAll('.testimonial-item');
+            const prevTestimonialButton = document.getElementById('prev-testimonial');
+            const nextTestimonialButton = document.getElementById('next-testimonial');
+            let currentTestimonial = 0;
+            function showTestimonial(index) {
+                testimonialItems.forEach(item => item.classList.add('opacity-0'));
+                testimonialItems[index].classList.remove('opacity-0');
+            }
+            nextTestimonialButton.addEventListener('click', () => {
+                currentTestimonial = (currentTestimonial + 1) % testimonialItems.length;
+                showTestimonial(currentTestimonial);
+            });
+            prevTestimonialButton.addEventListener('click', () => {
+                currentTestimonial = (currentTestimonial - 1 + testimonialItems.length) % testimonialItems.length;
+                showTestimonial(currentTestimonial);
+            });
+            setInterval(() => nextTestimonialButton.click(), 5000);
+
+            // --- FAQ Accordion ---
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    const answer = button.nextElementSibling;
+                    const icon = button.querySelector('.faq-icon');
+                    const item = button.parentElement;
+                    const isOpening = !item.classList.contains('open');
+
+                    document.querySelectorAll('.faq-item.open').forEach(openItem => {
+                        if (openItem !== item) {
+                            openItem.classList.remove('open');
+                            openItem.querySelector('.faq-answer').style.maxHeight = '0px';
+                            openItem.querySelector('.faq-icon').classList.remove('rotate-180');
+                        }
+                    });
+
+                    if (isOpening) {
+                        item.classList.add('open');
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        icon.classList.add('rotate-180');
+                    } else {
+                        item.classList.remove('open');
+                        answer.style.maxHeight = '0px';
+                        icon.classList.remove('rotate-180');
+                    }
+                });
+            });
+
+            // --- Contact Form Logic ---
+            const locationSelect = document.getElementById('location');
+            const customLocationWrapper = document.getElementById('custom-location-wrapper');
+            const customLocationInput = document.getElementById('custom-location');
+            locationSelect.addEventListener('change', () => {
+                if (locationSelect.value === 'custom') {
+                    customLocationWrapper.classList.remove('hidden');
+                    customLocationInput.required = true;
+                } else {
+                    customLocationWrapper.classList.add('hidden');
+                    customLocationInput.required = false;
+                }
+            });
+            const bookingForm = document.getElementById('booking-form');
+            const successMessage = document.getElementById('form-success-message');
+            bookingForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const data = new FormData(form);
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: data,
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (response.ok) {
+                        bookingForm.classList.add('hidden');
+                        successMessage.classList.remove('hidden');
+                    } else {
+                        // Handle server errors
+                        alert('表單送出失敗，請稍後再試或直接聯絡我。');
+                    }
+                } catch (error) {
+                    // Handle network errors
+                    alert('發生網路錯誤，請檢查您的連線。');
+                }
+            });
+
+            // --- Sticky CTA Visibility ---
+            const stickyCTA = document.getElementById('sticky-cta');
+            const contactSection = document.getElementById('contact');
+            const ctaObserver = new IntersectionObserver(entries => {
+                const isContactVisible = contactSection.getBoundingClientRect().top < window.innerHeight;
+                if (window.scrollY > window.innerHeight / 2 && !isContactVisible) {
+                    stickyCTA.classList.remove('translate-y-full');
+                } else {
+                    stickyCTA.classList.add('translate-y-full');
+                }
+            }, { threshold: 0.1 });
+            ctaObserver.observe(document.body);
+        });
+    </script>
+</body>
+</html>

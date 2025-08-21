@@ -84,6 +84,79 @@
             margin-bottom: 30px;
         }
 
+        /* 導航按鈕區域 */
+        .navigation-section {
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-30px);
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            border-radius: 20px;
+            padding: 20px 25px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            color: #fff;
+            text-align: center;
+            min-width: 160px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(147, 51, 234, 0.4);
+            border-color: rgba(147, 51, 234, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .nav-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+        }
+
+        .nav-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            display: block;
+            font-weight: 300;
+        }
+
         .stats {
             display: flex;
             justify-content: center;
@@ -223,7 +296,6 @@
         .script-card:nth-child(18) { animation-delay: 3.9s; }
         .script-card:nth-child(19) { animation-delay: 4.1s; }
 
-
         .script-card:hover {
             transform: translateY(-15px) scale(1.02);
             box-shadow: 0 25px 50px rgba(147, 51, 234, 0.4);
@@ -344,6 +416,17 @@
                 font-size: 2.5rem;
             }
 
+            .nav-buttons {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+
+            .nav-btn {
+                min-width: 200px;
+                padding: 18px 20px;
+            }
+
             .stats {
                 flex-direction: column;
                 gap: 20px;
@@ -433,6 +516,27 @@
         <div class="header">
             <h1 class="main-title">海星の劇本殺總覽</h1>
             <p class="subtitle">探索精彩故事，體驗不同人生</p>
+            
+            <!-- 導航按鈕區域 -->
+            <div class="navigation-section">
+                <div class="nav-buttons">
+                    <button class="nav-btn" onclick="goToPage('劇本介紹.html')">
+                        <span class="nav-icon">📖</span>
+                        <span class="nav-text">劇本介紹</span>
+                        <span class="nav-desc">新手入門指南</span>
+                    </button>
+                    <button class="nav-btn" onclick="goToPage('榮譽牆.html')">
+                        <span class="nav-icon">🏆</span>
+                        <span class="nav-text">榮譽牆</span>
+                        <span class="nav-desc">記錄遊戲里程</span>
+                    </button>
+                    <button class="nav-btn" onclick="goToPage('主持人資訊.html')">
+                        <span class="nav-icon">👨‍💼</span>
+                        <span class="nav-text">主持人資訊</span>
+                        <span class="nav-desc">認識海星</span>
+                    </button>
+                </div>
+            </div>
             
             <div class="stats">
                 <div class="stat-item">
@@ -641,7 +745,7 @@
                 <img src="https://i.postimg.cc/qqp3BtDL/image.jpg" alt="陰緣" class="script-image">
                 <h3 class="script-title">陰緣</h3>
                 <div class="script-info">
-                    <span class="info-badge">  3男3女</span>
+                    <span class="info-badge">👥 3男3女</span>
                     <span class="info-badge">⏰ 4小時</span>
                     <span class="info-badge">⭐ 2星</span>
                 </div>
@@ -675,8 +779,8 @@
             </div>
 
             <div class="script-card" data-theme="mystery" data-players="7" data-types="日式,硬核推理,精怪,密室,進階,還原" data-difficulty="4">
-                <img src="https://i.postimg.cc/KvyQtdnC/海報.jpg" alt="漓川怪談簿" class="script-image">
-                <h3 class="script-title">漓川怪談簿</h3>
+                <img src="https://i.postimg.cc/KvyQtdnC/海報.jpg" alt="漣川怪談簿" class="script-image">
+                <h3 class="script-title">漣川怪談簿</h3>
                 <div class="script-info">
                     <span class="info-badge">👥 3男4女</span>
                     <span class="info-badge">⏰ 4.5小時</span>
@@ -806,7 +910,6 @@
                 <button class="detail-btn" onclick="goToScript('anjian')">查看詳細介紹</button>
             </div>
 
-            <!-- New Scripts Start -->
             <div class="script-card" data-theme="horror" data-players="6" data-types="日式推理,變格,硬核,進階,微恐怖,繁體" data-difficulty="5">
                 <img src="https://i.postimg.cc/W3dHNnnx/image.jpg" alt="瘋子2" class="script-image">
                 <h3 class="script-title">瘋子2：我將在18歲後分裂成很多人</h3>
@@ -844,7 +947,7 @@
                 <button class="detail-btn" onclick="goToScript('fengqiu')">查看詳細介紹</button>
             </div>
 
-            <div class="script-card" data-theme="modern" data-players="7" data-types="懸疑,病態,還原,歡樂,荒誕,新手,無兇手" data-difficulty="5">
+            <div class="script-card" data-theme="modern" data-players="7" data-types="懸疑,病態,還原,歡樂,荒誕,新手,無兇手" data-difficulty="0">
                 <img src="https://i.postimg.cc/gjX9pHjJ/image.jpg" alt="純白少年的慢性死亡" class="script-image">
                 <h3 class="script-title">純白少年的慢性死亡</h3>
                 <div class="script-info">
@@ -862,7 +965,6 @@
                 </div>
                 <button class="detail-btn" onclick="goToScript('chunbai')">查看詳細介紹</button>
             </div>
-            <!-- New Scripts End -->
 
         </div>
 
@@ -957,13 +1059,13 @@
         },
         {
             id: 'lichuan',
-            name: '漓川怪談簿',
+            name: '漣川怪談簿',
             players: 7,
             types: ['日式', '硬核推理', '精怪', '密室', '進階', '還原'],
             difficulty: 4,
             theme: 'mystery',
             time: 4.5,
-            file: '漓川怪談簿.html'
+            file: '漣川怪談簿.html'
         },
         {
             id: 'nairao',
@@ -1134,6 +1236,11 @@
         filterScripts();
     }
 
+    // 前往指定頁面的函式
+    function goToPage(filename) {
+        window.location.href = filename;
+    }
+
     // 前往劇本詳細頁面的函式
     function goToScript(scriptId) {
         const script = scripts.find(s => s.id === scriptId);
@@ -1147,4 +1254,3 @@
     </script>
 </body>
 </html>
- 
