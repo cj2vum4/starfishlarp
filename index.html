@@ -411,39 +411,253 @@
             }
         }
 
-        @media (max-width: 768px) {
+        /* 平板響應式設計 */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 15px;
+            }
+            
             .main-title {
-                font-size: 2.5rem;
+                font-size: 3.2rem;
+            }
+            
+            .nav-buttons {
+                gap: 20px;
+            }
+            
+            .nav-btn {
+                min-width: 140px;
+                padding: 16px 20px;
+            }
+            
+            .scripts-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+            }
+        }
+
+        /* 手機響應式設計 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            .main-title {
+                font-size: 2.2rem;
+                letter-spacing: 1px;
+                margin-bottom: 10px;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 25px;
+            }
+
+            /* 導航按鈕優化 */
+            .navigation-section {
+                margin-bottom: 30px;
             }
 
             .nav-buttons {
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
                 align-items: center;
+                padding: 0 10px;
             }
 
             .nav-btn {
-                min-width: 200px;
-                padding: 18px 20px;
+                width: 100%;
+                max-width: 280px;
+                min-width: unset;
+                padding: 16px 20px;
+                border-radius: 15px;
             }
 
+            .nav-icon {
+                font-size: 1.8rem;
+                margin-bottom: 6px;
+            }
+
+            .nav-text {
+                font-size: 1rem;
+                margin-bottom: 3px;
+            }
+
+            .nav-desc {
+                font-size: 0.8rem;
+            }
+
+            /* 統計區域優化 */
             .stats {
-                flex-direction: column;
-                gap: 20px;
+                flex-direction: row;
+                justify-content: space-around;
+                gap: 10px;
+                margin-bottom: 25px;
+                flex-wrap: wrap;
+            }
+
+            .stat-item {
+                flex: 1;
+                min-width: 80px;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .stat-label {
+                font-size: 0.85rem;
+            }
+
+            /* 篩選區域優化 */
+            .filter-section {
+                padding: 20px 15px;
+                margin-bottom: 30px;
+                border-radius: 15px;
+            }
+
+            .filter-title {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
             }
 
             .filter-controls {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 15px;
             }
 
+            .filter-group {
+                gap: 8px;
+            }
+
+            .filter-label {
+                font-size: 0.85rem;
+            }
+
+            .filter-select {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+                border-radius: 8px;
+                min-width: unset;
+                width: 100%;
+            }
+
+            .reset-btn {
+                padding: 12px 25px;
+                font-size: 0.9rem;
+                margin-top: 15px;
+            }
+
+            /* 劇本網格優化 */
             .scripts-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 15px;
+                margin-bottom: 30px;
             }
 
             .script-card {
-                padding: 20px;
+                padding: 15px;
+                border-radius: 15px;
+            }
+
+            .script-image {
+                height: 180px;
+                margin-bottom: 15px;
+                border-radius: 12px;
+            }
+
+            .script-title {
+                font-size: 1.25rem;
+                margin-bottom: 12px;
+            }
+
+            .script-info {
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+
+            .info-badge {
+                padding: 4px 10px;
+                font-size: 0.8rem;
+                border-radius: 12px;
+            }
+
+            .script-types {
+                gap: 6px;
+                margin-bottom: 15px;
+            }
+
+            .type-tag {
+                padding: 3px 8px;
+                font-size: 0.75rem;
+                border-radius: 10px;
+            }
+
+            .detail-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+                border-radius: 12px;
+            }
+
+            .no-results {
+                font-size: 1rem;
+                margin: 30px 0;
+            }
+        }
+
+        /* 小螢幕手機優化 */
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.8rem;
+                letter-spacing: 0.5px;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .nav-btn {
+                max-width: 260px;
+                padding: 14px 18px;
+            }
+
+            .nav-icon {
+                font-size: 1.6rem;
+            }
+
+            .nav-text {
+                font-size: 0.95rem;
+            }
+
+            .nav-desc {
+                font-size: 0.75rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+            }
+
+            .script-card {
+                padding: 12px;
+            }
+
+            .script-image {
+                height: 160px;
+            }
+
+            .script-title {
+                font-size: 1.15rem;
             }
         }
 
