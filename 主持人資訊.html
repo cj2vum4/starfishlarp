@@ -169,6 +169,7 @@
                 <a href="#experience" class="nav-link text-gray-400 hover:text-white transition-colors">主持經驗</a>
                 <a href="#testimonials" class="nav-link text-gray-400 hover:text-white transition-colors">玩家回饋</a>
                 <a href="#faq" class="nav-link text-gray-400 hover:text-white transition-colors">常見問題</a>
+                <a href="#schedule" class="nav-link text-gray-400 hover:text-white transition-colors">我的檔期</a>
                 <a href="#contact" class="nav-link text-gray-400 hover:text-white transition-colors">聯絡與訂位</a>
             </nav>
             <a href="#contact" class="hidden md:inline-block bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)]">立即訂位</a>
@@ -187,6 +188,7 @@
             <a href="#experience" class="block py-2 text-gray-300 hover:text-cyan-400">主持經驗</a>
             <a href="#testimonials" class="block py-2 text-gray-300 hover:text-cyan-400">玩家回饋</a>
             <a href="#faq" class="block py-2 text-gray-300 hover:text-cyan-400">常見問題</a>
+            <a href="#schedule" class="block py-2 text-gray-300 hover:text-cyan-400">我的檔期</a>
             <a href="#contact" class="block py-2 text-gray-300 hover:text-cyan-400">聯絡與訂位</a>
             <a href="#contact" class="mt-4 w-full text-center bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)]">立即訂位</a>
         </div>
@@ -447,7 +449,20 @@
                 </div>
             </section>
 
-            <!-- 9. Contact & Booking Section -->
+            <!-- 9. Schedule Section -->
+            <section id="schedule">
+                <h2 class="text-4xl font-bold mb-16 text-center gradient-text" data-aos="fade-up">我的檔期</h2>
+                <div class="max-w-4xl mx-auto" data-aos="fade-up">
+                    <div class="card rounded-2xl overflow-hidden p-2 md:p-4">
+                        <!-- Responsive iframe container -->
+                        <div class="relative w-full" style="padding-bottom: 75%;"> <!-- 4:3 Aspect Ratio -->
+                            <iframe src="https://calendar.google.com/calendar/embed?src=cj2vum4%40gmail.com&ctz=Asia%2FTaipei" class="absolute top-0 left-0 w-full h-full" style="border: 0;" frameborder="0" scrolling="no"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10. Contact & Booking Section -->
             <section id="contact" class="card p-8 md:p-12 rounded-2xl" data-aos="zoom-in">
                 <div class="grid md:grid-cols-2 gap-12">
                     <div>
@@ -463,10 +478,10 @@
                         <!-- 
                             IMPORTANT: To make this form work, you need to:
                             1. Go to https://formspree.io/ and create a new form.
-                            2. Get your form's endpoint URL (e.g., https://formspree.io/f/xgvzjqqb).
+                            2. Get your form's endpoint URL (e.g., https://formspree.io/f/xxxxxxxx).
                             3. Replace the placeholder "YOUR_FORM_ID" below with your actual form ID.
                         -->
-                        <form id="booking-form" class="space-y-4" action="https://formspree.io/f/xgvzjqqb" method="POST">
+                        <form id="booking-form" class="space-y-4" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
                             <!-- Form fields are restyled for dark theme -->
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-400">姓名</label>
@@ -512,16 +527,16 @@
         </div>
     </main>
 
-    <!-- 10. Sticky CTA -->
+    <!-- 11. Sticky CTA -->
     <div id="sticky-cta" class="fixed bottom-0 left-0 right-0 bg-black/30 backdrop-blur-lg p-4 z-40 transform translate-y-full transition-transform duration-500 border-t border-gray-800/50">
         <div class="container mx-auto px-6 flex justify-between items-center">
-            <p class="text-white hidden md:block">準備好體驗看看劇本殺了嗎？一起來開啟屬於你的劇本殺體驗。</p>
+            <p class="text-white hidden md:block">想好你的隊友了嗎？現在就預約一場屬於你的结局。</p>
             <p class="text-white text-center w-full md:hidden">立即預約你的專屬劇本殺</p>
             <a href="#contact" class="bg-cyan-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)] flex-shrink-0">立即訂位</a>
         </div>
     </div>
 
-    <!-- 11. Footer -->
+    <!-- 12. Footer -->
     <footer id="footer" class="bg-black/30 text-gray-400 py-12 border-t border-gray-800/50">
         <div class="container mx-auto px-6 text-center">
             <p class="font-bold text-lg text-white mb-4">© 海星。劇本殺主持人｜也許也是你的脫單月老</p>
@@ -531,6 +546,7 @@
                 <a href="#services" class="hover:text-white">服務與場地</a>
                 <a href="#recommendations" class="hover:text-white">推薦本單</a>
                 <a href="#faq" class="hover:text-white">常見問題</a>
+                <a href="#schedule" class="hover:text-white">我的檔期</a>
                 <a href="#contact" class="hover:text-white">聯絡與訂位</a>
             </div>
             <div class="flex justify-center space-x-6 mb-8">
