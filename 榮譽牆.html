@@ -71,6 +71,56 @@
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 165, 0, 0.4);
         }
         
+        /* --- 新增介紹區塊 --- */
+        .intro-container {
+            background-color: #2b2b2b;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin: 0 auto 2rem auto;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .intro-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .intro-title {
+            font-size: 1.5rem;
+            color: #eee;
+            margin: 0 0 15px 0;
+        }
+        
+        .intro-container .toggle-arrow {
+            color: #eee;
+        }
+        
+        .intro-body {
+            max-height: 300px;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.4s ease-in-out;
+            opacity: 1;
+            margin-top: 0;
+        }
+        
+        .intro-container.collapsed .intro-body {
+            max-height: 0;
+            opacity: 0;
+            margin-top: -15px; /* 收合時移除間距 */
+        }
+        
+        .intro-list {
+            list-style-position: inside;
+            padding-left: 0;
+            line-height: 1.8;
+            color: #ccc;
+            margin: 0;
+        }
+        
         /* --- 玩家選擇區 --- */
         .player-selector-container {
             display: flex;
@@ -135,7 +185,8 @@
             transition: transform 0.4s ease;
         }
         
-        .leaderboard-container.collapsed .toggle-arrow {
+        .leaderboard-container.collapsed .toggle-arrow,
+        .intro-container.collapsed .toggle-arrow {
             transform: rotate(180deg);
         }
         
@@ -437,6 +488,23 @@
         </div>
 
         <h1 class="main-title">劇本殺榮譽牆</h1>
+        
+        <!-- 新增的使用導覽區塊 -->
+        <div class="intro-container collapsed">
+            <div class="intro-header">
+                <h2 class="intro-title">🧭 使用導覽 🧭</h2>
+                <span class="toggle-arrow">▼</span>
+            </div>
+            <div class="intro-body">
+                <ol class="intro-list">
+                    <li>玩家填寫"新增玩本記錄"</li>
+                    <li>根據登記姓名找到自己的玩本記錄</li>
+                    <li>點選劇本可以看到歷史玩家評論</li>
+                    <li>泡泡可以提前戳破</li>
+                    <li>有建議可以跟海星說，畢竟是我第一次寫網站</li>
+                </ol>
+            </div>
+        </div>
 
         <div class="player-selector-container">
             <label for="playerSelector">選擇玩家:</label>
@@ -497,15 +565,15 @@
             ];
             
             const bubbleColors = [
-                { bg: 'rgba(173, 216, 230, 0.25)', border: 'rgba(173, 216, 230, 0.5)' }, // 淺藍
-                { bg: 'rgba(144, 238, 144, 0.25)', border: 'rgba(144, 238, 144, 0.5)' }, // 淺綠
-                { bg: 'rgba(255, 182, 193, 0.25)', border: 'rgba(255, 182, 193, 0.5)' }, // 淺粉
-                { bg: 'rgba(255, 255, 224, 0.25)', border: 'rgba(255, 255, 224, 0.5)' }, // 淺黃
-                { bg: 'rgba(221, 160, 221, 0.25)', border: 'rgba(221, 160, 221, 0.5)' }, // 紫紅
-                { bg: 'rgba(240, 230, 140, 0.25)', border: 'rgba(240, 230, 140, 0.5)' }, // 卡其
-                { bg: 'rgba(175, 238, 238, 0.25)', border: 'rgba(175, 238, 238, 0.5)' }, // 淡青
-                { bg: 'rgba(255, 228, 196, 0.25)', border: 'rgba(255, 228, 196, 0.5)' }, // 杏仁
-                { bg: 'rgba(230, 230, 250, 0.25)', border: 'rgba(230, 230, 250, 0.5)' }  // 薰衣草
+                { bg: 'rgba(173, 216, 230, 0.5)', border: 'rgba(173, 216, 230, 0.7)' }, // 淺藍
+                { bg: 'rgba(144, 238, 144, 0.5)', border: 'rgba(144, 238, 144, 0.7)' }, // 淺綠
+                { bg: 'rgba(255, 182, 193, 0.5)', border: 'rgba(255, 182, 193, 0.7)' }, // 淺粉
+                { bg: 'rgba(255, 255, 224, 0.5)', border: 'rgba(255, 255, 224, 0.7)' }, // 淺黃
+                { bg: 'rgba(221, 160, 221, 0.5)', border: 'rgba(221, 160, 221, 0.7)' }, // 紫紅
+                { bg: 'rgba(240, 230, 140, 0.5)', border: 'rgba(240, 230, 140, 0.7)' }, // 卡其
+                { bg: 'rgba(175, 238, 238, 0.5)', border: 'rgba(175, 238, 238, 0.7)' }, // 淡青
+                { bg: 'rgba(255, 228, 196, 0.5)', border: 'rgba(255, 228, 196, 0.7)' }, // 杏仁
+                { bg: 'rgba(230, 230, 250, 0.5)', border: 'rgba(230, 230, 250, 0.7)' }  // 薰衣草
             ];
 
             const PROXY_URL = 'https://corsproxy.io/?';
@@ -521,6 +589,8 @@
             const leaderboardContainer = document.querySelector('.leaderboard-container');
             const leaderboardHeader = document.querySelector('.leaderboard-header');
             const leaderboardSearch = document.getElementById('leaderboardSearch');
+            const introContainer = document.querySelector('.intro-container');
+            const introHeader = document.querySelector('.intro-header');
             const commentBubbleContainer = document.getElementById('commentBubbleContainer');
             
             // --- 音效設定 ---
@@ -748,9 +818,10 @@
                     bubble.style.height = `${size}px`;
                     bubble.style.left = `${Math.random() * (window.innerWidth - size)}px`;
                     
-                    const duration = Math.random() * 5 + 7.5; // 7.5s to 12.5s
+                    // *** 修正 ***: 移除延遲並加大速度落差
+                    const duration = Math.random() * 8 + 4; // 速度區間改為 4s 到 12s
                     bubble.style.animationDuration = `${duration}s`;
-                    bubble.style.animationDelay = `${Math.random() * 5}s`;
+                    // bubble.style.animationDelay = `${Math.random() * 5}s`; // 移除延遲
 
                     bubble.addEventListener('click', (e) => {
                         startAudio();
@@ -821,8 +892,14 @@
                 startAudio();
                 leaderboardContainer.classList.toggle('collapsed');
             });
+            
+            // G. 監聽使用導覽標題的點擊事件
+            introHeader.addEventListener('click', () => {
+                startAudio();
+                introContainer.classList.toggle('collapsed');
+            });
 
-            // G. 為所有卡片圖片加上點擊事件以顯示評論
+            // H. 為所有卡片圖片加上點擊事件以顯示評論
             document.querySelectorAll('.image-container').forEach(container => {
                 container.addEventListener('click', () => {
                     startAudio();
@@ -837,7 +914,7 @@
                 });
             });
             
-            // H. 監聽排行榜搜尋框的輸入
+            // I. 監聽排行榜搜尋框的輸入
             leaderboardSearch.addEventListener('input', (event) => {
                 const searchTerm = event.target.value.toLowerCase();
                 const players = leaderboardList.querySelectorAll('li');
@@ -851,7 +928,7 @@
                 });
             });
             
-            // I. 監聽玩家搜尋框的輸入
+            // J. 監聽玩家搜尋框的輸入
             playerSearch.addEventListener('input', (event) => {
                 const searchTerm = event.target.value.toLowerCase();
                 const options = playerSelector.querySelectorAll('option');
