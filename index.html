@@ -157,28 +157,26 @@
             font-weight: 300;
         }
 
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-bottom: 30px;
-        }
-
-        .stat-item {
+        /* 篩選結果顯示 */
+        .filter-result {
             text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(147, 51, 234, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+
+        .result-text {
             color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
+        #filteredCount {
             color: #a855f7;
-            text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            opacity: 0.8;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
         }
 
         /* 篩選區域 */
@@ -488,26 +486,14 @@
                 font-size: 0.8rem;
             }
 
-            /* 統計區域優化 */
-            .stats {
-                flex-direction: row;
-                justify-content: space-around;
-                gap: 10px;
-                margin-bottom: 25px;
-                flex-wrap: wrap;
+            /* 篩選結果顯示優化 */
+            .filter-result {
+                margin-bottom: 15px;
+                padding: 8px;
             }
 
-            .stat-item {
-                flex: 1;
-                min-width: 80px;
-            }
-
-            .stat-number {
-                font-size: 1.8rem;
-            }
-
-            .stat-label {
-                font-size: 0.85rem;
+            .result-text {
+                font-size: 1rem;
             }
 
             /* 篩選區域優化 */
@@ -635,18 +621,7 @@
                 font-size: 0.75rem;
             }
 
-            .stats {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .stat-number {
-                font-size: 1.6rem;
-            }
-
-            .stat-label {
-                font-size: 0.8rem;
-            }
+            /* 篩選結果顯示優化 */
 
             .script-card {
                 padding: 12px;
@@ -751,25 +726,13 @@
                     </button>
                 </div>
             </div>
-            
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-number" id="totalScripts">19</div>
-                    <div class="stat-label">精選劇本</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="totalTypes">38</div>
-                    <div class="stat-label">劇本類型</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="avgTime">4.5</div>
-                    <div class="stat-label">平均時長(小時)</div>
-                </div>
             </div>
-        </div>
 
         <div class="filter-section">
             <h2 class="filter-title">🔍 劇本篩選</h2>
+            <div class="filter-result">
+                <span class="result-text">找到 <span id="filteredCount">19</span> 個符合條件的劇本</span>
+            </div>
             <div class="filter-controls">
                 <div class="filter-group">
                     <label class="filter-label">👥 遊戲人數</label>
@@ -789,43 +752,13 @@
                         <option value="推理">推理</option>
                         <option value="情感">情感</option>
                         <option value="機制">機制</option>
+                        <option value="新手">新手</option>
+                        <option value="繁體">繁體</option>
+                        <option value="陣營">陣營</option>
                         <option value="沉浸">沉浸</option>
                         <option value="微恐">微恐</option>
-                        <option value="還原">還原</option>
-                        <option value="新手">新手</option>
                         <option value="無兇手">無兇手</option>
-                        <option value="陣營">陣營</option>
-                        <option value="太空">太空</option>
-                        <option value="民國">民國</option>
-                        <option value="日式">日式</option>
-                        <option value="現代">現代</option>
                         <option value="立意">立意</option>
-                        <option value="古風">古風</option>
-                        <option value="恐怖">恐怖</option>
-                        <option value="驚悚">驚悚</option>
-                        <option value="身份轉換">身份轉換</option>
-                        <option value="神話">神話</option>
-                        <option value="雙主持">雙主持</option>
-                        <option value="硬核推理">硬核推理</option>
-                        <option value="精怪">精怪</option>
-                        <option value="密室">密室</option>
-                        <option value="進階">進階</option>
-                        <option value="童話">童話</option>
-                        <option value="輕鬆">輕鬆</option>
-                        <option value="愛情">愛情</option>
-                        <option value="校園">校園</option>
-                        <option value="遺憾">遺憾</option>
-                        <option value="軍閥">軍閥</option>
-                        <option value="家國">家國</option>
-                        <option value="謀戰">謀戰</option>
-                        <option value="懷舊">懷舊</option>
-                        <option value="團建">團建</option>
-                        <option value="變格">變格</option>
-                        <option value="燒腦">燒腦</option>
-                        <option value="科技">科技</option>
-                        <option value="演繹">演繹</option>
-                        <option value="病態">病態</option>
-                        <option value="繁體">繁體</option>
                     </select>
                 </div>
                 
@@ -1376,28 +1309,154 @@
     // DOM載入後執行的初始化函式
     document.addEventListener('DOMContentLoaded', () => {
         // 綁定篩選事件監聽
-        document.getElementById('playerFilter').addEventListener('change', filterScripts);
-        document.getElementById('typeFilter').addEventListener('change', filterScripts);
-        document.getElementById('difficultyFilter').addEventListener('change', filterScripts);
+        document.getElementById('playerFilter').addEventListener('change', () => {
+            updateAvailableOptions();
+            filterScripts();
+        });
+        document.getElementById('typeFilter').addEventListener('change', () => {
+            updateAvailableOptions();
+            filterScripts();
+        });
+        document.getElementById('difficultyFilter').addEventListener('change', () => {
+            updateAvailableOptions();
+            filterScripts();
+        });
         
-        // 動態更新統計數據
-        updateStats();
+        // 初始化可用選項和篩選
+        updateAvailableOptions();
+        filterScripts();
     });
     
-    // 動態計算並更新統計數據的函式
-    function updateStats() {
-        // 總劇本數
-        const totalScripts = scripts.length;
-        document.getElementById('totalScripts').textContent = totalScripts;
-
-        // 總類型數 (不重複)
-        const allTypes = new Set(scripts.flatMap(script => script.types));
-        document.getElementById('totalTypes').textContent = allTypes.size;
-
-        // 平均時長
-        const totalTime = scripts.reduce((sum, script) => sum + script.time, 0);
-        const avgTime = (totalTime / totalScripts).toFixed(1);
-        document.getElementById('avgTime').textContent = avgTime;
+    // 更新可用選項的函式
+    function updateAvailableOptions() {
+        const playerFilter = document.getElementById('playerFilter').value;
+        const typeFilter = document.getElementById('typeFilter').value;
+        const difficultyFilter = document.getElementById('difficultyFilter').value;
+        
+        // 根據當前篩選條件找出符合的劇本
+        let filteredScripts = scripts.filter(script => {
+            let match = true;
+            if (playerFilter && script.players != playerFilter) match = false;
+            if (typeFilter && !script.types.includes(typeFilter)) match = false;
+            if (difficultyFilter && script.difficulty != difficultyFilter) match = false;
+            return match;
+        });
+        
+        // 更新人數選項
+        updatePlayerOptions(filteredScripts, typeFilter, difficultyFilter);
+        
+        // 更新類型選項
+        updateTypeOptions(filteredScripts, playerFilter, difficultyFilter);
+        
+        // 更新難度選項
+        updateDifficultyOptions(filteredScripts, playerFilter, typeFilter);
+    }
+    
+    // 更新人數選項
+    function updatePlayerOptions(baseScripts, typeFilter, difficultyFilter) {
+        const playerSelect = document.getElementById('playerFilter');
+        const currentValue = playerSelect.value;
+        
+        // 找出在其他條件下可用的人數
+        let availablePlayers = new Set();
+        scripts.forEach(script => {
+            let match = true;
+            if (typeFilter && !script.types.includes(typeFilter)) match = false;
+            if (difficultyFilter && script.difficulty != difficultyFilter) match = false;
+            if (match) {
+                availablePlayers.add(script.players);
+            }
+        });
+        
+        // 更新選項
+        const options = playerSelect.querySelectorAll('option');
+        options.forEach(option => {
+            if (option.value === '') return; // 保留"全部人數"選項
+            const playerCount = parseInt(option.value);
+            if (availablePlayers.has(playerCount)) {
+                option.style.display = 'block';
+                option.disabled = false;
+            } else {
+                option.style.display = 'none';
+                option.disabled = true;
+            }
+        });
+        
+        // 如果當前選擇的選項不可用，清空選擇
+        if (currentValue && !availablePlayers.has(parseInt(currentValue))) {
+            playerSelect.value = '';
+        }
+    }
+    
+    // 更新類型選項
+    function updateTypeOptions(baseScripts, playerFilter, difficultyFilter) {
+        const typeSelect = document.getElementById('typeFilter');
+        const currentValue = typeSelect.value;
+        
+        // 找出在其他條件下可用的類型
+        let availableTypes = new Set();
+        scripts.forEach(script => {
+            let match = true;
+            if (playerFilter && script.players != playerFilter) match = false;
+            if (difficultyFilter && script.difficulty != difficultyFilter) match = false;
+            if (match) {
+                script.types.forEach(type => availableTypes.add(type));
+            }
+        });
+        
+        // 更新選項
+        const options = typeSelect.querySelectorAll('option');
+        options.forEach(option => {
+            if (option.value === '') return; // 保留"全部類型"選項
+            if (availableTypes.has(option.value)) {
+                option.style.display = 'block';
+                option.disabled = false;
+            } else {
+                option.style.display = 'none';
+                option.disabled = true;
+            }
+        });
+        
+        // 如果當前選擇的選項不可用，清空選擇
+        if (currentValue && !availableTypes.has(currentValue)) {
+            typeSelect.value = '';
+        }
+    }
+    
+    // 更新難度選項
+    function updateDifficultyOptions(baseScripts, playerFilter, typeFilter) {
+        const difficultySelect = document.getElementById('difficultyFilter');
+        const currentValue = difficultySelect.value;
+        
+        // 找出在其他條件下可用的難度
+        let availableDifficulties = new Set();
+        scripts.forEach(script => {
+            let match = true;
+            if (playerFilter && script.players != playerFilter) match = false;
+            if (typeFilter && !script.types.includes(typeFilter)) match = false;
+            if (match) {
+                availableDifficulties.add(script.difficulty);
+            }
+        });
+        
+        // 更新選項
+        const options = difficultySelect.querySelectorAll('option');
+        options.forEach(option => {
+            if (option.value === '') return; // 保留"全部難度"選項
+            const difficulty = parseInt(option.value);
+            if (availableDifficulties.has(difficulty)) {
+                option.style.display = 'block';
+                option.disabled = false;
+            } else {
+                option.style.display = 'none';
+                option.disabled = true;
+            }
+        });
+        
+        // 如果當前選擇的選項不可用，清空選擇
+        if (currentValue && !availableDifficulties.has(parseInt(currentValue))) {
+            difficultySelect.value = '';
+        }
     }
 
     // 篩選功能
@@ -1408,6 +1467,7 @@
         
         const scriptCards = document.querySelectorAll('.script-card');
         const noResultsEl = document.getElementById('noResults');
+        const filteredCountEl = document.getElementById('filteredCount');
         let visibleCount = 0;
 
         scriptCards.forEach(card => {
@@ -1434,6 +1494,9 @@
             }
         });
 
+        // 更新篩選結果數量
+        filteredCountEl.textContent = visibleCount;
+
         // 根據 visibleCount 決定是否顯示 "查無結果"
         if (visibleCount === 0) {
             noResultsEl.classList.remove('hidden');
@@ -1447,6 +1510,7 @@
         document.getElementById('playerFilter').value = '';
         document.getElementById('typeFilter').value = '';
         document.getElementById('difficultyFilter').value = '';
+        updateAvailableOptions();
         filterScripts();
     }
 
