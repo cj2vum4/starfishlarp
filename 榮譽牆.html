@@ -71,17 +71,20 @@
         
         /* --- 玩家選擇區 --- */
         .player-selector-container {
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 2.5rem;
+            flex-wrap: wrap; /* 在小螢幕上換行 */
         }
 
         .player-selector-container label {
             font-size: 1.2rem;
-            margin-right: 10px;
             color: #ccc;
         }
 
-        #playerSelector {
+        #playerSelector, #playerSearch {
             padding: 10px 15px;
             font-size: 1rem;
             border-radius: 8px;
@@ -89,8 +92,131 @@
             background-color: #333;
             color: #fff;
             min-width: 200px;
-            cursor: pointer;
         }
+        
+        #playerSelector {
+             cursor: pointer;
+        }
+        
+        /* --- 全新排行榜樣式 --- */
+        .leaderboard-container {
+            background-color: #2b2b2b;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin: 0 auto 2.5rem auto;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .leaderboard-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none; /* 防止選取文字 */
+        }
+
+        .leaderboard-title {
+            text-align: center;
+            margin: 0 0 15px 0;
+            font-size: 1.5rem;
+            color: #ffd700;
+        }
+
+        .toggle-arrow {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-left: 10px;
+            margin-bottom: 12px;
+            transition: transform 0.4s ease;
+        }
+        
+        .leaderboard-container.collapsed .toggle-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .leaderboard-body {
+            max-height: 300px; /* 預設展開高度 */
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 1;
+        }
+        
+        .leaderboard-container.collapsed .leaderboard-body {
+            max-height: 0;
+            opacity: 0;
+        }
+        
+        .leaderboard-search {
+            margin-bottom: 10px;
+        }
+
+        #leaderboardSearch {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        
+        #leaderboardList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 265px; /* 約 5 個項目的高度 */
+            overflow-y: auto; /* 啟用垂直捲動 */
+            padding-right: 5px; /* 預留捲軸空間 */
+        }
+        
+        /* 自訂捲軸樣式 */
+        #leaderboardList::-webkit-scrollbar {
+            width: 8px;
+        }
+        #leaderboardList::-webkit-scrollbar-track {
+            background: #2b2b2b;
+            border-radius: 4px;
+        }
+        #leaderboardList::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+        #leaderboardList::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        #leaderboardList li {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #444;
+            font-size: 1.1rem;
+        }
+        
+        #leaderboardList li:last-child {
+            border-bottom: none;
+        }
+        
+        .rank {
+            font-weight: bold;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .player-name {
+            flex-grow: 1;
+            padding: 0 15px;
+        }
+        
+        .play-count {
+            font-weight: bold;
+        }
+        
+        /* 前三名特殊樣式 */
+        .rank-1 .rank, .rank-1 .player-name { color: #FFD700; } /* 金色 */
+        .rank-2 .rank, .rank-2 .player-name { color: #C0C0C0; } /* 銀色 */
+        .rank-3 .rank, .rank-3 .player-name { color: #CD7F32; } /* 銅色 */
 
         /* --- 榮譽牆網格排版 --- */
         .honor-wall {
@@ -121,6 +247,7 @@
             width: 100%;
             padding-top: 141.4%; 
             background-color: #333;
+            cursor: pointer; /* 新增游標 */
         }
 
         .script-card img {
@@ -233,6 +360,44 @@
             opacity: 0.9;
             transform: translate(-50%, -50%) scale(1); /* 恢復正常大小 */
         }
+        
+        /* --- 全新評論泡泡樣式 --- */
+        .comment-bubble-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 讓滑鼠可以穿透容器 */
+            z-index: 1000;
+        }
+        
+        .comment-bubble {
+            position: absolute;
+            bottom: -200px; /* 從螢幕外開始 */
+            color: #fff;
+            border-radius: 50%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: floatUp linear forwards;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            pointer-events: auto; /* 讓泡泡可以被點擊 */
+        }
+
+        .comment-bubble.popped {
+            transform: scale(1.2);
+            opacity: 0;
+        }
+        
+        @keyframes floatUp {
+            to {
+                transform: translateY(-120vh);
+            }
+        }
 
     </style>
 </head>
@@ -240,7 +405,6 @@
 
     <div class="container">
         
-        <!-- 新增的按鈕區塊 -->
         <div class="header-actions">
             <a href="index.html" class="header-btn back-btn">回到首頁</a>
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSd3U-nLaHB5xKx3jrB4SHYiuLqqoFWEVAkKYWCNRb_aA3UXDg/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="header-btn add-record-btn">新增玩本記錄</a>
@@ -253,12 +417,31 @@
             <select id="playerSelector">
                 <option value="">-- 讀取資料中 --</option>
             </select>
+            <input type="text" id="playerSearch" placeholder="搜尋玩家...">
+        </div>
+        
+        <div class="leaderboard-container collapsed">
+            <div class="leaderboard-header">
+                <h2 class="leaderboard-title">🏆 榮譽排行榜 🏆</h2>
+                <span class="toggle-arrow">▼</span>
+            </div>
+            <div class="leaderboard-body">
+                <div class="leaderboard-search">
+                    <input type="text" id="leaderboardSearch" placeholder="搜尋玩家...">
+                </div>
+                <ol id="leaderboardList">
+                    <!-- 排行榜項目將由 JavaScript 動態生成 -->
+                </ol>
+            </div>
         </div>
 
         <div class="honor-wall" id="honorWall">
             <!-- 劇本卡片將由 JavaScript 動態生成 -->
         </div>
     </div>
+    
+    <!-- 新增的評論泡泡區塊 -->
+    <div id="commentBubbleContainer" class="comment-bubble-container"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -287,6 +470,18 @@
                 { id: '陰緣', title: '陰緣', imgSrc: 'https://i.postimg.cc/qqp3BtDL/封面.jpg' }
             ];
             
+            const bubbleColors = [
+                { bg: 'rgba(173, 216, 230, 0.25)', border: 'rgba(173, 216, 230, 0.5)' }, // 淺藍
+                { bg: 'rgba(144, 238, 144, 0.25)', border: 'rgba(144, 238, 144, 0.5)' }, // 淺綠
+                { bg: 'rgba(255, 182, 193, 0.25)', border: 'rgba(255, 182, 193, 0.5)' }, // 淺粉
+                { bg: 'rgba(255, 255, 224, 0.25)', border: 'rgba(255, 255, 224, 0.5)' }, // 淺黃
+                { bg: 'rgba(221, 160, 221, 0.25)', border: 'rgba(221, 160, 221, 0.5)' }, // 紫紅
+                { bg: 'rgba(240, 230, 140, 0.25)', border: 'rgba(240, 230, 140, 0.5)' }, // 卡其
+                { bg: 'rgba(175, 238, 238, 0.25)', border: 'rgba(175, 238, 238, 0.5)' }, // 淡青
+                { bg: 'rgba(255, 228, 196, 0.25)', border: 'rgba(255, 228, 196, 0.5)' }, // 杏仁
+                { bg: 'rgba(230, 230, 250, 0.25)', border: 'rgba(230, 230, 250, 0.5)' }  // 薰衣草
+            ];
+
             const PROXY_URL = 'https://corsproxy.io/?';
             const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
             const CSV_URL = PROXY_URL + encodeURIComponent(GOOGLE_SHEET_URL);
@@ -295,6 +490,12 @@
             // --- DOM 元素 ---
             const honorWall = document.getElementById('honorWall');
             const playerSelector = document.getElementById('playerSelector');
+            const playerSearch = document.getElementById('playerSearch');
+            const leaderboardList = document.getElementById('leaderboardList');
+            const leaderboardContainer = document.querySelector('.leaderboard-container');
+            const leaderboardHeader = document.querySelector('.leaderboard-header');
+            const leaderboardSearch = document.getElementById('leaderboardSearch');
+            const commentBubbleContainer = document.getElementById('commentBubbleContainer');
 
             // --- 函式區 ---
 
@@ -320,13 +521,14 @@
                         if (!row) return;
                         
                         const parts = row.split(',');
-                        if (parts.length < 6) return; // 時間戳記, 名字, 日期, 劇本, 評價, 角色
+                        if (parts.length < 7) return; 
                         
                         const name = parts[1].trim();
                         const date = parts[2].trim();
                         const script = parts[3].trim();
-                        const rating = parts[4].trim();
-                        const character = parts.slice(5).filter(p => p.trim()).join(',').trim().replace(/^"|"$/g, '');
+                        const comment = parts[4].trim().replace(/^"|"$/g, '');
+                        const rating = parts[5].trim();
+                        const character = parts.slice(6).filter(p => p.trim()).join(',').trim().replace(/^"|"$/g, '');
 
                         if (name && script) {
                             playerNames.add(name);
@@ -336,7 +538,7 @@
                             if (!playRecords[name][script]) {
                                 playRecords[name][script] = [];
                             }
-                            playRecords[name][script].push({ date, character, rating });
+                            playRecords[name][script].push({ date, character, rating, comment });
                         }
                     });
 
@@ -433,6 +635,89 @@
                     }
                 });
             }
+            
+            // 4. 更新排行榜
+            function updateLeaderboard(playRecords) {
+                const playerCounts = [];
+                for (const playerName in playRecords) {
+                    let totalPlays = 0;
+                    for (const scriptName in playRecords[playerName]) {
+                        totalPlays += playRecords[playerName][scriptName].length;
+                    }
+                    playerCounts.push({ name: playerName, count: totalPlays });
+                }
+
+                playerCounts.sort((a, b) => b.count - a.count);
+
+                leaderboardList.innerHTML = '';
+                const topPlayers = playerCounts.slice(0, 20);
+
+                topPlayers.forEach((player, index) => {
+                    const rank = index + 1;
+                    const li = document.createElement('li');
+                    li.classList.add(`rank-${rank}`);
+                    
+                    let rankDisplay = rank;
+                    if (rank === 1) rankDisplay = '👑';
+
+                    li.innerHTML = `
+                        <span class="rank">${rankDisplay}</span>
+                        <span class="player-name">${player.name}</span>
+                        <span class="play-count">${player.count} 次</span>
+                    `;
+                    leaderboardList.appendChild(li);
+                });
+            }
+            
+            // 5. 顯示評論泡泡
+            function showComments(scriptId, playRecords) {
+                const allComments = [];
+                for (const playerName in playRecords) {
+                    if (playRecords[playerName][scriptId]) {
+                        playRecords[playerName][scriptId].forEach(record => {
+                            if (record.comment) {
+                                allComments.push(record.comment);
+                            }
+                        });
+                    }
+                }
+                
+                if (allComments.length === 0) {
+                    allComments.push("這個劇本還沒有人留下評論喔！");
+                }
+                
+                const scriptIndex = scriptsData.findIndex(script => script.id === scriptId);
+                const color = bubbleColors[scriptIndex % bubbleColors.length];
+
+                allComments.forEach(commentText => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'comment-bubble';
+                    bubble.textContent = commentText;
+                    
+                    bubble.style.backgroundColor = color.bg;
+                    bubble.style.borderColor = color.border;
+
+                    const size = Math.random() * 100 + 150;
+                    bubble.style.width = `${size}px`;
+                    bubble.style.height = `${size}px`;
+                    bubble.style.left = `${Math.random() * (window.innerWidth - size)}px`;
+                    
+                    const duration = Math.random() * 10 + 15;
+                    bubble.style.animationDuration = `${duration}s`;
+                    bubble.style.animationDelay = `${Math.random() * 5}s`;
+
+                    bubble.addEventListener('click', () => {
+                        bubble.classList.add('popped');
+                        setTimeout(() => bubble.remove(), 200);
+                    });
+                    
+                    bubble.addEventListener('animationend', () => {
+                        bubble.remove();
+                    });
+
+                    commentBubbleContainer.appendChild(bubble);
+                });
+            }
 
             // --- 初始化 ---
             
@@ -457,12 +742,57 @@
             } else if (playerSelector.textContent.includes('讀取中')) {
                 playerSelector.innerHTML = '<option value="">無玩家資料</option>';
             }
+            
+            // D. 填充排行榜
+            updateLeaderboard(playRecords);
 
-            // D. 監聽下拉選單的變化
+            // E. 監聽下拉選單的變化
             playerSelector.addEventListener('change', (event) => {
                 const selectedPlayer = event.target.value;
                 updateWallForPlayer(selectedPlayer, playRecords);
             });
+            
+            // F. 監聽排行榜標題的點擊事件
+            leaderboardHeader.addEventListener('click', () => {
+                leaderboardContainer.classList.toggle('collapsed');
+            });
+
+            // G. 為所有卡片圖片加上點擊事件以顯示評論
+            document.querySelectorAll('.image-container').forEach(container => {
+                container.addEventListener('click', () => {
+                    const scriptId = container.closest('.script-card').dataset.scriptId;
+                    showComments(scriptId, playRecords);
+                });
+            });
+            
+            // H. 監聽排行榜搜尋框的輸入
+            leaderboardSearch.addEventListener('input', (event) => {
+                const searchTerm = event.target.value.toLowerCase();
+                const players = leaderboardList.querySelectorAll('li');
+                players.forEach(player => {
+                    const playerName = player.querySelector('.player-name').textContent.toLowerCase();
+                    if (playerName.includes(searchTerm)) {
+                        player.style.display = 'flex';
+                    } else {
+                        player.style.display = 'none';
+                    }
+                });
+            });
+            
+            // I. 監聽玩家搜尋框的輸入
+            playerSearch.addEventListener('input', (event) => {
+                const searchTerm = event.target.value.toLowerCase();
+                const options = playerSelector.querySelectorAll('option');
+                options.forEach(option => {
+                    const optionText = option.textContent.toLowerCase();
+                    if (option.value === "" || optionText.includes(searchTerm)) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+            });
+
         });
     </script>
 
