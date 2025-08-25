@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>左左 - 劇本殺</title>
+    <style>
+        /* --- 全局樣式 --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 30%, #4f4f4f 60%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #ddd;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- 背景特效：記憶粉塵 --- */
+        .memory-dust-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .dust-particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: floatDust 25s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes floatDust {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            10%, 90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* --- 返回按鈕 --- */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(26, 26, 26, 0.8);
+            color: #b22222;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(178, 34, 34, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(178, 34, 34, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(178, 34, 34, 0.8);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(178, 34, 34, 0.4);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* --- 主容器與標題 --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #b22222;
+            text-shadow: 0 0 20px rgba(178, 34, 34, 0.7), 0 0 40px rgba(178, 34, 34, 0.5);
+            margin-bottom: 15px;
+            letter-spacing: 5px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title::before, .title::after {
+            content: '左';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #b22222;
+            animation: glitch 3s infinite;
+        }
+
+        .title::after {
+            left: 2px;
+            animation-delay: 0.5s;
+            color: #fff;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes glitch {
+            0%, 100% { clip-path: inset(50% 0 30% 0); }
+            20% { clip-path: inset(10% 0 85% 0); }
+            40% { clip-path: inset(80% 0 5% 0); }
+            60% { clip-path: inset(30% 0 60% 0); }
+            80% { clip-path: inset(60% 0 20% 0); }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(220, 220, 220, 0.8);
+            font-weight: 300;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .story-quote {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin: 20px auto;
+            max-width: 700px;
+            border-left: 3px solid #b22222;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        /* --- 海報區塊 --- */
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 45%;
+            min-width: 300px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 60px rgba(178, 34, 34, 0.3);
+            transition: all 0.4s ease;
+            border: 2px solid rgba(178, 34, 34, 0.3);
+            filter: grayscale(30%);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 80px rgba(178, 34, 34, 0.5);
+            filter: grayscale(0%);
+        }
+
+        /* --- 主要內容與卡片 --- */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(26, 26, 26, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(178, 34, 34, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(178, 34, 34, 0.2), transparent 40%);
+            transform: rotate(0deg);
+            transition: transform 0.8s ease;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .card:hover::before {
+            transform: rotate(360deg);
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            border-color: rgba(178, 34, 34, 0.4);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #b22222;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #b22222;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(178, 34, 34, 0.4);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(178, 34, 34, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(178, 34, 34, 0.2);
+        }
+
+        .info-item:hover {
+            background: rgba(178, 34, 34, 0.2);
+            transform: translateX(5px);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #ccc;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #b22222;
+        }
+
+        .stars-rating .star-rating {
+            color: #b22222;
+            font-size: 1.2rem;
+            text-shadow: 0 0 8px rgba(178, 34, 34, 0.5);
+        }
+
+        .stars-rating .empty {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #b22222;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tag:hover {
+            background: #ff4500;
+            transform: scale(1.05);
+        }
+        
+        /* --- 角色介紹 --- */
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(178, 34, 34, 0.1);
+            border-radius: 10px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(178, 34, 34, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .character-card::after {
+            content: '?';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 2rem;
+            color: rgba(255,255,255,0.05);
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover {
+            background: rgba(178, 34, 34, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .character-card:hover::after {
+            color: rgba(178, 34, 34, 0.5);
+            transform: rotate(15deg);
+        }
+        
+        .character-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #b22222;
+            text-shadow: 0 0 15px rgba(178, 34, 34, 0.6);
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover .character-number {
+            transform: scale(1.1);
+            color: #ff4500;
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #ccc;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #999;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #b22222;
+            font-weight: 600;
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+        
+        /* --- 描述區塊 --- */
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ccc;
+            text-align: justify;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(178, 34, 34, 0.3) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #ff6347;
+            text-shadow: 0 0 8px rgba(178, 34, 34, 0.5);
+        }
+        
+        /* --- 裝飾線條 --- */
+        .decorative-line {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(178, 34, 34, 0.5), transparent);
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .decorative-line::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #b22222;
+            border-radius: 50%;
+            box-shadow: 0 0 15px 5px rgba(178, 34, 34, 0.6);
+        }
+
+        /* --- 預約按鈕 --- */
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #b22222, #8b0000);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(178, 34, 34, 0.3), 0 0 40px rgba(178, 34, 34, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(178, 34, 34, 0.5), 0 0 60px rgba(178, 34, 34, 0.3);
+        }
+        
+        /* --- 動畫 --- */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* --- 響應式設計 --- */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .title { font-size: 2.5rem; }
+            .card { padding: 20px; }
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .poster-image {
+                max-width: 90%;
+                min-width: unset;
+            }
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="memory-dust-effects" id="dust-container"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">左左</h1>
+            <div class="decorative-line"></div>
+            <p class="subtitle">我所有的一切，都被這間屋子的空氣一點點研磨成了微不可見的粉塵。</p>
+            <div class="story-quote">
+                「已經記不清了，是第幾次這樣掙扎。<br>
+                也記不清是為什麼，要接受這樣的折磨。」
+            </div>
+        </div>
+
+        <div class="poster-section">
+            <img src="https://i.postimg.cc/prpYyKkY/image.png" alt="左左 劇本殺海報" class="poster-image">
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">左左</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">約 5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                         <div class="gender-icon">
+                            <span class="icon">🎭</span>
+                            <span>(原版為7人，可調整)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">現代</span>
+                        <span class="tag">驚悚</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">獵奇</span>
+                        <span class="tag">沉浸</span>
+                        <span class="tag">微恐</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-number">1</div>
+                        <div class="character-name">角色一</div>
+                        <div class="character-info">破碎記憶的追尋者</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-number">2</div>
+                        <div class="character-name">角色二</div>
+                        <div class="character-info">被遺忘的過去</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-number">3</div>
+                        <div class="character-name">角色三</div>
+                        <div class="character-info">扭曲現實的觀察者</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-number">4</div>
+                        <div class="character-name">角色四</div>
+                        <div class="character-info">深陷囹圄的靈魂</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-number">5</div>
+                        <div class="character-name">角色五</div>
+                        <div class="character-info">秘密的守護者</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-number">6</div>
+                        <div class="character-name">角色六</div>
+                        <div class="character-info">真相的犧牲品</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    我的名字，我的年齡，我的記憶。
+                    <br>
+                    我所有的一切，都被這間屋子的空氣一點點研磨成了<span class="highlight">微不可見的粉塵</span>。
+                    <br><br>
+                    在這裡，時間失去了意義，空間變得扭曲。我們像是被困在一個永無止境的噩夢中，不斷重複著相似卻又不同的片段。瑣碎的記憶在腦中盤旋，每一個細節都透露出<span class="highlight">令人毛骨悚然的詭異</span>。
+                    <br><br>
+                    我們是誰？為什麼會在這裡？那個被稱為「左左」的存在，究竟是救贖還是詛咒？我們必須根據現場<span class="highlight">僅有的線索</span>來判斷彼此的身份，拼湊出事件的全貌。然而，當真相的輪廓逐漸清晰，一個更加<span class="highlight">變態且獵奇</span>的世界在我們面前展開。這不僅是一場推理，更是一次對人性的極致考驗。
+                </div>
+            </div>
+            
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《左左》是一部以<span class="highlight">故事還原</span>為核心的現代驚悚劇本。劇本字數精煉，但後勁十足，能帶給玩家極大的震撼與思考。
+                    <br><br>
+                    遊戲前期，玩家將在<span class="highlight">記憶空白</span>的狀態下開始，通過搜證和交流，逐步還原各自的身份和故事。劇本的設定雖然獵奇甚至有些變態，但其內在邏輯卻相當嚴謹，能夠支撐起整個世界觀。
+                    <br><br>
+                    劇本中包含一個<span class="highlight">考驗人性的小互動環節</span>，玩家的選擇將會影響故事的走向，增加了遊戲的沉浸感與代入感。整個過程節奏絲滑，GM（遊戲主持人）的引導至關重要，能夠在玩家迷茫時給予恰到好處的提示。
+                    <br><br>
+                    總結來說，《左左》推薦給喜歡<span class="highlight">獵奇、驚悚題材</span>，並且享受沉浸式還原故事樂趣的玩家。如果你擁有一顆強大的心臟，並且不畏懼挑戰人性黑暗面，那麼這部劇本將會帶給你一次畢生難忘的體驗。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約這場掙扎</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 背景粉塵特效 ---
+            const dustContainer = document.getElementById('dust-container');
+            const particleCount = 50;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'dust-particle';
+                const size = Math.random() * 3 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 20 + 15}s`;
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+                dustContainer.appendChild(particle);
+            }
+
+            // --- 卡片懸停光效 ---
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(178, 34, 34, 0.1), rgba(26, 26, 26, 0.85) 60%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(26, 26, 26, 0.85)';
+                });
+            });
+
+            // --- 標題點擊音效模擬 ---
+            const title = document.querySelector('.title');
+            let audioContext;
+            
+            function initAudio() {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.warn('Web Audio API is not supported in this browser');
+                }
+            }
+
+            function playGlitchSound() {
+                if (!audioContext) return;
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+
+                oscillator.frequency.exponentialRampToValueAtTime(80, audioContext.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            }
+
+            title.addEventListener('click', () => {
+                if (!audioContext) {
+                    initAudio();
+                }
+                playGlitchSound();
+                title.style.animation = 'none';
+                void title.offsetWidth; // 強制重繪
+                title.style.animation = 'glitch 3s infinite';
+            });
+        });
+
+        // --- 滾動視差 ---
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const dustEffects = document.querySelector('.memory-dust-effects');
+            if (dustEffects) {
+                dustEffects.style.transform = `translateY(${scrolled * 0.2}px)`;
+            }
+        });
+    </script>
+
+<audio id="bgm" src="左左.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+
+
+
+</body>
+</html>

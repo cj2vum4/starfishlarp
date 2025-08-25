@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常春藤公寓 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d4a2d 30%, #1e3a1e 60%, #0f2f0f 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 常春藤蔓延特效 */
+        .ivy-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ivy-vine {
+            position: absolute;
+            width: 3px;
+            background: linear-gradient(180deg, #228B22, #32CD32, #90EE90);
+            animation: vineGrow 8s ease-out infinite;
+            opacity: 0.6;
+            border-radius: 2px;
+        }
+
+        .ivy-vine:nth-child(1) { left: 10%; animation-delay: 0s; height: 200px; }
+        .ivy-vine:nth-child(2) { left: 30%; animation-delay: 2s; height: 150px; }
+        .ivy-vine:nth-child(3) { left: 50%; animation-delay: 4s; height: 180px; }
+        .ivy-vine:nth-child(4) { left: 70%; animation-delay: 6s; height: 220px; }
+        .ivy-vine:nth-child(5) { right: 10%; animation-delay: 1s; height: 160px; }
+
+        @keyframes vineGrow {
+            0% {
+                top: -50px;
+                opacity: 0;
+                transform: scaleY(0);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scaleY(1) rotate(5deg);
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+                transform: scaleY(0.8) rotate(-5deg);
+            }
+        }
+
+        /* 日記頁面飄落 */
+        .diary-pages {
+            position: absolute;
+            color: rgba(255, 248, 220, 0.4);
+            font-size: 14px;
+            animation: pageFloat 12s linear infinite;
+            pointer-events: none;
+            font-family: 'Courier New', monospace;
+        }
+
+        .diary-pages:nth-child(6) { left: 20%; animation-delay: 0s; }
+        .diary-pages:nth-child(7) { left: 60%; animation-delay: 4s; }
+        .diary-pages:nth-child(8) { right: 20%; animation-delay: 8s; }
+
+        @keyframes pageFloat {
+            0% {
+                top: -20px;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(34, 139, 34, 0.9);
+            color: #90EE90;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(144, 238, 144, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(34, 139, 34, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(34, 139, 34, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(144, 238, 144, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #90EE90;
+            text-shadow: 0 0 30px rgba(144, 238, 144, 0.8), 0 0 60px rgba(144, 238, 144, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #90EE90, #32CD32, #228B22);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 248, 220, 0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(144, 238, 144, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .year-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #228B22, #32CD32);
+            color: #fff;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            box-shadow: 0 5px 20px rgba(144, 238, 144, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(144, 238, 144, 0.4), 0 0 80px rgba(144, 238, 144, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(144, 238, 144, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(144, 238, 144, 0.5), 0 0 100px rgba(144, 238, 144, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(26, 26, 26, 0.85);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(144, 238, 144, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(144, 238, 144, 0.3);
+            border-color: rgba(144, 238, 144, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #90EE90;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #90EE90;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(144, 238, 144, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(144, 238, 144, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(144, 238, 144, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(144, 238, 144, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(144, 238, 144, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #90EE90;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #90EE90;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(144, 238, 144, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(144, 238, 144, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(144, 238, 144, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #1e3a1e, #2d4a2d);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(144, 238, 144, 0.3);
+            box-shadow: 0 4px 15px rgba(144, 238, 144, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(144, 238, 144, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fff;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(144, 238, 144, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #90EE90;
+            text-shadow: 0 0 10px rgba(144, 238, 144, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #1e3a1e, #2d4a2d);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(144, 238, 144, 0.4), 0 0 40px rgba(144, 238, 144, 0.2);
+            border: 2px solid rgba(144, 238, 144, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(144, 238, 144, 0.5), 0 0 60px rgba(144, 238, 144, 0.3);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(144, 238, 144, 0.1);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 2px solid rgba(144, 238, 144, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card:hover {
+            background: rgba(144, 238, 144, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(144, 238, 144, 0.4);
+        }
+
+        .character-emoji {
+            width: 100%;
+            height: 120px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(144, 238, 144, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(144, 238, 144, 0.3);
+            object-fit: cover;
+            display: block;
+        }
+
+        .character-card:hover .character-emoji {
+            border-color: rgba(144, 238, 144, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(144, 238, 144, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #90EE90;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .character-info {
+            font-size: 0.9rem;
+            color: #fff;
+            opacity: 0.9;
+            line-height: 1.4;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #90EE90;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(144, 238, 144, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 14s ease-in-out infinite;
+            color: rgba(144, 238, 144, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 10s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(2deg); }
+            66% { transform: translateY(-40px) rotate(-2deg); }
+        }
+
+        /* 裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #90EE90, transparent);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "🍃";
+            position: absolute;
+            top: -8px;
+            color: #90EE90;
+            font-size: 1.2rem;
+        }
+
+        .decorative-line::before {
+            left: 20%;
+        }
+
+        .decorative-line::after {
+            right: 20%;
+        }
+
+        /* 日記引言框 */
+        .diary-quote {
+            background: rgba(144, 238, 144, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #90EE90;
+            position: relative;
+            font-family: 'Courier New', monospace;
+        }
+
+        .diary-quote::before {
+            content: "📔";
+            position: absolute;
+            top: -5px;
+            left: -15px;
+            font-size: 1.5rem;
+        }
+
+        .quote-text {
+            font-style: italic;
+            color: #90EE90;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 15px;
+            }
+
+            .character-card {
+                padding: 20px 15px;
+            }
+
+            .character-emoji {
+                height: 100px;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="ivy-effects">
+        <div class="ivy-vine"></div>
+        <div class="ivy-vine"></div>
+        <div class="ivy-vine"></div>
+        <div class="ivy-vine"></div>
+        <div class="ivy-vine"></div>
+        <div class="diary-pages">星期一日記...</div>
+        <div class="diary-pages">星期二日記...</div>
+        <div class="diary-pages">星期三日記...</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🏢</div>
+        <div class="floating-element">📔</div>
+        <div class="floating-element">🔍</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">常春藤公寓</h1>
+            <div class="year-badge">市中心老城區的神秘租客</div>
+            <div class="decorative-line"></div>
+            <p class="subtitle">一本日記，七個房間，窺探隐藏在藤蔓背後的真相</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/7hgnYWvJ/image.jpg" alt="常春藤公寓劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/y86ysjLW/image.jpg" alt="常春藤公寓劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">常春藤公寓</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4-5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>4男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>2女</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">🎭</span>
+                            <span>可反串</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">本格</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">微恐</span>
+                        <span class="tag">現代</span>
+                        <span class="tag">架空</span>
+                        <span class="tag">新手友善</span>
+                        <span class="tag">繁化</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/rFk9YMW1/image.jpg" alt="星期一角色" class="character-emoji">
+                        <div class="character-name">星期一</div>
+                        <div class="character-info">神秘租客之一</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Nfkk3S7W/image.jpg" alt="星期二角色" class="character-emoji">
+                        <div class="character-name">星期二</div>
+                        <div class="character-info">神秘租客之一</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Fsp0Wchv/image.jpg" alt="星期四角色" class="character-emoji">
+                        <div class="character-name">星期四</div>
+                        <div class="character-info">神秘租客之一</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/h4xrrfJ4/image.jpg" alt="星期五角色" class="character-emoji">
+                        <div class="character-name">星期五</div>
+                        <div class="character-info">神秘租客之一</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/DwCdZGN6/image.jpg" alt="星期六角色" class="character-emoji">
+                        <div class="character-name">星期六</div>
+                        <div class="character-info">神秘租客之一</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/SxKCwsKM/image.jpg" alt="星期天角色" class="character-emoji">
+                        <div class="character-name">星期天</div>
+                        <div class="character-info">神秘租客之一</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    <span class="highlight">「常春藤公寓」</span>位於市中心的老城區，是一棟四層樓高、看起來毫不起眼的房屋。公寓的水泥牆上，覆蓋著一片片枝繁葉茂的常春藤，它們以肉眼不能察覺的速度蔓延著，不斷纏繞著住客的身軀，如同灰白世界裡的一抹綠意。
+                    <br><br>
+                    這些藤蔓找不到源頭，卻又深深扎下了根。而我，作為<span class="highlight">常春藤公寓的一名租客</span>，必須按照門牌號上標記的「星期一」到「星期天」，在對應的日子裡寫下一篇日記，記錄所見所聞。
+                    <br><br>
+                    但是，這些日記真的只是單純的記錄嗎？當每個房間都隱藏著不為人知的秘密，當每個租客都有著複雜的過往時，真相也許比想像中更加撲朔迷離...
+                </div>
+                
+                <div class="diary-quote">
+                    <div class="quote-text">
+                        "我想，日記存在的意義就是滿足窺視者的好奇心而已，<br>
+                        比如青春期孩子的父母，<br>
+                        比如「常春藤公寓」的房東。<br>
+                        又比如，此刻翻開日記的你。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《常春藤公寓》是一部<span class="highlight">現代架空惊悚推理劇本</span>，以獨特的日記體敘事方式，帶領玩家深入一個充滿謎團的神秘公寓。這個劇本最大的特色在於其<span class="highlight">四重故事反轉</span>設計，讓玩家在推理過程中不斷被顛覆既有認知。
+                    <br><br>
+                    劇本採用了<span class="highlight">新穎的破冰環節</span>，讓玩家能夠快速融入角色。每個角色都以「星期」命名，這不僅是身份標識，更是深層故事結構的重要組成部分。遊戲中設置了<span class="highlight">集體搜證和演繹過程</span>，玩家需要在實際的場景中尋找線索，體驗身臨其境的推理樂趣。
+                    <br><br>
+                    作為一個<span class="highlight">新手友善</span>的劇本，《常春藤公寓》在保持推理挑戰性的同時，確保每個角色都有重要的參與感，沒有邊緣角色的存在。劇本的<span class="highlight">微恐元素</span>恰到好處，既能營造緊張氛圍，又不會過度驚嚇玩家。
+                    <br><br>
+                    特別值得一提的是，這個劇本加入了<span class="highlight">「第四堵牆」的打破</span>設計，讓玩家與故事之間的界限變得模糊，創造出獨特的沉浸式體驗。從開始的租客代入，到中期的身份混亂，再到後期的真相大白，整個過程環環相扣，精彩絕倫。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#90EE90';
+                            s.style.textShadow = '0 0 15px rgba(144, 238, 144, 0.8)';
+                        } else {
+                            s.style.color = 'rgba(144, 238, 144, 0.3)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        if (!s.classList.contains('empty')) {
+                            s.style.color = '#90EE90';
+                            s.style.textShadow = '0 0 10px rgba(144, 238, 144, 0.5)';
+                        }
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(144, 238, 144, 0.4)';
+                    const emoji = card.querySelector('.character-emoji');
+                    if (emoji) {
+                        emoji.style.transform = 'scale(1.2) rotate(10deg)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                    const emoji = card.querySelector('.character-emoji');
+                    if (emoji) {
+                        emoji.style.transform = 'scale(1) rotate(0deg)';
+                    }
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(144, 238, 144, 0.2) 0%, rgba(26, 26, 26, 0.85) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(26, 26, 26, 0.85)';
+                });
+            });
+
+            // 常春藤蔓延爆炸效果
+            function createIvyEffect() {
+                const container = document.querySelector('.ivy-effects');
+                const burst = document.createElement('div');
+                burst.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 80px;
+                    height: 80px;
+                    color: #90EE90;
+                    font-size: 3rem;
+                    animation: ivyBurst 2.5s ease-out forwards;
+                    pointer-events: none;
+                    z-index: 9999;
+                `;
+                burst.textContent = '🍃';
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes ivyBurst {
+                        0% { 
+                            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                            opacity: 1;
+                        }
+                        100% { 
+                            transform: translate(-50%, -50%) scale(4) rotate(720deg);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+                container.appendChild(burst);
+                
+                setTimeout(() => {
+                    container.removeChild(burst);
+                    document.head.removeChild(style);
+                }, 2500);
+            }
+
+            // 點擊標題觸發常春藤效果
+            document.querySelector('.title').addEventListener('click', createIvyEffect);
+
+            // 日記文字流動效果
+            function createDiaryStream() {
+                const container = document.querySelector('.ivy-effects');
+                const diaryTexts = ['星期一...', '星期二...', '星期四...', '房東...'];
+                
+                diaryTexts.forEach((text, index) => {
+                    setTimeout(() => {
+                        const stream = document.createElement('div');
+                        stream.className = 'diary-pages';
+                        stream.textContent = text;
+                        stream.style.left = Math.random() * 80 + 10 + '%';
+                        stream.style.color = '#90EE90';
+                        stream.style.fontSize = '16px';
+                        stream.style.fontWeight = 'bold';
+                        container.appendChild(stream);
+                        
+                        setTimeout(() => {
+                            if (container.contains(stream)) {
+                                container.removeChild(stream);
+                            }
+                        }, 12000);
+                    }, index * 800);
+                });
+            }
+
+            // 年代徽章點擊效果
+            const yearBadge = document.querySelector('.year-badge');
+            yearBadge.addEventListener('click', () => {
+                yearBadge.style.animation = 'none';
+                yearBadge.style.transform = 'rotate(720deg) scale(1.2)';
+                createDiaryStream();
+                setTimeout(() => {
+                    yearBadge.style.animation = 'pulse 2s ease-in-out infinite';
+                    yearBadge.style.transform = '';
+                }, 1000);
+            });
+
+            // 常春藤藤蔓互動效果
+            const vines = document.querySelectorAll('.ivy-vine');
+            vines.forEach(vine => {
+                vine.addEventListener('click', () => {
+                    vine.style.background = 'linear-gradient(180deg, #32CD32, #90EE90, #98FB98)';
+                    vine.style.animationDuration = '4s';
+                    vine.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        vine.style.background = 'linear-gradient(180deg, #228B22, #32CD32, #90EE90)';
+                        vine.style.animationDuration = '8s';
+                        vine.style.transform = '';
+                    }, 2000);
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const ivyEffects = document.querySelector('.ivy-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (ivyEffects) ivyEffects.style.transform = `translateY(${scrolled * 0.04}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.09}px)`;
+        });
+
+        // 神秘音效模擬
+        let audioContext;
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playApartmentSound() {
+            if (audioContext) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(160, audioContext.currentTime + 1.8);
+                
+                gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.8);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1.8);
+            }
+        }
+
+        // 點擊任意地方初始化音效
+        document.addEventListener('click', function() {
+            if (!audioContext) {
+                initAudio();
+            }
+        }, { once: true });
+
+        // CTA按鈕公寓效果
+        document.querySelector('.cta-button').addEventListener('click', (e) => {
+            playApartmentSound();
+            createIvyEffect();
+        });
+
+        // 動態背景粒子
+        function createBackgroundParticles() {
+            const container = document.querySelector('.floating-elements');
+            for (let i = 0; i < 3; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 4px;
+                    height: 4px;
+                    background: #90EE90;
+                    border-radius: 50%;
+                    box-shadow: 0 0 10px #90EE90;
+                    animation: apartmentFloat ${12 + Math.random() * 6}s ease-in-out infinite;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100}%;
+                `;
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (container.contains(particle)) {
+                        container.removeChild(particle);
+                    }
+                }, 18000);
+            }
+        }
+
+        // 添加公寓粒子動畫樣式
+        const apartmentParticleStyle = document.createElement('style');
+        apartmentParticleStyle.textContent = `
+            @keyframes apartmentFloat {
+                0%, 100% { 
+                    transform: translateY(0px) translateX(0px);
+                    opacity: 0;
+                }
+                50% {
+                    transform: translateY(-80px) translateX(40px);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(apartmentParticleStyle);
+
+        // 定期創建背景粒子
+        setInterval(createBackgroundParticles, 6000);
+
+        // 角色名稱跳動效果
+        const characterNames = document.querySelectorAll('.character-name');
+        characterNames.forEach(name => {
+            name.addEventListener('mouseenter', () => {
+                name.style.animation = 'apartmentBounce 0.8s ease-in-out';
+            });
+            
+            name.addEventListener('animationend', () => {
+                name.style.animation = '';
+            });
+        });
+
+        // 添加公寓跳動動畫
+        const apartmentBounceStyle = document.createElement('style');
+        apartmentBounceStyle.textContent = `
+            @keyframes apartmentBounce {
+                0%, 20%, 60%, 100% {
+                    transform: translateY(0);
+                }
+                40% {
+                    transform: translateY(-15px);
+                }
+                80% {
+                    transform: translateY(-8px);
+                }
+            }
+        `;
+        document.head.appendChild(apartmentBounceStyle);
+
+        // 日記引言框發光效果
+        const diaryQuote = document.querySelector('.diary-quote');
+        if (diaryQuote) {
+            diaryQuote.addEventListener('mouseenter', () => {
+                diaryQuote.style.boxShadow = '0 0 25px rgba(144, 238, 144, 0.4)';
+                diaryQuote.style.borderLeftColor = '#32CD32';
+                diaryQuote.style.transform = 'scale(1.02)';
+            });
+            
+            diaryQuote.addEventListener('mouseleave', () => {
+                diaryQuote.style.boxShadow = 'none';
+                diaryQuote.style.borderLeftColor = '#90EE90';
+                diaryQuote.style.transform = 'scale(1)';
+            });
+        }
+    </script>
+
+<audio id="bgm" src="常春藤公寓.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+</body>
+</html>

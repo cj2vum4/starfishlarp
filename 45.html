@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c1810 0%, #4a2c17 30%, #5d3318 60%, #6b3a19 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 山霧特效 */
+        .mountain-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .fog {
+            position: absolute;
+            width: 200%;
+            height: 100px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: fogMove 15s linear infinite;
+            opacity: 0.4;
+        }
+
+        .fog:nth-child(1) { top: 20%; animation-delay: 0s; }
+        .fog:nth-child(2) { top: 60%; animation-delay: 5s; }
+        .fog:nth-child(3) { top: 80%; animation-delay: 10s; }
+
+        @keyframes fogMove {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* 神秘符號飄落 */
+        .mystic-symbols {
+            position: absolute;
+            color: rgba(255, 215, 0, 0.3);
+            font-size: 20px;
+            animation: symbolFall 12s linear infinite;
+            pointer-events: none;
+        }
+
+        .mystic-symbols:nth-child(4) { left: 15%; animation-delay: 0s; }
+        .mystic-symbols:nth-child(5) { left: 45%; animation-delay: 3s; }
+        .mystic-symbols:nth-child(6) { left: 75%; animation-delay: 6s; }
+
+        @keyframes symbolFall {
+            0% {
+                top: -20px;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: #ffd700;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ffd700, #ff8c00, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 248, 220, 0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .year-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #b8860b, #daa520);
+            color: #2c1810;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.4), 0 0 80px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(60, 30, 15, 0.85);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ffd700;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #ffd700;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 215, 0, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #8b4513, #a0522d);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fff;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 215, 0, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #8b4513, #a0522d);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.3);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .character-emoji {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #8b4513, #a0522d);
+        }
+
+        .character-card:hover .character-emoji {
+            border-color: rgba(255, 215, 0, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .character-info {
+            font-size: 0.9rem;
+            color: #fff;
+            opacity: 0.9;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #ffd700;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 14s ease-in-out infinite;
+            color: rgba(255, 215, 0, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 10s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(2deg); }
+            66% { transform: translateY(-40px) rotate(-2deg); }
+        }
+
+        /* 裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "🔮";
+            position: absolute;
+            top: -8px;
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .decorative-line::before {
+            left: 20%;
+        }
+
+        .decorative-line::after {
+            right: 20%;
+        }
+
+        /* 佛經引言框 */
+        .buddhist-quote {
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            position: relative;
+        }
+
+        .buddhist-quote::before {
+            content: "📿";
+            position: absolute;
+            top: -5px;
+            left: -15px;
+            font-size: 1.5rem;
+        }
+
+        .quote-text {
+            font-style: italic;
+            color: #ffd700;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 3rem;
+                letter-spacing: 4px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .character-card {
+                padding: 20px 15px;
+            }
+
+            .character-emoji {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="mountain-effects">
+        <div class="fog"></div>
+        <div class="fog"></div>
+        <div class="fog"></div>
+        <div class="mystic-symbols">卍</div>
+        <div class="mystic-symbols">☯</div>
+        <div class="mystic-symbols">🔮</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">⛰️</div>
+        <div class="floating-element">👁️</div>
+        <div class="floating-element">📿</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">45</h1>
+            <div class="year-badge">1997 駝嶺河峽谷風景區事件</div>
+            <div class="decorative-line"></div>
+            <p class="subtitle">窺見虚妄，還原真相——一場意外背後的神秘謎團</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/yYJhpxpr/gto1-Zyy-LPx-DJj-X-KTw-YLkw-Rfk-HCgw2-Dmff-Uk6-Iuh-DMk92fa-X8g0k5ub-Yf-Wa-N-I9-A.jpg" alt="劇本殺45海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/WzyGbczn/005-Jw-XXtgy1hfpak9ub0jj30u016man2.jpg" alt="劇本殺45海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">45</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>4男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>2女</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">🎭</span>
+                            <span>可反串</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">推理</span>
+                        <span class="tag">本格</span>
+                        <span class="tag">現代</span>
+                        <span class="tag">微恐</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">新手友善</span>
+                        <span class="tag">進階可玩</span>
+                        <span class="tag">繁化</span>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-emoji">👨‍💼</div>
+                        <div class="character-name">李瀚明</div>
+                        <div class="character-info">男性角色<br>神秘遊客之一</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">👤</div>
+                        <div class="character-name">林明</div>
+                        <div class="character-info">男性角色<br>事件關鍵人物</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">🧘‍♂️</div>
+                        <div class="character-name">秦蒼</div>
+                        <div class="character-info">男性角色<br>手持佛珠的男人</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">🌸</div>
+                        <div class="character-name">秦花語</div>
+                        <div class="character-info">女性角色<br>優雅神秘的女子</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">⭐</div>
+                        <div class="character-name">楊星彩</div>
+                        <div class="character-info">女性角色<br>推薦C位角色</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">👨‍🎨</div>
+                        <div class="character-name">張耀雲</div>
+                        <div class="character-info">男性角色<br>藝術家身份</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    <span class="highlight">1997年</span>，A市評選上了國家重點名勝風景城市，其中駝嶺河峽谷風景區更是風靡全國，成為當時最熱門的旅遊勝地。然而好景不長，一場突如其來的意外讓<span class="highlight">十四位遊客</span>因此蒙難，讓原本美麗的駝嶺河山谷風景區蒙上了一層異樣的色彩。
+                    <br><br>
+                    但是，意外真的是意外嗎？隨著調查的深入，越來越多的疑點浮出水面。<span class="highlight">六封神秘的邀請函</span>，一個手持佛珠的神秘男人，還有那些看似巧合卻又充滿蹊蹺的細節...
+                    <br><br>
+                    在這起撲朔迷離的事件中，每個人都有著自己的秘密，每個人都可能是關鍵的線索。當真相被層層迷霧掩蓋時，唯有透過細致的推理和還原，才能撥開雲霧見青天。
+                </div>
+                
+                <div class="buddhist-quote">
+                    <div class="quote-text">
+                        "佛家曾說：凡所有相，皆為虛妄，若見諸相非相，即見如來。<br>
+                        一切所能看見的事物外表，都是虛假的，只有守住本心，不受迷惑，<br>
+                        方能得見如來，看清虛妄。<br><br>
+                        你...窺見虛妄了嗎？"
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《45》是一部<span class="highlight">本格推理劇本</span>，以1997年的真實風景區意外事件為背景，巧妙地將懸疑推理與佛學哲理相結合。劇本採用<span class="highlight">多線敘事結構</span>，每個角色都擁有獨特的視角和隱藏的秘密。
+                    <br><br>
+                    這個劇本的最大特色在於其<span class="highlight">還原性</span>——玩家不僅需要找出真凶，更要還原整個事件的完整經過。劇本中融入了大量的<span class="highlight">佛學元素</span>，透過"虛妄"與"真相"的對比，營造出獨特的神秘氛圍。
+                    <br><br>
+                    作為一個<span class="highlight">新手友善</span>的劇本，《45》在保持推理難度的同時，也為初學者提供了充足的線索引導。同時，其深層的邏輯結構和精巧的機關設計，也能滿足<span class="highlight">進階玩家</span>的挑戰需求。
+                    <br><br>
+                    劇本採用了<span class="highlight">單人搜證環節</span>設計，讓每位玩家都能獨立發現關鍵線索，增強了遊戲的參與感和沉浸體驗。微恐元素的加入，為推理過程增添了緊張刺激的氛圍，但不會過於驚悚，適合大部分玩家體驗。
+                </div>
+            </div>
+
+            
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 15px rgba(255, 215, 0, 0.8)';
+                        } else {
+                            s.style.color = 'rgba(255, 215, 0, 0.3)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        if (!s.classList.contains('empty')) {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(255, 215, 0, 0.4)';
+                    const emoji = card.querySelector('.character-emoji');
+                    if (emoji) {
+                        emoji.style.transform = 'scale(1.2) rotate(10deg)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                    const emoji = card.querySelector('.character-emoji');
+                    if (emoji) {
+                        emoji.style.transform = 'scale(1) rotate(0deg)';
+                    }
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 215, 0, 0.2) 0%, rgba(60, 30, 15, 0.85) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(60, 30, 15, 0.85)';
+                });
+            });
+
+            // 神秘符號爆炸效果
+            function createMysticEffect() {
+                const container = document.querySelector('.mountain-effects');
+                const burst = document.createElement('div');
+                burst.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 80px;
+                    height: 80px;
+                    color: #ffd700;
+                    font-size: 3rem;
+                    animation: mysticBurst 2.5s ease-out forwards;
+                    pointer-events: none;
+                    z-index: 9999;
+                `;
+                burst.textContent = '🔮';
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes mysticBurst {
+                        0% { 
+                            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                            opacity: 1;
+                        }
+                        100% { 
+                            transform: translate(-50%, -50%) scale(3) rotate(720deg);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+                container.appendChild(burst);
+                
+                setTimeout(() => {
+                    container.removeChild(burst);
+                    document.head.removeChild(style);
+                }, 2500);
+            }
+
+            // 點擊標題觸發神秘效果
+            document.querySelector('.title').addEventListener('click', createMysticEffect);
+
+            // 佛經文字流動效果
+            function createBuddhistStream() {
+                const container = document.querySelector('.mountain-effects');
+                const texts = ['虛妄...', '真相...', '如來...', '覺悟...'];
+                
+                texts.forEach((text, index) => {
+                    setTimeout(() => {
+                        const stream = document.createElement('div');
+                        stream.className = 'mystic-symbols';
+                        stream.textContent = text;
+                        stream.style.left = Math.random() * 80 + 10 + '%';
+                        stream.style.color = '#ffd700';
+                        stream.style.fontSize = '16px';
+                        stream.style.fontWeight = 'bold';
+                        container.appendChild(stream);
+                        
+                        setTimeout(() => {
+                            if (container.contains(stream)) {
+                                container.removeChild(stream);
+                            }
+                        }, 12000);
+                    }, index * 800);
+                });
+            }
+
+            // 年代徽章旋轉效果
+            const yearBadge = document.querySelector('.year-badge');
+            yearBadge.addEventListener('click', () => {
+                yearBadge.style.animation = 'none';
+                yearBadge.style.transform = 'rotate(720deg) scale(1.2)';
+                createBuddhistStream();
+                setTimeout(() => {
+                    yearBadge.style.animation = 'pulse 2s ease-in-out infinite';
+                    yearBadge.style.transform = '';
+                }, 1000);
+            });
+
+            // 山霧互動效果
+            const fogs = document.querySelectorAll('.fog');
+            fogs.forEach(fog => {
+                fog.addEventListener('click', () => {
+                    fog.style.background = 'linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent)';
+                    fog.style.animationDuration = '8s';
+                    setTimeout(() => {
+                        fog.style.background = 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)';
+                        fog.style.animationDuration = '15s';
+                    }, 2000);
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const mountainEffects = document.querySelector('.mountain-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (mountainEffects) mountainEffects.style.transform = `translateY(${scrolled * 0.03}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.08}px)`;
+        });
+
+        // 神秘音效模擬
+        let audioContext;
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playMysticSound() {
+            if (audioContext) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(528, audioContext.currentTime);  // 528Hz 為療癒頻率
+                oscillator.frequency.exponentialRampToValueAtTime(396, audioContext.currentTime + 1.5);
+                
+                gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1.5);
+            }
+        }
+
+        // 點擊任意地方初始化音效
+        document.addEventListener('click', function() {
+            if (!audioContext) {
+                initAudio();
+            }
+        }, { once: true });
+
+        // CTA按鈕神秘效果
+        document.querySelector('.cta-button').addEventListener('click', (e) => {
+            playMysticSound();
+            createMysticEffect();
+        });
+
+        // 動態背景粒子
+        function createBackgroundParticles() {
+            const container = document.querySelector('.floating-elements');
+            for (let i = 0; i < 3; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 3px;
+                    height: 3px;
+                    background: #ffd700;
+                    border-radius: 50%;
+                    box-shadow: 0 0 8px #ffd700;
+                    animation: mysticalFloat ${10 + Math.random() * 5}s ease-in-out infinite;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100}%;
+                `;
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (container.contains(particle)) {
+                        container.removeChild(particle);
+                    }
+                }, 15000);
+            }
+        }
+
+        // 添加神秘粒子動畫樣式
+        const mysticalParticleStyle = document.createElement('style');
+        mysticalParticleStyle.textContent = `
+            @keyframes mysticalFloat {
+                0%, 100% { 
+                    transform: translateY(0px) translateX(0px);
+                    opacity: 0;
+                }
+                50% {
+                    transform: translateY(-60px) translateX(30px);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(mysticalParticleStyle);
+
+        // 定期創建背景粒子
+        setInterval(createBackgroundParticles, 5000);
+
+        // 角色名稱跳動效果
+        const characterNames = document.querySelectorAll('.character-name');
+        characterNames.forEach(name => {
+            name.addEventListener('mouseenter', () => {
+                name.style.animation = 'mysticalBounce 0.8s ease-in-out';
+            });
+            
+            name.addEventListener('animationend', () => {
+                name.style.animation = '';
+            });
+        });
+
+        // 添加神秘跳動動畫
+        const mysticalBounceStyle = document.createElement('style');
+        mysticalBounceStyle.textContent = `
+            @keyframes mysticalBounce {
+                0%, 20%, 60%, 100% {
+                    transform: translateY(0);
+                }
+                40% {
+                    transform: translateY(-12px);
+                }
+                80% {
+                    transform: translateY(-6px);
+                }
+            }
+        `;
+        document.head.appendChild(mysticalBounceStyle);
+
+        // 佛經引言框閃爍效果
+        const buddhistQuote = document.querySelector('.buddhist-quote');
+        if (buddhistQuote) {
+            buddhistQuote.addEventListener('mouseenter', () => {
+                buddhistQuote.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.3)';
+                buddhistQuote.style.borderLeftColor = '#ff8c00';
+            });
+            
+            buddhistQuote.addEventListener('mouseleave', () => {
+                buddhistQuote.style.boxShadow = 'none';
+                buddhistQuote.style.borderLeftColor = '#ffd700';
+            });
+        }
+    </script>
+
+<audio id="bgm" src="45.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+</body>
+</html>
