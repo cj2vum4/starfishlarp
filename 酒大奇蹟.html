@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>酒大奇蹟 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 25%, #0d1b2a 50%, #415a77 75%, #1b263b 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 霓虹酒杯漂浮效果 */
+        .neon-drinks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .neon-drink {
+            position: absolute;
+            font-size: 2.5rem;
+            animation: neonFloat 18s ease-in-out infinite;
+            text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+            opacity: 0.4;
+        }
+
+        .neon-drink:nth-child(1) { 
+            top: 10%; left: 15%; 
+            color: #ff1744; 
+            animation-delay: 0s; 
+        }
+        .neon-drink:nth-child(2) { 
+            top: 25%; right: 20%; 
+            color: #e91e63; 
+            animation-delay: 3s; 
+        }
+        .neon-drink:nth-child(3) { 
+            bottom: 30%; left: 25%; 
+            color: #9c27b0; 
+            animation-delay: 6s; 
+        }
+        .neon-drink:nth-child(4) { 
+            top: 60%; right: 15%; 
+            color: #673ab7; 
+            animation-delay: 9s; 
+        }
+        .neon-drink:nth-child(5) { 
+            bottom: 15%; right: 30%; 
+            color: #3f51b5; 
+            animation-delay: 12s; 
+        }
+
+        @keyframes neonFloat {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) scale(1); 
+                opacity: 0.3; 
+            }
+            25% { 
+                transform: translateY(-30px) rotate(5deg) scale(1.1); 
+                opacity: 0.6; 
+            }
+            50% { 
+                transform: translateY(-60px) rotate(-3deg) scale(0.9); 
+                opacity: 0.8; 
+            }
+            75% { 
+                transform: translateY(-20px) rotate(8deg) scale(1.2); 
+                opacity: 0.5; 
+            }
+        }
+
+        /* 科幻光束效果 */
+        .light-beams {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(180deg, transparent, #00bcd4, transparent);
+            animation: beamSweep 12s linear infinite;
+            opacity: 0.6;
+        }
+
+        .light-beam:nth-child(1) { left: 20%; animation-delay: 0s; }
+        .light-beam:nth-child(2) { left: 50%; animation-delay: 4s; }
+        .light-beam:nth-child(3) { left: 80%; animation-delay: 8s; }
+
+        @keyframes beamSweep {
+            0% { top: -100px; opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { top: 100vh; opacity: 0; }
+        }
+
+        /* 返回按鈕 */
+        .back-to-overview {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-60px);
+            animation: slideInLeft 1.2s ease-out 0.6s forwards;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.4);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #9c27b0, #e91e63);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(233, 30, 99, 0.6);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(-60px);
+            animation: fadeInUp 1.2s ease-out forwards;
+        }
+
+        .title {
+            font-size: 5rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 
+                0 0 20px #ff1744,
+                0 0 40px #e91e63,
+                0 0 60px #9c27b0,
+                0 0 80px #673ab7;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff1744, #e91e63, #9c27b0, #673ab7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            position: relative;
+            font-family: 'Microsoft JhengHei', sans-serif;
+        }
+
+        .title::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, 
+                rgba(255, 23, 68, 0.3), 
+                rgba(233, 30, 99, 0.3), 
+                rgba(156, 39, 176, 0.3), 
+                rgba(103, 58, 183, 0.3));
+            filter: blur(20px);
+            animation: titleGlow 3s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(233, 30, 99, 0.6);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .year-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #e91e63, #9c27b0, #673ab7);
+            color: #fff;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.5);
+            animation: futuristicPulse 2.5s ease-in-out infinite;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes futuristicPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 8px 25px rgba(233, 30, 99, 0.5); 
+            }
+            50% { 
+                transform: scale(1.08); 
+                box-shadow: 0 15px 40px rgba(233, 30, 99, 0.7); 
+            }
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1.2s ease-out 0.3s forwards;
+        }
+
+        .poster-container {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .main-poster {
+            max-width: 45%;
+            min-width: 320px;
+            position: relative;
+        }
+
+        .poster-image {
+            width: 100%;
+            height: auto;
+            max-height: 650px;
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(233, 30, 99, 0.4),
+                0 0 100px rgba(156, 39, 176, 0.3);
+            transition: all 0.4s ease;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+        }
+
+        .poster-image:hover {
+            transform: scale(1.03) rotateY(5deg);
+            box-shadow: 
+                0 35px 70px rgba(233, 30, 99, 0.6),
+                0 0 120px rgba(156, 39, 176, 0.4);
+        }
+
+        .character-preview {
+            max-width: 45%;
+            min-width: 320px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 150px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(233, 30, 99, 0.3);
+            transition: all 0.3s ease;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-image:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 15px 35px rgba(233, 30, 99, 0.5);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 70, 0.9), 
+                rgba(45, 45, 90, 0.85));
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(233, 30, 99, 0.4);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1.2s ease-out 0.4s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(233, 30, 99, 0.2), 
+                transparent);
+            transition: left 0.8s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 35px 70px rgba(233, 30, 99, 0.4);
+            border-color: rgba(233, 30, 99, 0.7);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.6s;
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff1744;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #e91e63;
+            padding-bottom: 12px;
+            text-shadow: 0 0 15px rgba(255, 23, 68, 0.5);
+            position: relative;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 15px 18px;
+            background: linear-gradient(135deg, 
+                rgba(233, 30, 99, 0.1), 
+                rgba(156, 39, 176, 0.1));
+            border-radius: 15px;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(233, 30, 99, 0.3);
+        }
+
+        .info-item:hover {
+            background: linear-gradient(135deg, 
+                rgba(233, 30, 99, 0.2), 
+                rgba(156, 39, 176, 0.2));
+            transform: translateX(8px);
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #ff1744;
+            text-shadow: 0 0 10px rgba(255, 23, 68, 0.4);
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 4px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+            cursor: pointer;
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 215, 0, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.3) rotate(10deg);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 18px rgba(233, 30, 99, 0.4);
+        }
+
+        .tag:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 12px 30px rgba(233, 30, 99, 0.6);
+            background: linear-gradient(135deg, #9c27b0, #e91e63);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1.2s ease-out 0.8s forwards;
+        }
+
+        .description-text {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #fff;
+            text-align: justify;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, 
+                transparent 0%, 
+                rgba(233, 30, 99, 0.5) 40%, 
+                rgba(156, 39, 176, 0.5) 60%, 
+                transparent 100%);
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 23, 68, 0.6);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 60px;
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1.2s ease-out 1s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #e91e63, #9c27b0, #673ab7);
+            color: white;
+            padding: 18px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 15px 40px rgba(233, 30, 99, 0.5), 
+                0 0 60px rgba(156, 39, 176, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 25px 60px rgba(233, 30, 99, 0.7), 
+                0 0 80px rgba(156, 39, 176, 0.5);
+            background: linear-gradient(135deg, #9c27b0, #673ab7, #e91e63);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .character-card {
+            background: linear-gradient(135deg, 
+                rgba(233, 30, 99, 0.15), 
+                rgba(156, 39, 176, 0.1));
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 2px solid rgba(233, 30, 99, 0.4);
+            transition: all 0.4s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 23, 68, 0.1), 
+                rgba(156, 39, 176, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .character-card:hover::before {
+            opacity: 1;
+        }
+
+        .character-card:hover {
+            background: linear-gradient(135deg, 
+                rgba(233, 30, 99, 0.25), 
+                rgba(156, 39, 176, 0.2));
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 15px 35px rgba(233, 30, 99, 0.5);
+        }
+
+        .character-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            margin: 0 auto 18px;
+            border: 3px solid rgba(233, 30, 99, 0.6);
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(255, 23, 68, 0.8);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(255, 23, 68, 0.6);
+        }
+
+        .character-name {
+            font-weight: 700;
+            color: #ff1744;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 23, 68, 0.4);
+        }
+
+        .character-info {
+            font-size: 0.95rem;
+            color: #fff;
+            opacity: 0.9;
+            line-height: 1.5;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1rem;
+            color: #ff1744;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(255, 23, 68, 0.4);
+        }
+
+        /* 裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                #ff1744, 
+                #e91e63, 
+                #9c27b0, 
+                transparent);
+            margin: 25px 0;
+            position: relative;
+            border-radius: 2px;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "🍷";
+            position: absolute;
+            top: -12px;
+            color: #ff1744;
+            font-size: 1.5rem;
+            text-shadow: 0 0 15px rgba(255, 23, 68, 0.6);
+        }
+
+        .decorative-line::before {
+            left: 25%;
+        }
+
+        .decorative-line::after {
+            right: 25%;
+        }
+
+        /* 未來酒文化引言框 */
+        .wine-quote {
+            background: linear-gradient(135deg, 
+                rgba(233, 30, 99, 0.08), 
+                rgba(156, 39, 176, 0.05));
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 6px solid #e91e63;
+            position: relative;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            backdrop-filter: blur(10px);
+        }
+
+        .wine-quote::before {
+            content: "🥂";
+            position: absolute;
+            top: -8px;
+            left: -18px;
+            font-size: 2rem;
+            text-shadow: 0 0 15px rgba(233, 30, 99, 0.8);
+        }
+
+        .quote-text {
+            font-style: italic;
+            color: #ff1744;
+            font-size: 1.15rem;
+            line-height: 1.7;
+            text-shadow: 0 0 10px rgba(255, 23, 68, 0.3);
+            font-weight: 500;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .title {
+                font-size: 3rem;
+                letter-spacing: 2px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 12px 15px;
+            }
+
+            .poster-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .main-poster, .character-preview {
+                max-width: 90%;
+                min-width: unset;
+            }
+
+            .back-to-overview {
+                top: 15px;
+                left: 15px;
+            }
+            
+            .back-btn {
+                padding: 12px 18px;
+                font-size: 0.85rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 20px;
+            }
+
+            .character-card {
+                padding: 20px 15px;
+            }
+
+            .character-image {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .character-preview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="neon-drinks">
+        <div class="neon-drink">🍷</div>
+        <div class="neon-drink">🥂</div>
+        <div class="neon-drink">🍸</div>
+        <div class="neon-drink">🍺</div>
+        <div class="neon-drink">🥃</div>
+    </div>
+
+    <div class="light-beams">
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">酒大奇蹟</h1>
+            <div class="year-badge">公元 2088 年 • 酒文化巔峰時代</div>
+            <div class="decorative-line"></div>
+            <p class="subtitle">齊炸戒酒中心的神秘宴會，七位酒界豪傑的命運交錯</p>
+        </div>
+
+        <div class="poster-section">
+            <div class="poster-container">
+                <div class="main-poster">
+                    <img src="https://i.postimg.cc/1X7LT5c9/2025-08-28-123509.png" alt="酒大奇蹟劇本殺主海報" class="poster-image">
+                </div>
+                <div class="character-preview">
+                    <img src="https://i.postimg.cc/D0w9BbGj/2025-08-28-123540.png" alt="角色預覽1" class="preview-image">
+                    <img src="https://i.postimg.cc/DZnk4NwK/2025-08-28-123548.png" alt="角色預覽2" class="preview-image">
+                    <img src="https://i.postimg.cc/ZRHk8LWv/2025-08-28-123554.png" alt="角色預覽3" class="preview-image">
+                    <img src="https://i.postimg.cc/qv6dPn5W/2025-08-28-123605.png" alt="角色預覽4" class="preview-image">
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">酒大奇蹟</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4-5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span>👨</span>
+                            <span>4男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span>👩</span>
+                            <span>3女</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span>🎭</span>
+                            <span>可反串</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🍷 特殊需求</span>
+                    <span class="info-value">不提供酒水</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">歡樂</span>
+                        <span class="tag">未來</span>
+                        <span class="tag">機制</span>
+                        <span class="tag">酒文化</span>
+                        <span class="tag">科幻</span>
+                        <span class="tag">特殊</span>
+                        <span class="tag">沉浸</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/D0w9BbGj/2025-08-28-123540.png" alt="查理" class="character-image">
+                        <div class="character-name">查理</div>
+                        <div class="character-info">男，53歲<br><strong>酒仙</strong> - 德高望重的酒界泰斗</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/DZnk4NwK/2025-08-28-123548.png" alt="羅婆婆" class="character-image">
+                        <div class="character-name">羅婆婆</div>
+                        <div class="character-info">女，75歲<br><strong>酒陣</strong> - 精通酒陣布局的長者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/ZRHk8LWv/2025-08-28-123554.png" alt="逆火" class="character-image">
+                        <div class="character-name">逆火</div>
+                        <div class="character-info">男，26歲<br><strong>酒魔</strong> - 叛逆不羈的年輕酒客</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/qv6dPn5W/2025-08-28-123605.png" alt="華生" class="character-image">
+                        <div class="character-name">華生</div>
+                        <div class="character-info">男，25歲<br><strong>酒鬼</strong> - 沉迷酒中世界的探索者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/1zp1tSPH/2025-08-28-123616.png" alt="周念" class="character-image">
+                        <div class="character-name">周念</div>
+                        <div class="character-info">女，25歲<br><strong>酒靈</strong> - 靈動敏銳的酒道修行者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/tCMjvD2h/2025-08-28-123625.png" alt="盧致標" class="character-image">
+                        <div class="character-name">盧致標</div>
+                        <div class="character-info">男，33歲<br><strong>酒帝</strong> - 統御酒界的霸主級人物</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/W4RPTzRz/2025-08-28-123633.png" alt="鄧圓順" class="character-image">
+                        <div class="character-name">鄧圓順</div>
+                        <div class="character-info">女，23歲<br><strong>酒騙</strong> - 機靈善變的酒界新星</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    <span class="highlight">公元2088年</span>，世界科技水平飛速發展。全世界人們安居樂業，和平共處。因為智能化的社會，很多傳統文化逐漸流失，比如「武術」「書法」等等……當然，有些文化是恆久不變的主題，在生活更加完美的超現代社會，那些文化被保存，甚至擴張得更加完善。比如飲食文化、<span class="highlight">酒文化</span>。
+                    <br><br>
+                    因為現代的優質提純技術，酒成為最常見的飲料，幾乎人人都會在閒暇時光來上兩杯。我們這次的故事，講述的就是在這個豐衣足食，吃飽了沒有事做的社會中，已經達到巔峰的<span class="highlight">【酒文化】</span>。喝酒，是一種情感的宣洩，是一種禮儀的表達。喝酒成為了現代生活的一門藝術和學問。
+                    <br><br>
+                    我們中華大地上，更是有著各路酒中豪傑。這些豪傑具備著各種各樣飲酒絕技與酒壇稱謂 - <span class="highlight">酒仙、酒陣、酒魔、酒鬼、酒靈、酒帝、酒騙</span> - 每個稱謂都代表著不同的酒道境界與人生態度。
+                    <br><br>
+                    因為一些原因，當今酒壇高手紛紛被集中到一個叫做<span class="highlight">【齊炸戒酒中心】</span>的地方。公元2088年7月29日【中華酒節】，戒酒中心舉辦了久違的宴會，更是有傳說中的美酒【滿壇香】出現……
+                </div>
+                
+                <div class="wine-quote">
+                    <div class="quote-text">
+                        "本應是一場舉杯狂歡的盛宴，<br>
+                        不料卻發生了一場後代被稱呼為「奇蹟」的故事……<br><br>
+                        七位酒界豪傑，七種人生態度，<br>
+                        當滿壇香的香氣飄散在空中時，<br>
+                        究竟會引發什麼樣的連鎖反應？"
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《酒大奇蹟》是一部<span class="highlight">未來科幻歡樂機制本</span>，以2088年的酒文化巔峰時代為背景，呈現了七位各具特色的酒界豪傑在戒酒中心相遇的奇妙故事。這個劇本最大的特色在於<span class="highlight">需要搭配真實酒水進行遊戲</span>，讓玩家在微醺狀態下體驗角色的內心世界。
+                    <br><br>
+                    劇本中的每個角色都有獨特的「酒壇稱謂」 - 從德高望重的<span class="highlight">酒仙查理</span>，到精通酒陣的<span class="highlight">羅婆婆</span>，再到年輕叛逆的<span class="highlight">酒魔逆火</span>，每個人都代表著不同的酒道哲學與人生境界。
+                    <br><br>
+                    作為一個<span class="highlight">特殊機制本</span>，《酒大奇蹟》不僅僅是推理解謎，更是一場關於酒文化、人性慾望與社會變遷的深度體驗。在「齊炸戒酒中心」這個充滿矛盾的場所，當傳說中的「滿壇香」出現時，所有人的命運都將被改寫。
+                    <br><br>
+                    劇本推理難度適中（★★★☆☆），更注重於角色互動與情境沉浸。透過酒文化這個載體，探討在高度發達的未來社會中，傳統文化如何傳承與演變，以及人類情感表達的本質追求。
+                    <br><br>
+                    ⚠️ <span class="highlight">特別提醒</span>：此劇本需要玩家適量飲酒參與，請確保身體狀況允許，並提前安排好安全的交通方式。未成年或不便飲酒的玩家可以無酒精飲料替代參與。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 互動效果初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星評分互動
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 20px rgba(255, 215, 0, 0.9)';
+                            s.style.transform = 'scale(1.2)';
+                        } else {
+                            s.style.color = 'rgba(255, 215, 0, 0.3)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        if (!s.classList.contains('empty')) {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 12px rgba(255, 215, 0, 0.6)';
+                            s.style.transform = 'scale(1)';
+                        }
+                    });
+                });
+            });
+
+            // 標籤點擊波紋效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const ripple = document.createElement('div');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 0;
+                        height: 0;
+                        background: rgba(255, 255, 255, 0.4);
+                        border-radius: 50%;
+                        transform: translate(-50%, -50%);
+                        animation: ripple 0.6s ease-out;
+                        pointer-events: none;
+                    `;
+                    tag.style.position = 'relative';
+                    tag.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        tag.removeChild(ripple);
+                    }, 600);
+                });
+            });
+
+            // 角色卡片精緻互動
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    const image = card.querySelector('.character-image');
+                    const name = card.querySelector('.character-name');
+                    
+                    if (image) {
+                        image.style.transform = 'scale(1.15) rotate(3deg)';
+                        image.style.filter = 'brightness(1.2) contrast(1.1)';
+                    }
+                    
+                    if (name) {
+                        name.style.color = '#fff';
+                        name.style.textShadow = '0 0 15px rgba(255, 23, 68, 0.8)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    const image = card.querySelector('.character-image');
+                    const name = card.querySelector('.character-name');
+                    
+                    if (image) {
+                        image.style.transform = 'scale(1) rotate(0deg)';
+                        image.style.filter = 'brightness(1) contrast(1)';
+                    }
+                    
+                    if (name) {
+                        name.style.color = '#ff1744';
+                        name.style.textShadow = '0 0 10px rgba(255, 23, 68, 0.4)';
+                    }
+                });
+            });
+
+            // 卡片動態光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `
+                        radial-gradient(circle at ${x}px ${y}px, 
+                            rgba(233, 30, 99, 0.25) 0%, 
+                            rgba(26, 26, 70, 0.9) 50%, 
+                            rgba(45, 45, 90, 0.85) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = `linear-gradient(135deg, 
+                        rgba(26, 26, 70, 0.9), 
+                        rgba(45, 45, 90, 0.85))`;
+                });
+            });
+
+            // 霓虹爆炸特效
+            function createNeonExplosion() {
+                const colors = ['#ff1744', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5'];
+                
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        width: 6px;
+                        height: 6px;
+                        background: ${colors[Math.floor(Math.random() * colors.length)]};
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 9999;
+                        animation: neonBurst 2.5s ease-out forwards;
+                        box-shadow: 0 0 15px currentColor;
+                    `;
+                    
+                    const angle = (i / 20) * 360;
+                    const distance = 150 + Math.random() * 200;
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes neonBurst {
+                            0% { 
+                                transform: translate(-50%, -50%) scale(0);
+                                opacity: 1;
+                            }
+                            50% {
+                                transform: translate(-50%, -50%) 
+                                    translate(${Math.cos(angle * Math.PI / 180) * distance}px, 
+                                             ${Math.sin(angle * Math.PI / 180) * distance}px) 
+                                    scale(1.5);
+                                opacity: 0.8;
+                            }
+                            100% { 
+                                transform: translate(-50%, -50%) 
+                                    translate(${Math.cos(angle * Math.PI / 180) * distance * 1.5}px, 
+                                             ${Math.sin(angle * Math.PI / 180) * distance * 1.5}px) 
+                                    scale(0);
+                                opacity: 0;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(particle);
+                        document.head.removeChild(style);
+                    }, 2500);
+                }
+            }
+
+            // 標題點擊觸發霓虹爆炸
+            document.querySelector('.title').addEventListener('click', () => {
+                createNeonExplosion();
+                playFuturisticSound();
+            });
+
+            // 未來科幻音效
+            function playFuturisticSound() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // 創建未來感音效序列
+                    oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.3);
+                    oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.6);
+                    oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.9);
+                    
+                    gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 1.2);
+                } catch (e) {
+                    console.log('音效不支援');
+                }
+            }
+
+            // 霓虹酒杯互動
+            const neonDrinks = document.querySelectorAll('.neon-drink');
+            neonDrinks.forEach((drink, index) => {
+                drink.addEventListener('click', () => {
+                    drink.style.animation = 'none';
+                    drink.style.transform = 'scale(3) rotate(720deg)';
+                    drink.style.textShadow = '0 0 40px currentColor, 0 0 80px currentColor';
+                    
+                    setTimeout(() => {
+                        drink.style.animation = 'neonFloat 18s ease-in-out infinite';
+                        drink.style.transform = '';
+                        drink.style.textShadow = '0 0 20px currentColor, 0 0 40px currentColor';
+                    }, 2000);
+                });
+            });
+
+            // 年代徽章特效
+            const yearBadge = document.querySelector('.year-badge');
+            yearBadge.addEventListener('click', () => {
+                yearBadge.style.animation = 'none';
+                yearBadge.style.transform = 'rotate(1080deg) scale(1.3)';
+                yearBadge.style.background = 'linear-gradient(135deg, #ff1744, #e91e63, #9c27b0, #673ab7)';
+                
+                // 創建時間漣漪效果
+                const timeRipple = document.createElement('div');
+                timeRipple.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 100px;
+                    height: 100px;
+                    border: 3px solid #e91e63;
+                    border-radius: 50%;
+                    transform: translate(-50%, -50%);
+                    animation: timeRipple 2s ease-out;
+                    pointer-events: none;
+                `;
+                yearBadge.style.position = 'relative';
+                yearBadge.appendChild(timeRipple);
+                
+                setTimeout(() => {
+                    yearBadge.style.animation = 'futuristicPulse 2.5s ease-in-out infinite';
+                    yearBadge.style.transform = '';
+                    yearBadge.style.background = 'linear-gradient(135deg, #e91e63, #9c27b0, #673ab7)';
+                    if (yearBadge.contains(timeRipple)) {
+                        yearBadge.removeChild(timeRipple);
+                    }
+                }, 2000);
+            });
+
+            // CTA 按鈕特效
+            document.querySelector('.cta-button').addEventListener('click', (e) => {
+                createNeonExplosion();
+                playFuturisticSound();
+            });
+        });
+
+        // 添加動態樣式
+        const dynamicStyles = document.createElement('style');
+        dynamicStyles.textContent = `
+            @keyframes ripple {
+                0% { width: 0; height: 0; opacity: 1; }
+                100% { width: 100px; height: 100px; opacity: 0; }
+            }
+            
+            @keyframes timeRipple {
+                0% { 
+                    width: 0; 
+                    height: 0; 
+                    opacity: 1; 
+                    border-width: 3px;
+                }
+                100% { 
+                    width: 300px; 
+                    height: 300px; 
+                    opacity: 0; 
+                    border-width: 0;
+                }
+            }
+        `;
+        document.head.appendChild(dynamicStyles);
+
+        // 滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const neonEffects = document.querySelector('.neon-drinks');
+            const lightBeams = document.querySelector('.light-beams');
+            
+            if (neonEffects) neonEffects.style.transform = `translateY(${scrolled * 0.2}px)`;
+            if (lightBeams) lightBeams.style.transform = `translateY(${scrolled * 0.4}px)`;
+        });
+
+        // 動態粒子創建
+        function createAmbientParticles() {
+            const container = document.querySelector('.light-beams');
+            const colors = ['#ff1744', '#e91e63', '#9c27b0', '#673ab7'];
+            
+            for (let i = 0; i < 3; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 4px;
+                    height: 4px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    border-radius: 50%;
+                    box-shadow: 0 0 20px currentColor;
+                    animation: ambientFloat ${15 + Math.random() * 10}s ease-in-out infinite;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100}%;
+                    opacity: 0.6;
+                `;
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (container.contains(particle)) {
+                        container.removeChild(particle);
+                    }
+                }, 25000);
+            }
+        }
+
+        // 添加環境粒子動畫
+        const ambientStyle = document.createElement('style');
+        ambientStyle.textContent = `
+            @keyframes ambientFloat {
+                0%, 100% { 
+                    transform: translateY(0px) translateX(0px) scale(1);
+                    opacity: 0.3;
+                }
+                25% {
+                    transform: translateY(-80px) translateX(40px) scale(1.2);
+                    opacity: 0.8;
+                }
+                50% {
+                    transform: translateY(-120px) translateX(-20px) scale(0.8);
+                    opacity: 0.6;
+                }
+                75% {
+                    transform: translateY(-60px) translateX(60px) scale(1.1);
+                    opacity: 0.7;
+                }
+            }
+        `;
+        document.head.appendChild(ambientStyle);
+
+        // 定期創建環境粒子
+        setInterval(createAmbientParticles, 8000);
+        createAmbientParticles(); // 立即創建第一批
+
+        // 圖片載入錯誤處理
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            img.addEventListener('error', function() {
+                this.style.display = 'none';
+                console.log(`圖片載入失敗: ${this.src}`);
+            });
+        });
+    </script>
+
+    <audio id="bgm" loop muted>
+        <source src="酒大奇蹟.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        // 點擊頁面啟用背景音樂
+        document.addEventListener('click', function() {
+            const bgm = document.getElementById('bgm');
+            if (bgm && bgm.muted) {
+                bgm.muted = false;
+                bgm.play().catch(e => console.log('音樂播放失敗'));
+            }
+        }, { once: true });
+    </script>
+
+</body>
+</html>
