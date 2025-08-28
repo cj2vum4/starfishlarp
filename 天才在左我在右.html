@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天才在左我在右 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 30%, #2d2d2d 60%, #404040 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        /* 撲克牌飄浮效果 */
+        .card-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: linear-gradient(135deg, #333, #666);
+            width: 40px;
+            height: 60px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 0, 0, 0.8);
+            animation: card-float 8s ease-in-out infinite;
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .floating-card:nth-child(1) { left: 10%; top: 15%; animation-delay: 0s; }
+        .floating-card:nth-child(2) { left: 85%; top: 25%; animation-delay: 2s; }
+        .floating-card:nth-child(3) { left: 20%; top: 70%; animation-delay: 4s; }
+        .floating-card:nth-child(4) { right: 15%; top: 60%; animation-delay: 6s; }
+
+        @keyframes card-float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.6;
+            }
+            25% { 
+                transform: translateY(-30px) rotate(15deg);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translateY(-20px) rotate(-10deg);
+                opacity: 0.4;
+            }
+            75% { 
+                transform: translateY(-40px) rotate(25deg);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.8), 0 0 60px rgba(255, 0, 0, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #ff0000, #cc0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .letter-quote {
+            font-size: 1.1rem;
+            color: rgba(255, 0, 0, 0.9);
+            margin: 20px 0;
+            text-align: center;
+            line-height: 1.6;
+            font-family: '微軟正黑體', serif;
+            font-style: italic;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 0, 0, 0.05);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 0, 0, 0.3);
+            border-color: rgba(255, 0, 0, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ff0000;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 0, 0, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 0, 0, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 0, 0, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4), 0 0 40px rgba(255, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.5), 0 0 60px rgba(255, 0, 0, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 12s ease-in-out infinite;
+            color: rgba(255, 0, 0, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 8s;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .character-card:hover {
+            background: rgba(255, 0, 0, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(255, 0, 0, 0.8);
+            transform: scale(1.05) rotateY(360deg);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .character-role {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .tarot-symbol {
+            font-size: 0.8rem;
+            color: #ff6666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(3deg); }
+            66% { transform: translateY(-40px) rotate(-3deg); }
+        }
+
+        /* 陰暗脈搏效果 */
+        .pulse-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 60%, rgba(255,0,0,0.1) 100%);
+            pointer-events: none;
+            z-index: 0;
+            animation: darkPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes darkPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* 特殊互動效果 */
+        .mystery-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 15px;
+            border: 2px dashed rgba(255, 0, 0, 0.3);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mystery-section:hover {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: rgba(255, 0, 0, 0.5);
+            transform: scale(1.02);
+        }
+
+        .mystery-text {
+            color: #ff6666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+
+        .reveal-hint {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .hidden-message {
+            opacity: 0;
+            transition: all 1s ease;
+            margin-top: 15px;
+            color: #fff;
+            font-weight: 600;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+        .hidden-message.revealed {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="pulse-overlay"></div>
+
+    <div class="card-effects">
+        <div class="floating-card">♠</div>
+        <div class="floating-card">♥</div>
+        <div class="floating-card">♦</div>
+        <div class="floating-card">♣</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🃏</div>
+        <div class="floating-element">🎭</div>
+        <div class="floating-element">💀</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">天才在左我在右</h1>
+            <div class="letter-quote">
+                「近來可好，我的朋友。當你收到這封信時，不必驚訝，不必恐慌。<br>
+                我冒昧邀請你參加我的葬禮，悼念我的死亡。<br>
+                你聽啊。窺探者的鋼琴曲幽幽奏響。<br>
+                你看啊。傀儡師的身軀割裂在舞台上。<br>
+                我躺在棺材內，等待你。這是我最後的願望......」
+            </div>
+            <p class="subtitle">一場沒有DM的劇本遊戲，作者的陰謀</p>
+        </div>
+
+        <div class="poster-section" style="text-align: center; margin-bottom: 40px; opacity: 0; transform: translateY(50px); animation: fadeInUp 1s ease-out 0.2s forwards;">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/c4gk78LJ/image.png" alt="天才在左我在右劇本殺封面1" style="max-width: 45%; min-width: 300px; max-height: 600px; border-radius: 20px; box-shadow: 0 20px 40px rgba(255, 0, 0, 0.3), 0 0 80px rgba(255, 0, 0, 0.2); transition: all 0.3s ease; border: 2px solid rgba(255, 0, 0, 0.3);">
+                <img src="https://i.postimg.cc/VkX7pQMQ/image.jpg" alt="天才在左我在右劇本殺封面2" style="max-width: 45%; min-width: 300px; max-height: 600px; border-radius: 20px; box-shadow: 0 20px 40px rgba(255, 0, 0, 0.3), 0 0 80px rgba(255, 0, 0, 0.2); transition: all 0.3s ease; border: 2px solid rgba(255, 0, 0, 0.3);">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🃏 劇本名稱</span>
+                    <span class="info-value">天才在左我在右</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4-5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <span class="info-value">7人（不限性別）</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">現代</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">本格</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">硬核</span>
+                        <span class="tag">微恐</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/T1h74KjC/image.png" alt="偽面者" class="character-image" style="border-radius: 15px; object-fit: cover; width: 80px; height: 80px;">
+                        <div class="character-name">偽面者</div>
+                        <div class="character-role">前律師<br>笑臉綜合症患者</div>
+                        <div class="tarot-symbol">♠審判者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/G3Nqphxn/image.png" alt="獵心師" class="character-image" style="border-radius: 15px; object-fit: cover; width: 80px; height: 80px;">
+                        <div class="character-name">獵心師</div>
+                        <div class="character-role">神秘職業<br>有特殊需求</div>
+                        <div class="tarot-symbol">♥魅惑者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/c1558cZj/image.png" alt="低語者" class="character-image" style="border-radius: 15px; object-fit: cover; width: 80px; height: 80px;">
+                        <div class="character-name">低語者</div>
+                        <div class="character-role">內向青年<br>自閉症患者</div>
+                        <div class="tarot-symbol">♦隱者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/qq9LDjvv/image.png" alt="匿行者" class="character-image" style="border-radius: 15px; object-fit: cover; width: 80px; height: 80px;">
+                        <div class="character-name">匿行者</div>
+                        <div class="character-role">社會邊緣人<br>社交恐懼症</div>
+                        <div class="tarot-symbol">♣逃避者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/8P6wfQZJ/image.png" alt="築夢師" class="character-image" style="border-radius: 15px; object-fit: cover; width: 80px; height: 80px;">
+                        <div class="character-name">築夢師</div>
+                        <div class="character-role">藝術創作者<br>妄想症患者</div>
+                        <div class="tarot-symbol">♠造夢者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/nrs216ZW/image.png" alt="犧牲者" class="character-image" style="border-radius: 15px; object-fit: cover; width: 80px; height: 80px;">
+                        <div class="character-name">犧牲者</div>
+                        <div class="character-role">憂鬱靈魂<br>重度抑鬱症</div>
+                        <div class="tarot-symbol">♥受難者</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/J0g6VRPm/image.png" alt="執刑者" class="character-image" style="border-radius: 15px; object-fit: cover; width: 80px; height: 80px;">
+                        <div class="character-name">執刑者</div>
+                        <div class="character-role">危險分子<br>反社會人格</div>
+                        <div class="tarot-symbol">♦死神</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    故事源於一封神秘的<span class="highlight">邀請函</span>，邀請你參加一場葬禮。在這個充滿哲學思辨的世界中，七個身患不同心理疾病的人收到了來自「沈先生」的信件，每個人都被分配了一張神秘的塔羅牌。
+                    <br><br>
+                    這些卡牌包括<span class="highlight">審判者、魅惑者、隱者、逃避者、造夢師、受難者、死神</span>等，每張牌都代表著持有者內心的痛苦與掙扎。在《昨日救贖》這本神秘書籍的指引下，一個關於「以罪殺罪」的恐怖儀式即將展開。
+                    <br><br>
+                    <span class="highlight">雍九</span>是這一切的始作俑者，他撰寫了《昨日救贖》系列書籍，試圖通過完美犯罪來「拯救」這個世界。而<span class="highlight">沈先生</span>作為審判者，要在理想與現實之間做出抉擇。
+                </div>
+
+                <div class="mystery-section" onclick="revealSecret()">
+                    <div class="mystery-text">點擊此處揭示隱藏的真相</div>
+                    <div class="reveal-hint">（警告：涉及劇情劇透）</div>
+                    <div class="hidden-message" id="secretMessage">
+                        「天才在左瘋子在右」VS「天才在左我在右」<br>
+                        所以我是真的瘋了嗎？我真的有病嗎？<br>
+                        這是關於自我救贖與道德選擇的終極考驗...
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《天才在左我在右》是一部<span class="highlight">顛覆性的現代推理劇本</span>，摒棄了傳統的「三刀兩毒」模式，開創了全新的推理體驗。這不是為了推理而推理的作品，而是通過完整的故事來探究人性的劣根性。
+                    <br><br>
+                    劇本的最大創新在於<span class="highlight">沒有傳統意義上的DM</span>，所有玩家都是偵探位角色，沒有邊緣角色的存在。每個案件的重點不在兇手，而在受害者的身世與死亡原因，讓玩家在推理過程中思考道德與選擇的意義。
+                    <br><br>
+                    整個劇情如同讀小說般流暢，前半段讓玩家沉浸其中，意猶未盡時才發現一切剛剛開始。<span class="highlight">多個兇案、驚人反轉、創新設計</span>，玩到最後你可能會發現自己已經被作者完全掌控。
+                    <br><br>
+                    這是一個關於<span class="highlight">心理疾病與社會邊緣人</span>的深度思辨，每個角色都代表著不同的心理狀態，從自閉症到反社會人格，從抑鬱症到妄想症。玩家將在扮演中體驗這些角色的內心世界，思考什麼是真正的善惡與救贖。
+                    <br><br>
+                    <span class="highlight">警告：此劇本屬於硬核推理，建議有一定劇本殺經驗的玩家遊玩。涉及心理疾病題材，需要成熟的心態來面對複雜的人性探討。</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ff0000';
+                            s.style.textShadow = '0 0 15px rgba(255, 0, 0, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 15px 35px rgba(255, 0, 0, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 0, 0, 0.25) 0%, rgba(0,0,0,0.6) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.6)';
+                });
+            });
+
+            // 撲克牌點擊效果
+            const floatingCards = document.querySelectorAll('.floating-card');
+            floatingCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.style.animation = 'none';
+                    card.style.transform = 'scale(1.5) rotate(720deg)';
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.animation = 'card-float 8s ease-in-out infinite';
+                        card.style.transform = '';
+                        card.style.opacity = '';
+                    }, 1000);
+                });
+            });
+        });
+
+        // 揭示隱藏訊息
+        function revealSecret() {
+            const hiddenMessage = document.getElementById('secretMessage');
+            hiddenMessage.classList.toggle('revealed');
+            
+            // 創建血紅色波紋效果
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 10px;
+                height: 10px;
+                border: 2px solid rgba(255, 0, 0, 0.8);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                animation: secretRipple 2s ease-out forwards;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes secretRipple {
+                    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+                    100% { transform: translate(-50%, -50%) scale(50); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => {
+                if (document.body.contains(ripple)) document.body.removeChild(ripple);
+                if (document.head.contains(style)) document.head.removeChild(style);
+            }, 2000);
+        }
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const cardEffects = document.querySelector('.card-effects');
+            const floating = document.querySelector('.floating-elements');
+            const pulse = document.querySelector('.pulse-overlay');
+            
+            if (cardEffects) cardEffects.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (pulse) pulse.style.transform = `translateY(${scrolled * 0.02}px)`;
+        });
+
+        // 標題點擊特效
+        document.querySelector('.title').addEventListener('click', () => {
+            const title = document.querySelector('.title');
+            title.style.animation = 'none';
+            title.style.transform = 'scale(1.1)';
+            title.style.textShadow = '0 0 50px rgba(255, 0, 0, 1), 0 0 100px rgba(255, 0, 0, 0.8)';
+            
+            setTimeout(() => {
+                title.style.transform = 'scale(1)';
+                title.style.textShadow = '0 0 30px rgba(255, 0, 0, 0.8), 0 0 60px rgba(255, 0, 0, 0.6)';
+            }, 300);
+        });
+
+        // 隨機撲克牌重新排列
+        setInterval(() => {
+            const cards = document.querySelectorAll('.floating-card');
+            cards.forEach(card => {
+                const delay = Math.random() * 3;
+                card.style.animationDelay = delay + 's';
+            });
+        }, 15000);
+    </script>
+
+    <audio id="bgm" src="天才在左我在右.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+</body>
+</html>
