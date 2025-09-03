@@ -234,6 +234,22 @@
             color: #fff;
         }
 
+        /* 搜索框樣式 */
+        .search-box input {
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: rgba(147, 51, 234, 0.8);
+            box-shadow: 0 0 15px rgba(147, 51, 234, 0.3);
+            transform: scale(1.02);
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         .reset-btn {
             background: linear-gradient(45deg, #dc2626, #dc267f);
             color: white;
@@ -293,6 +309,24 @@
         .script-card:nth-child(17) { animation-delay: 3.7s; }
         .script-card:nth-child(18) { animation-delay: 3.9s; }
         .script-card:nth-child(19) { animation-delay: 4.1s; }
+        .script-card:nth-child(20) { animation-delay: 4.3s; }
+        .script-card:nth-child(21) { animation-delay: 4.5s; }
+        .script-card:nth-child(22) { animation-delay: 4.7s; }
+        .script-card:nth-child(23) { animation-delay: 4.9s; }
+        .script-card:nth-child(24) { animation-delay: 5.1s; }
+        .script-card:nth-child(25) { animation-delay: 5.3s; }
+        .script-card:nth-child(26) { animation-delay: 5.5s; }
+        .script-card:nth-child(27) { animation-delay: 5.7s; }
+        .script-card:nth-child(28) { animation-delay: 5.9s; }
+        .script-card:nth-child(29) { animation-delay: 6.1s; }
+        .script-card:nth-child(30) { animation-delay: 6.3s; }
+        .script-card:nth-child(31) { animation-delay: 6.5s; }
+        .script-card:nth-child(32) { animation-delay: 6.7s; }
+        .script-card:nth-child(33) { animation-delay: 6.9s; }
+        .script-card:nth-child(34) { animation-delay: 7.1s; }
+        .script-card:nth-child(35) { animation-delay: 7.3s; }
+        .script-card:nth-child(36) { animation-delay: 7.5s; }
+        .script-card:nth-child(37) { animation-delay: 7.7s; }
 
         .script-card:hover {
             transform: translateY(-15px) scale(1.02);
@@ -501,6 +535,13 @@
                 padding: 20px 15px;
                 margin-bottom: 30px;
                 border-radius: 15px;
+            }
+
+            /* 搜索框響應式優化 */
+            .search-box input {
+                max-width: 100%;
+                font-size: 0.9rem;
+                padding: 10px 18px;
             }
 
             .filter-title {
@@ -726,13 +767,20 @@
                     </button>
                 </div>
             </div>
-            </div>
+        </div>
 
         <div class="filter-section">
             <h2 class="filter-title">🔍 劇本篩選</h2>
             <div class="filter-result">
-                <span class="result-text">找到 <span id="filteredCount">19</span> 個符合條件的劇本</span>
+                <span class="result-text">找到 <span id="filteredCount">37</span> 個符合條件的劇本</span>
             </div>
+            
+            <!-- 搜索框 -->
+            <div class="search-box" style="margin-bottom: 20px; text-align: center;">
+                <input type="text" id="searchInput" placeholder="🔍 搜索劇本名稱..." 
+                       style="width: 100%; max-width: 400px; padding: 12px 20px; border-radius: 25px; border: 1px solid rgba(147, 51, 234, 0.5); background: rgba(147, 51, 234, 0.2); color: #fff; font-size: 1rem;">
+            </div>
+            
             <div class="filter-controls">
                 <div class="filter-group">
                     <label class="filter-label">👥 遊戲人數</label>
@@ -772,6 +820,17 @@
                         <option value="3">3星 - 中等</option>
                         <option value="4">4星 - 困難</option>
                         <option value="5">5星 - 極難</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">📊 排序方式</label>
+                    <select id="sortFilter" class="filter-select">
+                        <option value="default">預設順序</option>
+                        <option value="name">按名稱排序</option>
+                        <option value="difficulty">按難度排序</option>
+                        <option value="time">按時長排序</option>
+                        <option value="players">按人數排序</option>
                     </select>
                 </div>
             </div>
@@ -1113,6 +1172,277 @@
                 <button class="detail-btn" onclick="goToScript('chunbai')">查看詳細介紹</button>
             </div>
 
+            <!-- 新增的劇本卡片 -->
+            <div class="script-card" data-theme="modern" data-players="10" data-types="陣營,機制,歡樂,現代,撕逼,新手" data-difficulty="1">
+                <img src="https://i.postimg.cc/KcVXYpTR/image.jpg" alt="拆遷" class="script-image">
+                <h3 class="script-title">拆遷</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 5男5女（可反串）</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 1星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">陣營</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">撕逼</span>
+                    <span class="type-tag">新手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('chaiqian')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="shrine" data-players="6" data-types="情感,日式,沉浸,還原,新手" data-difficulty="2">
+                <img src="https://i.postimg.cc/DwD8FHhJ/2025-09-03-102020.png" alt="眠夢不老泉" class="script-image">
+                <h3 class="script-title">眠夢不老泉</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 4.5小時</span>
+                    <span class="info-badge">⭐ 2星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">日式</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">新手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('mianmeng')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="mystery" data-players="5" data-types="硬核,推理,燒腦,變格,現代" data-difficulty="5">
+                <img src="https://i.postimg.cc/L8XcWh1Q/109951165590072847.jpg" alt="年輪" class="script-image">
+                <h3 class="script-title">年輪</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男2女</span>
+                    <span class="info-badge">⏰ 5小時</span>
+                    <span class="info-badge">⭐ 5星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">硬核</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">燒腦</span>
+                    <span class="type-tag">變格</span>
+                    <span class="type-tag">現代</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('nianlun')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="shrine" data-players="5" data-types="日式,硬核,還原,推理,機制" data-difficulty="4">
+                <img src="https://i.postimg.cc/JzGNvW45/arch.jpg" alt="神樂湯" class="script-image">
+                <h3 class="script-title">神樂湯</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男2女</span>
+                    <span class="info-badge">⏰ 4-5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">日式</span>
+                    <span class="type-tag">硬核</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">機制</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('shenle')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="modern" data-players="10" data-types="續集,機制,歡樂,陣營,現代,房產,博弈" data-difficulty="1">
+                <img src="https://i.postimg.cc/85kxw6QF/v2-84e72c373c2077e6324e282bd93eba61-1440w.png" alt="拆遷2買房" class="script-image">
+                <h3 class="script-title">拆遷2買房</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 5男5女（可反串）</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 1星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">續集</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">陣營</span>
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">房產</span>
+                    <span class="type-tag">博弈</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('chaiqian2')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="space" data-players="7" data-types="歡樂,未來,機制,酒文化,科幻,特殊,沉浸" data-difficulty="3">
+                <img src="https://i.postimg.cc/1X7LT5c9/2025-08-28-123509.png" alt="酒大奇蹟" class="script-image">
+                <h3 class="script-title">酒大奇蹟</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 4男3女（可反串）</span>
+                    <span class="info-badge">⏰ 4-5小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">未來</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">酒文化</span>
+                    <span class="type-tag">科幻</span>
+                    <span class="type-tag">特殊</span>
+                    <span class="type-tag">沉浸</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('jiuda')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="modern" data-players="6" data-types="日式,推理,還原,硬核,情感,懸疑,進階" data-difficulty="4">
+                <img src="https://i.postimg.cc/wv0KPH3k/1-S-5.jpg" alt="請將我深埋" class="script-image">
+                <h3 class="script-title">請將我深埋</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女（可反串）</span>
+                    <span class="info-badge">⏰ 4-5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">日式</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">硬核</span>
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">懸疑</span>
+                    <span class="type-tag">進階</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('qingjiang')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="love" data-players="6" data-types="情感,現代,沉浸,愛情,新手" data-difficulty="1">
+                <img src="https://i.postimg.cc/XqvNPrvx/image.jpg" alt="風起時想你" class="script-image">
+                <h3 class="script-title">風起時想你</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 1星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">愛情</span>
+                    <span class="type-tag">新手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('fengqi')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="horror" data-players="6" data-types="微恐,還原,推理,沉浸,進階" data-difficulty="4">
+                <img src="https://i.postimg.cc/Gpvg6BBj/image.jpg" alt="病嬌3：近乎正常的我們" class="script-image">
+                <h3 class="script-title">病嬌3：近乎正常的我們</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">進階</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('bingjiao3')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="mystery" data-players="7" data-types="現代,推理,本格,還原,硬核,微恐,繁體" data-difficulty="3">
+                <img src="https://i.postimg.cc/c4gk78LJ/image.png" alt="天才在左我在右" class="script-image">
+                <h3 class="script-title">天才在左我在右</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 7人（不限性別）</span>
+                    <span class="info-badge">⏰ 4-5小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">本格</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">硬核</span>
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">繁體</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('tiancai')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="modern" data-players="6" data-types="現代,情感,純愛,浪漫,無兇手" data-difficulty="0">
+                <img src="https://i.postimg.cc/sXBRPWRV/image.jpg" alt="太陽可以是藍色嗎" class="script-image">
+                <h3 class="script-title">太陽可以是藍色嗎</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 4.5小時</span>
+                    <span class="info-badge">⭐ 0星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">情感</span>
+                    <span class="type-tag">純愛</span>
+                    <span class="type-tag">浪漫</span>
+                    <span class="type-tag">無兇手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('taiyang')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="horror" data-players="6" data-types="現代,驚悚,還原,獵奇,沉浸,微恐,繁體,城限" data-difficulty="4">
+                <img src="https://i.postimg.cc/prpYyKkY/image.png" alt="左左" class="script-image">
+                <h3 class="script-title">左左</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女（原版7人）</span>
+                    <span class="info-badge">⏰ 約5小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">驚悚</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">獵奇</span>
+                    <span class="type-tag">沉浸</span>
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">繁體</span>
+                    <span class="type-tag">城限</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('zuozuo')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="mystery" data-players="6" data-types="本格,推理,還原,微恐,現代,架空,新手友善,繁化" data-difficulty="3">
+                <img src="https://i.postimg.cc/7hgnYWvJ/image.jpg" alt="常春藤公寓" class="script-image">
+                <h3 class="script-title">常春藤公寓</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 4男2女（可反串）</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">本格</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">架空</span>
+                    <span class="type-tag">新手友善</span>
+                    <span class="type-tag">繁化</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('changchun')">查看詳細介紹</button>
+            </div>
+
+            <div class="script-card" data-theme="mystery" data-players="6" data-types="推理,本格,現代,微恐,還原,新手友善,進階可玩,繁化" data-difficulty="4">
+                <img src="https://i.postimg.cc/yYJhpxpr/gto1-Zyy-LPx-DJj-X-KTw-YLkw-Rfk-HCgw2-Dmff-Uk6-Iuh-DMk92fa-X8g0k5ub-Yf-Wa-N-I9-A.jpg" alt="45" class="script-image">
+                <h3 class="script-title">45</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 4男2女（可反串）</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">本格</span>
+                    <span class="type-tag">現代</span>
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">新手友善</span>
+                    <span class="type-tag">進階可玩</span>
+                    <span class="type-tag">繁化</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('45')">查看詳細介紹</button>
+            </div>
+
         </div>
 
         <div class="no-results hidden" id="noResults">
@@ -1303,6 +1633,146 @@
             theme: 'modern',
             time: 4.5,
             file: '純白少年的慢性死亡.html'
+        },
+        {
+            id: 'chaiqian',
+            name: '拆遷',
+            players: 6,
+            types: ['歡樂', '機制', '新手', '現代', '團建'],
+            difficulty: 1,
+            theme: 'modern',
+            time: 4,
+            file: '拆遷.html'
+        },
+        {
+            id: 'mianmeng',
+            name: '眠夢不老泉',
+            players: 6,
+            types: ['情感', '日式', '沉浸', '還原', '新手'],
+            difficulty: 2,
+            theme: 'shrine',
+            time: 4.5,
+            file: '眠夢不老泉.html'
+        },
+        {
+            id: 'nianlun',
+            name: '年輪',
+            players: 5,
+            types: ['推理', '還原', '進階', '硬核', '燒腦'],
+            difficulty: 4,
+            theme: 'mystery',
+            time: 5,
+            file: '年輪.html'
+        },
+        {
+            id: 'shenle',
+            name: '神樂湯',
+            players: 6,
+            types: ['日式', '推理', '還原', '進階', '微恐'],
+            difficulty: 4,
+            theme: 'shrine',
+            time: 5,
+            file: '神樂湯.html'
+        },
+        {
+            id: 'chaiqian2',
+            name: '拆遷2買房',
+            players: 6,
+            types: ['歡樂', '機制', '新手', '現代', '團建'],
+            difficulty: 1,
+            theme: 'modern',
+            time: 4,
+            file: '拆遷2.html'
+        },
+        {
+            id: 'jiuda',
+            name: '酒大奇蹟',
+            players: 7,
+            types: ['機制', '情感', '沉浸', '科幻', '進階'],
+            difficulty: 3,
+            theme: 'space',
+            time: 5.5,
+            file: '酒大奇蹟.html'
+        },
+        {
+            id: 'qingjiang',
+            name: '請將我深埋',
+            players: 6,
+            types: ['情感', '現代', '沉浸', '立意', '新手'],
+            difficulty: 2,
+            theme: 'modern',
+            time: 4.5,
+            file: '請將我深埋.html'
+        },
+        {
+            id: 'fengqi',
+            name: '風起時想你',
+            players: 6,
+            types: ['情感', '現代', '沉浸', '愛情', '新手'],
+            difficulty: 1,
+            theme: 'love',
+            time: 4,
+            file: '風起時想你.html'
+        },
+        {
+            id: 'bingjiao3',
+            name: '病嬌3：近乎正常的我們',
+            players: 6,
+            types: ['微恐', '還原', '推理', '沉浸', '進階'],
+            difficulty: 4,
+            theme: 'horror',
+            time: 5,
+            file: '病嬌3近乎正常的我們.html'
+        },
+        {
+            id: 'tiancai',
+            name: '天才在左我在右',
+            players: 6,
+            types: ['推理', '機制', '進階', '燒腦', '硬核'],
+            difficulty: 4,
+            theme: 'mystery',
+            time: 5,
+            file: '天才在左我在右.html'
+        },
+        {
+            id: 'taiyang',
+            name: '太陽可以是藍色嗎',
+            players: 6,
+            types: ['情感', '現代', '沉浸', '立意', '新手'],
+            difficulty: 2,
+            theme: 'modern',
+            time: 4.5,
+            file: '太陽可以是藍色嗎.html'
+        },
+        {
+            id: 'zuozuo',
+            name: '左左',
+            players: 6,
+            types: ['推理', '還原', '進階', '燒腦', '硬核'],
+            difficulty: 5,
+            theme: 'horror',
+            time: 6,
+            file: '左左.html'
+        },
+        {
+            id: 'changchun',
+            name: '常春藤公寓',
+            players: 6,
+            types: ['推理', '還原', '進階', '燒腦', '硬核'],
+            difficulty: 4,
+            theme: 'mystery',
+            time: 5,
+            file: '常春藤公寓.html'
+        },
+        {
+            id: '45',
+            name: '45',
+            players: 6,
+            types: ['推理', '還原', '進階', '燒腦', '硬核'],
+            difficulty: 5,
+            theme: 'mystery',
+            time: 6,
+            file: '45.html'
         }
     ];
 
@@ -1320,6 +1790,16 @@
         document.getElementById('difficultyFilter').addEventListener('change', () => {
             updateAvailableOptions();
             filterScripts();
+        });
+        
+        // 綁定搜索事件監聽
+        document.getElementById('searchInput').addEventListener('input', () => {
+            filterScripts();
+        });
+        
+        // 綁定排序事件監聽
+        document.getElementById('sortFilter').addEventListener('change', () => {
+            sortScripts();
         });
         
         // 初始化可用選項和篩選
@@ -1350,6 +1830,9 @@
         
         // 更新難度選項
         updateDifficultyOptions(filteredScripts, playerFilter, typeFilter);
+        
+        // 更新篩選結果數量
+        updateFilteredCount(filteredScripts.length);
     }
     
     // 更新人數選項
@@ -1464,16 +1947,17 @@
         const playerFilter = document.getElementById('playerFilter').value;
         const typeFilter = document.getElementById('typeFilter').value;
         const difficultyFilter = document.getElementById('difficultyFilter').value;
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
         
         const scriptCards = document.querySelectorAll('.script-card');
         const noResultsEl = document.getElementById('noResults');
-        const filteredCountEl = document.getElementById('filteredCount');
         let visibleCount = 0;
 
         scriptCards.forEach(card => {
             const players = card.dataset.players;
             const types = card.dataset.types.split(',');
             const difficulty = card.dataset.difficulty;
+            const title = card.querySelector('.script-title').textContent.toLowerCase();
             
             let shouldShow = true;
             if (playerFilter && players !== playerFilter) {
@@ -1485,6 +1969,9 @@
             if (difficultyFilter && difficulty !== difficultyFilter) {
                 shouldShow = false;
             }
+            if (searchQuery && !title.includes(searchQuery)) {
+                shouldShow = false;
+            }
             
             if (shouldShow) {
                 card.classList.remove('hidden');
@@ -1494,14 +1981,22 @@
             }
         });
 
-        // 更新篩選結果數量
-        filteredCountEl.textContent = visibleCount;
-
         // 根據 visibleCount 決定是否顯示 "查無結果"
         if (visibleCount === 0) {
             noResultsEl.classList.remove('hidden');
         } else {
             noResultsEl.classList.add('hidden');
+        }
+        
+        // 更新篩選結果數量
+        updateFilteredCount(visibleCount);
+    }
+
+    // 更新篩選結果數量
+    function updateFilteredCount(count) {
+        const filteredCountEl = document.getElementById('filteredCount');
+        if (filteredCountEl) {
+            filteredCountEl.textContent = count;
         }
     }
 
@@ -1510,13 +2005,63 @@
         document.getElementById('playerFilter').value = '';
         document.getElementById('typeFilter').value = '';
         document.getElementById('difficultyFilter').value = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('sortFilter').value = 'default';
         updateAvailableOptions();
         filterScripts();
+        sortScripts();
     }
 
     // 前往指定頁面的函式
     function goToPage(filename) {
         window.location.href = filename;
+    }
+
+    // 排序功能
+    function sortScripts() {
+        const sortType = document.getElementById('sortFilter').value;
+        const scriptCards = Array.from(document.querySelectorAll('.script-card:not(.hidden)'));
+        const scriptsGrid = document.getElementById('scriptsGrid');
+        
+        if (sortType === 'default') {
+            // 恢復原始順序
+            scriptCards.forEach(card => {
+                scriptsGrid.appendChild(card);
+            });
+            return;
+        }
+        
+        scriptCards.sort((a, b) => {
+            switch (sortType) {
+                case 'name':
+                    const nameA = a.querySelector('.script-title').textContent;
+                    const nameB = b.querySelector('.script-title').textContent;
+                    return nameA.localeCompare(nameB, 'zh-TW');
+                    
+                case 'difficulty':
+                    const diffA = parseInt(a.dataset.difficulty);
+                    const diffB = parseInt(b.dataset.difficulty);
+                    return diffA - diffB;
+                    
+                case 'time':
+                    const timeA = parseFloat(a.querySelector('.info-badge:nth-child(2)').textContent.replace('⏰ ', '').replace('小時', ''));
+                    const timeB = parseFloat(b.querySelector('.info-badge:nth-child(2)').textContent.replace('⏰ ', '').replace('小時', ''));
+                    return timeA - timeB;
+                    
+                case 'players':
+                    const playersA = parseInt(a.dataset.players);
+                    const playersB = parseInt(b.dataset.players);
+                    return playersA - playersB;
+                    
+                default:
+                    return 0;
+            }
+        });
+        
+        // 重新排列卡片
+        scriptCards.forEach(card => {
+            scriptsGrid.appendChild(card);
+        });
     }
 
     // 前往劇本詳細頁面的函式
