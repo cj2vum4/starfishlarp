@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鯨魚馬戲團 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1e2a3a 30%, #2d4b6b 60%, #3a5998 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 海洋波浪動畫效果 */
+        .ocean-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(58, 89, 152, 0.3) 0%, rgba(45, 75, 107, 0.2) 100%);
+            animation: wave 12s linear infinite;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .wave:nth-child(1) { animation-delay: 0s; opacity: 0.7; }
+        .wave:nth-child(2) { animation-delay: 2s; opacity: 0.5; height: 80px; }
+        .wave:nth-child(3) { animation-delay: 4s; opacity: 0.3; height: 60px; }
+
+        @keyframes wave {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+
+        /* 鯨魚雲朵效果 */
+        .cloud-whale {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2rem;
+            animation: float-whale 20s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        .cloud-whale:nth-child(4) { top: 15%; right: 10%; animation-delay: 0s; }
+        .cloud-whale:nth-child(5) { top: 25%; left: 15%; animation-delay: 5s; }
+        .cloud-whale:nth-child(6) { top: 35%; right: 20%; animation-delay: 10s; }
+
+        @keyframes float-whale {
+            0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.6; }
+            33% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+            66% { transform: translateY(-10px) translateX(-15px); opacity: 0.7; }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(58, 89, 152, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(58, 89, 152, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(58, 89, 152, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(58, 89, 152, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(58, 89, 152, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(58, 89, 152, 0.8), 0 0 60px rgba(58, 89, 152, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #6ba3d6, #3a5998);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(58, 89, 152, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(58, 89, 152, 0.3);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(58, 89, 152, 0.6);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(58, 89, 152, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(58, 89, 152, 0.3);
+            border-color: rgba(58, 89, 152, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3a5998;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(58, 89, 152, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(58, 89, 152, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(58, 89, 152, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(58, 89, 152, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(58, 89, 152, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #4fc3f7;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #e2e8f0;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #3a5998, #2d4b6b);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(58, 89, 152, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(58, 89, 152, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(58, 89, 152, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(58, 89, 152, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(58, 89, 152, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(58, 89, 152, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(58, 89, 152, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(58, 89, 152, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(58, 89, 152, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(58, 89, 152, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(58, 89, 152, 0.5);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(58, 89, 152, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(58, 89, 152, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #3a5998, #2d4b6b);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(58, 89, 152, 0.4), 0 0 40px rgba(58, 89, 152, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(58, 89, 152, 0.5), 0 0 60px rgba(58, 89, 152, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(58, 89, 152, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #4fc3f7;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(79, 195, 247, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        /* 新增時光漫談效果 */
+        .radio-wave {
+            position: absolute;
+            top: 10%;
+            right: 5%;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            animation: radio-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes radio-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        /* 特色展示區域樣式 */
+        .features-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(58, 89, 152, 0.3);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(58, 89, 152, 0.2) 0%, rgba(45, 75, 107, 0.1) 100%);
+            border-radius: 15px;
+            border: 1px solid rgba(58, 89, 152, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-item:hover::before {
+            left: 100%;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(58, 89, 152, 0.4);
+            border-color: rgba(58, 89, 152, 0.6);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            animation: float-icon 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(58, 89, 152, 0.5));
+        }
+
+        .feature-item:nth-child(1) .feature-icon { animation-delay: 0s; }
+        .feature-item:nth-child(2) .feature-icon { animation-delay: 0.5s; }
+        .feature-item:nth-child(3) .feature-icon { animation-delay: 1s; }
+        .feature-item:nth-child(4) .feature-icon { animation-delay: 1.5s; }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        .feature-content h3 {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(58, 89, 152, 0.5);
+        }
+
+        .feature-content p {
+            color: #f1f5f9;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .features-showcase {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .feature-item {
+                padding: 15px;
+            }
+            
+            .feature-icon {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="ocean-effects">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="cloud-whale">🐋</div>
+        <div class="cloud-whale">🐋</div>
+        <div class="cloud-whale">🐋</div>
+        <div class="radio-wave">📻 FM 52.0</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🎪</div>
+        <div class="floating-element">🎭</div>
+        <div class="floating-element">⭐</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">鯨魚馬戲團</h1>
+            <p class="subtitle">一段關於時光與相遇的溫情故事</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/ZKPLFj52/369-E2-FA6-448-B-4-C9-A-8-A6-E-8-B077276577-B.jpg" alt="鯨魚馬戲團劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/0NCQVMw8/2025-09-03-153825.png" alt="鯨魚馬戲團劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">鯨魚馬戲團</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">3-4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>2男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>4女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">情感</span>
+                        <span class="tag">溫情</span>
+                        <span class="tag">新手友好</span>
+                        <span class="tag">還原</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/DZbrWPNC/FEFB2187-6-E82-42-A0-AEB4-550-FD8856064.jpg" alt="雲雲角色海報" class="character-image">
+                        <div class="character-name">雲雲</div>
+                        <div class="character-info">女性角色<br>煙花魔術師，單純好哭</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Wpk8tsL2/22-EB7785-5-C1-E-474-F-B870-A0621702357-F.jpg" alt="天天角色海報" class="character-image">
+                        <div class="character-name">天天</div>
+                        <div class="character-info">男性角色<br>小丑，活潑愛鬧，適合感性男生</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/RZXQ2FfT/CCD78069-0208-4845-8-BA9-2482857-AA432.jpg" alt="圓圓角色海報" class="character-image">
+                        <div class="character-name">圓圓</div>
+                        <div class="character-info">女性角色<br>河豚獨輪車演員，性格固執</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/GpfPh5X8/447-FE85-A-3-CDC-447-D-B508-57632-DCCD9-EE.jpg" alt="萱萱角色海報" class="character-image">
+                        <div class="character-name">萱萱</div>
+                        <div class="character-info">女性角色<br>副團長，適合成熟女孩，有愛情線</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/BnqBhD86/D1-ECB2-A4-B674-4-B90-BA24-8-CB483-B91-EB5.jpg" alt="飛飛角色海報" class="character-image">
+                        <div class="character-name">飛飛</div>
+                        <div class="character-info">男性角色<br>秋刀魚飛刀手，適合外向男生</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/tJWNcNt1/3-A825-B94-89-A9-4461-8-F7-A-CCE0-C8-FA954-F.jpg" alt="落落角色海報" class="character-image">
+                        <div class="character-name">落落</div>
+                        <div class="character-info">女性角色<br>美人魚，年齡較小，內向不善表達</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    <span class="highlight">插播一條天氣訊息</span>。今日我市上空出現諸多雲團，引來無數市民圍觀。據天文專家推測，此雲團會繼續聚集......
+                    <br><br>
+                    <span class="highlight">現在是晚間21點30分</span>，歡迎收聽調頻FM 52.0《時光漫談》，走進你的人生旅程。都說有的人坐飛機就能見到，但有的人要坐時光機才能見到，就像今天住在這個城市上空的雲團，匯聚成躍出天際的鯨魚，而這鯨魚雲團後面，是否藏著時光的秘密......
+                    <br><br>
+                    <span class="highlight">一通日常的電話</span>，意外入院的老爸，驚動了被安置在生活各個角落的你們。你們從不同的位置朝著同一個方向開始匯集。天上的雲團也開始匯集，逐漸變成了鯨魚的模樣。
+                    <br><br>
+                    一場魔幻的奇遇，一段真實的相遇。一篇生活的箴言，一首時光的秘密。<span class="highlight">鯨魚馬戲團，開幕，上演</span>。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《鯨魚馬戲團》是一部充滿<span class="highlight">歡樂與治癒</span>的現代情感劇本，以親情為核心，講述了一個關於家庭、時光與相遇的動人故事。當天空中的雲朵匯聚成鯨魚的形狀，六個原本分散在生活各個角落的馬戲團成員，因為一通電話而重新聚集。
+                    <br><br>
+                    這個劇本<span class="highlight">前期歡樂，後期催淚</span>，是一個讓人在毫無防備的情況下被深深感動的作品。每個角色都有著獨特的馬戲團職業和深刻的背景故事，需要玩家們通過互動來逐步還原整個故事的全貌。
+                    <br><br>
+                    劇本<span class="highlight">推理難度適中</span>，更注重角色情感的刻畫和故事的還原。<span class="highlight">非常適合新手玩家</span>，也是許多人推薦的入門好本。遊戲過程中，玩家將在歡樂中體驗到濃濃的親情溫暖，最終在淚水中獲得治癒和成長。
+                    <br><br>
+                    這是一個關於<span class="highlight">夢想與現實</span>的故事，在這個特殊的夜晚，當鯨魚雲團出現在天空中時，每個馬戲團成員都將找到屬於自己的答案，以及那份久違的家庭溫暖。
+                </div>
+                
+                <div class="features-showcase">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎪</div>
+                        <div class="feature-content">
+                            <h3>歡樂治癒系</h3>
+                            <p>前期歡樂互動，後期深刻體驗</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💖</div>
+                        <div class="feature-content">
+                            <h3>情感共鳴強</h3>
+                            <p>"前面有多歡樂，後面哭得就有多兇"</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🌟</div>
+                        <div class="feature-content">
+                            <h3>新手友好</h3>
+                            <p>推理適中，深度足夠</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📻</div>
+                        <div class="feature-content">
+                            <h3>電台元素</h3>
+                            <p>《時光漫談》創意設定</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ff6b6b';
+                        } else {
+                            s.style.color = '#4fc3f7';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#4fc3f7';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(58, 89, 152, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(58, 89, 152, 0.25) 0%, rgba(0,0,0,0.4) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.4)';
+                });
+            });
+
+            // 鯨魚點擊效果
+            const whales = document.querySelectorAll('.cloud-whale');
+            whales.forEach(whale => {
+                whale.addEventListener('click', () => {
+                    whale.style.transform = 'scale(1.5) rotate(360deg)';
+                    whale.style.transition = 'all 1s ease';
+                    setTimeout(() => {
+                        whale.style.transform = '';
+                    }, 1000);
+                });
+            });
+
+            // 電台波效果
+            const radioWave = document.querySelector('.radio-wave');
+            if (radioWave) {
+                radioWave.addEventListener('click', () => {
+                    alert('🎵 現在播放：時光漫談 FM 52.0 🎵\n\n都說有的人坐飛機就能見到，但有的人要坐時光機才能見到......');
+                });
+                radioWave.style.cursor = 'pointer';
+            }
+
+            // 特色項目互動效果
+            const featureItems = document.querySelectorAll('.feature-item');
+            featureItems.forEach((item, index) => {
+                item.addEventListener('mouseenter', () => {
+                    // 添加脈衝光效
+                    item.style.boxShadow = `0 0 30px rgba(58, 89, 152, 0.6), 0 15px 30px rgba(58, 89, 152, 0.4)`;
+                    
+                    // 圖標放大效果
+                    const icon = item.querySelector('.feature-icon');
+                    icon.style.transform = 'scale(1.2) rotate(10deg)';
+                    icon.style.transition = 'all 0.3s ease';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    // 恢復原始狀態
+                    item.style.boxShadow = '';
+                    const icon = item.querySelector('.feature-icon');
+                    icon.style.transform = '';
+                });
+
+                // 點擊效果
+                item.addEventListener('click', () => {
+                    item.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        item.style.transform = 'scale(1.02)';
+                    }, 150);
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const ocean = document.querySelector('.ocean-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (ocean) ocean.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // 頁面載入音效提示
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const audioHint = document.createElement('div');
+                audioHint.style.cssText = `
+                    position: fixed; 
+                    bottom: 20px; 
+                    right: 20px; 
+                    background: rgba(58, 89, 152, 0.9); 
+                    color: white; 
+                    padding: 10px 15px; 
+                    border-radius: 10px; 
+                    font-size: 0.9rem;
+                    z-index: 1001;
+                    animation: fadeIn 0.5s ease-out;
+                `;
+                audioHint.textContent = '🎵 點擊電台圖標聆聽時光漫談';
+                document.body.appendChild(audioHint);
+                
+                setTimeout(() => {
+                    audioHint.style.animation = 'fadeOut 0.5s ease-out';
+                    setTimeout(() => {
+                        document.body.removeChild(audioHint);
+                    }, 500);
+                }, 3000);
+            }, 2000);
+        });
+
+        // CSS 動畫補充
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(20px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+</body>
+</html>
