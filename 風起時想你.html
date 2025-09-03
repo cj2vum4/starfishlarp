@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>風起時想你 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 30%, #5d6d7e 60%, #85929e 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 風與雲特效 */
+        .wind-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wind-particle {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.3);
+            animation: windFlow 20s linear infinite;
+            font-size: 1.5rem;
+        }
+
+        .wind-particle:nth-child(1) { top: 10%; left: -5%; animation-delay: 0s; }
+        .wind-particle:nth-child(2) { top: 25%; left: -5%; animation-delay: 7s; }
+        .wind-particle:nth-child(3) { top: 40%; left: -5%; animation-delay: 14s; }
+        .wind-particle:nth-child(4) { top: 55%; left: -5%; animation-delay: 3s; }
+        .wind-particle:nth-child(5) { top: 70%; left: -5%; animation-delay: 10s; }
+        .wind-particle:nth-child(6) { top: 85%; left: -5%; animation-delay: 17s; }
+
+        @keyframes windFlow {
+            0% {
+                left: -10%;
+                opacity: 0;
+                transform: translateY(0px);
+            }
+            10% {
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                left: 110%;
+                opacity: 0;
+                transform: translateY(0px);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(133, 146, 158, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(133, 146, 158, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(133, 146, 158, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(133, 146, 158, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(133, 146, 158, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(133, 146, 158, 0.8), 0 0 60px rgba(133, 146, 158, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #85929e, #5d6d7e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(133, 146, 158, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .wind-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #5d6d7e, #85929e);
+            color: #fff;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0;
+            box-shadow: 0 5px 20px rgba(133, 146, 158, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .wind-quote {
+            font-size: 1.1rem;
+            color: rgba(133, 146, 158, 0.9);
+            margin: 20px 0;
+            text-align: center;
+            line-height: 1.6;
+            font-family: '微軟正黑體', serif;
+            font-style: italic;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(133, 146, 158, 0.4), 0 0 80px rgba(133, 146, 158, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(133, 146, 158, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(133, 146, 158, 0.5), 0 0 100px rgba(133, 146, 158, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(133, 146, 158, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(133, 146, 158, 0.3);
+            border-color: rgba(133, 146, 158, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #85929e;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(133, 146, 158, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(133, 146, 158, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(133, 146, 158, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(133, 146, 158, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(133, 146, 158, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #85929e;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(133, 146, 158, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(133, 146, 158, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #5d6d7e, #85929e);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(133, 146, 158, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(133, 146, 158, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(133, 146, 158, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(133, 146, 158, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #5d6d7e, #85929e);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(133, 146, 158, 0.4), 0 0 40px rgba(133, 146, 158, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(133, 146, 158, 0.5), 0 0 60px rgba(133, 146, 158, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 18s ease-in-out infinite;
+            color: rgba(133, 146, 158, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 6s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 12s;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(133, 146, 158, 0.2);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 2px solid rgba(133, 146, 158, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card:hover {
+            background: rgba(133, 146, 158, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(133, 146, 158, 0.4);
+        }
+
+        .character-image {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(133, 146, 158, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(133, 146, 158, 0.3);
+            object-fit: cover;
+            display: block;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(133, 146, 158, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(133, 146, 158, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .character-info {
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.4;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .character-quote {
+            font-size: 0.85rem;
+            color: rgba(133, 146, 158, 0.9);
+            margin-top: 8px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #85929e;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(133, 146, 158, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(2deg); }
+            66% { transform: translateY(-45px) rotate(-2deg); }
+        }
+
+        /* 裝飾線條 */
+        .decorative-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #85929e, transparent);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .decorative-line::before,
+        .decorative-line::after {
+            content: "🌪️";
+            position: absolute;
+            top: -8px;
+            color: #85929e;
+            font-size: 1.2rem;
+        }
+
+        .decorative-line::before {
+            left: 20%;
+        }
+
+        .decorative-line::after {
+            right: 20%;
+        }
+
+        /* 風的引言框 */
+        .wind-quote-box {
+            background: rgba(133, 146, 158, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #85929e;
+            position: relative;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .wind-quote-box::before {
+            content: "💨";
+            position: absolute;
+            top: -5px;
+            left: -15px;
+            font-size: 1.5rem;
+        }
+
+        .quote-text {
+            font-style: italic;
+            color: #85929e;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 15px;
+            }
+
+            .character-card {
+                padding: 20px 15px;
+            }
+
+            .character-image {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="wind-effects">
+        <div class="wind-particle">💨</div>
+        <div class="wind-particle">🍃</div>
+        <div class="wind-particle">☁️</div>
+        <div class="wind-particle">🌬️</div>
+        <div class="wind-particle">🍂</div>
+        <div class="wind-particle">💨</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🌪️</div>
+        <div class="floating-element">🌸</div>
+        <div class="floating-element">💫</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">風起時想你</h1>
+            <div class="wind-badge">🌬️ 當風起時，思念如潮水湧來 🌬️</div>
+            <div class="decorative-line"></div>
+            <p class="subtitle">驀然回首，所過之處已是陽和啟蟄，枯木逢春</p>
+        </div>
+
+        <div class="poster-section">
+            <img src="https://i.postimg.cc/XqvNPrvx/image.jpg" alt="風起時想你劇本殺海報" class="poster-image">
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🌬️ 劇本名稱</span>
+                    <span class="info-value">風起時想你</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">5 - 5.5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                        <span style="color: #85929e; font-size: 0.8rem; margin-left: 10px;">（不可反串）</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">情感</span>
+                        <span class="tag">新手</span>
+                        <span class="tag">愛情</span>
+                        <span class="tag">親情</span>
+                        <span class="tag">友情</span>
+                        <span class="tag">現代</span>
+                        <span class="tag">無兇手</span>
+                        <span class="tag">沉浸式</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/N0102hV8/image.jpg" alt="林碩" class="character-image">
+                        <div class="character-name">林碩</div>
+                        <div class="character-info">男性角色<br>溫暖而堅定的存在</div>
+                        <div class="character-quote">「如果有天玫瑰花開了，帶著它來看看我好嗎？」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/qRwMQspz/image.jpg" alt="陳煜" class="character-image">
+                        <div class="character-name">陳煜</div>
+                        <div class="character-info">男性角色<br>溫柔關懷的守護者</div>
+                        <div class="character-quote">「今天有好好吃飯嗎？」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/gJm2vSFC/image.jpg" alt="白榆" class="character-image">
+                        <div class="character-name">白榆</div>
+                        <div class="character-info">男性角色<br>詩意而深沉的靈魂</div>
+                        <div class="character-quote">「天上何所有，歷歷種白榆。」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/cJqHJ1D4/image.jpg" alt="沈念" class="character-image">
+                        <div class="character-name">沈念</div>
+                        <div class="character-info">女性角色<br>堅定的愛情信仰者</div>
+                        <div class="character-quote">「長相守，到白頭，山為證。」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/FznFXhdv/image.jpg" alt="顧薇" class="character-image">
+                        <div class="character-name">顧薇</div>
+                        <div class="character-info">女性角色<br>敏感而浪漫的心靈</div>
+                        <div class="character-quote">「書上說如果你愛一個人，就會聞到他身上特別的味道。」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/jSn2Kn4F/image.jpg" alt="楊若楠" class="character-image">
+                        <div class="character-name">楊若楠</div>
+                        <div class="character-info">女性角色<br>深藏思念的溫柔</div>
+                        <div class="character-quote">「思念變成海，在窗外進不來。」</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    這是一個關於<span class="highlight">風與思念</span>的故事，一個關於等待與相遇的溫柔傳說。在這個世界裡，風不僅僅是自然現象，更是連接心靈的神秘使者，它穿越時空，傳遞著最深沉的情感。
+                    <br><br>
+                    它掠過荒漠曠野，跨過春夏四季，涉過千河萬山。每一陣風都承載著不同的故事，每一次吹拂都可能改變命運的軌跡。在這個關於<span class="highlight">愛情、親情與友情</span>交織的故事中，六個年輕人的生命因為風而產生了微妙的聯繫。
+                    <br><br>
+                    它傳來了悠遠綿長的思念，帶來了經年的愜意與安詳。然而，生活從來不是只有美好，在某個不為人知的夜晚，一場未知的大火改變了一切。火光中，秘密被燃燒，真相被掩埋，而那些深藏的情感也在烈焰中經歷了洗禮。
+                    <br><br>
+                    <span class="highlight">"我本不想與任何人講起你，可它卻說可以替我去見你。"</span>
+                    <br><br>
+                    現在，當風再次吹起時，那些被時間塵封的記憶開始復甦，那些未曾說出口的話語隨風而來。你在等，等一場風停，又等一場風起。在這個循環中，每個人都在尋找著屬於自己的答案，每個人都在等待著命運的安排。
+                </div>
+                
+                <div class="wind-quote-box">
+                    <div class="quote-text">
+                        "你在等，等一場風停<br>
+                        又等一場風起<br>
+                        驀然回首，所過之處已是陽和啟蟄，枯木逢春。"
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="decorative-line"></div>
+                <div class="description-text">
+                    《風起時想你》是一部純粹的<span class="highlight">情感體驗劇本</span>，完全沒有兇殺案件，沒有複雜的推理邏輯，只有最真摯的人性情感和最動人的故事情節。這個劇本專注於探討人與人之間的情感連結，讓玩家在角色扮演中體驗到愛情的甜蜜與苦澀、親情的溫暖與牽絆、友情的純真與考驗。
+                    <br><br>
+                    劇本採用了<span class="highlight">多重時間線敘事</span>的手法，通過不同角色的回憶與現實交織，逐步揭開那場改變一切的大火背後的真相。每個角色都有著屬於自己的秘密和心願，這些秘密並非罪惡，而是關於愛與被愛、給予與犧牲的深層情感。
+                    <br><br>
+                    這是一個<span class="highlight">高度沉浸式</span>的情感劇本，玩家需要真正投入到角色的內心世界中，感受他們的喜怒哀樂。遊戲過程中沒有勾心鬥角，沒有爾虞我詐，只有六個年輕人在風的見證下，慢慢敞開心扉，分享彼此最珍貴的回憶。
+                    <br><br>
+                    劇本的<span class="highlight">文學性極強</span>，每個角色的台詞都充滿詩意，如「如果有天玫瑰花開了，帶著它來看看我好嗎？」這樣的經典語句貫穿始終。整個故事就像一首關於青春、愛情與成長的長詩，讓玩家在遊戲結束後依然回味無窮。
+                    <br><br>
+                    特別適合<span class="highlight">情侶約會</span>或者<span class="highlight">朋友聚會</span>，這個劇本能夠增進彼此的了解，讓參與者在扮演角色的過程中，也對現實中的關係有更深的感悟。5-5.5小時的遊戲時間，給予玩家充分的空間去品味每一個細節，感受每一次心跳。
+                    <br><br>
+                    這不僅僅是一場劇本殺，更是一次<span class="highlight">心靈之旅</span>，一次關於愛與被愛的深度探索。當最後一陣風吹過，當所有的秘密都被溫柔地揭開，你會發現，原來最美的故事，就是關於人與人之間那些最純真的情感。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果（0星設計）
+            const stars = document.querySelectorAll('.star-rating');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    star.style.color = '#85929e';
+                    star.style.textShadow = '0 0 15px rgba(133, 146, 158, 0.8)';
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    star.style.color = 'rgba(255, 255, 255, 0.3)';
+                    star.style.textShadow = '0 0 10px rgba(133, 146, 158, 0.5)';
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(133, 146, 158, 0.4)';
+                    const image = card.querySelector('.character-image');
+                    if (image) {
+                        image.style.transform = 'scale(1.1) rotate(5deg)';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                    const image = card.querySelector('.character-image');
+                    if (image) {
+                        image.style.transform = 'scale(1) rotate(0deg)';
+                    }
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(133, 146, 158, 0.25) 0%, rgba(0,0,0,0.4) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.4)';
+                });
+            });
+
+            // 風效果
+            function createWindEffect() {
+                const container = document.querySelector('.wind-effects');
+                const windGust = document.createElement('div');
+                windGust.style.cssText = `
+                    position: fixed;
+                    top: 30%;
+                    left: -150px;
+                    transform: translateY(-50%);
+                    font-size: 4rem;
+                    animation: windGust 6s linear forwards;
+                    pointer-events: none;
+                    z-index: 9999;
+                `;
+                windGust.textContent = '🌪️';
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes windGust {
+                        0% { 
+                            left: -150px;
+                            opacity: 0;
+                            transform: translateY(-50%) rotate(0deg);
+                        }
+                        10% {
+                            opacity: 1;
+                        }
+                        90% {
+                            opacity: 1;
+                        }
+                        100% { 
+                            left: calc(100vw + 150px);
+                            opacity: 0;
+                            transform: translateY(-50%) rotate(360deg);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+                container.appendChild(windGust);
+                
+                setTimeout(() => {
+                    container.removeChild(windGust);
+                    document.head.removeChild(style);
+                }, 6000);
+            }
+
+            // 點擊標題觸發風效果
+            document.querySelector('.title').addEventListener('click', createWindEffect);
+
+            // 風徽章點擊效果
+            const windBadge = document.querySelector('.wind-badge');
+            windBadge.addEventListener('click', () => {
+                windBadge.style.animation = 'none';
+                windBadge.style.transform = 'rotate(360deg) scale(1.2)';
+                createWindEffect();
+                setTimeout(() => {
+                    windBadge.style.animation = 'pulse 2s ease-in-out infinite';
+                    windBadge.style.transform = '';
+                }, 1000);
+            });
+
+            // 風粒子互動效果
+            const windParticles = document.querySelectorAll('.wind-particle');
+            windParticles.forEach(particle => {
+                particle.addEventListener('click', () => {
+                    particle.style.animationDuration = '8s';
+                    particle.style.transform = 'scale(1.5)';
+                    particle.style.opacity = '1';
+                    setTimeout(() => {
+                        particle.style.animationDuration = '20s';
+                        particle.style.transform = '';
+                        particle.style.opacity = '';
+                    }, 4000);
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const windEffects = document.querySelector('.wind-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (windEffects) windEffects.style.transform = `translateY(${scrolled * 0.02}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.06}px)`;
+        });
+
+        // 動態背景粒子
+        function createBackgroundParticles() {
+            const container = document.querySelector('.floating-elements');
+            for (let i = 0; i < 2; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 2px;
+                    height: 2px;
+                    background: #85929e;
+                    border-radius: 50%;
+                    box-shadow: 0 0 6px #85929e;
+                    animation: windFloat ${12 + Math.random() * 6}s ease-in-out infinite;
+                    top: ${Math.random() * 100}%;
+                    left: ${Math.random() * 100}%;
+                `;
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (container.contains(particle)) {
+                        container.removeChild(particle);
+                    }
+                }, 18000);
+            }
+        }
+
+        // 添加風粒子動畫樣式
+        const windParticleStyle = document.createElement('style');
+        windParticleStyle.textContent = `
+            @keyframes windFloat {
+                0%, 100% { 
+                    transform: translateY(0px) translateX(0px);
+                    opacity: 0;
+                }
+                50% {
+                    transform: translateY(-40px) translateX(20px);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(windParticleStyle);
+
+        // 定期創建背景粒子
+        setInterval(createBackgroundParticles, 8000);
+
+        // 角色名稱跳動效果
+        const characterNames = document.querySelectorAll('.character-name');
+        characterNames.forEach(name => {
+            name.addEventListener('mouseenter', () => {
+                name.style.animation = 'windBounce 0.8s ease-in-out';
+            });
+            
+            name.addEventListener('animationend', () => {
+                name.style.animation = '';
+            });
+        });
+
+        // 添加風跳動動畫
+        const windBounceStyle = document.createElement('style');
+        windBounceStyle.textContent = `
+            @keyframes windBounce {
+                0%, 20%, 60%, 100% {
+                    transform: translateY(0);
+                }
+                40% {
+                    transform: translateY(-10px);
+                }
+                80% {
+                    transform: translateY(-5px);
+                }
+            }
+        `;
+        document.head.appendChild(windBounceStyle);
+
+        // 風引言框發光效果
+        const windQuoteBox = document.querySelector('.wind-quote-box');
+        if (windQuoteBox) {
+            windQuoteBox.addEventListener('mouseenter', () => {
+                windQuoteBox.style.boxShadow = '0 0 20px rgba(133, 146, 158, 0.4)';
+                windQuoteBox.style.borderLeftColor = '#5d6d7e';
+                windQuoteBox.style.transform = 'scale(1.02)';
+            });
+            
+            windQuoteBox.addEventListener('mouseleave', () => {
+                windQuoteBox.style.boxShadow = 'none';
+                windQuoteBox.style.borderLeftColor = '#85929e';
+                windQuoteBox.style.transform = 'scale(1)';
+            });
+        }
+
+        // CTA按鈕風效果
+        document.querySelector('.cta-button').addEventListener('click', (e) => {
+            createWindEffect();
+        });
+    </script>
+
+    <audio id="bgm" src="風起時想你.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            const bgm = document.getElementById('bgm');
+            if (bgm) {
+                bgm.muted = false;
+            }
+        }, {once: true});
+    </script>
+
+</body>
+</html>

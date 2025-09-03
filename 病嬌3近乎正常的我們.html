@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病嬌3：近乎正常的我們 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0f1a 0%, #2d1b2d 30%, #3e1b3e 60%, #4a1f4a 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        /* 水珠效果 */
+        .water-drops {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .water-drop {
+            position: absolute;
+            background: linear-gradient(135deg, transparent, rgba(255, 182, 193, 0.8), transparent);
+            border-radius: 50% 50% 50% 0;
+            animation: drop-fall 8s ease-in-out infinite;
+            opacity: 0.6;
+            transform: rotate(45deg);
+        }
+
+        .water-drop:nth-child(1) { width: 8px; height: 10px; left: 20%; top: 10%; animation-delay: 0s; }
+        .water-drop:nth-child(2) { width: 6px; height: 8px; left: 60%; top: 20%; animation-delay: 2s; }
+        .water-drop:nth-child(3) { width: 10px; height: 12px; left: 80%; top: 15%; animation-delay: 4s; }
+        .water-drop:nth-child(4) { width: 7px; height: 9px; left: 40%; top: 25%; animation-delay: 6s; }
+
+        @keyframes drop-fall {
+            0%, 100% { 
+                transform: rotate(45deg) translateY(0px);
+                opacity: 0.6;
+            }
+            25% { 
+                transform: rotate(45deg) translateY(20px);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: rotate(45deg) translateY(40px);
+                opacity: 0.4;
+            }
+            75% { 
+                transform: rotate(45deg) translateY(60px);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.8), 0 0 60px rgba(255, 105, 180, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: '微軟正黑體', serif;
+        }
+
+        .series-tag {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.3), 0 0 80px rgba(255, 105, 180, 0.2);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(255, 105, 180, 0.4), 0 0 100px rgba(255, 105, 180, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 105, 180, 0.3);
+            border-color: rgba(255, 105, 180, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ff69b4;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 105, 180, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 105, 180, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 105, 180, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.4), 0 0 40px rgba(255, 105, 180, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 105, 180, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 12s ease-in-out infinite;
+            color: rgba(255, 105, 180, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 8s;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 105, 180, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 105, 180, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.4);
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .character-card:hover::before {
+            left: 100%;
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 105, 180, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            object-fit: cover;
+            display: block;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(255, 105, 180, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .character-role {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .day-symbol {
+            font-size: 0.8rem;
+            color: #ff69b4;
+            margin-top: 5px;
+            font-style: italic;
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) rotate(3deg); }
+            66% { transform: translateY(-40px) rotate(-3deg); }
+        }
+
+        /* 陰暗脈搏效果 */
+        .pulse-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 60%, rgba(255,105,180,0.1) 100%);
+            pointer-events: none;
+            z-index: 0;
+            animation: pinkPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pinkPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .opening-quote {
+            font-size: 1.0rem;
+            color: rgba(255, 105, 180, 0.9);
+            margin: 20px 0;
+            line-height: 1.8;
+            font-family: '微軟正黑體', serif;
+            font-style: italic;
+            padding: 20px;
+            border-left: 4px solid rgba(255, 105, 180, 0.5);
+            background: rgba(255, 105, 180, 0.05);
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .poster-section div {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .poster-section .poster-image {
+                max-width: 90% !important;
+                min-width: unset !important;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="pulse-overlay"></div>
+
+    <div class="water-drops">
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+        <div class="water-drop"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">💧</div>
+        <div class="floating-element">🎭</div>
+        <div class="floating-element">💔</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="series-tag">精分系列完結篇</div>
+            <h1 class="title">病嬌3：近乎正常的我們</h1>
+            <p class="subtitle">這世界上最純粹的愛，永遠不會變質的愛……</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/Gpvg6BBj/image.jpg" alt="病嬌3：近乎正常的我們 劇本殺海報1" style="max-width: 45%; min-width: 300px; max-height: 600px; border-radius: 20px; box-shadow: 0 20px 40px rgba(255, 105, 180, 0.3), 0 0 80px rgba(255, 105, 180, 0.2); transition: all 0.3s ease; border: 2px solid rgba(255, 105, 180, 0.3);">
+                <img src="https://i.postimg.cc/7ZGWMtwd/image.jpg" alt="病嬌3：近乎正常的我們 劇本殺海報2" style="max-width: 45%; min-width: 300px; max-height: 600px; border-radius: 20px; box-shadow: 0 20px 40px rgba(255, 105, 180, 0.3), 0 0 80px rgba(255, 105, 180, 0.2); transition: all 0.3s ease; border: 2px solid rgba(255, 105, 180, 0.3);">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">💧 劇本名稱</span>
+                    <span class="info-value">病嬌3：近乎正常的我們</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <span class="info-value">6人（可反串）</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">都市</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">沉浸</span>
+                        <span class="tag">懸疑</span>
+                        <span class="tag">微恐</span>
+                        <span class="tag">情懷</span>
+                        <span class="tag">繁化</span>
+                        <span class="tag">演繹</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div style="text-align: center; margin-bottom: 20px; color: #ff69b4; font-size: 1.0rem; font-style: italic;">
+                    蕭何的七個分裂人格，輪流主導著他的生活
+                </div>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/QdC3LqsJ/image.jpg" alt="星期二" class="character-image">
+                        <div class="character-name">星期二</div>
+             <!--           <div class="character-role">理性冷靜的人格</div>-->
+                        <div class="day-symbol">Tuesday</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/nrpy3407/image.jpg" alt="星期三" class="character-image">
+                        <div class="character-name">星期三</div>
+            <!--            <div class="character-role">神秘莫測的人格</div>-->
+                        <div class="day-symbol">Wednesday</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/LsZF56Jq/image.jpg" alt="星期四" class="character-image">
+                        <div class="character-name">星期四</div>
+            <!--            <div class="character-role">溫和善良的人格</div>-->
+                        <div class="day-symbol">Thursday</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Ss60LT7k/image.jpg" alt="星期五" class="character-image">
+                        <div class="character-name">星期五</div>
+            <!--            <div class="character-role">活潑開朗的人格</div>-->
+                        <div class="day-symbol">Friday</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/wvH4z6LY/image.jpg" alt="星期六" class="character-image">
+                        <div class="character-name">星期六</div>
+            <!--            <div class="character-role">深沉內斂的人格</div>-->
+                        <div class="day-symbol">Saturday</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Y93nqJzG/image.jpg" alt="星期日" class="character-image">
+                        <div class="character-name">星期日</div>
+            <!--            <div class="character-role">溫暖如陽的人格</div>-->
+                        <div class="day-symbol">Sunday</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="opening-quote">
+                    「清晨的陽光細膩而清晰。我走向窗邊，看著寒熱溫差形成的水珠掛在玻璃上。它起初只是細細的一顆，緩緩地偏向了右側，將另一顆水珠吞噬，隨後陡然加速向左下方滑走。一顆、兩顆、三顆…… 每一顆水珠的軌跡都是如此相似。不過終究是慶幸的，今天的故事仍舊屬於我們。」
+                </div>
+                <div class="description-text">
+                    這是<span class="highlight">精分系列的完結篇</span>，延續了《病嬌男孩的精分日記》的世界觀。蕭何是一個擁有七個分裂人格的青年，每一個人格都以星期命名，輪流主導著他的生活。
+                    <br><br>
+                    我們的生活如架上落滿灰塵的書本，平淡到毫無波瀾。但在這平靜的表面下，<span class="highlight">七個不同的靈魂</span>各自懷著不同的情感與記憶，他們既孤獨又熱鬧，既分離又統一。
+                    <br><br>
+           <!--         這個故事將帶領玩家進入一個關於<span class="highlight">自我認同與情感治癒</span>的深層旅程，探討什麼是真正的愛與被愛。-->
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《病嬌3：近乎正常的我們》是一部<span class="highlight">都市情感沉浸劇本</span>，由鑫夢人生發行。這不是一個傳統的推理劇本，而是一場關於人格、記憶與情感的深度體驗。
+                    <br><br>
+                    劇本特色：<span class="highlight">節奏舖排恰到好處，毫不累贅</span>。情節意想不到，建議玩家做好被感動的準備。主持人會有大量精彩演繹，需要玩家細心欣賞每個細節。
+                    <br><br>
+                    這是一個<span class="highlight">微恐但溫暖</span>的故事，適合喜愛沉浸體驗的玩家。遊戲難度不高，更注重情感共鳴與角色扮演的深度。每個人格都有其獨特的視角與情感表達方式，同時也為病嬌的系列故事畫下完美的句號。
+                    <br><br>
+                    注意：此劇本建議先體驗《病嬌男孩的精分日記》，以獲得完整的故事體驗。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ff69b4';
+                            s.style.textShadow = '0 0 15px rgba(255, 105, 180, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 人格卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 15px 35px rgba(255, 105, 180, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 105, 180, 0.25) 0%, rgba(0,0,0,0.5) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.5)';
+                });
+            });
+
+            // 水珠點擊效果
+            const waterDrops = document.querySelectorAll('.water-drop');
+            waterDrops.forEach(drop => {
+                drop.addEventListener('click', () => {
+                    drop.style.animation = 'none';
+                    drop.style.transform = 'scale(2) rotate(45deg)';
+                    drop.style.opacity = '0';
+                    setTimeout(() => {
+                        drop.style.animation = 'drop-fall 8s ease-in-out infinite';
+                        drop.style.transform = 'rotate(45deg)';
+                        drop.style.opacity = '0.6';
+                    }, 1000);
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const waterDrops = document.querySelector('.water-drops');
+            const floating = document.querySelector('.floating-elements');
+            const pulse = document.querySelector('.pulse-overlay');
+            
+            if (waterDrops) waterDrops.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (pulse) pulse.style.transform = `translateY(${scrolled * 0.02}px)`;
+        });
+
+        // 標題點擊特效
+        document.querySelector('.title').addEventListener('click', () => {
+            const title = document.querySelector('.title');
+            title.style.animation = 'none';
+            title.style.transform = 'scale(1.1)';
+            title.style.textShadow = '0 0 50px rgba(255, 105, 180, 1), 0 0 100px rgba(255, 105, 180, 0.8)';
+            
+            setTimeout(() => {
+                title.style.transform = 'scale(1)';
+                title.style.textShadow = '0 0 30px rgba(255, 105, 180, 0.8), 0 0 60px rgba(255, 105, 180, 0.6)';
+            }, 300);
+        });
+
+        // 人格卡片輪播特效
+        setInterval(() => {
+            const cards = document.querySelectorAll('.character-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = 'translateY(-10px) scale(1.05)';
+                    setTimeout(() => {
+                        card.style.transform = 'translateY(0) scale(1)';
+                    }, 200);
+                }, index * 300);
+            });
+        }, 10000);
+
+        // 系列標籤脈搏效果增強
+        document.querySelector('.series-tag').addEventListener('click', () => {
+            const tag = document.querySelector('.series-tag');
+            tag.style.animation = 'none';
+            tag.style.transform = 'scale(1.2)';
+            tag.style.boxShadow = '0 8px 25px rgba(255, 105, 180, 0.8)';
+            
+            setTimeout(() => {
+                tag.style.animation = 'pulse 2s infinite';
+                tag.style.transform = 'scale(1)';
+                tag.style.boxShadow = '0 4px 15px rgba(255, 105, 180, 0.4)';
+            }, 500);
+        });
+    </script>
+
+    <audio id="bgm" src="病嬌3近乎正常的我們.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+</body>
+</html>

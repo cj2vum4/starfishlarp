@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神樂湯 - 劇本殺</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif TC', '微軟正黑體', serif;
+            background: linear-gradient(135deg, #0d0c1d 0%, #2c223a 50%, #4a344e 100%);
+            min-height: 100vh;
+            color: #f0e6ff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(185, 43, 39, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(185, 43, 39, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(185, 43, 39, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(185, 43, 39, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(185, 43, 39, 0.5);
+        }
+
+        /* 燈籠飄落效果 */
+        .lantern-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .lantern {
+            position: absolute;
+            font-size: 2.5rem;
+            user-select: none;
+            pointer-events: none;
+            animation: lantern-fall 15s linear infinite;
+            opacity: 0;
+        }
+        
+        .lantern:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .lantern:nth-child(2) { left: 25%; animation-delay: 3s; }
+        .lantern:nth-child(3) { left: 40%; animation-delay: 7s; }
+        .lantern:nth-child(4) { left: 55%; animation-delay: 1s; }
+        .lantern:nth-child(5) { left: 70%; animation-delay: 5s; }
+        .lantern:nth-child(6) { left: 85%; animation-delay: 9s; }
+
+        @keyframes lantern-fall {
+            0% {
+                transform: translateY(-10vh) rotate(-10deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(110vh) rotate(10deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(220, 50, 50, 0.8), 0 0 40px rgba(220, 50, 50, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #ff5e57, #c42727);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 5px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(220, 50, 50, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .invite-quote {
+            font-size: 1.2rem;
+            color: #ff5e57;
+            margin: 20px auto;
+            text-align: center;
+            line-height: 1.6;
+            font-style: italic;
+            max-width: 700px;
+            text-shadow: 0 0 10px rgba(220, 50, 50, 0.4);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 550px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(185, 43, 39, 0.3), 0 0 80px rgba(185, 43, 39, 0.2);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(185, 43, 39, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(185, 43, 39, 0.4), 0 0 100px rgba(185, 43, 39, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(23, 21, 40, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(185, 43, 39, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(185, 43, 39, 0.3);
+            border-color: rgba(185, 43, 39, 0.6);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ff5e57;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #b92b27;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(220, 50, 50, 0.4);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(185, 43, 39, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(185, 43, 39, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(185, 43, 39, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(185, 43, 39, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f0e6ff;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #ffcdd2;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #c42727, #ff5e57);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(185, 43, 39, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(185, 43, 39, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: #e0d8f5;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(185, 43, 39, 0.5) 50%, transparent 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #ffcdd2;
+            text-shadow: 0 0 10px rgba(220, 50, 50, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #c42727, #ff5e57);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(185, 43, 39, 0.4), 0 0 40px rgba(185, 43, 39, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(185, 43, 39, 0.5), 0 0 60px rgba(185, 43, 39, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 12s ease-in-out infinite;
+            color: rgba(185, 43, 39, 0.6);
+            font-size: 2.5rem;
+        }
+
+        .floating-element:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 65%; right: 10%; animation-delay: 4s; }
+        .floating-element:nth-child(3) { bottom: 15%; left: 25%; animation-delay: 8s; }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(185, 43, 39, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 2px solid rgba(185, 43, 39, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card:hover {
+            background: rgba(185, 43, 39, 0.35);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(185, 43, 39, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(185, 43, 39, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(255, 94, 87, 0.8);
+            transform: scale(1.05) rotate(3deg);
+            box-shadow: 0 8px 25px rgba(185, 43, 39, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #ffcdd2;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #e0d8f5;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #ffcdd2;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(220, 50, 50, 0.3);
+        }
+
+        .icon { font-size: 1.1rem; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .title { font-size: 2.8rem; }
+            .card { padding: 20px; }
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .tags { justify-content: flex-start; }
+            .poster-image { max-height: 400px; }
+            .back-to-overview { top: 10px; left: 10px; }
+            .back-btn { padding: 10px 15px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="lantern-effects">
+        <div class="lantern">🏮</div>
+        <div class="lantern">🏮</div>
+        <div class="lantern">🏮</div>
+        <div class="lantern">🏮</div>
+        <div class="lantern">🏮</div>
+        <div class="lantern">🏮</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">♨️</div>
+        <div class="floating-element">👹</div>
+        <div class="floating-element">🌸</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">神樂湯</h1>
+            <div class="invite-quote">
+                「嘿嘿，歡迎光臨神樂湯！」
+            </div>
+            <p class="subtitle">這是一封從黑暗中遞出的邀請函...</p>
+        </div>
+
+        <div class="poster-section">
+             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/JzGNvW45/arch.jpg" alt="神樂湯劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/VkVRkkHh/arch.jpg" alt="神樂湯劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">♨️ 劇本名稱</span>
+                    <span class="info-value">神樂湯</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 - 5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon"><span class="icon">👨</span><span>3男</span></div>
+                        <div class="gender-icon"><span class="icon">👩</span><span>2女</span></div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">日式</span>
+                        <span class="tag">硬核</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">機制</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/HsS06LHL/arch.jpg" alt="螃蟹" class="character-image">
+                        <div class="character-name">螃蟹 (男)</div>
+                        <div class="character-info">身體健碩，湯泉的老顧客，高大帥氣八塊腹肌。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/858mLnGB/arch.jpg" alt="青蛙" class="character-image">
+                        <div class="character-name">青蛙 (男)</div>
+                        <div class="character-info">蛤蟆先生的表弟，看起來精明能幹的樣子。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/6qtVm2y8/arch.jpg" alt="黑魚" class="character-image">
+                        <div class="character-name">黑魚 (男)</div>
+                        <div class="character-info">戴著一副墨鏡，霸氣外露，看起來不好惹的樣子。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/0NKCM1Ty/arch.jpg" alt="甲魚" class="character-image">
+                        <div class="character-name">甲魚 (女)</div>
+                        <div class="character-info">喜歡塗脂抹粉，聲音比較尖細，十分活潑的樣子。</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/5N9q5ChG/arch.jpg" alt="豚豚" class="character-image">
+                        <div class="character-name">豚豚 (女)</div>
+                        <div class="character-info">鱷龜先生的妻子，富態的女性，看起來十分有錢。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    <span class="highlight">神樂湯溫泉</span>，坐落在繁華的星町市，相傳早在日本江戶時期就已然存在。時過境遷，今天店長「蛤蟆先生」將會邀請各位貴賓前來洗浴消遣。
+                    <br><br>
+                    一場<span class="highlight">蓄謀已久的狂歡盛宴</span>，一股不為人知的暗流。離奇失蹤的神秘女子，慘死於窗前的肥胖男人⋯⋯ 層層謊言編織下的真相，你，能找到嗎？
+                    <br><br>
+                    黑夜降臨之時，星町市依舊沉醉在燈紅酒綠之中，一個<span class="highlight">巨大的陰謀</span>正在這最骯髒的角落裡，悄然醞釀著。
+                </div>
+            </div>
+             <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《神樂湯》是一個充滿<span class="highlight">日式黑暗風格</span>的硬核推理還原劇本，讓人聯想到《神隱少女》中那光怪陸離的湯屋世界。玩家將扮演各種動物，投入這場懸疑的盛宴。
+                    <br><br>
+                    劇本結構嚴謹，開局的<span class="highlight">小機制</span>能迅速破冰，而後續的劇情層層遞進，反轉效果極佳。其獨創的敘事詭計，在市場上非常罕見，能給玩家帶來驚豔的體驗。
+                    <br><br>
+                    推理難度中等，包含了<span class="highlight">還原和密室</span>手法，邏輯自洽，非常適合進階玩家或由老玩家帶領新手一同挑戰。準備好揭開神樂湯深處，那骯髒又迷人的秘密了嗎？
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.stars-rating .star-rating:not(.empty)');
+            const ratingContainer = document.querySelector('.stars-rating');
+            
+            ratingContainer.addEventListener('mouseleave', () => {
+                stars.forEach(s => {
+                    s.style.color = '#ffd700';
+                    s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                });
+            });
+
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ff5e57';
+                            s.style.textShadow = '0 0 15px rgba(220, 50, 50, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+            });
+
+            // 卡片懸停光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(185, 43, 39, 0.2) 0%, rgba(23, 21, 40, 0.7) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(23, 21, 40, 0.7)';
+                });
+            });
+            
+            // 標題點擊漣漪效果
+            const title = document.querySelector('.title');
+            title.addEventListener('click', e => {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                title.appendChild(ripple);
+
+                const rect = title.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+
+                ripple.addEventListener('animationend', () => {
+                    ripple.remove();
+                });
+            });
+
+            const style = document.createElement('style');
+            style.textContent = `
+                .title { position: relative; overflow: hidden; }
+                .ripple {
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 94, 87, 0.6);
+                    transform: scale(0);
+                    animation: ripple-effect 0.8s linear;
+                }
+                @keyframes ripple-effect {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // 滾動視差
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const lanterns = document.querySelector('.lantern-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (lanterns) lanterns.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.2}px)`;
+        });
+    </script>
+    
+    <audio id="bgm" src="神樂湯.mp3" autoplay loop muted></audio>
+    <script>
+      // 點擊頁面解除靜音
+      document.addEventListener('click', function(){
+        const bgm = document.getElementById('bgm');
+        if (bgm.paused) {
+            bgm.play().catch(e => console.log("Audio playback failed: " + e));
+        }
+        bgm.muted = false;
+      }, {once:true});
+    </script>
+
+</body>
+</html>
+
