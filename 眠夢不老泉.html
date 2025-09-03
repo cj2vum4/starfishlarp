@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>眠夢不老泉 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 30%, #16213e 60%, #0f3460 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(34, 197, 94, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 音樂控制按鈕 */
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #volume-btn {
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        #volume-btn:hover {
+            background: rgba(34, 197, 94, 1);
+            transform: scale(1.1);
+        }
+
+
+        /* 神秘水波紋效果 */
+        .water-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ripple {
+            position: absolute;
+            background: radial-gradient(circle, transparent 0%, rgba(34, 197, 94, 0.1) 40%, transparent 70%);
+            border-radius: 50%;
+            animation: ripple 6s infinite ease-in-out;
+        }
+
+        .ripple:nth-child(1) { width: 400px; height: 400px; top: 20%; left: 10%; animation-delay: 0s; }
+        .ripple:nth-child(2) { width: 300px; height: 300px; top: 50%; right: 20%; animation-delay: 2s; }
+        .ripple:nth-child(3) { width: 500px; height: 500px; bottom: 10%; left: 30%; animation-delay: 4s; }
+
+        @keyframes ripple {
+            0%, 100% { opacity: 0.05; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.2); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.8), 0 0 40px rgba(34, 197, 94, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #22c55e, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+        
+        .poster-slider {
+            position: relative;
+            width: 100%;
+            max-width: 900px; /* Adjust as needed */
+            aspect-ratio: 16 / 9;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.3), 0 0 80px rgba(34, 197, 94, 0.2);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .poster-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .poster-image.active {
+            opacity: 1;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(34, 197, 94, 0.3);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #22c55e;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(34, 197, 94, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-rating:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #22c55e, #059669);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(34, 197, 94, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #22c55e, #059669);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.5), 0 0 60px rgba(34, 197, 94, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.2;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(34, 197, 94, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-15px) rotate(5deg); }
+            66% { transform: translateY(-25px) rotate(-5deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-slider {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+            }
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .character-card:hover::before {
+            left: 100%;
+        }
+
+        .character-card:hover {
+            background: rgba(34, 197, 94, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.3);
+        }
+
+        .character-name {
+            font-weight: 700;
+            color: #22c55e;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .character-age {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .character-gender {
+            font-size: 0.8rem;
+            color: #22c55e;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .character-desc {
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .character-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(34, 197, 94, 0.5);
+            transition: all 0.3s ease;
+            object-fit: cover;
+            background-color: #059669;
+        }
+
+        .character-card:hover .character-avatar {
+            transform: scale(1.1);
+            border-color: rgba(34, 197, 94, 0.8);
+        }
+
+        .quote {
+            font-style: italic;
+            color: #22c55e;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        .fountain-animation {
+            position: fixed;
+            bottom: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: fountain 3s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes fountain {
+            0%, 100% { transform: scale(1) translateY(0); opacity: 0.3; }
+            50% { transform: scale(1.5) translateY(-20px); opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="#" class="back-btn" onclick="history.back()">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="audio-control">
+        <button id="volume-btn">🎵</button>
+    </div>
+
+    <div class="water-effects">
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">⚗️</div>
+        <div class="floating-element">🔍</div>
+        <div class="floating-element">🗝️</div>
+    </div>
+
+    <div class="fountain-animation"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">眠夢不老泉</h1>
+            <p class="subtitle">一場跨越三十年的恩怨情仇</p>
+        </div>
+
+        <div class="poster-section">
+            <div class="poster-slider">
+                <img src="https://i.postimg.cc/DwD8FHhJ/2025-09-03-102020.png" class="poster-image active" alt="眠夢不老泉封面一">
+                <img src="https://i.postimg.cc/JztGfmfC/2025-09-03-101955.png" class="poster-image" alt="眠夢不老泉封面二">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">📖 劇本名稱</span>
+                    <span class="info-value">眠夢不老泉</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <span class="info-value">6人（3男3女）</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">現代</span>
+                        <span class="tag">硬核</span>
+                        <span class="tag">本格</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">進階</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色陣容</h2>
+                <div class="quote">"六位人物因為同一事件而緊密聯繫，每一幕的主線都匯聚在同一條線上"</div>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/9FLDgzNB/v2-6aac3c81fada61d63b0adbb7985012d7-1440w.jpg" alt="阿杉" class="character-avatar">
+                        <div class="character-name">阿杉</div>
+                        <div class="character-age">41歲</div>
+                        <div class="character-gender">女性角色</div>
+                        <div class="character-desc">踏實勤勞，待人和善</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/KjN12Ycx/v2-3ca68a77dff10df65dc8fc53bd94e028-1440w.jpg" alt="邦迪" class="character-avatar">
+                        <div class="character-name">邦迪</div>
+                        <div class="character-age">47歲</div>
+                        <div class="character-gender">男性角色</div>
+                        <div class="character-desc">高大粗獷，專業可靠</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/tTGJn6Y9/v2-e20ce79ee53b4ca8e6204b8a668ce6cd-1440w.jpg" alt="伊伊" class="character-avatar">
+                        <div class="character-name">伊伊</div>
+                        <div class="character-age">32歲</div>
+                        <div class="character-gender">女性角色</div>
+                        <div class="character-desc">容貌美麗，氣質端莊</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/yY1JT0nd/v2-7c6699a64f3587b1521b9727fb61fef4-1440w.jpg" alt="達文西" class="character-avatar">
+                        <div class="character-name">達文西</div>
+                        <div class="character-age">45歲</div>
+                        <div class="character-gender">男性角色</div>
+                        <div class="character-desc">溫文爾雅，學識淵博</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/gjdxQhWg/v2-2f5dfa65e32d6c05e630cfe4b42899e4-1440w-1.jpg" alt="蜜兒" class="character-avatar">
+                        <div class="character-name">蜜兒</div>
+                        <div class="character-age">44歲</div>
+                        <div class="character-gender">女性角色</div>
+                        <div class="character-desc">見識廣博，開朗健美</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/PqwNqyf6/v2-8c51195346baefd60df2248d59143e73-1440w.jpg" alt="小喬" class="character-avatar">
+                        <div class="character-name">小喬</div>
+                        <div class="character-age">45歲</div>
+                        <div class="character-gender">男性角色</div>
+                        <div class="character-desc">身材消瘦，冷峻睿智</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    有人飲下<span class="highlight">青春之泉</span>，獲得了永生的秘法<br>
+                    有人提燈照亮黑暗，鮮血卻流向地下<br>
+                    是誰將膨脹的野心縱飛天際<br>
+                    又是誰將自己獻給亘古長存的思想<br><br>
+                    
+                    三重迷案揭開這跨越近<span class="highlight">三十年</span>的恩怨情仇
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    這是一部根據<span class="highlight">美國真實事件改編</span>的還原推理劇本，深刻直擊人性最黑暗的一面。劇本擁有豐富的背景故事，角色情感交織複雜，每個角色都有著獨立的行為軌跡和心理變化。
+                    <br><br>
+                    作為<span class="highlight">硬核本格推理</span>的佳作，劇本著重在劇情及角色的刻畫，讓玩家自然代入劇中角色，並隨著故事情節起伏。不論是愛情、友情、親情都能發人深省，需要玩家盡可能取得彼此信任，合作來還原故事真相。
+                    <br><br>
+                    每個角色都擁有獨立的行為軌跡和心理變化，六位人物因為同一事件而緊密聯繫。大量細節伏筆埋藏於文字之間，<span class="highlight">破解真相的那刻，一種「驀然回首，那人竟在燈火闌珊處」的恍然頓悟之感，油然而生</span>。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="#" class="cta-button">立即預約遊戲</a>
+        </div>
+    </div>
+    
+    <audio id="bgm" src="年輪.mp3" autoplay loop muted></audio>
+    <script>
+      // 點擊頁面解除靜音
+      document.addEventListener('click', function(){
+        const bgm = document.getElementById('bgm');
+        if (bgm.paused) {
+            bgm.play().catch(e => console.log("Audio playback failed: " + e));
+        }
+        bgm.muted = false;
+      }, {once:true});
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 海報輪播 ---
+            let currentImageIndex = 0;
+            const images = document.querySelectorAll('.poster-slider .poster-image');
+            const totalImages = images.length;
+
+            function changeImage() {
+                if(totalImages > 1) {
+                    images[currentImageIndex].classList.remove('active');
+                    currentImageIndex = (currentImageIndex + 1) % totalImages;
+                    images[currentImageIndex].classList.add('active');
+                }
+            }
+            setInterval(changeImage, 5000); // 每5秒更換圖片
+
+            // --- 星星懸停效果 ---
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#059669';
+                            s.style.textShadow = '0 0 15px rgba(5, 150, 105, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // --- 標籤點擊效果 ---
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // --- 卡片懸停時的光效 ---
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(34, 197, 94, 0.25) 0%, rgba(0,0,0,0.4) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.4)';
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const waterEffects = document.querySelector('.water-effects');
+            const floating = document.querySelector('.floating-elements');
+            const fountain = document.querySelector('.fountain-animation');
+            
+            if (waterEffects) waterEffects.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+            if (fountain) fountain.style.transform = `translateY(${scrolled * -0.1}px) translateX(${scrolled * 0.02}px)`;
+        });
+
+        // CTA按鈕點擊效果
+        const ctaButton = document.querySelector('.cta-button');
+        if (ctaButton) {
+            ctaButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const ripple = document.createElement('div');
+                const rect = ctaButton.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.5)';
+                ripple.style.animation = 'ripple-effect 0.6s linear';
+                ripple.style.pointerEvents = 'none';
+                
+                ctaButton.style.position = 'relative';
+                ctaButton.style.overflow = 'hidden';
+                ctaButton.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+                
+                // 這裡可以添加實際的預約功能
+                alert('即將跳轉至預約頁面...');
+            });
+        }
+
+        // 添加CSS動畫
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-effect {
+                0% { transform: scale(0); opacity: 1; }
+                100% { transform: scale(4); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+</body>
+</html>
