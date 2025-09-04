@@ -699,32 +699,32 @@
                     <div class="character-card">
                         <img src="https://i.postimg.cc/rFdCtQ2S/u-3345584339-1622144925-fm-253-app-138-f-JPEG.jpg" alt="李瀚明角色海報" class="character-image">
                         <div class="character-name">李瀚明</div>
-                        <div class="character-info">男性角色<br>
+                        <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
                         <img src="https://i.postimg.cc/C55C74Bp/unnamed.jpg" alt="林明角色海報" class="character-image">
                         <div class="character-name">林明</div>
-                        <div class="character-info">男性角色<br>
+                        <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
                         <img src="https://i.postimg.cc/mZpyDKJL/e1684051778844.jpg" alt="秦蒼角色海報" class="character-image">
                         <div class="character-name">秦蒼</div>
-                        <div class="character-info">男性角色<br>
+                        <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
                         <img src="https://i.postimg.cc/13wGvXtX/m3ke54ay-Hk5tzlo-Q0-Ck-FYj0n-Hq-SGNJ33xo3-FIa8kl-Jl-HP4aage-Cjl4ja-SKDt6a-H.jpg" alt="秦花語角色海報" class="character-image">
                         <div class="character-name">秦花語</div>
-                        <div class="character-info">女性角色<br>
+                        <div class="character-info">女性角色<br></div>
                     </div>
                     <div class="character-card">
                         <img src="https://i.postimg.cc/Y0P6smYG/e1684051791255.jpg" alt="楊星彩角色海報" class="character-image">
                         <div class="character-name">楊星彩</div>
-                        <div class="character-info">女性角色<br>
+                        <div class="character-info">女性角色<br></div>
                     </div>
                     <div class="character-card">
                         <img src="https://i.postimg.cc/L6rkkLmG/y1684051797013.jpg" alt="張耀雲角色海報" class="character-image">
                         <div class="character-name">張耀雲</div>
-                        <div class="character-info">男性角色<br>
+                        <div class="character-info">男性角色<br></div>
                     </div>
                 </div>
             </div>
@@ -1081,15 +1081,29 @@
                 buddhistQuote.style.borderLeftColor = '#ffd700';
             });
         }
+
+        // 音頻控制
+        const bgm = document.getElementById('bgm');
+        if (bgm) {
+            // 點擊頁面解除靜音
+            document.addEventListener('click', function(){
+                bgm.muted = false;
+            }, {once:true});
+        } else {
+            // 如果音頻元素不存在，延遲檢查
+            setTimeout(() => {
+                const bgmRetry = document.getElementById('bgm');
+                if (bgmRetry) {
+                    document.addEventListener('click', function(){
+                        bgmRetry.muted = false;
+                    }, {once:true});
+                }
+            }, 100);
+        }
     </script>
 
-<audio id="bgm" src="45.mp3" autoplay loop muted></audio>
-    <script>
-        // 點擊頁面解除靜音
-        document.addEventListener('click', function(){
-            document.getElementById('bgm').muted = false;
-        }, {once:true});
-    </script>
+    <!-- 背景音樂 -->
+    <audio id="bgm" src="45.mp3" autoplay loop muted></audio>
 
 </body>
 </html>
