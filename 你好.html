@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>你好 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 30%, #fd79a8 60%, #e84393 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 心形飄浮效果 */
+        .heart-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart-particle {
+            position: absolute;
+            color: rgba(255, 182, 193, 0.6);
+            user-select: none;
+            pointer-events: none;
+            animation: heartFloat 12s linear infinite;
+        }
+
+        .heart-particle:nth-child(1) { left: 10%; animation-delay: 0s; font-size: 1.5em; }
+        .heart-particle:nth-child(2) { left: 20%; animation-delay: 2s; font-size: 1.2em; }
+        .heart-particle:nth-child(3) { left: 30%; animation-delay: 4s; font-size: 1.8em; }
+        .heart-particle:nth-child(4) { left: 40%; animation-delay: 6s; font-size: 1.3em; }
+        .heart-particle:nth-child(5) { left: 50%; animation-delay: 8s; font-size: 1.6em; }
+        .heart-particle:nth-child(6) { left: 60%; animation-delay: 1s; font-size: 1.4em; }
+        .heart-particle:nth-child(7) { left: 70%; animation-delay: 3s; font-size: 1.7em; }
+        .heart-particle:nth-child(8) { left: 80%; animation-delay: 5s; font-size: 1.3em; }
+        .heart-particle:nth-child(9) { left: 90%; animation-delay: 7s; font-size: 1.5em; }
+
+        @keyframes heartFloat {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg) scale(1);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg) scale(0.5);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(232, 67, 147, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(232, 67, 147, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(232, 67, 147, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(232, 67, 147, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(232, 67, 147, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(232, 67, 147, 0.8), 0 0 60px rgba(232, 67, 147, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e84393, #fd79a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(232, 67, 147, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(232, 67, 147, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(232, 67, 147, 0.2);
+            border-color: rgba(232, 67, 147, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #e84393;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(232, 67, 147, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(232, 67, 147, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(232, 67, 147, 0.2);
+        }
+
+        .info-item:hover {
+            background: rgba(232, 67, 147, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(232, 67, 147, 0.2);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #2d3436;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #e84393;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #ddd;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #e84393, #fd79a8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(232, 67, 147, 0.2);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(232, 67, 147, 0.4);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(232, 67, 147, 0.1);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(232, 67, 147, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(232, 67, 147, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(232, 67, 147, 0.3);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(232, 67, 147, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(232, 67, 147, 0.2);
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(232, 67, 147, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(232, 67, 147, 0.4);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(232, 67, 147, 0.3);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #636e72;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #2d3436;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(232, 67, 147, 0.3) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #2d3436;
+            text-shadow: 0 0 5px rgba(232, 67, 147, 0.3);
+        }
+
+        .quote-section {
+            background: rgba(255, 182, 193, 0.2);
+            border-left: 4px solid #e84393;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: #2d3436;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #e84393, #fd79a8);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(232, 67, 147, 0.3), 0 0 40px rgba(232, 67, 147, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(232, 67, 147, 0.4), 0 0 60px rgba(232, 67, 147, 0.2);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(232, 67, 147, 0.5);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* 新增動畫效果 */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideInFromRight {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        /* 互動元素懸停效果增強 */
+        .tag:hover {
+            animation: pulse 0.6s ease-in-out;
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+        }
+
+        .character-card:hover .character-image {
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .cta-button:hover {
+            animation: pulse 0.8s ease-in-out infinite;
+        }
+
+        /* 滾動指示器 */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(232, 67, 147, 0.2);
+            z-index: 1001;
+        }
+
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #e84393, #fd79a8);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* 載入動畫 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 30%, #fd79a8 60%, #e84393 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+        }
+
+        /* 緊急修復：確保載入動畫不會永久覆蓋內容 */
+        .loading-overlay.hidden {
+            display: none !important;
+        }
+
+        /* 緊急修復：如果載入動畫有問題，強制隱藏 */
+        @media (max-width: 9999px) {
+            .loading-overlay[style*="display: none"] {
+                display: none !important;
+            }
+        }
+
+        .loading-heart {
+            font-size: 4rem;
+            animation: pulse 1s ease-in-out infinite;
+            color: white;
+            text-shadow: 0 0 20px rgba(232, 67, 147, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #e84393;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(232, 67, 147, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 載入動畫 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-heart">💖</div>
+        <div style="position: absolute; bottom: 20px; color: white; font-size: 0.9rem; opacity: 0.8;">
+            如果載入時間過長，請點擊此處
+        </div>
+    </div>
+
+    <!-- 滾動指示器 -->
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="heart-effects">
+        <div class="heart-particle">💕</div>
+        <div class="heart-particle">💖</div>
+        <div class="heart-particle">💝</div>
+        <div class="heart-particle">💗</div>
+        <div class="heart-particle">💓</div>
+        <div class="heart-particle">💕</div>
+        <div class="heart-particle">💖</div>
+        <div class="heart-particle">💝</div>
+        <div class="heart-particle">💗</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🌸</div>
+        <div class="floating-element">💌</div>
+        <div class="floating-element">🎭</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">你好</h1>
+            <p class="subtitle">治癒系情感大戲，帶你經歷一段平凡的感動</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/WzGqZvHq/hello-poster1.jpg" alt="你好劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/9MbXCvP3/hello-poster2.jpg" alt="你好劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">你好</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">3-4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">現代</span>
+                        <span class="tag">情感</span>
+                        <span class="tag">沉浸</span>
+                        <span class="tag">治癒</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">本格</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/k4cCQLV9/character1.jpg" alt="李海澤" class="character-image">
+                        <div class="character-name">李海澤</div>
+                        <div class="character-info">男性角色<br>溫文儒雅，深情男子</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/J0Y5hxzK/character2.jpg" alt="阿瑤" class="character-image">
+                        <div class="character-name">阿瑤</div>
+                        <div class="character-info">女性角色<br>笑靨如花，溫柔女子</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/FRNVg4qL/character3.jpg" alt="夏雲錚" class="character-image">
+                        <div class="character-name">夏雲錚</div>
+                        <div class="character-info">男性角色<br>青春年華，純真少年</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/4N7Y4yb1/character4.jpg" alt="于婉兒" class="character-image">
+                        <div class="character-name">于婉兒</div>
+                        <div class="character-info">女性角色<br>青澀美好，初戀女孩</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/c4Nj8kqT/character5.jpg" alt="江楓" class="character-image">
+                        <div class="character-name">江楓</div>
+                        <div class="character-info">男性角色<br>成熟穩重，責任男人</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/MGRJCHfG/character6.jpg" alt="王芳" class="character-image">
+                        <div class="character-name">王芳</div>
+                        <div class="character-info">女性角色<br>賢良淑德，堅強女人</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="quote-section">
+                    那一年，初識相知，他溫文爾雅，她笑靨如花。<br>
+                    <span class="highlight">"你好，初次見面，請多多關照。"</span><br>
+                    人生最好的狀態就是未來可期。<br><br>
+                    
+                    那一天，重逢相遇，他目光炯炯，她滿目星河。<br>
+                    <span class="highlight">"你好，好久不見，別來無恙。"</span><br>
+                    大抵上所有的歲月靜好，不外乎遠方有夢，身邊有你，那便是這世間的萬般溫柔。<br><br>
+                    
+                    那一刻，揮手告別，他欲言又止，她淚眼矇矓。<br>
+                    <span class="highlight">"你好，我已經開始想你了。"</span><br>
+                    山水一程，三生有幸。承蒙不棄，多謝關照。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    《你好》是一部<span class="highlight">治癒系情感大戲</span>，以阿爾茲海默症為出發點，講述忘記與銘記、相伴與離別的故事，也就是我們與最在乎的親人愛人之間的情感。
+                    <br><br>
+                    <strong>💕 三段愛情故事：</strong><br>
+                    劇本用<span class="highlight">老中青三對情侶</span>詮釋了愛情的面貌，對應著人生的三個階段：<span class="highlight">初遇——結婚——相伴</span>。每一段故事都能觸動玩家內心深處的情感。
+                    <br><br>
+                    <strong>😭 極強代入感：</strong><br>
+                    劇本設定非常貼近現代平凡人的生活，玩家帶入感極重。傳說中<span class="highlight">平均每車都會哭三個以上</span>的情感本，最後一幕往往整車人都不禁落淚。
+                    <br><br>
+                    <strong>🎨 精美道具設計：</strong><br>
+                    光是彩色原繪就超過40張，如同電影一般將每一幕畫在你眼前。推理難度極低，更注重角色間的情感交流和小劇場演繹。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 錯誤處理和調試
+            window.addEventListener('error', function(e) {
+                console.error('JavaScript 錯誤:', e.error);
+            });
+
+            // 檢查必要元素是否存在
+            const requiredElements = ['loadingOverlay', 'scrollProgress', 'title'];
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            
+            if (missingElements.length > 0) {
+                console.warn('缺少必要元素:', missingElements);
+            }
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#fd79a8';
+                        } else {
+                            s.style.color = '#e84393';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#e84393';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                    
+                    // 創建愛心爆炸效果
+                    createHeartBurst(tag);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(232, 67, 147, 0.3)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的溫暖光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 30px 60px rgba(232, 67, 147, 0.3)';
+                    card.style.borderColor = 'rgba(232, 67, 147, 0.6)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+                    card.style.borderColor = 'rgba(232, 67, 147, 0.3)';
+                });
+            });
+
+            // 海報圖片點擊放大效果
+            const posterImages = document.querySelectorAll('.poster-image');
+            posterImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    img.style.transform = 'scale(1.1)';
+                    img.style.zIndex = '1000';
+                    setTimeout(() => {
+                        img.style.transform = 'scale(1.02)';
+                        img.style.zIndex = 'auto';
+                    }, 300);
+                });
+            });
+
+            // 創建愛心爆炸效果函數
+            function createHeartBurst(element) {
+                const rect = element.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                for (let i = 0; i < 8; i++) {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '💖';
+                    heart.style.position = 'fixed';
+                    heart.style.left = centerX + 'px';
+                    heart.style.top = centerY + 'px';
+                    heart.style.fontSize = '1.5rem';
+                    heart.style.pointerEvents = 'none';
+                    heart.style.zIndex = '9999';
+                    heart.style.transition = 'all 0.8s ease-out';
+                    
+                    document.body.appendChild(heart);
+                    
+                    const angle = (i * 45) * Math.PI / 180;
+                    const distance = 100;
+                    const targetX = centerX + Math.cos(angle) * distance;
+                    const targetY = centerY + Math.sin(angle) * distance;
+                    
+                    setTimeout(() => {
+                        heart.style.left = targetX + 'px';
+                        heart.style.top = targetY + 'px';
+                        heart.style.opacity = '0';
+                        heart.style.transform = 'scale(0.5) rotate(360deg)';
+                    }, 50);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(heart);
+                    }, 800);
+                }
+            }
+
+            // 滾動視差效果
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.floating-element');
+                
+                parallaxElements.forEach((element, index) => {
+                    const speed = 0.5 + (index * 0.1);
+                    element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.1}deg)`;
+                });
+            });
+
+            // 文字打字機效果
+            function typeWriter(element, text, speed = 100) {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                }
+                type();
+            }
+
+            // 為標題添加打字機效果
+            const title = document.querySelector('.title');
+            const originalTitle = title.textContent;
+            title.textContent = '';
+            
+            setTimeout(() => {
+                typeWriter(title, originalTitle, 150);
+            }, 1000);
+
+            // 滑鼠跟隨愛心效果
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            // 點擊創建愛心軌跡
+            document.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+                    createClickHeart(e.clientX, e.clientY);
+                }
+            });
+
+            function createClickHeart(x, y) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '💕';
+                heart.style.position = 'fixed';
+                heart.style.left = x + 'px';
+                heart.style.top = y + 'px';
+                heart.style.fontSize = '2rem';
+                heart.style.pointerEvents = 'none';
+                heart.style.zIndex = '9999';
+                heart.style.transition = 'all 1s ease-out';
+                heart.style.transform = 'scale(0)';
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.style.transform = 'scale(1) translateY(-50px)';
+                    heart.style.opacity = '0';
+                }, 50);
+                
+                setTimeout(() => {
+                    document.body.removeChild(heart);
+                }, 1000);
+            }
+
+            // 頁面載入完成後的動畫序列
+            setTimeout(() => {
+                document.body.style.overflow = 'auto';
+                
+                // 為所有卡片添加進入動畫
+                const allCards = document.querySelectorAll('.card, .poster-section, .cta-section');
+                allCards.forEach((card, index) => {
+                    card.style.animationDelay = `${0.1 * index}s`;
+                });
+            }, 2000);
+
+            // 滾動到元素時的淡入效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 觀察所有需要動畫的元素
+            document.querySelectorAll('.card, .poster-section, .cta-section').forEach(el => {
+                observer.observe(el);
+            });
+
+            // 滾動進度指示器
+            const scrollProgress = document.getElementById('scrollProgress');
+            if (scrollProgress) {
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset;
+                    const docHeight = document.body.offsetHeight - window.innerHeight;
+                    const scrollPercent = (scrollTop / docHeight) * 100;
+                    scrollProgress.style.width = scrollPercent + '%';
+                });
+            }
+
+            // 載入動畫控制
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                // 點擊載入動畫可以關閉它
+                loadingOverlay.addEventListener('click', () => {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                        loadingOverlay.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                        console.log('手動關閉載入動畫');
+                    }, 500);
+                });
+
+                // 立即開始隱藏載入動畫
+                setTimeout(() => {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                        loadingOverlay.classList.add('hidden');
+                        // 確保頁面內容可見
+                        document.body.style.overflow = 'auto';
+                    }, 1000);
+                }, 1000);
+
+                // 備用方案：如果 5 秒後載入動畫還在，強制隱藏
+                setTimeout(() => {
+                    if (loadingOverlay.style.display !== 'none') {
+                        loadingOverlay.style.display = 'none';
+                        loadingOverlay.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                        console.log('強制隱藏載入動畫');
+                    }
+                }, 5000);
+            }
+
+            // 鍵盤快捷鍵
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    // ESC 鍵返回主頁
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // 觸摸設備支援
+            let touchStartY = 0;
+            let touchStartX = 0;
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                touchStartX = e.touches[0].clientX;
+            });
+
+            document.addEventListener('touchend', (e) => {
+                const touchEndY = e.changedTouches[0].clientY;
+                const touchEndX = e.changedTouches[0].clientX;
+                const diffY = touchStartY - touchEndY;
+                const diffX = touchStartX - touchEndX;
+                
+                if (Math.abs(diffY) > 50 || Math.abs(diffX) > 50) {
+                    // 滑動距離足夠，觸發愛心效果
+                    createClickHeart(touchEndX, touchEndY);
+                }
+            });
+
+            // 性能優化：節流滾動事件
+            let ticking = false;
+            function updateScrollEffects() {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        // 滾動相關的效果更新
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', updateScrollEffects);
+
+            // 性能監控
+            let frameCount = 0;
+            let lastTime = performance.now();
+            
+            function updateFPS() {
+                frameCount++;
+                const currentTime = performance.now();
+                
+                if (currentTime >= lastTime + 1000) {
+                    const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                    if (fps < 30) {
+                        console.warn('FPS 過低:', fps);
+                    }
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                
+                requestAnimationFrame(updateFPS);
+            }
+            
+            requestAnimationFrame(updateFPS);
+
+            // 調試模式（開發時使用）
+            if (window.location.search.includes('debug=true')) {
+                console.log('調試模式已啟用');
+                window.debugMode = true;
+            }
+
+            console.log('你好頁面特效已載入完成！');
+        });
