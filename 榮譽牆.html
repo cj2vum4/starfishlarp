@@ -152,6 +152,23 @@
              cursor: pointer;
         }
         
+        /* 清除泡泡按鈕樣式 */
+        .clear-bubbles-btn {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #dc3545;
+            background-color: #dc3545;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .clear-bubbles-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+        
         /* --- 全新排行榜樣式 --- */
         .leaderboard-container {
             background-color: #2b2b2b;
@@ -432,48 +449,60 @@
             z-index: 1000;
         }
         
-        .comment-bubble {
+        /* 新增：泡泡的外層容器，負責定位與向上漂浮動畫 */
+        .comment-bubble-wrapper {
             position: absolute;
-            bottom: -200px; /* 從螢幕外開始 */
-            color: #fff;
+            animation: floatUp linear forwards;
+            cursor: pointer;
+            pointer-events: auto;
+            will-change: transform;
+            backface-visibility: hidden;
+            /* JS 會動態設定 left, bottom, width, height, animation-duration, animation-delay */
+        }
+
+        /* 泡泡本體，負責外觀與原地擺動動畫 */
+        .comment-bubble {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            color: #1a1a1a; /* 深色文字，提升可讀性 */
             border-radius: 50%;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            animation: floatUp linear forwards, bubbleFloat 3s ease-in-out infinite;
-            cursor: pointer;
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: auto; /* 讓泡泡可以被點擊 */
-            font-weight: 500;
+            animation: bubbleFloat 3s ease-in-out infinite;
+            font-weight: 600; /* 加粗字體提升可讀性 */
             line-height: 1.4;
             word-wrap: break-word;
-            max-width: 80%;
             
-            /* 泡泡質感 - 簡化漸變提升效能 */
+            /* 泡泡質感 - 更深的背景色提升對比度 */
             background: radial-gradient(circle at 30% 30%, 
-                rgba(255, 255, 255, 0.9) 0%, 
-                rgba(255, 255, 255, 0.6) 50%, 
-                rgba(255, 255, 255, 0.2) 100%);
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(255, 255, 255, 0.8) 50%, 
+                rgba(255, 255, 255, 0.4) 100%);
             
-            /* 泡泡邊框效果 */
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            /* 泡泡邊框效果 - 更深的邊框 */
+            border: 2px solid rgba(255, 255, 255, 0.9);
             
-            /* 泡泡光澤效果 - 簡化陰影提升效能 */
+            /* 泡泡光澤效果 - 增強陰影提升立體感 */
             box-shadow: 
-                inset 0 0 15px rgba(255, 255, 255, 0.3),
-                0 0 15px rgba(255, 255, 255, 0.2),
-                0 4px 20px rgba(0, 0, 0, 0.15);
+                inset 0 0 15px rgba(255, 255, 255, 0.4),
+                0 0 15px rgba(255, 255, 255, 0.3),
+                0 4px 20px rgba(0, 0, 0, 0.2);
             
             /* 泡泡內部光點 */
             position: relative;
             overflow: hidden;
             
             /* 硬體加速 */
-            will-change: transform, opacity;
+            will-change: transform;
             transform: translateZ(0);
             backface-visibility: hidden;
+            
+            /* 文字陰影提升可讀性 */
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
         
         /* 泡泡內部光點 */
@@ -502,15 +531,23 @@
             pointer-events: none;
         }
 
-        .comment-bubble.popped {
-            transform: scale(1.2) translateZ(0);
+        /* 點擊破裂效果：外層容器暫停並淡出 */
+        .comment-bubble-wrapper.popped {
+            animation-play-state: paused;
             opacity: 0;
-            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 點擊破裂效果：內部泡泡放大 */
+        .comment-bubble-wrapper.popped .comment-bubble {
+            animation-play-state: paused;
+            transform: scale(1.2) translateZ(0);
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         @keyframes floatUp {
             to {
-                transform: translateY(-120vh) translateZ(0);
+                transform: translateY(-100vh) translateZ(0);
             }
         }
         
@@ -626,6 +663,7 @@
                 <option value="">-- 讀取資料中 --</option>
             </select>
             <input type="text" id="playerSearch" placeholder="搜尋玩家...">
+            <button id="clearBubblesBtn" class="clear-bubbles-btn">清除泡泡</button>
         </div>
         
         <div class="leaderboard-container collapsed">
@@ -912,7 +950,7 @@
                 });
             }
             
-            // 5. 顯示評論泡泡 - 優化動畫效能
+            // 5. 顯示評論泡泡 - 優化顯示效果
             function showComments(scriptId, playRecords) {
                 const allComments = [];
                 for (const playerName in playRecords) {
@@ -932,52 +970,69 @@
                 const scriptIndex = scriptsData.findIndex(script => script.id === scriptId);
                 const color = bubbleColors[scriptIndex % bubbleColors.length];
 
-                // 優化泡泡間距和位置計算
-                const bubbleSpacing = 180; // 減少間距提升密度
+                // 清除現有的泡泡
+                commentBubbleContainer.innerHTML = '';
+
+                // 優化泡泡間距和位置計算 - 允許重疊但減少過度重疊
+                const bubbleSpacing = 120; // 減少間距，允許適度重疊
                 const startPositions = [];
                 
                 // 使用 requestAnimationFrame 優化動畫效能
                 const createBubble = (commentText, index) => {
                     requestAnimationFrame(() => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'comment-bubble-wrapper';
+
                         const bubble = document.createElement('div');
                         bubble.className = 'comment-bubble';
                         bubble.textContent = commentText;
                         
+                        wrapper.appendChild(bubble);
+                        
                         // 優化泡泡大小計算
                         const baseSize = Math.max(100, Math.min(180, commentText.length * 6));
                         const size = baseSize + Math.random() * 30;
-                        bubble.style.width = `${size}px`;
-                        bubble.style.height = `${size}px`;
+                        wrapper.style.width = `${size}px`;
+                        wrapper.style.height = `${size}px`;
                         
-                        // 改進位置分配算法
-                        let startX, startY;
+                        // 改進位置分配算法 - 泡泡從底部開始往上飄
+                        let startX;
                         let attempts = 0;
-                        const maxAttempts = 8;
+                        const maxAttempts = 15; // 增加嘗試次數
+                        
+                        // 計算安全的起始位置範圍 - 水平位置隨機，垂直位置固定在底部
+                        const safeMargin = 50; // 邊緣安全距離
+                        const minX = safeMargin;
+                        const maxX = window.innerWidth - size - safeMargin;
                         
                         do {
-                            startX = Math.random() * (window.innerWidth - size - 40) + 20;
-                            startY = Math.random() * (window.innerHeight * 0.25) + (window.innerHeight * 0.75);
+                            startX = Math.random() * (maxX - minX) + minX;
                             attempts++;
                         } while (attempts < maxAttempts && startPositions.some(pos => 
-                            Math.abs(pos.x - startX) < bubbleSpacing && Math.abs(pos.y - startY) < bubbleSpacing
+                            Math.abs(pos.x - startX) < bubbleSpacing
                         ));
                         
-                        startPositions.push({ x: startX, y: startY });
-                        bubble.style.left = `${startX}px`;
-                        bubble.style.bottom = `${window.innerHeight - startY}px`;
+                        startPositions.push({ x: startX });
+                        wrapper.style.left = `${startX}px`;
+                        wrapper.style.bottom = `-${size}px`; // 從螢幕底部外開始
                         
-                        // 優化動畫時間和延遲
-                        const baseDuration = 5.5; // 稍微加快基礎速度
+                        // 優化動畫時間和延遲 - 讓泡泡停留更久且不超出螢幕
+                        const baseDuration = 6; // 減少基礎停留時間，避免超出螢幕
                         const speedVariation = 1.5; // 減少速度變化範圍
                         const duration = baseDuration + (Math.random() * speedVariation);
-                        bubble.style.animationDuration = `${duration}s`;
+                        wrapper.style.animationDuration = `${duration}s`;
                         
-                        // 減少延遲時間，讓泡泡更密集
-                        const delay = index * 0.6; // 每個泡泡延遲 0.6 秒起飛
-                        bubble.style.animationDelay = `${delay}s`;
+                        // 減少延遲時間，讓泡泡更密集出現
+                        const delay = index * 0.3; // 每個泡泡延遲 0.3 秒起飛
+                        wrapper.style.animationDelay = `${delay}s`;
+                        
+                        // 動畫結束時自動移除泡泡
+                        wrapper.addEventListener('animationend', () => {
+                            wrapper.remove();
+                        });
 
                         // 優化點擊事件處理
-                        bubble.addEventListener('click', (e) => {
+                        wrapper.addEventListener('click', (e) => {
                             e.stopPropagation();
                             startAudio();
                             
@@ -1021,21 +1076,17 @@
                             setTimeout(() => splash.remove(), 500);
 
                             // 泡泡破裂動畫
-                            bubble.classList.add('popped');
-                            setTimeout(() => bubble.remove(), 120);
+                            wrapper.classList.add('popped');
+                            setTimeout(() => wrapper.remove(), 120);
                         });
                         
-                        bubble.addEventListener('animationend', () => {
-                            bubble.remove();
-                        });
-
-                        commentBubbleContainer.appendChild(bubble);
+                        commentBubbleContainer.appendChild(wrapper);
                     });
                 };
                 
                 // 分批創建泡泡，避免阻塞主線程
                 allComments.forEach((commentText, index) => {
-                    setTimeout(() => createBubble(commentText, index), index * 50);
+                    setTimeout(() => createBubble(commentText, index), index * 30); // 減少間隔時間
                 });
             }
 
@@ -1125,6 +1176,24 @@
                         option.style.display = 'none';
                     }
                 });
+            });
+            
+            // K. 監聽清除泡泡按鈕的點擊事件
+            const clearBubblesBtn = document.getElementById('clearBubblesBtn');
+            clearBubblesBtn.addEventListener('click', () => {
+                startAudio();
+                clickSound.triggerAttackRelease('C2', '8n');
+                commentBubbleContainer.innerHTML = '';
+            });
+            
+            // L. 監聽視窗大小變更，重新調整泡泡位置
+            window.addEventListener('resize', () => {
+                // 延遲執行，避免頻繁觸發
+                clearTimeout(window.resizeTimeout);
+                window.resizeTimeout = setTimeout(() => {
+                    // 視窗大小改變時，清除所有泡泡讓用戶重新點擊顯示
+                    commentBubbleContainer.innerHTML = '';
+                }, 250);
             });
 
         });
