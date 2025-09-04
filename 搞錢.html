@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搞錢 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 30%, #b8860b 60%, #ffd700 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 金錢飄落效果 */
+        .money-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .money-symbol {
+            position: absolute;
+            color: rgba(255, 215, 0, 0.8);
+            user-select: none;
+            pointer-events: none;
+            animation: moneyFall 8s linear infinite;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .money-symbol:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .money-symbol:nth-child(2) { left: 20%; animation-delay: 1s; }
+        .money-symbol:nth-child(3) { left: 30%; animation-delay: 2s; }
+        .money-symbol:nth-child(4) { left: 40%; animation-delay: 3s; }
+        .money-symbol:nth-child(5) { left: 50%; animation-delay: 4s; }
+        .money-symbol:nth-child(6) { left: 60%; animation-delay: 1.5s; }
+        .money-symbol:nth-child(7) { left: 70%; animation-delay: 2.5s; }
+        .money-symbol:nth-child(8) { left: 80%; animation-delay: 3.5s; }
+        .money-symbol:nth-child(9) { left: 90%; animation-delay: 0.5s; }
+
+        @keyframes moneyFall {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 返回按鈕 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(184, 134, 11, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 215, 0, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+            color: #1a1a1a;
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffed4a, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            font-family: 'Georgia', serif;
+            position: relative;
+        }
+
+        .title::before {
+            content: '💰';
+            position: absolute;
+            left: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: bounce 2s infinite;
+        }
+
+        .title::after {
+            content: '💎';
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: bounce 2s infinite 1s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-70%) scale(1.2); }
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a1a;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin: 0 auto;
+            width: 400px;
+            height: 500px;
+            border: 3px solid rgba(255, 215, 0, 0.8);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ffd700;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #555;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #ffd700, #f39c12);
+            color: #1a1a1a;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 215, 0, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+            color: #1a1a1a;
+        }
+
+        .character-card:hover .character-avatar {
+            border-color: rgba(255, 215, 0, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .character-info {
+            font-size: 0.8rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+
+        .character-detail {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            margin-top: 4px;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 215, 0, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .quote-section {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #ffd700;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: #ecf0f1;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .money-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 215, 0, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffd700, #f39c12);
+            color: #1a1a1a;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.4);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 6s ease-in-out infinite;
+            color: rgba(255, 215, 0, 0.6);
+            font-size: 2.5rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 4s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(15deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 3rem;
+            }
+
+            .title::before,
+            .title::after {
+                display: none;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                width: 300px;
+                height: 400px;
+                font-size: 2rem;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #ffd700;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .difficulty-special {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .difficulty-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty-label {
+            font-size: 0.8rem;
+            color: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="money-effects">
+        <div class="money-symbol">💰</div>
+        <div class="money-symbol">💎</div>
+        <div class="money-symbol">💵</div>
+        <div class="money-symbol">🪙</div>
+        <div class="money-symbol">💴</div>
+        <div class="money-symbol">💰</div>
+        <div class="money-symbol">💎</div>
+        <div class="money-symbol">💵</div>
+        <div class="money-symbol">🪙</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">💼</div>
+        <div class="floating-element">📈</div>
+        <div class="floating-element">🏆</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">搞錢</h1>
+            <p class="subtitle">年輕人！睡什麼睡！給我起來搞錢！</p>
+        </div>
+
+        <div class="poster-section">
+            <div class="poster-image">
+                <img src="https://i.postimg.cc/Bb2bW6Xn/4x5.png" alt="搞錢劇本海報" style="width: 100%; height: 100%; object-fit: cover; border-radius: 17px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">搞錢</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4-5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="money-counter">
+                        <span>7-10人</span>
+                        <span>（可反串）</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="difficulty-special">
+                        <div class="difficulty-row">
+                            <div class="stars">
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">歡樂</span>
+                        <span class="tag">機制</span>
+                        <span class="tag">陣營</span>
+                        <span class="tag">現代</span>
+                        <span class="tag">商戰</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/dtKD28xk/01-S.jpg" alt="林笑" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">林笑</div>
+                        <div class="character-info">嬌小御姐</div>
+                        <div class="character-detail">29歲女性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/66Zy4HYx/02-S.jpg" alt="趙行遠" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">趙行遠</div>
+                        <div class="character-info">忠厚老實</div>
+                        <div class="character-detail">26歲男性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/cHpC5Y1z/03-S.jpg" alt="董建國" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">董建國</div>
+                        <div class="character-info">溫潤謙和</div>
+                        <div class="character-detail">48歲男性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/vBgDzXy9/04-S.jpg" alt="白如鏡" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">白如鏡</div>
+                        <div class="character-info">心思細膩</div>
+                        <div class="character-detail">25歲女性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/mr6tCJvB/05-S.jpg" alt="藤原凌" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">藤原凌</div>
+                        <div class="character-info">分外妖嬈</div>
+                        <div class="character-detail">30歲女性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/yNNDJsrL/06-S.jpg" alt="瑟琳娜" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">瑟琳娜</div>
+                        <div class="character-info">高貴優雅</div>
+                        <div class="character-detail">34歲女性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/rFS03hrN/07-S.jpg" alt="齊梅" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">齊梅</div>
+                        <div class="character-info">目光毒辣</div>
+                        <div class="character-detail">40歲女性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/MpqMSy02/08-S.jpg" alt="鄭義" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">鄭義</div>
+                        <div class="character-info">文質彬彬</div>
+                        <div class="character-detail">50歲男性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/9Qb4Fr14/09-S.jpg" alt="李民俊" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">李民俊</div>
+                        <div class="character-info">貌比潘安</div>
+                        <div class="character-detail">33歲男性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/L6dgydns/10-S.jpg" alt="賈仁君" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">賈仁君</div>
+                        <div class="character-info">頭腦機敏</div>
+                        <div class="character-detail">35歲男性</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    國家級醫療養生產業園，即將落戶平安市，本地的大富豪們紛紛摩拳擦掌，準備大展拳腳，讓資產騰飛。
+                    <br><br>
+                    此時，神秘的散財童子老金，突然出現，以產業園競標勝負為準，邀請勝者加入世界級財團——金氏集團。
+                    <br><br>
+                    大富豪們親歷笑裡藏刀、同夥背刺、坑蒙拐騙，誰能笑到最後，獲得階級躍遷，左右世界格局？
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">遊戲特色</h2>
+                <div class="description-text">
+                    《搞錢》是一部<span class="highlight">歡樂機制本</span>，就像它的名字一樣，什麼都沒有搞錢重要！這是一個集智慧與幽默於一體的精彩旅程。
+                    <br><br>
+                    <strong>🎮 遊戲機制豐富：</strong><br>
+                    • 各種商戰機制：拍賣、詐騙、投資、併購<br>
+                    • 結盟、背叛、威脅、欺騙等社交博弈<br>
+                    • 技能卡牌：每個角色都有獨特的賺錢技能
+                    <br><br>
+                    <strong>😂 從頭爆笑到尾：</strong><br>
+                    沒有邊緣角色，所有人體驗在線。精心打磨每一個遊戲環節，自然不尷尬，無社死環節，新手也能瞬間放開。確保玩家從破冰開始主動撕逼，到結尾故事驚喜連連！
+                    <br><br>
+                    <strong>🎯 推理難度友好：</strong><br>
+                    破案難度僅1星，主要樂趣在於<span class="highlight">賺錢競爭</span>。玩家需要運用社交技巧與心理戰術，爭取更多利益和機會。最終不論如何，都不要走心唷！
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">💰 立即預約搞錢 💰</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    star.style.color = '#ff6b35';
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    star.style.color = '#ffd700';
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                    
+                    // 添加金錢飛舞效果
+                    createMoneyBurst(tag);
+                });
+            });
+
+            // 角色卡片點擊效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.style.transform = 'translateY(-5px) scale(1.05)';
+                    setTimeout(() => {
+                        card.style.transform = 'translateY(-5px)';
+                    }, 200);
+                    
+                    // 添加金幣效果
+                    createCoinEffect(card);
+                });
+            });
+
+            // 卡片懸停時的金色光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 215, 0, 0.3) 0%, rgba(0,0,0,0.4) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.4)';
+                });
+            });
+
+            // 金錢計數器動畫
+            function animateCounter() {
+                const counters = document.querySelectorAll('.money-counter');
+                counters.forEach(counter => {
+                    const randomMoney = Math.floor(Math.random() * 999999999);
+                    const moneyText = `💰 ${randomMoney.toLocaleString()}`;
+                    
+                    // 隨機顯示金錢數字（僅作視覺效果）
+                    if (Math.random() < 0.1) { // 10% 機率
+                        const originalText = counter.innerHTML;
+                        counter.innerHTML = moneyText;
+                        counter.style.background = 'rgba(255, 215, 0, 0.5)';
+                        
+                        setTimeout(() => {
+                            counter.innerHTML = originalText;
+                            counter.style.background = 'rgba(255, 215, 0, 0.2)';
+                        }, 1500);
+                    }
+                });
+            }
+
+            // 每10秒執行一次金錢動畫
+            setInterval(animateCounter, 10000);
+        });
+
+        // 創建金錢爆炸效果
+        function createMoneyBurst(element) {
+            const symbols = ['💰', '💎', '💵', '🪙', '💴'];
+            const rect = element.getBoundingClientRect();
+            
+            for (let i = 0; i < 5; i++) {
+                const money = document.createElement('div');
+                money.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                money.style.cssText = `
+                    position: fixed;
+                    top: ${rect.top + rect.height/2}px;
+                    left: ${rect.left + rect.width/2}px;
+                    font-size: 1.5rem;
+                    pointer-events: none;
+                    z-index: 9999;
+                    animation: moneyBurst 1s ease-out forwards;
+                `;
+                
+                const angle = (Math.PI * 2 * i) / 5;
+                const distance = 50;
+                const deltaX = Math.cos(angle) * distance;
+                const deltaY = Math.sin(angle) * distance;
+                
+                money.style.setProperty('--deltaX', deltaX + 'px');
+                money.style.setProperty('--deltaY', deltaY + 'px');
+                
+                document.body.appendChild(money);
+                
+                setTimeout(() => money.remove(), 1000);
+            }
+            
+            // 添加CSS動畫
+            if (!document.head.querySelector('style[data-money-burst]')) {
+                const style = document.createElement('style');
+                style.setAttribute('data-money-burst', 'true');
+                style.textContent = `
+                    @keyframes moneyBurst {
+                        0% {
+                            opacity: 1;
+                            transform: scale(1) translate(0, 0);
+                        }
+                        100% {
+                            opacity: 0;
+                            transform: scale(1.5) translate(var(--deltaX), var(--deltaY));
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // 創建金幣效果
+        function createCoinEffect(element) {
+            const rect = element.getBoundingClientRect();
+            const coin = document.createElement('div');
+            coin.textContent = '🪙';
+            coin.style.cssText = `
+                position: fixed;
+                top: ${rect.top}px;
+                left: ${rect.left + rect.width/2}px;
+                font-size: 2rem;
+                pointer-events: none;
+                z-index: 9999;
+                animation: coinFloat 2s ease-out forwards;
+            `;
+            
+            document.body.appendChild(coin);
+            setTimeout(() => coin.remove(), 2000);
+            
+            // 添加CSS動畫
+            if (!document.head.querySelector('style[data-coin-float]')) {
+                const style = document.createElement('style');
+                style.setAttribute('data-coin-float', 'true');
+                style.textContent = `
+                    @keyframes coinFloat {
+                        0% {
+                            opacity: 1;
+                            transform: translateY(0) rotate(0deg);
+                        }
+                        100% {
+                            opacity: 0;
+                            transform: translateY(-50px) rotate(360deg);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const moneyEffects = document.querySelector('.money-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (moneyEffects) moneyEffects.style.transform = `translateY(${scrolled * 0.03}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.06}px)`;
+        });
+
+        // 動態金錢符號生成
+        function createDynamicMoney() {
+            const symbols = ['💰', '💎', '💵', '🪙', '💴'];
+            const moneyElement = document.createElement('div');
+            moneyElement.className = 'money-symbol';
+            moneyElement.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            moneyElement.style.left = Math.random() * 100 + '%';
+            moneyElement.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            moneyElement.style.fontSize = (Math.random() * 0.8 + 1.2) + 'em';
+            
+            document.querySelector('.money-effects').appendChild(moneyElement);
+            
+            setTimeout(() => {
+                moneyElement.remove();
+            }, 8000);
+        }
+
+        // 每2秒添加一個新的金錢符號
+        setInterval(createDynamicMoney, 2000);
+
+        // 標題點擊特效
+        document.querySelector('.title').addEventListener('click', () => {
+            const title = document.querySelector('.title');
+            title.style.animation = 'none';
+            title.offsetHeight; // 觸發重排
+            title.style.animation = 'bounce 0.6s ease-in-out';
+            
+            // 創建大量金錢雨
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createDynamicMoney();
+                }, i * 100);
+            }
+        });
+    </script>
+
+    <audio id="bgm" loop muted>
+        <source src="搞錢.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            const audio = document.getElementById('bgm');
+            if (audio) {
+                audio.muted = false;
+                audio.volume = 0.4;
+                audio.play().catch(e => console.log('Audio play failed:', e));
+            }
+        }, {once:true});
+    </script>
+
+</body>
+</html>

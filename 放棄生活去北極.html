@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>放棄生活去北極 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 30%, #2c3e50 60%, #34495e 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 北極風雪效果 */
+        .arctic-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.7);
+            user-select: none;
+            pointer-events: none;
+            animation: snowfall 15s linear infinite;
+            font-size: 1.2em;
+        }
+
+        .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .snowflake:nth-child(2) { left: 20%; animation-delay: 3s; }
+        .snowflake:nth-child(3) { left: 30%; animation-delay: 6s; }
+        .snowflake:nth-child(4) { left: 40%; animation-delay: 9s; }
+        .snowflake:nth-child(5) { left: 50%; animation-delay: 12s; }
+        .snowflake:nth-child(6) { left: 60%; animation-delay: 2s; }
+        .snowflake:nth-child(7) { left: 70%; animation-delay: 5s; }
+        .snowflake:nth-child(8) { left: 80%; animation-delay: 8s; }
+        .snowflake:nth-child(9) { left: 90%; animation-delay: 11s; }
+
+        @keyframes snowfall {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 返回按鈕 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(52, 152, 219, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(52, 152, 219, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(52, 152, 219, 0.8), 0 0 60px rgba(52, 152, 219, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #3498db, #2980b9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-gallery {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            width: 400px;
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(52, 152, 219, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(52, 152, 219, 0.3);
+            border-color: rgba(52, 152, 219, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(52, 152, 219, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(52, 152, 219, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #f39c12;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #e2e8f0;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(52, 152, 219, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(52, 152, 219, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(52, 152, 219, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .character-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .character-card:hover .character-avatar {
+            border-color: rgba(52, 152, 219, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .character-detail {
+            font-size: 0.8rem;
+            color: #bdc3c7;
+            margin-top: 5px;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(52, 152, 219, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4), 0 0 40px rgba(52, 152, 219, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(52, 152, 219, 0.5), 0 0 60px rgba(52, 152, 219, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(52, 152, 219, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                width: 300px;
+                height: auto;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #f39c12;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .quote-section {
+            background: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: #ecf0f1;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="arctic-effects">
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🌌</div>
+        <div class="floating-element">🌠</div>
+        <div class="floating-element">❄️</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">放棄生活去北極</h1>
+            <p class="subtitle">一場逃離現實的心靈治癒之旅</p>
+        </div>
+
+        <div class="poster-section">
+            <div class="poster-gallery">
+                <img src="https://i.postimg.cc/zvKbZd9Y/20211010172344555-0134.jpg" alt="放棄生活去北極海報1" class="poster-image">
+                <img src="https://i.postimg.cc/CKxqBsfb/2025-09-04-115153.png" alt="放棄生活去北極海報2" class="poster-image">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">放棄生活去北極</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🌟 推理程度</span>
+                    <div class="stars">
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">日式</span>
+                        <span class="tag">情感</span>
+                        <span class="tag">立意</span>
+                        <span class="tag">治癒</span>
+                        <span class="tag">新手友好</span>
+                        <span class="tag">機制</span>
+                        <span class="tag">歡樂</span>
+                        <span class="tag">沉浸</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-avatar"><img src="https://i.postimg.cc/SQ2cfd1r/6fb4b246-e5c0-4a38-ba76-48a47270022a-C.png" alt="木木警官"></div>
+                        <div class="character-name">木木警官</div>
+                        <div class="character-detail">30歲男性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar"><img src="https://i.postimg.cc/J7fZ6X9W/491ae6d4-c233-4732-8c7a-1c39e058e0aa-C.png" alt="娘口三三"></div>
+                        <div class="character-name">娘口三三</div>
+                        <div class="character-detail">25歲男性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar"><img src="https://i.postimg.cc/j59djzzq/4c2181b2-2818-45f7-86d5-2968af2c52ee-C.png" alt="佐藤"></div>
+                        <div class="character-name">佐藤</div>
+                        <div class="character-detail">24歲男性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar"><img src="https://i.postimg.cc/jdyNG5bn/bb259e53-111c-4812-bb1c-ecb9a85cc3c0-C-314159.png" alt="3.14159"></div>
+                        <div class="character-name">3.14159</div>
+                        <div class="character-detail">26歲女性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar"><img src="https://i.postimg.cc/L514gnTt/fec95f9f-1730-4bf5-bd5f-8665a79d9750-C.png" alt="絕緣體"></div>
+                        <div class="character-name">絕緣體</div>
+                        <div class="character-detail">28歲女性</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar"><img src="https://i.postimg.cc/Z0zb8471/bf6b551c-4b19-4a1b-9829-227b8fc4d852-C.png" alt="方向盤"></div>
+                        <div class="character-name">方向盤</div>
+                        <div class="character-detail">26歲女性</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="quote-section">
+                    我們在交錯的高樓間尋找方向，<br>
+                    狼狽度日，像動物一樣忙碌，<br>
+                    卻從未弄清生活的模樣。<br>
+                    孤獨，沮喪，倦怠，迷茫……<br><br>
+                    也許我們真的應該學會放下，<br>
+                    放下生活中的壓力，來一場說走就走的旅行，<br>
+                    去一個安靜無人的地方，<br>
+                    沙漠太熱，南極太冷，海島上的風浪也不夠漂亮。<br><br>
+                    <span class="highlight">春天來了，不如，去北極吧？</span>
+                </div>
+                <div class="description-text">
+                    故事發生在<span class="highlight">2035年的日本</span>，六個不同境遇的年轻人相約一起去北極看極光。在這趟旅途中，每個人都找到了心靈缺失的部分，是一個很治癒心靈的劇本。
+                    <br><br>
+                    無論是愛情、親情、夢想還是自信，這個劇本都能觸動內心深處的情感。這不僅僅是一場遊戲，更是一次<span class="highlight">心靈療癒的旅程</span>。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    《放棄生活去北極》是一部<span class="highlight">情感立意本</span>，以現代都市人的生活困境為背景，描述六個年輕人逃離現實、尋找心靈慰藉的故事。
+                    <br><br>
+                    這個劇本非常適合<span class="highlight">新手玩家</span>和<span class="highlight">情感玩家</span>，推理難度適中，更注重角色間的情感交流和內心成長。玩完整個劇本會有一種被治癒的感覺，讓玩家重新審視自己的生活態度。
+                    <br><br>
+                    建議玩家<span class="highlight">不要反串</span>，以獲得最佳的遊戲體驗。這個劇本強調的不是複雜的推理，而是<span class="highlight">人與人之間的理解與陪伴</span>，是現代人在快節奏生活中尋找溫暖的故事。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#e74c3c';
+                        } else {
+                            s.style.color = '#f39c12';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#f39c12';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(52, 152, 219, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(52, 152, 219, 0.25) 0%, rgba(0,0,0,0.4) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.4)';
+                });
+            });
+
+            // 角色頭像點擊效果
+            const avatars = document.querySelectorAll('.character-avatar');
+            avatars.forEach(avatar => {
+                avatar.addEventListener('click', () => {
+                    avatar.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        avatar.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const arctic = document.querySelector('.arctic-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (arctic) arctic.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // 添加雪花動態效果
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = ['❄', '❅', '❆'][Math.floor(Math.random() * 3)];
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            snowflake.style.fontSize = (Math.random() * 0.8 + 0.8) + 'em';
+            
+            document.querySelector('.arctic-effects').appendChild(snowflake);
+            
+            setTimeout(() => {
+                snowflake.remove();
+            }, 20000);
+        }
+
+        // 每3秒添加一個新雪花
+        setInterval(createSnowflake, 3000);
+
+        // 北極光效果
+        function createAuroraEffect() {
+            const aurora = document.createElement('div');
+            aurora.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, 
+                    rgba(0, 255, 127, 0.1) 0%, 
+                    rgba(0, 191, 255, 0.1) 25%, 
+                    rgba(138, 43, 226, 0.1) 50%, 
+                    rgba(255, 20, 147, 0.1) 75%, 
+                    rgba(0, 255, 127, 0.1) 100%);
+                pointer-events: none;
+                z-index: -1;
+                opacity: 0;
+                animation: aurora 20s ease-in-out infinite;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes aurora {
+                    0%, 100% { opacity: 0; transform: translateY(0px); }
+                    50% { opacity: 0.3; transform: translateY(-20px); }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(aurora);
+        }
+
+        // 初始化北極光效果
+        createAuroraEffect();
+    </script>
+
+    <audio id="bgm" loop muted>
+        <source src="放棄生活去北極.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            const audio = document.getElementById('bgm');
+            if (audio) {
+                audio.muted = false;
+                audio.play().catch(e => console.log('Audio play failed:', e));
+            }
+        }, {once:true});
+    </script>
+
+</body>
+</html>

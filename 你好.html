@@ -498,39 +498,7 @@
             transition: width 0.3s ease;
         }
 
-        /* 載入動畫 */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 30%, #fd79a8 60%, #e84393 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 1s ease-out;
-        }
 
-        /* 緊急修復：確保載入動畫不會永久覆蓋內容 */
-        .loading-overlay.hidden {
-            display: none !important;
-        }
-
-        /* 緊急修復：如果載入動畫有問題，強制隱藏 */
-        @media (max-width: 9999px) {
-            .loading-overlay[style*="display: none"] {
-                display: none !important;
-            }
-        }
-
-        .loading-heart {
-            font-size: 4rem;
-            animation: pulse 1s ease-in-out infinite;
-            color: white;
-            text-shadow: 0 0 20px rgba(232, 67, 147, 0.8);
-        }
 
         @media (max-width: 768px) {
             .main-content {
@@ -589,13 +557,7 @@
     </style>
 </head>
 <body>
-    <!-- 載入動畫 -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-heart">💖</div>
-        <div style="position: absolute; bottom: 20px; color: white; font-size: 0.9rem; opacity: 0.8;">
-            如果載入時間過長，請點擊此處
-        </div>
-    </div>
+
 
     <!-- 滾動指示器 -->
     <div class="scroll-indicator">
@@ -634,8 +596,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="https://i.postimg.cc/WzGqZvHq/hello-poster1.jpg" alt="你好劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="https://i.postimg.cc/9MbXCvP3/hello-poster2.jpg" alt="你好劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/yYHRnqbT/1756965231384-2b83cb44-9f84-4eda-b1a5-1eeeedac38fb-2.jpg" alt="你好劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/wxJJhx0v/1756965231384-2b83cb44-9f84-4eda-b1a5-1eeeedac38fb-1.jpg" alt="你好劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -695,34 +657,34 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/k4cCQLV9/character1.jpg" alt="李海澤" class="character-image">
+                        <img src="https://i.postimg.cc/tgwZx86W/2025-09-04-135049.png" alt="李海澤" class="character-image">
                         <div class="character-name">李海澤</div>
-                        <div class="character-info">男性角色<br>溫文儒雅，深情男子</div>
+                        <div class="character-info">男性角色<br>「人生最好的狀態，就是未來可期。」</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/J0Y5hxzK/character2.jpg" alt="阿瑤" class="character-image">
+                        <img src="https://i.postimg.cc/Vk7bYJL7/2025-09-04-135103.png" alt="阿瑤" class="character-image">
                         <div class="character-name">阿瑤</div>
-                        <div class="character-info">女性角色<br>笑靨如花，溫柔女子</div>
+                        <div class="character-info">女性角色<br>「願你，眼裡滿是溫柔，心裡滿是幸福。」</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/FRNVg4qL/character3.jpg" alt="夏雲錚" class="character-image">
-                        <div class="character-name">夏雲錚</div>
-                        <div class="character-info">男性角色<br>青春年華，純真少年</div>
+                        <img src="https://i.postimg.cc/LsnghmJm/2025-09-04-135056.png" alt="夏雲峥" class="character-image">
+                        <div class="character-name">夏雲峥</div>
+                        <div class="character-info">男性角色<br>「願有歲月可回首，且以深情共白頭。」</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/4N7Y4yb1/character4.jpg" alt="于婉兒" class="character-image">
+                        <img src="https://i.postimg.cc/5NSCR7cW/2025-09-04-135112.png" alt="于婉兒" class="character-image">
                         <div class="character-name">于婉兒</div>
-                        <div class="character-info">女性角色<br>青澀美好，初戀女孩</div>
+                        <div class="character-info">女性角色<br>「人生苦短，來日方長。」</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/c4Nj8kqT/character5.jpg" alt="江楓" class="character-image">
-                        <div class="character-name">江楓</div>
-                        <div class="character-info">男性角色<br>成熟穩重，責任男人</div>
+                        <img src="https://i.postimg.cc/W3ZD6SmK/2025-09-04-135041.png" alt="梁梓奕" class="character-image">
+                        <div class="character-name">梁梓奕</div>
+                        <div class="character-info">男性角色<br>「願有人問你溫飽，有人問你歸期。」</div>
                     </div>
                     <div class="character-card">
-                        <img src="https://i.postimg.cc/MGRJCHfG/character6.jpg" alt="王芳" class="character-image">
-                        <div class="character-name">王芳</div>
-                        <div class="character-info">女性角色<br>賢良淑德，堅強女人</div>
+                        <img src="https://i.postimg.cc/ht4dWLgz/2025-09-04-135121.png" alt="林墨" class="character-image">
+                        <div class="character-name">林墨</div>
+                        <div class="character-info">女性角色<br>「願有人與你歡閒，願有人陪你到老。」</div>
                     </div>
                 </div>
             </div>
@@ -767,6 +729,8 @@
     </div>
 
     <script>
+
+
         // 添加互動效果
         document.addEventListener('DOMContentLoaded', function() {
             // 錯誤處理和調試
@@ -775,7 +739,7 @@
             });
 
             // 檢查必要元素是否存在
-            const requiredElements = ['loadingOverlay', 'scrollProgress', 'title'];
+            const requiredElements = ['scrollProgress', 'title'];
             const missingElements = requiredElements.filter(id => !document.getElementById(id));
             
             if (missingElements.length > 0) {
@@ -1008,41 +972,7 @@
                 });
             }
 
-            // 載入動畫控制
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            if (loadingOverlay) {
-                // 點擊載入動畫可以關閉它
-                loadingOverlay.addEventListener('click', () => {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                        loadingOverlay.classList.add('hidden');
-                        document.body.style.overflow = 'auto';
-                        console.log('手動關閉載入動畫');
-                    }, 500);
-                });
 
-                // 立即開始隱藏載入動畫
-                setTimeout(() => {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                        loadingOverlay.classList.add('hidden');
-                        // 確保頁面內容可見
-                        document.body.style.overflow = 'auto';
-                    }, 1000);
-                }, 1000);
-
-                // 備用方案：如果 5 秒後載入動畫還在，強制隱藏
-                setTimeout(() => {
-                    if (loadingOverlay.style.display !== 'none') {
-                        loadingOverlay.style.display = 'none';
-                        loadingOverlay.classList.add('hidden');
-                        document.body.style.overflow = 'auto';
-                        console.log('強制隱藏載入動畫');
-                    }
-                }, 5000);
-            }
 
             // 鍵盤快捷鍵
             document.addEventListener('keydown', (e) => {

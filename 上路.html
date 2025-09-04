@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上路 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 30%, #2c1810 60%, #1f1f1f 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 黑暗恐怖效果 */
+        .dark-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shadow-element {
+            position: absolute;
+            background: radial-gradient(circle, rgba(139, 0, 0, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: shadowPulse 4s ease-in-out infinite;
+        }
+
+        .shadow-element:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shadow-element:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .shadow-element:nth-child(3) {
+            width: 180px;
+            height: 180px;
+            bottom: 30%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes shadowPulse {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* 返回按鈕 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 0, 0, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 0, 0, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(139, 0, 0, 0.8), 0 0 60px rgba(139, 0, 0, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #8b0000, #dc143c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-images {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #8b0000, #2c1810);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+            margin: 0 auto;
+            width: 400px;
+            height: 500px;
+            border: 2px solid rgba(139, 0, 0, 0.5);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(139, 0, 0, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(139, 0, 0, 0.4);
+            border-color: rgba(139, 0, 0, 0.6);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #8b0000;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(139, 0, 0, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(139, 0, 0, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #8b0000;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #333;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #8b0000, #dc143c);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(139, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(139, 0, 0, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #8b0000, #2c1810);
+            color: white;
+        }
+
+        .character-card:hover .character-avatar {
+            border-color: rgba(139, 0, 0, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.5);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .character-detail {
+            font-size: 0.8rem;
+            color: #bdc3c7;
+            margin-top: 5px;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(139, 0, 0, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+        }
+
+        .warning-box {
+            background: rgba(139, 0, 0, 0.1);
+            border-left: 4px solid #8b0000;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #8b0000, #dc143c);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.4), 0 0 40px rgba(139, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.6), 0 0 60px rgba(139, 0, 0, 0.4);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.2;
+            animation: float 10s ease-in-out infinite;
+            color: rgba(139, 0, 0, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 25%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 8s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.8rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-images {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .poster-image {
+                width: 300px;
+                height: 400px;
+                font-size: 2rem;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #8b0000;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .quote-section {
+            background: rgba(139, 0, 0, 0.1);
+            border-left: 4px solid #8b0000;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: #ecf0f1;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="dark-effects">
+        <div class="shadow-element"></div>
+        <div class="shadow-element"></div>
+        <div class="shadow-element"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🚗</div>
+        <div class="floating-element">👻</div>
+        <div class="floating-element">🌙</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">上路</h1>
+            <p class="subtitle">時辰到了，該上路了</p>
+        </div>
+
+        <div class="poster-section">
+            <div class="poster-images">
+                <div class="poster-image">
+                    <img src="https://i.postimg.cc/L5CwvkVd/image.jpg" alt="上路劇本海報1" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
+                </div>
+                <div class="poster-image">
+                    <img src="https://i.postimg.cc/ncr6r5Hn/image.jpg" alt="上路劇本海報2" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">上路</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>2男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">現代</span>
+                        <span class="tag">恐怖</span>
+                        <span class="tag">硬核</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">變格</span>
+                        <span class="tag">進階</span>
+                        <span class="tag">繁體</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/3w2M7v3p/1.jpg" alt="達澤明" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">達澤明</div>
+                        <div class="character-info">家裡的爸爸</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/nrcNvSBY/5.jpg" alt="張雅文" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">張雅文</div>
+                        <div class="character-info">家裡的媽媽</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/sXzk2g2L/3.jpg" alt="張卓君" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">張卓君</div>
+                        <div class="character-info">家裡的哥哥</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/MpCkhDJq/2.jpg" alt="阿花" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">阿花</div>
+                        <div class="character-info">家裡的姐姐</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">
+                            <img src="https://i.postimg.cc/Hxtf81ck/4.jpg" alt="達雯菁" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </div>
+                        <div class="character-name">達雯菁</div>
+                        <div class="character-info">家裡的妹妹</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="quote-section">
+                    夜裡，一輛車行駛在國道上，不知駛向何方。<br>
+                    車裡坐著一家五口人，"1...2...3...1...2...3..."<br>
+                    媽媽嘴裡一直念叨著什麼，數著車後面的人。<br><br>
+                    爸爸失了神一般開著車，三個孩子不清楚發生了什麼，<br>
+                    這個家究竟怎麼了？<br>
+                    是從什麼時候開始這個家就不再正常了？<br><br>
+                    <span class="highlight">"時辰到了，該上路了"</span>
+                </div>
+                <div class="description-text">
+                    《上路》是一個圍繞<span class="highlight">大家庭</span>展開的神秘恐怖故事。達澤明和張雅文原本是同村的青梅竹馬，但命運的安排讓他們走上了一條扭曲的道路。
+                    <br><br>
+                    這個看似完美的家庭背後隱藏著<span class="highlight">不可告人的秘密</span>。當真相逐漸浮現，每個人都將面對自己內心最深層的恐懼...
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">遊戲特色</h2>
+                <div class="warning-box">
+                    <div class="warning-title">⚠️ 溫馨提醒</div>
+                    本劇本包含恐怖元素和單人搜證環節，恐怖程度由海星控制，但畢竟劇本場地布置有限，如果想體驗恐怖氛圍的話建議到店家體驗。
+                </div>
+                <div class="description-text">
+                    《上路》巧妙地將<span class="highlight">玩家、劇情、地圖</span>融合，將平時盤兇容易忽略的小地圖融合其中，前進式闖關小遊戲的既視感！
+                    <br><br>
+                    劇本採用<span class="highlight">新穎的讀本方式</span>，沒有進行常規的指兇環節，整個本子的推理難度適中，故事完整性很棒，非常適合喜歡還原的進階玩家。
+                    <br><br>
+                    線索卡描述精煉，沒有干擾/誤導線索，地圖、線索卡、故事、NPC演繹等滿滿的細節！<span class="highlight">可怕的不是厲鬼，而是人心</span>。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#dc143c';
+                        } else {
+                            s.style.color = '#8b0000';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#8b0000';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(0,0,0,0.6)';
+                });
+            });
+
+            // 角色頭像點擊效果
+            const avatars = document.querySelectorAll('.character-avatar');
+            avatars.forEach(avatar => {
+                avatar.addEventListener('click', () => {
+                    avatar.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        avatar.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // 恐怖效果 - 隨機閃爍
+            function createFlicker() {
+                const elements = document.querySelectorAll('.card, .character-card');
+                const randomElement = elements[Math.floor(Math.random() * elements.length)];
+                
+                randomElement.style.filter = 'brightness(0.3)';
+                setTimeout(() => {
+                    randomElement.style.filter = 'brightness(1)';
+                }, 100);
+            }
+
+            // 每10-20秒隨機閃爍一次
+            setInterval(() => {
+                if (Math.random() < 0.3) {
+                    createFlicker();
+                }
+            }, Math.random() * 10000 + 10000);
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const darkEffects = document.querySelector('.dark-effects');
+            const floating = document.querySelector('.floating-elements');
+            
+            if (darkEffects) darkEffects.style.transform = `translateY(${scrolled * 0.02}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.08}px)`;
+        });
+
+        // 添加陰影動態效果
+        function createShadowPulse() {
+            const shadowElements = document.querySelectorAll('.shadow-element');
+            shadowElements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = Math.random() * 0.8 + 0.2;
+                    element.style.transform = `scale(${Math.random() * 0.5 + 0.8})`;
+                }, index * 1000);
+            });
+        }
+
+        // 每5秒觸發一次陰影脈衝
+        setInterval(createShadowPulse, 5000);
+
+        // 恐怖音效提示
+        function createHorrorEffect() {
+            const title = document.querySelector('.title');
+            const originalText = title.textContent;
+            
+            // 隨機改變標題文字
+            const horrorTexts = ['該上路了', '一家人要整整齊齊', '1...2...3...', '時辰到了'];
+            const randomText = horrorTexts[Math.floor(Math.random() * horrorTexts.length)];
+            
+            title.style.color = '#dc143c';
+            title.textContent = randomText;
+            
+            setTimeout(() => {
+                title.style.color = '';
+                title.textContent = originalText;
+            }, 2000);
+        }
+
+        // 非常低機率觸發恐怖效果
+        setInterval(() => {
+            if (Math.random() < 0.05) { // 5% 機率
+                createHorrorEffect();
+            }
+        }, 30000);
+
+        // 鼠標跟隨陰影效果
+        document.addEventListener('mousemove', (e) => {
+            const shadowCursor = document.createElement('div');
+            shadowCursor.style.cssText = `
+                position: fixed;
+                top: ${e.clientY}px;
+                left: ${e.clientX}px;
+                width: 20px;
+                height: 20px;
+                background: radial-gradient(circle, rgba(139, 0, 0, 0.3) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                animation: shadowFade 1s ease-out forwards;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shadowFade {
+                    0% { opacity: 1; transform: scale(1); }
+                    100% { opacity: 0; transform: scale(2); }
+                }
+            `;
+            
+            if (!document.head.querySelector('style[data-shadow-cursor]')) {
+                style.setAttribute('data-shadow-cursor', 'true');
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(shadowCursor);
+            
+            setTimeout(() => {
+                shadowCursor.remove();
+            }, 1000);
+        });
+    </script>
+
+    <audio id="bgm" loop muted>
+        <source src="上路.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            const audio = document.getElementById('bgm');
+            if (audio) {
+                audio.muted = false;
+                audio.volume = 0.3; // 調低音量避免過於嚇人
+                audio.play().catch(e => console.log('Audio play failed:', e));
+            }
+        }, {once:true});
+    </script>
+
+</body>
+</html>
