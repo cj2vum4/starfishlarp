@@ -442,36 +442,150 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            animation: floatUp linear forwards;
+            animation: floatUp linear forwards, bubbleFloat 3s ease-in-out infinite;
             cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: auto; /* 讓泡泡可以被點擊 */
+            font-weight: 500;
+            line-height: 1.4;
+            word-wrap: break-word;
+            max-width: 80%;
+            
+            /* 泡泡質感 - 簡化漸變提升效能 */
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                rgba(255, 255, 255, 0.2) 100%);
+            
+            /* 泡泡邊框效果 */
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            
+            /* 泡泡光澤效果 - 簡化陰影提升效能 */
+            box-shadow: 
+                inset 0 0 15px rgba(255, 255, 255, 0.3),
+                0 0 15px rgba(255, 255, 255, 0.2),
+                0 4px 20px rgba(0, 0, 0, 0.15);
+            
+            /* 泡泡內部光點 */
+            position: relative;
+            overflow: hidden;
+            
+            /* 硬體加速 */
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        
+        /* 泡泡內部光點 */
+        .comment-bubble::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 20%;
+            height: 20%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* 泡泡內部光點2 */
+        .comment-bubble::after {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 60%;
+            width: 15%;
+            height: 15%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
         .comment-bubble.popped {
-            transform: scale(1.2);
+            transform: scale(1.2) translateZ(0);
             opacity: 0;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         @keyframes floatUp {
             to {
-                transform: translateY(-120vh);
+                transform: translateY(-120vh) translateZ(0);
             }
         }
         
-        /* 泡泡破裂粒子特效 */
+        /* 泡泡漂浮動畫 - 優化效能 */
+        @keyframes bubbleFloat {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) translateZ(0); 
+            }
+            25% { 
+                transform: translateY(-6px) rotate(0.5deg) translateZ(0); 
+            }
+            50% { 
+                transform: translateY(-3px) rotate(-0.3deg) translateZ(0); 
+            }
+            75% { 
+                transform: translateY(-8px) rotate(0.3deg) translateZ(0); 
+            }
+        }
+        
+        /* 泡泡破裂粒子特效 - 優化效能 */
         .pop-particle {
             position: absolute;
-            background-color: #fff;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 100%);
             border-radius: 50%;
             opacity: 1;
-            animation: pop-out 0.5s ease-out forwards;
+            animation: pop-out 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
             pointer-events: none;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+            transform: translate(0, 0) translateZ(0);
+            
+            /* 硬體加速 */
+            will-change: transform, opacity;
+            backface-visibility: hidden;
         }
 
         @keyframes pop-out {
-            to {
-                transform: scale(2);
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg) translateZ(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(var(--x), var(--y)) scale(1.3) rotate(90deg) translateZ(0);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translate(calc(var(--x) * 1.2), calc(var(--y) * 1.2)) scale(0) rotate(180deg) translateZ(0);
+                opacity: 0;
+            }
+        }
+        
+        /* 泡泡水花特效 - 優化效能 */
+        .water-splash {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            animation: waterSplash 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            
+            /* 硬體加速 */
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        
+        @keyframes waterSplash {
+            0% {
+                transform: scale(0) rotate(0deg) translateZ(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1) rotate(90deg) translateZ(0);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1.8) rotate(180deg) translateZ(0);
                 opacity: 0;
             }
         }
@@ -542,38 +656,51 @@
             
             // --- 資料區 ---
             const scriptsData = [
-                // 原有劇本
+                // 根據 index.html 劇本清單更新
+                { id: '王座', title: '王座', imgSrc: 'https://i.postimg.cc/d0cKpGxL/2021-11-13-195627.jpg' },
                 { id: '北國之春', title: '北國之春', imgSrc: 'https://i.postimg.cc/yNWMsNFR/01.jpg' },
-                { id: '群星', title: '群星', imgSrc: 'https://i.postimg.cc/G3DGXBM5/image.jpg' },
-                { id: '病嬌男孩的精分日記', title: '病嬌男孩的精分日記', imgSrc: 'https://i.postimg.cc/RZYbc6pZ/1.jpg' },
-                { id: '孤城', title: '孤城', imgSrc: 'https://i.postimg.cc/cCsdmcGG/b644a7b3-c9a4-4d08-b36d-c69cc70a0b39-S.png' },
+                { id: '別來無恙', title: '別來無恙', imgSrc: 'https://i.postimg.cc/ZR8GbTTx/image.jpg' },
                 { id: '奉天1928', title: '奉天1928', imgSrc: 'https://i.postimg.cc/W3Z7nM68/image.jpg' },
+                { id: '孤城', title: '孤城', imgSrc: 'https://i.postimg.cc/cCsdmcGG/b644a7b3-c9a4-4d08-b36d-c69cc70a0b39-S.png' },
+                { id: '病嬌男孩的精分日記', title: '病嬌男孩的精分日記', imgSrc: 'https://i.postimg.cc/RZYbc6pZ/1.jpg' },
+                { id: '陰緣', title: '陰緣', imgSrc: 'https://i.postimg.cc/qqp3BtDL/image.jpg' },
                 { id: '晴天神社', title: '晴天神社', imgSrc: 'https://i.postimg.cc/QMd81msL/image.png' },
+                { id: '漓川怪談簿', title: '漓川怪談簿', imgSrc: 'https://i.postimg.cc/KvyQtdnC/海報.jpg' },
+                { id: '誰動了我的奶酪', title: '誰動了我的奶酪', imgSrc: 'https://i.postimg.cc/hjP711CF/image.jpg' },
                 { id: '賣快樂的人', title: '賣快樂的人', imgSrc: 'https://i.postimg.cc/8zDnCPgc/image.jpg' },
-                { id: '別來無恙', title: '別來無恙', imgSrc: 'https://i.postimg.cc/ZR8GbTTx/组织者手册封面.jpg' },
-                { id: '誰動了我的奶酪', title: '誰動了我的奶酪', imgSrc: 'https://i.postimg.cc/hjP711CF/封面.jpg' },
-                // 新增劇本
-                { id: '木夕僧之戲', title: '木夕僧之戲', imgSrc: 'https://i.postimg.cc/5twZZZz7/11dacc07-b497-4e5a-9862-9d7cfd0cc80e-S_木夕僧之戲.png' },
-                { id: '案件重演', title: '案件重演', imgSrc: 'https://i.postimg.cc/gJJH0V1F/海报.jpg' },
-                { id: '沸騰跨世紀', title: '沸騰跨世紀', imgSrc: 'https://i.postimg.cc/fyw0htb3/IMG_7198.jpg' },
-                { id: '漓川怪談簿', title: '漓川怪談簿', imgSrc: 'https://i.postimg.cc/KvyQtdnC/海报.jpg' },
-                { id: '王座', title: '王座', imgSrc: 'https://i.postimg.cc/d0cKpGxL/2021-11-13_195627.jpg' },
-                { id: '瘋囚於妄念之終', title: '瘋囚於妄念之終', imgSrc: 'https://i.postimg.cc/YqYXV9qH/1742108932-138599662-g_l.jpg' },
-                { id: '瘋子2我將在18歲分裂成很多人', title: '瘋子2我將在18歲分裂成很多人', imgSrc: 'https://i.postimg.cc/W3dHNnnx/封面.jpg' },
-                { id: '純白少年的慢性死亡', title: '純白少年的慢性死亡', imgSrc: 'https://i.postimg.cc/gjX9pHjJ/主海报.jpg' },
-                { id: '陰緣', title: '陰緣', imgSrc: 'https://i.postimg.cc/qqp3BtDL/封面.jpg' }
+                { id: '沸騰跨世紀', title: '沸騰跨世紀', imgSrc: 'https://i.postimg.cc/fyw0htb3/IMG-7198.jpg' },
+                { id: '木夕僧之戲', title: '木夕僧之戲', imgSrc: 'https://i.postimg.cc/5twZZZz7/11dacc07-b497-4e5a-9862-9d7cfd0cc80e-S.png' },
+                { id: '群星', title: '群星', imgSrc: 'https://i.postimg.cc/G3DGXBM5/image.jpg' },
+                { id: '案件重演', title: '案件重演', imgSrc: 'https://i.postimg.cc/gJJH0V1F/image.jpg' },
+                { id: '瘋子2', title: '瘋子2：我將在18歲後分裂成很多人', imgSrc: 'https://i.postimg.cc/W3dHNnnx/image.jpg' },
+                { id: '瘋囚於妄念之終', title: '瘋囚於妄念之終', imgSrc: 'https://i.postimg.cc/YqYXV9qH/1742108932-138599662-g-l.jpg' },
+                { id: '純白少年的慢性死亡', title: '純白少年的慢性死亡', imgSrc: 'https://i.postimg.cc/gjX9pHjJ/image.jpg' },
+                { id: '拆遷', title: '拆遷', imgSrc: 'https://i.postimg.cc/KcVXYpTR/image.jpg' },
+                { id: '眠夢不老泉', title: '眠夢不老泉', imgSrc: 'https://i.postimg.cc/DwD8FHhJ/2025-09-03-102020.png' },
+                { id: '年輪', title: '年輪', imgSrc: 'https://i.postimg.cc/L8XcWh1Q/109951165590072847.jpg' },
+                { id: '神樂湯', title: '神樂湯', imgSrc: 'https://i.postimg.cc/JzGNvW45/arch.jpg' },
+                { id: '拆遷2', title: '拆遷2買房', imgSrc: 'https://i.postimg.cc/85kxw6QF/v2-84e72c373c2077e6324e282bd93eba61-1440w.png' },
+                { id: '酒大奇蹟', title: '酒大奇蹟', imgSrc: 'https://i.postimg.cc/1X7LT5c9/2025-08-28-123509.png' },
+                { id: '請將我深埋', title: '請將我深埋', imgSrc: 'https://i.postimg.cc/wv0KPH3k/1-S-5.jpg' },
+                { id: '風起時想你', title: '風起時想你', imgSrc: 'https://i.postimg.cc/XqvNPrvx/image.jpg' },
+                { id: '病嬌3近乎正常的我們', title: '病嬌3：近乎正常的我們', imgSrc: 'https://i.postimg.cc/Gpvg6BBj/image.jpg' },
+                { id: '天才在左我在右', title: '天才在左我在右', imgSrc: 'https://i.postimg.cc/c4gk78LJ/image.png' },
+                { id: '太陽可以是藍色嗎', title: '太陽可以是藍色嗎', imgSrc: 'https://i.postimg.cc/sXBRPWRV/image.jpg' },
+                { id: '左左', title: '左左', imgSrc: 'https://i.postimg.cc/d1ysfhyh/212x300.jpg' },
+                { id: '常春藤公寓', title: '常春藤公寓', imgSrc: 'https://i.postimg.cc/7hgnYWvJ/image.jpg' },
+                { id: '45', title: '45', imgSrc: 'https://i.postimg.cc/yYJhpxpr/gto1-Zyy-LPx-DJj-X-KTw-YLkw-Rfk-HCgw2-Dmff-Uk6-Iuh-DMk92fa-X8g0k5ub-Yf-Wa-N-I9-A.jpg' }
             ];
             
             const bubbleColors = [
-                { bg: 'rgba(173, 216, 230, 0.5)', border: 'rgba(173, 216, 230, 0.7)' }, // 淺藍
-                { bg: 'rgba(144, 238, 144, 0.5)', border: 'rgba(144, 238, 144, 0.7)' }, // 淺綠
-                { bg: 'rgba(255, 182, 193, 0.5)', border: 'rgba(255, 182, 193, 0.7)' }, // 淺粉
-                { bg: 'rgba(255, 255, 224, 0.5)', border: 'rgba(255, 255, 224, 0.7)' }, // 淺黃
-                { bg: 'rgba(221, 160, 221, 0.5)', border: 'rgba(221, 160, 221, 0.7)' }, // 紫紅
-                { bg: 'rgba(240, 230, 140, 0.5)', border: 'rgba(240, 230, 140, 0.7)' }, // 卡其
-                { bg: 'rgba(175, 238, 238, 0.5)', border: 'rgba(175, 238, 238, 0.7)' }, // 淡青
-                { bg: 'rgba(255, 228, 196, 0.5)', border: 'rgba(255, 228, 196, 0.7)' }, // 杏仁
-                { bg: 'rgba(230, 230, 250, 0.5)', border: 'rgba(230, 230, 250, 0.7)' }  // 薰衣草
+                { bg: 'rgba(70, 130, 180, 0.85)', border: 'rgba(70, 130, 180, 1)', text: '#ffffff' }, // 鋼藍色
+                { bg: 'rgba(34, 139, 34, 0.85)', border: 'rgba(34, 139, 34, 1)', text: '#ffffff' }, // 森林綠
+                { bg: 'rgba(199, 21, 133, 0.85)', border: 'rgba(199, 21, 133, 1)', text: '#ffffff' }, // 中紫紅
+                { bg: 'rgba(255, 140, 0, 0.85)', border: 'rgba(255, 140, 0, 1)', text: '#ffffff' }, // 深橙色
+                { bg: 'rgba(138, 43, 226, 0.85)', border: 'rgba(138, 43, 226, 1)', text: '#ffffff' }, // 藍紫色
+                { bg: 'rgba(220, 20, 60, 0.85)', border: 'rgba(220, 20, 60, 1)', text: '#ffffff' }, // 深紅色
+                { bg: 'rgba(0, 128, 128, 0.85)', border: 'rgba(0, 128, 128, 1)', text: '#ffffff' }, // 深青色
+                { bg: 'rgba(160, 82, 45, 0.85)', border: 'rgba(160, 82, 45, 1)', text: '#ffffff' }, // 馬鞍棕色
+                { bg: 'rgba(75, 0, 130, 0.85)', border: 'rgba(75, 0, 130, 1)', text: '#ffffff' }  // 靛青色
             ];
 
             const PROXY_URL = 'https://corsproxy.io/?';
@@ -785,7 +912,7 @@
                 });
             }
             
-            // 5. 顯示評論泡泡
+            // 5. 顯示評論泡泡 - 優化動畫效能
             function showComments(scriptId, playRecords) {
                 const allComments = [];
                 for (const playerName in playRecords) {
@@ -805,52 +932,110 @@
                 const scriptIndex = scriptsData.findIndex(script => script.id === scriptId);
                 const color = bubbleColors[scriptIndex % bubbleColors.length];
 
-                allComments.forEach(commentText => {
-                    const bubble = document.createElement('div');
-                    bubble.className = 'comment-bubble';
-                    bubble.textContent = commentText;
-                    
-                    bubble.style.backgroundColor = color.bg;
-                    bubble.style.borderColor = color.border;
-
-                    const size = Math.random() * 100 + 150;
-                    bubble.style.width = `${size}px`;
-                    bubble.style.height = `${size}px`;
-                    bubble.style.left = `${Math.random() * (window.innerWidth - size)}px`;
-                    
-                    // *** 修正 ***: 移除延遲並加大速度落差
-                    const duration = Math.random() * 8 + 4; // 速度區間改為 4s 到 12s
-                    bubble.style.animationDuration = `${duration}s`;
-                    // bubble.style.animationDelay = `${Math.random() * 5}s`; // 移除延遲
-
-                    bubble.addEventListener('click', (e) => {
-                        startAudio();
-                        popSound.triggerAttackRelease('C5', '8n');
+                // 優化泡泡間距和位置計算
+                const bubbleSpacing = 180; // 減少間距提升密度
+                const startPositions = [];
+                
+                // 使用 requestAnimationFrame 優化動畫效能
+                const createBubble = (commentText, index) => {
+                    requestAnimationFrame(() => {
+                        const bubble = document.createElement('div');
+                        bubble.className = 'comment-bubble';
+                        bubble.textContent = commentText;
                         
-                        // 泡泡破裂特效
-                        for (let i = 0; i < 5; i++) {
-                            const p = document.createElement('div');
-                            p.className = 'pop-particle';
-                            p.style.backgroundColor = color.border;
-                            p.style.left = `${e.clientX}px`;
-                            p.style.top = `${e.clientY}px`;
-                            const angle = Math.random() * 360;
-                            const distance = Math.random() * 50 + 50;
-                            p.style.setProperty('--x', `${Math.cos(angle * Math.PI / 180) * distance}px`);
-                            p.style.setProperty('--y', `${Math.sin(angle * Math.PI / 180) * distance}px`);
-                            document.body.appendChild(p);
-                            setTimeout(() => p.remove(), 500);
-                        }
+                        // 優化泡泡大小計算
+                        const baseSize = Math.max(100, Math.min(180, commentText.length * 6));
+                        const size = baseSize + Math.random() * 30;
+                        bubble.style.width = `${size}px`;
+                        bubble.style.height = `${size}px`;
+                        
+                        // 改進位置分配算法
+                        let startX, startY;
+                        let attempts = 0;
+                        const maxAttempts = 8;
+                        
+                        do {
+                            startX = Math.random() * (window.innerWidth - size - 40) + 20;
+                            startY = Math.random() * (window.innerHeight * 0.25) + (window.innerHeight * 0.75);
+                            attempts++;
+                        } while (attempts < maxAttempts && startPositions.some(pos => 
+                            Math.abs(pos.x - startX) < bubbleSpacing && Math.abs(pos.y - startY) < bubbleSpacing
+                        ));
+                        
+                        startPositions.push({ x: startX, y: startY });
+                        bubble.style.left = `${startX}px`;
+                        bubble.style.bottom = `${window.innerHeight - startY}px`;
+                        
+                        // 優化動畫時間和延遲
+                        const baseDuration = 5.5; // 稍微加快基礎速度
+                        const speedVariation = 1.5; // 減少速度變化範圍
+                        const duration = baseDuration + (Math.random() * speedVariation);
+                        bubble.style.animationDuration = `${duration}s`;
+                        
+                        // 減少延遲時間，讓泡泡更密集
+                        const delay = index * 0.6; // 每個泡泡延遲 0.6 秒起飛
+                        bubble.style.animationDelay = `${delay}s`;
 
-                        bubble.classList.add('popped');
-                        setTimeout(() => bubble.remove(), 200);
-                    });
-                    
-                    bubble.addEventListener('animationend', () => {
-                        bubble.remove();
-                    });
+                        // 優化點擊事件處理
+                        bubble.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            startAudio();
+                            
+                            // 播放泡泡破裂音效
+                            const popFreq = 800 + Math.random() * 400;
+                            popSound.triggerAttackRelease(popFreq + 'Hz', '16n');
+                            
+                            // 優化粒子特效數量
+                            for (let i = 0; i < 6; i++) {
+                                const p = document.createElement('div');
+                                p.className = 'pop-particle';
+                                p.style.left = `${e.clientX}px`;
+                                p.style.top = `${e.clientY}px`;
+                                
+                                const particleSize = Math.random() * 6 + 3;
+                                p.style.width = `${particleSize}px`;
+                                p.style.height = `${particleSize}px`;
+                                
+                                const colors = ['#ffffff', '#e3f2fd', '#f3e5f5', '#e8f5e8'];
+                                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                                
+                                const angle = Math.random() * 360;
+                                const distance = Math.random() * 60 + 30;
+                                const x = Math.cos(angle * Math.PI / 180) * distance;
+                                const y = Math.sin(angle * Math.PI / 180) * distance;
+                                
+                                p.style.setProperty('--x', `${x}px`);
+                                p.style.setProperty('--y', `${y}px`);
+                                
+                                document.body.appendChild(p);
+                                setTimeout(() => p.remove(), 600);
+                            }
+                            
+                            // 水花特效
+                            const splash = document.createElement('div');
+                            splash.className = 'water-splash';
+                            splash.style.left = `${e.clientX - 50}px`;
+                            splash.style.top = `${e.clientY - 50}px`;
+                            splash.style.background = `radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(135, 206, 235, 0.6) 50%, transparent 100%)`;
+                            document.body.appendChild(splash);
+                            setTimeout(() => splash.remove(), 500);
 
-                    commentBubbleContainer.appendChild(bubble);
+                            // 泡泡破裂動畫
+                            bubble.classList.add('popped');
+                            setTimeout(() => bubble.remove(), 120);
+                        });
+                        
+                        bubble.addEventListener('animationend', () => {
+                            bubble.remove();
+                        });
+
+                        commentBubbleContainer.appendChild(bubble);
+                    });
+                };
+                
+                // 分批創建泡泡，避免阻塞主線程
+                allComments.forEach((commentText, index) => {
+                    setTimeout(() => createBubble(commentText, index), index * 50);
                 });
             }
 
