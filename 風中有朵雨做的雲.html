@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>風中有朵雨做的雲 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 20, 147, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(218, 165, 32, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 添加雨滴效果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.1), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.05), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.1), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.05), transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: rain 20s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes rain {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* 霓虹燈飄浮效果 */
+        .neon-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .neon-particle {
+            position: absolute;
+            color: rgba(255, 20, 147, 0.9);
+            user-select: none;
+            pointer-events: none;
+            animation: neonFloat 12s linear infinite;
+            text-shadow: 
+                0 0 10px rgba(255, 20, 147, 1), 
+                0 0 20px rgba(255, 20, 147, 0.8),
+                0 0 30px rgba(0, 255, 255, 0.6);
+            filter: drop-shadow(0 0 5px rgba(255, 20, 147, 0.5));
+        }
+
+        .neon-particle:nth-child(1) { left: 8%; animation-delay: 0s; font-size: 1.5em; }
+        .neon-particle:nth-child(2) { left: 18%; animation-delay: 2s; font-size: 1.2em; }
+        .neon-particle:nth-child(3) { left: 28%; animation-delay: 4s; font-size: 1.8em; }
+        .neon-particle:nth-child(4) { left: 38%; animation-delay: 6s; font-size: 1.3em; }
+        .neon-particle:nth-child(5) { left: 48%; animation-delay: 8s; font-size: 1.6em; }
+        .neon-particle:nth-child(6) { left: 58%; animation-delay: 1s; font-size: 1.4em; }
+        .neon-particle:nth-child(7) { left: 68%; animation-delay: 3s; font-size: 1.7em; }
+        .neon-particle:nth-child(8) { left: 78%; animation-delay: 5s; font-size: 1.3em; }
+        .neon-particle:nth-child(9) { left: 88%; animation-delay: 7s; font-size: 1.5em; }
+
+        @keyframes neonFloat {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg) scale(1);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg) scale(0.5);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(218, 165, 32, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(218, 165, 32, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(218, 165, 32, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 
+                0 0 10px #ff1493,
+                0 0 20px #ff1493,
+                0 0 30px #ff1493,
+                0 0 40px #daa520,
+                0 0 50px #daa520,
+                0 0 60px #daa520;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #daa520, #ff1493, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: 'Georgia', serif;
+            animation: neonPulse 2s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        .title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 20, 147, 0.3), transparent);
+            border-radius: 10px;
+            animation: neonSweep 3s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes neonPulse {
+            0% {
+                text-shadow: 
+                    0 0 10px #ff1493,
+                    0 0 20px #ff1493,
+                    0 0 30px #ff1493,
+                    0 0 40px #daa520,
+                    0 0 50px #daa520,
+                    0 0 60px #daa520;
+            }
+            100% {
+                text-shadow: 
+                    0 0 20px #ff1493,
+                    0 0 30px #ff1493,
+                    0 0 40px #ff1493,
+                    0 0 50px #daa520,
+                    0 0 60px #daa520,
+                    0 0 70px #daa520;
+            }
+        }
+
+        @keyframes neonSweep {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 
+                0 0 5px #00ffff,
+                0 0 10px #00ffff,
+                0 0 15px #00ffff;
+            animation: neonFlicker 4s ease-in-out infinite;
+        }
+
+        @keyframes neonFlicker {
+            0%, 100% { 
+                text-shadow: 
+                    0 0 5px #00ffff,
+                    0 0 10px #00ffff,
+                    0 0 15px #00ffff;
+            }
+            50% { 
+                text-shadow: 
+                    0 0 2px #00ffff,
+                    0 0 5px #00ffff,
+                    0 0 8px #00ffff;
+            }
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 20, 147, 0.3);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            border-color: rgba(255, 20, 147, 0.6);
+        }
+
+        /* 圖片載入優化 */
+        .poster-image, .character-image {
+            background: linear-gradient(45deg, #2c1810, #daa520);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 圖片載入完成後移除背景動畫 */
+        .poster-image[src], .character-image[src] {
+            background: none;
+            animation: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: 
+                linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.6) 50%, rgba(15, 52, 96, 0.8) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.4),
+                0 0 30px rgba(255, 20, 147, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 20, 147, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 20, 147, 0.1), transparent);
+            animation: cardSweep 8s linear infinite;
+        }
+
+        @keyframes cardSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 30px 60px rgba(0,0,0,0.6),
+                0 0 40px rgba(255, 20, 147, 0.3),
+                0 0 60px rgba(0, 255, 255, 0.2);
+            border-color: rgba(255, 20, 147, 0.4);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid transparent;
+            background: linear-gradient(90deg, #ff1493, #00ffff, #daa520, #ff1493);
+            background-size: 200% 200%;
+            background-clip: border-box;
+            -webkit-background-clip: border-box;
+            padding-bottom: 10px;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff;
+            animation: neonTitleGlow 3s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        .card-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff1493, #00ffff, #daa520, #ff1493);
+            background-size: 200% 200%;
+            animation: neonBorderFlow 2s linear infinite;
+        }
+
+        @keyframes neonTitleGlow {
+            0% {
+                text-shadow: 
+                    0 0 10px #00ffff,
+                    0 0 20px #00ffff,
+                    0 0 30px #00ffff;
+            }
+            100% {
+                text-shadow: 
+                    0 0 15px #00ffff,
+                    0 0 30px #00ffff,
+                    0 0 45px #00ffff,
+                    0 0 60px #ff1493;
+            }
+        }
+
+        @keyframes neonBorderFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .info-item:hover {
+            background: rgba(218, 165, 32, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.2);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #f0e68c;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .star.empty {
+            color: #555;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #daa520, #ff1493, #00ffff);
+            background-size: 200% 200%;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 4px 15px rgba(218, 165, 32, 0.3),
+                0 0 20px rgba(255, 20, 147, 0.4);
+            animation: neonTagPulse 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 8px 25px rgba(218, 165, 32, 0.5),
+                0 0 30px rgba(255, 20, 147, 0.8),
+                0 0 50px rgba(0, 255, 255, 0.6);
+            animation: neonTagGlow 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonTagPulse {
+            0% {
+                box-shadow: 
+                    0 4px 15px rgba(218, 165, 32, 0.3),
+                    0 0 20px rgba(255, 20, 147, 0.4);
+            }
+            100% {
+                box-shadow: 
+                    0 4px 15px rgba(218, 165, 32, 0.3),
+                    0 0 30px rgba(255, 20, 147, 0.6),
+                    0 0 40px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        @keyframes neonTagGlow {
+            0% {
+                box-shadow: 
+                    0 8px 25px rgba(218, 165, 32, 0.5),
+                    0 0 30px rgba(255, 20, 147, 0.8),
+                    0 0 50px rgba(0, 255, 255, 0.6);
+            }
+            100% {
+                box-shadow: 
+                    0 8px 25px rgba(218, 165, 32, 0.5),
+                    0 0 40px rgba(255, 20, 147, 1),
+                    0 0 60px rgba(0, 255, 255, 0.8);
+            }
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(218, 165, 32, 0.15);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            padding: 2px;
+            background: linear-gradient(45deg, #ff1493, #00ffff, #daa520, #ff1493);
+            background-size: 300% 300%;
+            animation: neonBorder 3s ease infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .character-card:hover {
+            background: rgba(218, 165, 32, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 
+                0 10px 25px rgba(218, 165, 32, 0.4),
+                0 0 30px rgba(255, 20, 147, 0.6),
+                0 0 50px rgba(0, 255, 255, 0.4);
+        }
+
+        @keyframes neonBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(218, 165, 32, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+            object-fit: cover;
+            display: block;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(218, 165, 32, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 
+                0 0 5px #ff1493,
+                0 0 10px #ff1493,
+                0 0 15px #ff1493;
+            animation: neonGlow 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonGlow {
+            0% {
+                text-shadow: 
+                    0 0 5px #ff1493,
+                    0 0 10px #ff1493,
+                    0 0 15px #ff1493;
+            }
+            100% {
+                text-shadow: 
+                    0 0 10px #ff1493,
+                    0 0 20px #ff1493,
+                    0 0 30px #ff1493,
+                    0 0 40px #00ffff;
+            }
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f0e68c;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fff;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 20, 147, 0.2) 50%, transparent 100%);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #ff69b4;
+            text-shadow: 
+                0 0 8px rgba(255, 20, 147, 0.6),
+                0 0 16px rgba(0, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .highlight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 20, 147, 0.1), transparent);
+            border-radius: 6px;
+            animation: highlightPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .quote-section {
+            background: 
+                linear-gradient(135deg, rgba(26, 26, 46, 0.6) 0%, rgba(22, 33, 62, 0.4) 100%);
+            border-left: 4px solid transparent;
+            border-image: linear-gradient(180deg, #ff1493, #00ffff, #daa520) 1;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 0 15px 15px 0;
+            font-style: italic;
+            color: #e0e0e0;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            text-shadow: 
+                0 0 10px rgba(255, 20, 147, 0.3),
+                0 0 20px rgba(0, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quote-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 20, 147, 0.05), transparent);
+            animation: quoteGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes quoteGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #daa520, #ff1493, #00ffff);
+            background-size: 200% 200%;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 10px 30px rgba(218, 165, 32, 0.3), 
+                0 0 40px rgba(218, 165, 32, 0.1),
+                0 0 20px rgba(255, 20, 147, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: neonButtonPulse 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: neonButtonSweep 3s linear infinite;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 20px 40px rgba(218, 165, 32, 0.4), 
+                0 0 60px rgba(218, 165, 32, 0.2),
+                0 0 30px rgba(255, 20, 147, 0.8),
+                0 0 50px rgba(0, 255, 255, 0.6);
+            animation: neonButtonGlow 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonButtonPulse {
+            0% {
+                box-shadow: 
+                    0 10px 30px rgba(218, 165, 32, 0.3), 
+                    0 0 40px rgba(218, 165, 32, 0.1),
+                    0 0 20px rgba(255, 20, 147, 0.4);
+            }
+            100% {
+                box-shadow: 
+                    0 10px 30px rgba(218, 165, 32, 0.3), 
+                    0 0 40px rgba(218, 165, 32, 0.1),
+                    0 0 30px rgba(255, 20, 147, 0.6),
+                    0 0 40px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        @keyframes neonButtonSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes neonButtonGlow {
+            0% {
+                box-shadow: 
+                    0 20px 40px rgba(218, 165, 32, 0.4), 
+                    0 0 60px rgba(218, 165, 32, 0.2),
+                    0 0 30px rgba(255, 20, 147, 0.8),
+                    0 0 50px rgba(0, 255, 255, 0.6);
+            }
+            100% {
+                box-shadow: 
+                    0 20px 40px rgba(218, 165, 32, 0.4), 
+                    0 0 60px rgba(218, 165, 32, 0.2),
+                    0 0 40px rgba(255, 20, 147, 1),
+                    0 0 60px rgba(0, 255, 255, 0.8);
+            }
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.4;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(218, 165, 32, 0.5);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* 滾動指示器 */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(218, 165, 32, 0.2);
+            z-index: 1001;
+        }
+
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #daa520, #ff1493);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #f0e68c;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(218, 165, 32, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .disco-ball {
+            position: fixed;
+            top: 20%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            background: 
+                radial-gradient(circle at 30% 30%, #ff1493, #00ffff, #daa520, #ff1493);
+            border-radius: 50%;
+            animation: discoBall 4s linear infinite;
+            box-shadow: 
+                0 0 30px rgba(255, 20, 147, 0.6),
+                0 0 50px rgba(0, 255, 255, 0.4),
+                0 0 70px rgba(218, 165, 32, 0.3);
+            z-index: -1;
+            position: relative;
+        }
+
+        .disco-ball::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.3), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.2), transparent 50%);
+            border-radius: 50%;
+            animation: discoShine 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes discoShine {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        @keyframes discoBall {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 霓虹燈文字效果 */
+        .neon-text-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .neon-text {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: transparent;
+            text-shadow: 
+                0 0 5px #ff1493,
+                0 0 10px #ff1493,
+                0 0 15px #ff1493,
+                0 0 20px #00ffff,
+                0 0 35px #00ffff,
+                0 0 40px #00ffff;
+            animation: neonTextFlicker 4s ease-in-out infinite;
+            font-family: 'Arial', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        @keyframes neonTextFlicker {
+            0%, 100% {
+                opacity: 0.8;
+                text-shadow: 
+                    0 0 5px #ff1493,
+                    0 0 10px #ff1493,
+                    0 0 15px #ff1493,
+                    0 0 20px #00ffff,
+                    0 0 35px #00ffff,
+                    0 0 40px #00ffff;
+            }
+            50% {
+                opacity: 0.4;
+                text-shadow: 
+                    0 0 2px #ff1493,
+                    0 0 5px #ff1493,
+                    0 0 8px #ff1493,
+                    0 0 10px #00ffff,
+                    0 0 15px #00ffff,
+                    0 0 20px #00ffff;
+            }
+        }
+
+        /* 霓虹燈線條效果 */
+        .neon-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .neon-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #ff1493, #00ffff, #ff1493, transparent);
+            background-size: 200% 100%;
+            animation: neonLineFlow 3s linear infinite;
+        }
+
+        .neon-line.horizontal {
+            width: 100%;
+            height: 2px;
+            left: 0;
+        }
+
+        .neon-line.vertical {
+            height: 100%;
+            width: 2px;
+            top: 0;
+            background: linear-gradient(180deg, transparent, #ff1493, #00ffff, #ff1493, transparent);
+        }
+
+        @keyframes neonLineFlow {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 滾動指示器 -->
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="neon-effects">
+        <div class="neon-particle">🎵</div>
+        <div class="neon-particle">💃</div>
+        <div class="neon-particle">🎤</div>
+        <div class="neon-particle">🕺</div>
+        <div class="neon-particle">🎵</div>
+        <div class="neon-particle">💃</div>
+        <div class="neon-particle">🎤</div>
+        <div class="neon-particle">🕺</div>
+        <div class="neon-particle">🎵</div>
+        <div class="neon-particle">💃</div>
+        <div class="neon-particle">🎤</div>
+        <div class="neon-particle">🕺</div>
+    </div>
+
+    <!-- 霓虹燈文字效果 -->
+    <div class="neon-text-effects">
+        <div class="neon-text" style="top: 15%; left: 5%; animation-delay: 0s;">火鳳凰</div>
+        <div class="neon-text" style="top: 25%; right: 8%; animation-delay: 1s;">歌舞廳</div>
+        <div class="neon-text" style="top: 60%; left: 3%; animation-delay: 2s;">千禧年</div>
+        <div class="neon-text" style="top: 70%; right: 5%; animation-delay: 3s;">港風</div>
+        <div class="neon-text" style="top: 40%; left: 50%; animation-delay: 1.5s;">迪廳</div>
+        <div class="neon-text" style="top: 10%; right: 20%; animation-delay: 2.5s;">空港島</div>
+        <div class="neon-text" style="top: 80%; left: 15%; animation-delay: 4s;">歌王爭霸</div>
+        <div class="neon-text" style="top: 35%; right: 15%; animation-delay: 0.5s;">雨做的雲</div>
+    </div>
+
+    <!-- 霓虹燈線條效果 -->
+    <div class="neon-lines">
+        <div class="neon-line horizontal" style="top: 20%; animation-delay: 0s;"></div>
+        <div class="neon-line horizontal" style="top: 80%; animation-delay: 2s;"></div>
+        <div class="neon-line vertical" style="left: 10%; animation-delay: 1s;"></div>
+        <div class="neon-line vertical" style="right: 10%; animation-delay: 3s;"></div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🏙️</div>
+        <div class="floating-element">🎪</div>
+        <div class="floating-element">🌃</div>
+        <div class="floating-element">🎭</div>
+        <div class="floating-element">💫</div>
+        <div class="floating-element">🌧️</div>
+    </div>
+
+    <div class="disco-ball"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">風中有朵雨做的雲</h1>
+            <p class="subtitle">千禧年港風迪廳，沉默如一朵傍晚的雲</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/L57VYGP5/IMG-7151.jpg" alt="風中有朵雨做的雲 - 劇本海報" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/Z5Nw3YVS/v2-9fdb0f0b07c5f564e3cd7d3b81c7b96e-1440w.png" alt="風中有朵雨做的雲 - 角色海報" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">風中有朵雨做的雲</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>2女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">港風</span>
+                        <span class="tag">迪廳</span>
+                        <span class="tag">微恐</span>
+                        <span class="tag">情感</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">沉浸</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/3Rt17kJg/IMG-7153.jpg" alt="陳韻" class="character-image">
+                        <div class="character-name">陳韻</div>
+                        <div class="character-info">女性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Y0ydNh5p/IMG-7155.jpg" alt="劉飛宇" class="character-image">
+                        <div class="character-name">劉飛宇</div>
+                        <div class="character-info">男性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Wp9YcHhQ/IMG-7154.jpg" alt="張龍" class="character-image">
+                        <div class="character-name">張龍</div>
+                        <div class="character-info">男性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/NFL40Q5Z/IMG-7152.jpg" alt="蘇金巧" class="character-image">
+                        <div class="character-name">蘇金巧</div>
+                        <div class="character-info">女性角色</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/BvGMCWV1/IMG-7156.jpg" alt="李曉峯" class="character-image">
+                        <div class="character-name">李曉峯</div>
+                        <div class="character-info">男性角色</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="quote-section">
+                    千禧年的空港島熱鬧非凡，<br>
+                    新潮的男男女女穿著喇叭褲戴著蛤蟆鏡走進了火鳳凰歌舞廳。<br>
+                    漂亮的女人在天黑之前刷著濃密的睫毛膏，與人相約看今晚的焰火。<br><br>
+                    
+                    失意的人在破敗的汽車旅館看著黑白電視，<br>
+                    耳朵卻聽著窗外樹林中麻雀的撲騰聲。<br>
+                    他望著天邊被吹散的浮雲，突然露出了久違的笑容，<br>
+                    <span class="highlight">緩緩地摘下墨鏡看向遠方。</span><br><br>
+                    
+                    <span class="highlight">沉默，像一朵傍晚的雲。</span>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    《風中有朵雨做的雲》是一部<span class="highlight">披著情感外衣的邏輯推理本</span>，以千禧年港風迪廳為背景，融合了微恐、情感與推理元素。
+                    <br><br>
+                    <strong>🎪 歌王爭霸賽開場：</strong><br>
+                    遊戲開場的<span class="highlight">火鳳凰舞廳歌王爭霸賽</span>充滿歡樂氛圍，當海星拿著金話筒和燈光球進場，你彷彿來到那個精神亢奮的80年代。適合和熟人一起放開玩。
+                    <br><br>
+                    <strong>🔍 變格推理核心：</strong><br>
+                    這是一個<span class="highlight">硬核推理本，難度不小</span>！表面是情感沉浸，實際核心是邏輯推理。每個角色都有自己的緣由和故事，不是非黑即白，對凶手相當友好，能減輕壓力感。
+                    <br><br>
+                    <strong>💫 沉浸式體驗：</strong><br>
+                    玩家需要跟隨主持的引導代入角色中，體驗從歡樂到恐怖的情感轉換。<span class="highlight">恐怖程度不算高</span>，只有個別環節涉及恐怖元素，適合初嘗試恐怖本的玩家。
+                    <br><br>
+                    <strong>⚠️ 遊戲建議：</strong><br>
+                    這個本比較需要大家的配合。前面歡樂，後面加入玄幻內容稍微有點難推。<span class="highlight">不建議反串</span>，角色性別設定對劇情發展很重要。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 錯誤處理和調試
+            window.addEventListener('error', function(e) {
+                console.error('JavaScript 錯誤:', e.error);
+            });
+
+            // 檢查必要元素是否存在
+            const requiredElements = ['scrollProgress'];
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            
+            if (missingElements.length > 0) {
+                console.warn('缺少必要元素:', missingElements);
+            }
+
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#ff1493';
+                            s.style.textShadow = '0 0 10px rgba(255, 20, 147, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                    
+                    // 創建霓虹燈爆炸效果
+                    createNeonBurst(tag);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(218, 165, 32, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的迪廳光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 30px 60px rgba(218, 165, 32, 0.3)';
+                    card.style.borderColor = 'rgba(218, 165, 32, 0.6)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
+                    card.style.borderColor = 'rgba(218, 165, 32, 0.3)';
+                });
+            });
+
+            // 海報圖片點擊放大效果
+            const posterImages = document.querySelectorAll('.poster-image');
+            posterImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    img.style.transform = 'scale(1.1)';
+                    img.style.zIndex = '1000';
+                    setTimeout(() => {
+                        img.style.transform = 'scale(1.02)';
+                        img.style.zIndex = 'auto';
+                    }, 300);
+                });
+            });
+
+            // 創建霓虹燈爆炸效果函數
+            function createNeonBurst(element) {
+                const rect = element.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                for (let i = 0; i < 8; i++) {
+                    const neon = document.createElement('div');
+                    neon.innerHTML = '🎵';
+                    neon.style.position = 'fixed';
+                    neon.style.left = centerX + 'px';
+                    neon.style.top = centerY + 'px';
+                    neon.style.fontSize = '1.5rem';
+                    neon.style.pointerEvents = 'none';
+                    neon.style.zIndex = '9999';
+                    neon.style.transition = 'all 0.8s ease-out';
+                    neon.style.color = '#ff1493';
+                    neon.style.textShadow = '0 0 15px rgba(255, 20, 147, 1)';
+                    
+                    document.body.appendChild(neon);
+                    
+                    const angle = (i * 45) * Math.PI / 180;
+                    const distance = 100;
+                    const targetX = centerX + Math.cos(angle) * distance;
+                    const targetY = centerY + Math.sin(angle) * distance;
+                    
+                    setTimeout(() => {
+                        neon.style.left = targetX + 'px';
+                        neon.style.top = targetY + 'px';
+                        neon.style.opacity = '0';
+                        neon.style.transform = 'scale(0.5) rotate(360deg)';
+                    }, 50);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(neon);
+                    }, 800);
+                }
+            }
+
+            // 滾動視差效果
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.floating-element');
+                
+                parallaxElements.forEach((element, index) => {
+                    const speed = 0.4 + (index * 0.1);
+                    element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.08}deg)`;
+                });
+
+                // 迪斯可球旋轉速度隨滾動變化
+                const discoBall = document.querySelector('.disco-ball');
+                if (discoBall) {
+                    const rotationSpeed = scrolled * 0.5;
+                    discoBall.style.transform = `rotate(${rotationSpeed}deg)`;
+                }
+            });
+
+            // 文字打字機效果
+            function typeWriter(element, text, speed = 100) {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                }
+                type();
+            }
+
+            // 為標題添加打字機效果
+            const title = document.querySelector('.title');
+            const originalTitle = title.textContent;
+            title.textContent = '';
+            
+            setTimeout(() => {
+                typeWriter(title, originalTitle, 150);
+            }, 1000);
+
+            // 點擊創建音符軌跡
+            document.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+                    createClickNote(e.clientX, e.clientY);
+                }
+            });
+
+            function createClickNote(x, y) {
+                const notes = ['🎵', '🎤', '💃', '🕺'];
+                const note = document.createElement('div');
+                note.innerHTML = notes[Math.floor(Math.random() * notes.length)];
+                note.style.position = 'fixed';
+                note.style.left = x + 'px';
+                note.style.top = y + 'px';
+                note.style.fontSize = '2rem';
+                note.style.pointerEvents = 'none';
+                note.style.zIndex = '9999';
+                note.style.transition = 'all 1s ease-out';
+                note.style.transform = 'scale(0)';
+                note.style.color = '#ff1493';
+                note.style.textShadow = '0 0 15px rgba(255, 20, 147, 1)';
+                
+                document.body.appendChild(note);
+                
+                setTimeout(() => {
+                    note.style.transform = 'scale(1) translateY(-50px)';
+                    note.style.opacity = '0';
+                }, 50);
+                
+                setTimeout(() => {
+                    document.body.removeChild(note);
+                }, 1000);
+            }
+
+            // 頁面載入完成後的動畫序列
+            setTimeout(() => {
+                document.body.style.overflow = 'auto';
+                
+                // 為所有卡片添加進入動畫
+                const allCards = document.querySelectorAll('.card, .poster-section, .cta-section');
+                allCards.forEach((card, index) => {
+                    card.style.animationDelay = `${0.1 * index}s`;
+                });
+            }, 2000);
+
+            // 滾動到元素時的淡入效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 觀察所有需要動畫的元素
+            document.querySelectorAll('.card, .poster-section, .cta-section').forEach(el => {
+                observer.observe(el);
+            });
+
+            // 滾動進度指示器
+            const scrollProgress = document.getElementById('scrollProgress');
+            if (scrollProgress) {
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset;
+                    const docHeight = document.body.offsetHeight - window.innerHeight;
+                    const scrollPercent = (scrollTop / docHeight) * 100;
+                    scrollProgress.style.width = scrollPercent + '%';
+                });
+            }
+
+            // 鍵盤快捷鍵
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    // ESC 鍵返回主頁
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // 觸摸設備支持
+            let touchStartY = 0;
+            let touchStartX = 0;
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                touchStartX = e.touches[0].clientX;
+            });
+
+            document.addEventListener('touchend', (e) => {
+                const touchEndY = e.changedTouches[0].clientY;
+                const touchEndX = e.changedTouches[0].clientX;
+                const diffY = touchStartY - touchEndY;
+                const diffX = touchStartX - touchEndX;
+                
+                if (Math.abs(diffY) > 50 || Math.abs(diffX) > 50) {
+                    // 滑動距離足夠，觸發音符效果
+                    createClickNote(touchEndX, touchEndY);
+                }
+            });
+
+            // 性能優化：節流滾動事件
+            let ticking = false;
+            function updateScrollEffects() {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        // 滾動相關的效果更新
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', updateScrollEffects);
+
+            // 迪廳燈光閃爍效果
+            function createDiscoLights() {
+                const colors = ['#ff1493', '#daa520', '#00ffff', '#ff4500', '#9400d3'];
+                const lightCount = 5;
+                
+                for (let i = 0; i < lightCount; i++) {
+                    const light = document.createElement('div');
+                    light.style.position = 'fixed';
+                    light.style.width = '20px';
+                    light.style.height = '20px';
+                    light.style.borderRadius = '50%';
+                    light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    light.style.boxShadow = `0 0 20px ${colors[Math.floor(Math.random() * colors.length)]}`;
+                    light.style.top = Math.random() * window.innerHeight + 'px';
+                    light.style.left = Math.random() * window.innerWidth + 'px';
+                    light.style.pointerEvents = 'none';
+                    light.style.zIndex = '-1';
+                    light.style.opacity = '0.7';
+                    light.style.animation = `flash ${Math.random() * 2 + 1}s ease-in-out infinite alternate`;
+                    
+                    document.body.appendChild(light);
+                    
+                    setTimeout(() => {
+                        if (document.body.contains(light)) {
+                            document.body.removeChild(light);
+                        }
+                    }, 3000);
+                }
+            }
+
+            // 添加閃爍動畫
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes flash {
+                    0% { opacity: 0.3; transform: scale(0.8); }
+                    100% { opacity: 1; transform: scale(1.2); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 定期創建迪廳燈光效果
+            setInterval(createDiscoLights, 5000);
+
+            // 圖片載入處理
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                // 圖片載入成功
+                img.addEventListener('load', () => {
+                    img.style.opacity = '1';
+                    img.style.transform = 'scale(1)';
+                });
+                
+                // 圖片載入失敗
+                img.addEventListener('error', () => {
+                    console.warn('圖片載入失敗:', img.src);
+                    img.style.display = 'none';
+                    
+                    // 如果是角色圖片，顯示備用圖標
+                    if (img.classList.contains('character-image')) {
+                        const parent = img.parentElement;
+                        const fallback = document.createElement('div');
+                        fallback.className = 'character-image';
+                        fallback.style.display = 'flex';
+                        fallback.style.alignItems = 'center';
+                        fallback.style.justifyContent = 'center';
+                        fallback.style.fontSize = '2rem';
+                        fallback.innerHTML = '👤';
+                        parent.insertBefore(fallback, img);
+                    }
+                });
+                
+                // 初始狀態
+                img.style.opacity = '0';
+                img.style.transform = 'scale(0.8)';
+                img.style.transition = 'all 0.5s ease';
+            });
+
+            console.log('風中有朵雨做的雲頁面特效已載入完成！');
+        });
+    </script>
+
+<audio id="bgm" src="風中有朵雨做的雲.mp3" autoplay loop muted></audio>
+    <script>解除靜音
+    document.addEventListener('click', function(){
+        const bgm = document.getElementById('bgm');
+        if (bgm) {
+            bgm.muted = false;
+        }
+    }, {once: true});
+
+</script>
+
+</body>
+</html>

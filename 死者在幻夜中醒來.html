@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>死者在幻夜中醒來 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #0e4b99 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 燭光飄浮效果 */
+        .candle-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .candle-particle {
+            position: absolute;
+            color: rgba(255, 215, 0, 0.6);
+            user-select: none;
+            pointer-events: none;
+            animation: candleFloat 15s linear infinite;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .candle-particle:nth-child(1) { left: 5%; animation-delay: 0s; font-size: 1.2em; }
+        .candle-particle:nth-child(2) { left: 15%; animation-delay: 3s; font-size: 1.0em; }
+        .candle-particle:nth-child(3) { left: 25%; animation-delay: 6s; font-size: 1.4em; }
+        .candle-particle:nth-child(4) { left: 35%; animation-delay: 9s; font-size: 1.1em; }
+        .candle-particle:nth-child(5) { left: 45%; animation-delay: 12s; font-size: 1.3em; }
+        .candle-particle:nth-child(6) { left: 55%; animation-delay: 2s; font-size: 1.2em; }
+        .candle-particle:nth-child(7) { left: 65%; animation-delay: 5s; font-size: 1.5em; }
+        .candle-particle:nth-child(8) { left: 75%; animation-delay: 8s; font-size: 1.0em; }
+        .candle-particle:nth-child(9) { left: 85%; animation-delay: 11s; font-size: 1.3em; }
+        .candle-particle:nth-child(10) { left: 95%; animation-delay: 1s; font-size: 1.1em; }
+
+        @keyframes candleFloat {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg) scale(1);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg) scale(0.5);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(14, 75, 153, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(14, 75, 153, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(14, 75, 153, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(14, 75, 153, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 75, 153, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(14, 75, 153, 0.8), 0 0 60px rgba(14, 75, 153, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #0e4b99, #87ceeb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(14, 75, 153, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(14, 75, 153, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(14, 75, 153, 0.3);
+            border-color: rgba(14, 75, 153, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #0e4b99;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(14, 75, 153, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(14, 75, 153, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(14, 75, 153, 0.2);
+        }
+
+        .info-item:hover {
+            background: rgba(14, 75, 153, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(14, 75, 153, 0.2);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #87ceeb;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .star.empty {
+            color: #555;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #0e4b99, #87ceeb);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(14, 75, 153, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(14, 75, 153, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(14, 75, 153, 0.15);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(14, 75, 153, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(14, 75, 153, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(14, 75, 153, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(14, 75, 153, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(14, 75, 153, 0.3);
+            object-fit: cover;
+            background: linear-gradient(45deg, #1a1a2e, #0e4b99);
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(14, 75, 153, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(14, 75, 153, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(14, 75, 153, 0.3);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #87ceeb;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fff;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(14, 75, 153, 0.3) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #87ceeb;
+            text-shadow: 0 0 5px rgba(14, 75, 153, 0.3);
+        }
+
+        .quote-section {
+            background: rgba(135, 206, 235, 0.15);
+            border-left: 4px solid #0e4b99;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: #fff;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(14, 75, 153, 0.3);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #0e4b99, #87ceeb);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(14, 75, 153, 0.3), 0 0 40px rgba(14, 75, 153, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(14, 75, 153, 0.4), 0 0 60px rgba(14, 75, 153, 0.2);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(14, 75, 153, 0.5);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* 滾動指示器 */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(14, 75, 153, 0.2);
+            z-index: 1001;
+        }
+
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #0e4b99, #87ceeb);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #87ceeb;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(14, 75, 153, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 滾動指示器 -->
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="candle-effects">
+        <div class="candle-particle">🕯️</div>
+        <div class="candle-particle">💫</div>
+        <div class="candle-particle">🕯️</div>
+        <div class="candle-particle">✨</div>
+        <div class="candle-particle">🕯️</div>
+        <div class="candle-particle">💫</div>
+        <div class="candle-particle">🕯️</div>
+        <div class="candle-particle">✨</div>
+        <div class="candle-particle">🕯️</div>
+        <div class="candle-particle">💫</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🌙</div>
+        <div class="floating-element">⛩️</div>
+        <div class="floating-element">🗾</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">死者在幻夜中醒來</h1>
+            <p class="subtitle">硬核推理巔峰之作，陰陽師系列經典續作</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/LsZ4L32C/image-2-730x1024.png" alt="死者在幻夜中醒來 - 劇本海報" class="poster-image" style="max-width: 100%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">死者在幻夜中醒來</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">7 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span>+1</span>
+                            <span class="icon">❓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">日式</span>
+                        <span class="tag">硬核</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">詭計</span>
+                        <span class="tag">燒腦</span>
+                        <span class="tag">進階</span>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="https://i.postimg.cc/y8GYDb43/1721097279822-181372891-244468644-384275026526325-3052290476195858446-n.jpg" alt="戴著面具的人" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">戴著面具的人</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="https://i.postimg.cc/gJVYBcw3/1721097285531-399283673-244469659-1025483184956881-5715502761297618762-n.jpg" alt="青年女人" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">青年女人</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="https://i.postimg.cc/vTXGbPtB/1721097291973-507798534-244481058-260253302685863-3982985217897114998-n.jpg" alt="臉上帶痣的中年女人" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">臉上帶痣的中年女人</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="https://i.postimg.cc/hvKSFFx6/1721097298299-242681421-244641556-117727800657994-8334184114819320847-n.jpg" alt="年輕男人" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">年輕男人</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="https://i.postimg.cc/bJcyTSvz/1721097304190-117005101-244642593-620270068995677-7134904800704707363-n.jpg" alt="小男孩" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">小男孩</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="https://i.postimg.cc/2SyS8fJf/1721097310280-188235039-244695139-995747264316586-8277094505264761572-n.jpg" alt="長髮中年女子" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">長髮中年女子</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="https://i.postimg.cc/RVX0B0gR/1721097315657-982816210-244750249-587405125943917-6930582094014682518-n.jpg" alt="中年男人" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">中年男人</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="quote-section">
+                    河流上，漂浮著許多載著燭光的紙船，<br>
+                    在一片波浪中，搖曳成一片星星點點。<br>
+                    這條看不到盡頭的河流，將會流向彼岸。<br>
+                    人們相信，如果燭光與船隻一起到達了河流的盡頭，<br>
+                    <span class="highlight">兩個世界的人就可能在幻夜之中再次相見。</span><br><br>
+                    
+                    可是，扁舟一葉在浪花浮沉，<br>
+                    許多紙船都隨著波濤淹沒在了河流之中。<br>
+                    燭光熄滅，而摺紙船的人，<br>
+                    還等待著企盼之人的歸來。<br><br>
+                    
+                    我們曾無數次想要從河流溯洄，<br>
+                    <span class="highlight">只乞求到達那一個虛無縹緲的彼岸。</span><br>
+                    ——《未見村民間故事》
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    《死者在幻夜中醒來》是<span class="highlight">2021年硬核推理天花板之作</span>，作為陰陽師山背秋彥系列的第二部，講述了陰陽師消失的七年間發生的神秘事件。
+                    <br><br>
+                    <strong>🎯 硬核推理巔峰：</strong><br>
+                    被譽為<span class="highlight">2021年硬核本TOP1</span>，難度極高，需要玩家具備豐富的推理經驗。精妙的反轉加上能夠自圓其說的核心詭計，構成了一場硬核推理還原的饗宴。
+                    <br><br>
+                    <strong>🏮 日式神秘氛圍：</strong><br>
+                    故事背景設定在神秘的<span class="highlight">未見村</span>，充滿濃郁的日式風情。河流、燭光、紙船等意象營造出詩意而詭異的氛圍，讓玩家沉浸在東方神秘主義的世界中。
+                    <br><br>
+                    <strong>🔍 複雜角色關係：</strong><br>
+                    6-7人本設計，每個角色都有豐富的背景故事和複雜的人際關係。6人開本無邊緣角色，每位玩家都有充足的戲份；第7人偵探角色可選，適合新手或希望專注推理的玩家。
+                    <br><br>
+                    <strong>⚠️ 遊戲建議：</strong><br>
+                    <span class="highlight">本作品為系列作品</span>玩完過後一定會愛上劇本殺，記得再去約續做"七月十三日"、"作者不詳"，海星這邊沒練沒辦法主持XD。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 錯誤處理和調試
+            window.addEventListener('error', function(e) {
+                console.error('JavaScript 錯誤:', e.error);
+            });
+
+            // 檢查必要元素是否存在
+            const requiredElements = ['scrollProgress'];
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            
+            if (missingElements.length > 0) {
+                console.warn('缺少必要元素:', missingElements);
+            }
+
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#87ceeb';
+                            s.style.textShadow = '0 0 10px rgba(135, 206, 235, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                    
+                    // 創建燭光爆炸效果
+                    createCandleBurst(tag);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(14, 75, 153, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的神秘光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 30px 60px rgba(14, 75, 153, 0.3)';
+                    card.style.borderColor = 'rgba(14, 75, 153, 0.6)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
+                    card.style.borderColor = 'rgba(14, 75, 153, 0.3)';
+                });
+            });
+
+            // 海報圖片點擊放大效果
+            const posterImages = document.querySelectorAll('.poster-image');
+            posterImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    img.style.transform = 'scale(1.1)';
+                    img.style.zIndex = '1000';
+                    setTimeout(() => {
+                        img.style.transform = 'scale(1.02)';
+                        img.style.zIndex = 'auto';
+                    }, 300);
+                });
+            });
+
+            // 創建燭光爆炸效果函數
+            function createCandleBurst(element) {
+                const rect = element.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                for (let i = 0; i < 6; i++) {
+                    const candle = document.createElement('div');
+                    candle.innerHTML = '🕯️';
+                    candle.style.position = 'fixed';
+                    candle.style.left = centerX + 'px';
+                    candle.style.top = centerY + 'px';
+                    candle.style.fontSize = '1.5rem';
+                    candle.style.pointerEvents = 'none';
+                    candle.style.zIndex = '9999';
+                    candle.style.transition = 'all 0.8s ease-out';
+                    
+                    document.body.appendChild(candle);
+                    
+                    const angle = (i * 60) * Math.PI / 180;
+                    const distance = 80;
+                    const targetX = centerX + Math.cos(angle) * distance;
+                    const targetY = centerY + Math.sin(angle) * distance;
+                    
+                    setTimeout(() => {
+                        candle.style.left = targetX + 'px';
+                        candle.style.top = targetY + 'px';
+                        candle.style.opacity = '0';
+                        candle.style.transform = 'scale(0.5) rotate(360deg)';
+                    }, 50);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(candle);
+                    }, 800);
+                }
+            }
+
+            // 滾動視差效果
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.floating-element');
+                
+                parallaxElements.forEach((element, index) => {
+                    const speed = 0.3 + (index * 0.1);
+                    element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.05}deg)`;
+                });
+            });
+
+            // 文字打字機效果
+            function typeWriter(element, text, speed = 100) {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                }
+                type();
+            }
+
+            // 為標題添加打字機效果
+            const title = document.querySelector('.title');
+            const originalTitle = title.textContent;
+            title.textContent = '';
+            
+            setTimeout(() => {
+                typeWriter(title, originalTitle, 200);
+            }, 1000);
+
+            // 點擊創建燭光軌跡
+            document.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+                    createClickCandle(e.clientX, e.clientY);
+                }
+            });
+
+            function createClickCandle(x, y) {
+                const candle = document.createElement('div');
+                candle.innerHTML = '🕯️';
+                candle.style.position = 'fixed';
+                candle.style.left = x + 'px';
+                candle.style.top = y + 'px';
+                candle.style.fontSize = '2rem';
+                candle.style.pointerEvents = 'none';
+                candle.style.zIndex = '9999';
+                candle.style.transition = 'all 1s ease-out';
+                candle.style.transform = 'scale(0)';
+                
+                document.body.appendChild(candle);
+                
+                setTimeout(() => {
+                    candle.style.transform = 'scale(1) translateY(-50px)';
+                    candle.style.opacity = '0';
+                }, 50);
+                
+                setTimeout(() => {
+                    document.body.removeChild(candle);
+                }, 1000);
+            }
+
+            // 頁面載入完成後的動畫序列
+            setTimeout(() => {
+                document.body.style.overflow = 'auto';
+                
+                // 為所有卡片添加進入動畫
+                const allCards = document.querySelectorAll('.card, .poster-section, .cta-section');
+                allCards.forEach((card, index) => {
+                    card.style.animationDelay = `${0.1 * index}s`;
+                });
+            }, 2000);
+
+            // 滾動到元素時的淡入效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 觀察所有需要動畫的元素
+            document.querySelectorAll('.card, .poster-section, .cta-section').forEach(el => {
+                observer.observe(el);
+            });
+
+            // 滾動進度指示器
+            const scrollProgress = document.getElementById('scrollProgress');
+            if (scrollProgress) {
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset;
+                    const docHeight = document.body.offsetHeight - window.innerHeight;
+                    const scrollPercent = (scrollTop / docHeight) * 100;
+                    scrollProgress.style.width = scrollPercent + '%';
+                });
+            }
+
+            // 鍵盤快捷鍵
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    // ESC 鍵返回主頁
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // 觸摸設備支持
+            let touchStartY = 0;
+            let touchStartX = 0;
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                touchStartX = e.touches[0].clientX;
+            });
+
+            document.addEventListener('touchend', (e) => {
+                const touchEndY = e.changedTouches[0].clientY;
+                const touchEndX = e.changedTouches[0].clientX;
+                const diffY = touchStartY - touchEndY;
+                const diffX = touchStartX - touchEndX;
+                
+                if (Math.abs(diffY) > 50 || Math.abs(diffX) > 50) {
+                    // 滑動距離足夠，觸發燭光效果
+                    createClickCandle(touchEndX, touchEndY);
+                }
+            });
+
+            // 性能優化：節流滾動事件
+            let ticking = false;
+            function updateScrollEffects() {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        // 滾動相關的效果更新
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', updateScrollEffects);
+
+            console.log('死者在幻夜中醒來頁面特效已載入完成！');
+        });
+    </script>
+
+    <audio id="bgm" src="死者在幻夜中醒來.mp3" autoplay loop muted></audio>
+    <script>
+    // 點擊頁面解除靜音
+    document.addEventListener('click', function(){
+        const bgm = document.getElementById('bgm');
+        if (bgm) {
+            bgm.muted = false;
+        }
+    }, {once: true});
+
+    </script>
+
+
+</body>
+</html>

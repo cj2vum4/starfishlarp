@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>謀影南京風沙 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 30%, #8b4513 60%, #cd853f 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 諜戰煙霧飄浮效果 */
+        .smoke-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .smoke-particle {
+            position: absolute;
+            color: rgba(139, 69, 19, 0.6);
+            user-select: none;
+            pointer-events: none;
+            animation: smokeFloat 18s linear infinite;
+            text-shadow: 0 0 10px rgba(139, 69, 19, 0.8);
+        }
+
+        .smoke-particle:nth-child(1) { left: 10%; animation-delay: 0s; font-size: 1.3em; }
+        .smoke-particle:nth-child(2) { left: 20%; animation-delay: 3s; font-size: 1.1em; }
+        .smoke-particle:nth-child(3) { left: 30%; animation-delay: 6s; font-size: 1.5em; }
+        .smoke-particle:nth-child(4) { left: 40%; animation-delay: 9s; font-size: 1.2em; }
+        .smoke-particle:nth-child(5) { left: 50%; animation-delay: 12s; font-size: 1.4em; }
+        .smoke-particle:nth-child(6) { left: 60%; animation-delay: 2s; font-size: 1.3em; }
+        .smoke-particle:nth-child(7) { left: 70%; animation-delay: 5s; font-size: 1.6em; }
+        .smoke-particle:nth-child(8) { left: 80%; animation-delay: 8s; font-size: 1.1em; }
+        .smoke-particle:nth-child(9) { left: 90%; animation-delay: 11s; font-size: 1.4em; }
+
+        @keyframes smokeFloat {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg) scale(1);
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg) scale(0.5);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(139, 69, 19, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 69, 19, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(139, 69, 19, 0.8), 0 0 60px rgba(139, 69, 19, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #8b4513, #cd853f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(139, 69, 19, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            border-color: rgba(139, 69, 19, 0.6);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 69, 19, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(139, 69, 19, 0.3);
+            border-color: rgba(139, 69, 19, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #8b4513;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(139, 69, 19, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 69, 19, 0.2);
+        }
+
+        .info-item:hover {
+            background: rgba(139, 69, 19, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.2);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #d2b48c;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .star.empty {
+            color: #555;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #8b4513, #cd853f);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(139, 69, 19, 0.15);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            background: rgba(139, 69, 19, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(139, 69, 19, 0.4);
+        }
+
+        .character-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(139, 69, 19, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+            object-fit: cover;
+            display: block;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(139, 69, 19, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(139, 69, 19, 0.3);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #d2b48c;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fff;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(139, 69, 19, 0.3) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #d2b48c;
+            text-shadow: 0 0 5px rgba(139, 69, 19, 0.3);
+        }
+
+        .quote-section {
+            background: rgba(210, 180, 140, 0.15);
+            border-left: 4px solid #8b4513;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: #fff;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(139, 69, 19, 0.3);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #8b4513, #cd853f);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.3), 0 0 40px rgba(139, 69, 19, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(139, 69, 19, 0.4), 0 0 60px rgba(139, 69, 19, 0.2);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(139, 69, 19, 0.5);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* 滾動指示器 */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(139, 69, 19, 0.2);
+            z-index: 1001;
+        }
+
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #8b4513, #cd853f);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+                max-width: 100% !important;
+                min-width: 280px !important;
+            }
+
+            .poster-section > div {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .character-image {
+                width: 60px;
+                height: 60px;
+            }
+
+            .character-name {
+                font-size: 0.9rem;
+            }
+
+            .character-info {
+                font-size: 0.8rem;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #d2b48c;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(139, 69, 19, 0.3);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        /* 民國風格裝飾 */
+        .republic-ornament {
+            position: fixed;
+            top: 50%;
+            left: 5%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #8b4513, #2d2d2d);
+            border-radius: 50%;
+            border: 3px solid #cd853f;
+            animation: republicFloat 6s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(139, 69, 19, 0.5);
+            z-index: -1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #cd853f;
+        }
+
+        @keyframes republicFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 滾動指示器 -->
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="smoke-effects">
+        <div class="smoke-particle">💨</div>
+        <div class="smoke-particle">🔍</div>
+        <div class="smoke-particle">📜</div>
+        <div class="smoke-particle">🕵️</div>
+        <div class="smoke-particle">💨</div>
+        <div class="smoke-particle">🔍</div>
+        <div class="smoke-particle">📜</div>
+        <div class="smoke-particle">🕵️</div>
+        <div class="smoke-particle">💨</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🏛️</div>
+        <div class="floating-element">📯</div>
+        <div class="floating-element">⚔️</div>
+    </div>
+
+    <div class="republic-ornament">🎖️</div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">謀影南京風沙</h1>
+            <p class="subtitle">1946年國共內戰，南京保密局的諜戰對決</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/FHhLrJhf/page-0001.jpg" alt="謀影南京風沙劇本海報" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/qMVKF5Yx/page-0005.jpg" alt="謀影南京風沙劇本海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">謀影南京風沙</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">5 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>5男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">民國</span>
+                        <span class="tag">陣營</span>
+                        <span class="tag">謀戰</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">本格</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/ZqRv3tB4/2021-03-16-124825.jpg" alt="安軍" class="character-image">
+                        <div class="character-name">安軍</div>
+                        <div class="character-info">男，46歲<br>保密局副處長<br>「暗流湧動的權謀者」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/G26Dd7pr/2021-03-16-124847.jpg" alt="鄧萍萍" class="character-image">
+                        <div class="character-name">鄧萍萍</div>
+                        <div class="character-info">女，23歲<br>醫務科護士長<br>「白衣天使的秘密」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/L6tPFVFK/2021-03-16-124832.jpg" alt="歐陽澤" class="character-image">
+                        <div class="character-name">歐陽澤</div>
+                        <div class="character-info">男，行動科科長<br>中統身份<br>「密報的執行者」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/gJxR9FmN/2021-03-16-124841.jpg" alt="秦晴" class="character-image">
+                        <div class="character-name">秦晴</div>
+                        <div class="character-info">女，23歲<br>電訊組組長<br>「密碼背後的真相」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/kgwtBX5T/2021-03-16-124829.jpg" alt="羅文和" class="character-image">
+                        <div class="character-name">羅文和</div>
+                        <div class="character-info">男，45歲<br>情報科科長<br>「情報大師」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/zfcbFtKW/2021-03-16-124835.jpg" alt="劉宗錫" class="character-image">
+                        <div class="character-name">劉宗錫</div>
+                        <div class="character-info">男，36歲<br>醫務科主任<br>「弃医从军的理想」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/2jBv2DH5/2021-03-16-124838.jpg" alt="周毅剛" class="character-image">
+                        <div class="character-name">周毅剛</div>
+                        <div class="character-info">男，28歲<br>行動科副科長<br>「年輕的行動派」</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/fyX9Lc3d/2021-03-16-124844.jpg" alt="杜安嵐" class="character-image">
+                        <div class="character-name">杜安嵐</div>
+                        <div class="character-info">女，20歲<br>機要秘書<br>「青春掩蓋的深謀」</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="quote-section">
+                    1946年12月23日。<br>
+                    國共內戰之際，時任國民政府國防部保密局局長的毛人鳳<br>
+                    策劃了一系列針對中共的情報行動，<br>
+                    並派遣特別行動處處長吳曦準備在一週後前往重慶執行一項絕密計劃。<br><br>
+                    
+                    而此時的南京城，另一股暗潮正在醞釀⋯⋯<br>
+                    <span class="highlight">風雨欲來，明爭暗鬥</span><br>
+                    南京保密局總部裡，一場特工間諜之間的對決一觸即發，<br>
+                    <span class="highlight">只有勝者，才握有書寫歷史的機會。</span><br><br>
+                    
+                    無論何時何地保守秘密，比你生命更重要<br>
+                    這就是謀影⋯⋯<br>
+                    永遠繞不開的三個城市：重慶、南京、武漢<br>
+                    讓我們再一次回到那個驚心動魄的年代。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    《謀影南京風沙》是繼《謀影重慶迷霧》後的第二部民國謀影系列，以<span class="highlight">民國為背景的謀戰題材</span>，與重慶迷霧是同時期不同地點的兩地聯動作品。
+                    <br><br>
+                    <strong>🎖️ 高品質謀戰體驗：</strong><br>
+                    延續了一代熟悉的謀戰配方，這部謀影2比1更加重視<span class="highlight">還原、腦力角逐</span>的部分，增加了劇情分幕，提高了整體的閱讀體驗，也引入了凶案，體量更大。
+                    <br><br>
+                    <strong>📜 豐富的故事背景：</strong><br>
+                    每個人的背景故事更加豐滿，埋藏的故事線非常多，故事隱晦而優秀。作者的文筆細膩，能很好地把大家帶入到<span class="highlight">1946年謀戰的緊張氣氛</span>中。
+                    <br><br>
+                    <strong>🎬 影視級劇情質量：</strong><br>
+                    無論是主線還是支線，故事線足以用鏡頭拍成影視化作品。跌宕起伏的劇情，就像<span class="highlight">《風聲》《潛伏》《偽裝者》</span>式的電影劇本。
+                    <br><br>
+                    <strong>⚔️ 複雜陣營對抗：</strong><br>
+                    體量較大，難度較大，海星會適當扶車引導玩家還原故事。適合<span class="highlight">歡樂戲精/撕逼能手/談判騙紙/機制達人/私聊狂魔</span>類型的玩家。
+                    <br><br>
+                    <strong>⚠️ 遊戲建議：</strong><br>
+                    進階難度，推薦有一定謀戰經驗的玩家。故事的還原度比較大，梳理凶案需要比較多的時間。建議先玩過"孤城"、"王座"等類型劇本。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約遊戲</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 錯誤處理和調試
+            window.addEventListener('error', function(e) {
+                console.error('JavaScript 錯誤:', e.error);
+            });
+
+            // 檢查必要元素是否存在
+            const requiredElements = ['scrollProgress'];
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            
+            if (missingElements.length > 0) {
+                console.warn('缺少必要元素:', missingElements);
+            }
+
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#cd853f';
+                            s.style.textShadow = '0 0 10px rgba(205, 133, 63, 0.8)';
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                    
+                    // 創建謀戰煙霧爆炸效果
+                    createSmokeBurst(tag);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(139, 69, 19, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的民國光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 30px 60px rgba(139, 69, 19, 0.3)';
+                    card.style.borderColor = 'rgba(139, 69, 19, 0.6)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
+                    card.style.borderColor = 'rgba(139, 69, 19, 0.3)';
+                });
+            });
+
+            // 海報圖片點擊放大效果
+            const posterImages = document.querySelectorAll('.poster-image');
+            posterImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    img.style.transform = 'scale(1.1)';
+                    img.style.zIndex = '1000';
+                    setTimeout(() => {
+                        img.style.transform = 'scale(1.02)';
+                        img.style.zIndex = 'auto';
+                    }, 300);
+                });
+            });
+
+            // 創建謀戰煙霧爆炸效果函數
+            function createSmokeBurst(element) {
+                const rect = element.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                for (let i = 0; i < 6; i++) {
+                    const smoke = document.createElement('div');
+                    smoke.innerHTML = '💨';
+                    smoke.style.position = 'fixed';
+                    smoke.style.left = centerX + 'px';
+                    smoke.style.top = centerY + 'px';
+                    smoke.style.fontSize = '1.5rem';
+                    smoke.style.pointerEvents = 'none';
+                    smoke.style.zIndex = '9999';
+                    smoke.style.transition = 'all 0.8s ease-out';
+                    smoke.style.color = '#8b4513';
+                    smoke.style.textShadow = '0 0 15px rgba(139, 69, 19, 1)';
+                    
+                    document.body.appendChild(smoke);
+                    
+                    const angle = (i * 60) * Math.PI / 180;
+                    const distance = 80;
+                    const targetX = centerX + Math.cos(angle) * distance;
+                    const targetY = centerY + Math.sin(angle) * distance;
+                    
+                    setTimeout(() => {
+                        smoke.style.left = targetX + 'px';
+                        smoke.style.top = targetY + 'px';
+                        smoke.style.opacity = '0';
+                        smoke.style.transform = 'scale(0.5) rotate(360deg)';
+                    }, 50);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(smoke);
+                    }, 800);
+                }
+            }
+
+            // 滾動視差效果
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.floating-element');
+                
+                parallaxElements.forEach((element, index) => {
+                    const speed = 0.3 + (index * 0.1);
+                    element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.05}deg)`;
+                });
+
+                // 民國裝飾隨滾動旋轉
+                const republicOrnament = document.querySelector('.republic-ornament');
+                if (republicOrnament) {
+                    const rotationSpeed = scrolled * 0.3;
+                    republicOrnament.style.transform = `translateY(-15px) rotate(${rotationSpeed}deg)`;
+                }
+            });
+
+            // 文字打字機效果
+            function typeWriter(element, text, speed = 100) {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                }
+                type();
+            }
+
+            // 為標題添加打字機效果
+            const title = document.querySelector('.title');
+            const originalTitle = title.textContent;
+            title.textContent = '';
+            
+            setTimeout(() => {
+                typeWriter(title, originalTitle, 180);
+            }, 1000);
+
+            // 點擊創建謀戰元素軌跡
+            document.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+                    createClickSpy(e.clientX, e.clientY);
+                }
+            });
+
+            function createClickSpy(x, y) {
+                const spyElements = ['🔍', '📜', '🕵️', '💨'];
+                const element = document.createElement('div');
+                element.innerHTML = spyElements[Math.floor(Math.random() * spyElements.length)];
+                element.style.position = 'fixed';
+                element.style.left = x + 'px';
+                element.style.top = y + 'px';
+                element.style.fontSize = '2rem';
+                element.style.pointerEvents = 'none';
+                element.style.zIndex = '9999';
+                element.style.transition = 'all 1s ease-out';
+                element.style.transform = 'scale(0)';
+                element.style.color = '#8b4513';
+                element.style.textShadow = '0 0 15px rgba(139, 69, 19, 1)';
+                
+                document.body.appendChild(element);
+                
+                setTimeout(() => {
+                    element.style.transform = 'scale(1) translateY(-50px)';
+                    element.style.opacity = '0';
+                }, 50);
+                
+                setTimeout(() => {
+                    document.body.removeChild(element);
+                }, 1000);
+            }
+
+            // 頁面載入完成後的動畫序列
+            setTimeout(() => {
+                document.body.style.overflow = 'auto';
+                
+                // 為所有卡片添加進入動畫
+                const allCards = document.querySelectorAll('.card, .poster-section, .cta-section');
+                allCards.forEach((card, index) => {
+                    card.style.animationDelay = `${0.1 * index}s`;
+                });
+            }, 2000);
+
+            // 滾動到元素時的淡入效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 觀察所有需要動畫的元素
+            document.querySelectorAll('.card, .poster-section, .cta-section').forEach(el => {
+                observer.observe(el);
+            });
+
+            // 滾動進度指示器
+            const scrollProgress = document.getElementById('scrollProgress');
+            if (scrollProgress) {
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset;
+                    const docHeight = document.body.offsetHeight - window.innerHeight;
+                    const scrollPercent = (scrollTop / docHeight) * 100;
+                    scrollProgress.style.width = scrollPercent + '%';
+                });
+            }
+
+            // 鍵盤快捷鍵
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    // ESC 鍵返回主頁
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // 觸摸設備支持
+            let touchStartY = 0;
+            let touchStartX = 0;
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                touchStartX = e.touches[0].clientX;
+            });
+
+            document.addEventListener('touchend', (e) => {
+                const touchEndY = e.changedTouches[0].clientY;
+                const touchEndX = e.changedTouches[0].clientX;
+                const diffY = touchStartY - touchEndY;
+                const diffX = touchStartX - touchEndX;
+                
+                if (Math.abs(diffY) > 50 || Math.abs(diffX) > 50) {
+                    // 滑動距離足夠，觸發謀戰效果
+                    createClickSpy(touchEndX, touchEndY);
+                }
+            });
+
+            // 性能優化：節流滾動事件
+            let ticking = false;
+            function updateScrollEffects() {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        // 滾動相關的效果更新
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', updateScrollEffects);
+
+            // 民國謀戰氛圍燈光效果
+            function createSpyLights() {
+                const colors = ['#8b4513', '#cd853f', '#2d2d2d', '#1a1a1a', '#d2b48c'];
+                const lightCount = 3;
+                
+                for (let i = 0; i < lightCount; i++) {
+                    const light = document.createElement('div');
+                    light.style.position = 'fixed';
+                    light.style.width = '15px';
+                    light.style.height = '15px';
+                    light.style.borderRadius = '50%';
+                    light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    light.style.boxShadow = `0 0 15px ${colors[Math.floor(Math.random() * colors.length)]}`;
+                    light.style.top = Math.random() * window.innerHeight + 'px';
+                    light.style.left = Math.random() * window.innerWidth + 'px';
+                    light.style.pointerEvents = 'none';
+                    light.style.zIndex = '-1';
+                    light.style.opacity = '0.5';
+                    light.style.animation = `spyFlash ${Math.random() * 3 + 2}s ease-in-out infinite alternate`;
+                    
+                    document.body.appendChild(light);
+                    
+                    setTimeout(() => {
+                        if (document.body.contains(light)) {
+                            document.body.removeChild(light);
+                        }
+                    }, 4000);
+                }
+            }
+
+            // 添加謀戰閃爍動畫
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes spyFlash {
+                    0% { opacity: 0.2; transform: scale(0.8); }
+                    100% { opacity: 0.8; transform: scale(1.2); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 定期創建謀戰氛圍燈光效果
+            setInterval(createSpyLights, 6000);
+
+            console.log('謀影南京風沙頁面特效已載入完成！');
+        });
+    </script>
+
+
+    <audio id="bgm" src="南京風沙.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            const bgm = document.getElementById('bgm');
+            if (bgm) {
+                bgm.muted = false;
+            }
+        }, {once: true});
+
+    </script>
+
+
+</body>
+</html>
