@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盒子先生的秘密商店 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 30%, #2a2a2a 60%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 盒子漂浮效果 */
+        .floating-boxes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-box {
+            position: absolute;
+            font-size: 2rem;
+            user-select: none;
+            pointer-events: none;
+            animation: boxFloat 20s linear infinite;
+        }
+
+        .floating-box:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .floating-box:nth-child(2) { left: 20%; animation-delay: 4s; }
+        .floating-box:nth-child(3) { left: 30%; animation-delay: 8s; }
+        .floating-box:nth-child(4) { left: 40%; animation-delay: 12s; }
+        .floating-box:nth-child(5) { left: 50%; animation-delay: 16s; }
+        .floating-box:nth-child(6) { left: 60%; animation-delay: 3s; }
+        .floating-box:nth-child(7) { left: 70%; animation-delay: 7s; }
+        .floating-box:nth-child(8) { left: 80%; animation-delay: 11s; }
+        .floating-box:nth-child(9) { left: 90%; animation-delay: 15s; }
+
+        @keyframes boxFloat {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: rotate(0deg) scale(0.8);
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: rotate(360deg) scale(1.2);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(20, 20, 20, 0.9);
+            color: #ff6b6b;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 107, 107, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.8), 0 0 60px rgba(255, 107, 107, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #ff6b6b, #ff4757);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            font-family: 'Georgia', serif;
+            position: relative;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(255, 107, 107, 0.1) 70%);
+            z-index: -1;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            width: 400px; /* Adjusted width */
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.2);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            background-color: #1a1a1a;
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(255, 107, 107, 0.4);
+            border-color: rgba(255, 107, 107, 0.6);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+            transform: scale(0);
+            transition: transform 0.5s ease;
+            z-index: 0;
+        }
+
+        .card:hover::before {
+            transform: scale(1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 107, 107, 0.3);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ff6b6b;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 107, 107, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #555;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #ff6b6b, #ff4757);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 107, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .character-card:hover::before {
+            left: 100%;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 107, 107, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .character-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 107, 107, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.2), rgba(255, 71, 87, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ff6b6b;
+        }
+
+        .character-card:hover .character-placeholder {
+            border-color: rgba(255, 107, 107, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #f1f5f9;
+            opacity: 0.9;
+            line-height: 1.3;
+            position: relative;
+            z-index: 1;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text, .review-list {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .review-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .review-list li {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 3px solid #ff6b6b;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 107, 107, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ff4757);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4), 0 0 40px rgba(255, 107, 107, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.5), 0 0 60px rgba(255, 107, 107, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(255, 107, 107, 0.6);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #ff6b6b;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        /* 恐怖閃爍效果 */
+        .horror-flicker {
+            animation: horrorFlicker 0.3s ease-in-out;
+        }
+
+        @keyframes horrorFlicker {
+            0%, 100% { opacity: 1; }
+            25% { opacity: 0.3; filter: brightness(0.5) contrast(2); }
+            50% { opacity: 0.8; filter: brightness(1.5) contrast(1.5); }
+            75% { opacity: 0.2; filter: brightness(0.3) contrast(3); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .tags {
+                justify-content: flex-start;
+            }
+
+            .poster-image {
+                width: 90%;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="floating-boxes">
+        <div class="floating-box">📦</div>
+        <div class="floating-box">🎁</div>
+        <div class="floating-box">📋</div>
+        <div class="floating-box">📦</div>
+        <div class="floating-box">🎁</div>
+        <div class="floating-box">📋</div>
+        <div class="floating-box">📦</div>
+        <div class="floating-box">🎁</div>
+        <div class="floating-box">📋</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🔍</div>
+        <div class="floating-element">💀</div>
+        <div class="floating-element">🖤</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">盒子先生的秘密商店</h1>
+            <p class="subtitle">鑫夢人生經典現代驚悚劇本</p>
+        </div>
+
+        <div class="poster-section">
+            <img src="https://i.postimg.cc/hvs5q3Hj/f7cd87b7-8042-4163-b01c-12a159617662-S-Mr-Boxs-Secret-Store.png" 
+                 alt="《盒子先生的秘密商店》劇本殺官方海報" 
+                 class="poster-image">
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">盒子先生的秘密商店</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>4男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">現代</span>
+                        <span class="tag">驚悚</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">硬核</span>
+                        <span class="tag">獵奇</span>
+                        <span class="tag">心理</span>
+                        <span class="tag">進階</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-placeholder">
+                            <img src="https://i.postimg.cc/DfQVgxpR/BE.png" alt="BE大師" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">BE大師</div>
+                        <div class="character-info">女性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-placeholder">
+                            <img src="https://i.postimg.cc/cCBVLJ8d/image.png" alt="主角光環" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">主角光環</div>
+                        <div class="character-info">女性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-placeholder">
+                            <img src="https://i.postimg.cc/fTZsnG0w/image.png" alt="正常人類" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">正常人類</div>
+                        <div class="character-info">男性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-placeholder">
+                            <img src="https://i.postimg.cc/x8V2d7x3/image.png" alt="江郎才盡" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">江郎才盡</div>
+                        <div class="character-info">男性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-placeholder">
+                            <img src="https://i.postimg.cc/rFgB6KkJ/image.png" alt="童年味道" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">童年味道</div>
+                        <div class="character-info">女性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-placeholder">
+                            <img src="https://i.postimg.cc/m2wsbmQ7/image.png" alt="逆旅人生" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">逆旅人生</div>
+                        <div class="character-info">男性角色<br></div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-placeholder">
+                            <img src="https://i.postimg.cc/6Q7JfwFh/image.png" alt="靈魂畫手" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        </div>
+                        <div class="character-name">靈魂畫手</div>
+                        <div class="character-info">男性角色<br></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    <span class="highlight">"叮咚！歡迎光臨！"</span>
+                    <br><br>
+                    清脆的鈴聲喚醒了店鋪的燈光，我順著光亮的方向看去，是一個頭上戴著黑色帽子的老闆，他的影子隨著步伐而被拉得很長。
+                    <br><br>
+                    這是一間深夜營業的<span class="highlight">"秘密商店"</span>，貨架上陳列著許多黑色盲盒，每一個盒子上都畫著詭異的白色笑臉，似笑非笑的嘲諷。
+                    <br><br>
+                    <span class="highlight">"你們好，我是這家店鋪的老闆，可以叫我盒子先生。"</span>
+                    <br><br>
+                    <span class="highlight">"這些貨架上的秘密盲盒，都是其他客人留下來的秘密。"</span>
+                    <br><br>
+                    <span class="highlight">"我不會收取任何的費用，只接受用秘密交換秘密。"</span>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《盒子先生的秘密商店》是<span class="highlight">鑫夢人生</span>發行的現代驚悚劇本殺，由知名編劇<span class="highlight">斐然</span>與<span class="highlight">文刀</span>聯合創作。
+                    <br><br>
+                    這是一個以<span class="highlight">硬核故事還原</span>為核心的心理驚悚作品，將弗洛伊德的精神分析理論巧妙地融入其中。
+                    <br><br>
+                    劇本的流程設計精妙，玩家將透過一個個盲盒揭開塵封往事，逐步拼湊出令人毛骨悚然的真相。
+                    <br><br>
+                    其情節極具<span class="highlight">獵奇色彩</span>，挑戰玩家的心理承受極限，是一場直面內心黑暗的旅程，非常<span class="highlight">精彩</span>，海星一定會好好呈現這個劇本的。
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button">立即預約，交換你的秘密</a>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to trigger horror flicker effect
+            const triggerFlicker = (element) => {
+                element.classList.add('horror-flicker');
+                setTimeout(() => {
+                    element.classList.remove('horror-flicker');
+                }, 300); // Animation duration is 0.3s
+            };
+
+            // Randomly flicker elements for atmosphere
+            const elementsToFlicker = document.querySelectorAll('.card, .character-card, .tag, .title');
+            
+            setInterval(() => {
+                if (document.hasFocus()) { // Only run when the tab is active
+                    const randomElement = elementsToFlicker[Math.floor(Math.random() * elementsToFlicker.length)];
+                    triggerFlicker(randomElement);
+                }
+            }, 5000); // Flicker every 5 seconds
+
+            // Add flicker effect on tag click
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    triggerFlicker(document.body); // Flicker the whole page for a dramatic effect
+                });
+            });
+        });
+    </script>
+
+<audio id="bgm" src="盒子先生的秘密商店.mp3" autoplay loop muted></audio>
+<script>
+  // 點擊頁面解除靜音
+  document.addEventListener('click', function(){
+    document.getElementById('bgm').muted = false;
+  }, {once:true});
+</script>
+
+</body>
+</html>
+
