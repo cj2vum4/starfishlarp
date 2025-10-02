@@ -42,6 +42,9 @@
             --border-color: rgba(139, 148, 158, 0.2);
             --accent-cyan: #22d3ee;
             --accent-glow: 0 0 15px rgba(34, 211, 238, 0.4), 0 0 30px rgba(34, 211, 238, 0.2);
+            --text-primary: #e6edf3;
+            --overlay-dark: rgba(0, 0, 0, 0.4);
+            --transition-base: 0.3s ease;
         }
         h1, h2, h3 {
             font-family: 'Noto Serif TC', serif;
@@ -49,7 +52,7 @@
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background-color: var(--bg-dark);
-            color: #e6edf3;
+            color: var(--text-primary);
         }
         .nav-link.active {
             color: var(--accent-cyan);
@@ -58,12 +61,13 @@
         .gradient-text {
             background: linear-gradient(90deg, #a5b4fc, var(--accent-cyan));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            transition: all var(--transition-base);
         }
         .card:hover {
             transform: translateY(-5px);
@@ -75,7 +79,6 @@
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
         }
-        /* Image Slider Styles */
         .slider-container {
             position: relative;
             overflow: hidden;
@@ -88,7 +91,6 @@
         }
         .slider-slide {
             flex: 0 0 100%;
-            width: 100%;
         }
         .slider-slide img {
             width: 100%;
@@ -100,16 +102,17 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: rgba(0,0,0,0.4);
+            background-color: var(--overlay-dark);
             color: white;
             border: none;
             padding: 0.5rem;
             border-radius: 50%;
             cursor: pointer;
             z-index: 10;
+            transition: background-color var(--transition-base);
         }
         .slider-button:hover {
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.7);
         }
         .slider-button.prev { left: 0.5rem; }
         .slider-button.next { right: 0.5rem; }
@@ -158,7 +161,7 @@
     </a>
 
     <!-- Header & Navigation -->
-    <header id="header" class="bg-black/30 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-800/50">
+    <header class="bg-black/30 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-800/50">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
             <a href="#" class="text-xl font-bold gradient-text">海星｜劇本殺主持人</a>
             <nav class="hidden md:flex space-x-6 items-center">
@@ -219,12 +222,12 @@
                 <div class="md:col-span-2" data-aos="fade-right">
                     <div class="slider-container shadow-2xl">
                         <div class="slider-wrapper">
-                            <div class="slider-slide"><img src="https://i.postimg.cc/d355z7tR/1940326-0.jpg" alt="海星個人照 1"></div>
-                            <div class="slider-slide"><img src="https://i.postimg.cc/W36WwWBH/1944120-0.jpg" alt="海星個人照 2"></div>
-                            <div class="slider-slide"><img src="https://i.postimg.cc/Znbf7PZK/1944121-0.jpg" alt="海星個人照 3"></div>
+                            <div class="slider-slide"><img src="https://i.postimg.cc/d355z7tR/1940326-0.jpg" alt="海星個人照 1" loading="lazy"></div>
+                            <div class="slider-slide"><img src="https://i.postimg.cc/W36WwWBH/1944120-0.jpg" alt="海星個人照 2" loading="lazy"></div>
+                            <div class="slider-slide"><img src="https://i.postimg.cc/Znbf7PZK/1944121-0.jpg" alt="海星個人照 3" loading="lazy"></div>
                         </div>
-                        <button class="slider-button prev">&lt;</button>
-                        <button class="slider-button next">&gt;</button>
+                        <button class="slider-button prev" aria-label="上一張圖片">&lt;</button>
+                        <button class="slider-button next" aria-label="下一張圖片">&gt;</button>
                     </div>
                 </div>
                 <div class="md:col-span-3" data-aos="fade-left">
@@ -299,7 +302,7 @@
                 <div class="grid md:grid-cols-3 gap-8 mb-12">
                     <!-- Rec 1 -->
                     <div class="card rounded-2xl overflow-hidden group" data-aos="fade-up" data-aos-delay="100">
-                        <img src="https://i.postimg.cc/yNWMsNFR/01.jpg" alt="劇本殺《北國之春》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <img src="https://i.postimg.cc/yNWMsNFR/01.jpg" alt="劇本殺《北國之春》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                         <div class="p-6">
                             <h3 class="text-2xl font-bold mb-2 text-white">《北國之春》</h3>
                             <p class="text-gray-400">歡樂又具有立意的體驗，適合第一次接觸劇本殺的你。</p>
@@ -307,7 +310,7 @@
                     </div>
                     <!-- Rec 2 -->
                     <div class="card rounded-2xl overflow-hidden group" data-aos="fade-up" data-aos-delay="200">
-                        <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="劇本殺《群星》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <img src="https://i.postimg.cc/G3DGXBM5/image.jpg" alt="劇本殺《群星》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                         <div class="p-6">
                             <h3 class="text-2xl font-bold mb-2 text-white">《群星》</h3>
                             <p class="text-gray-400">沉浸式敘事與群像視角，讓你看見選擇如何交織命運。</p>
@@ -315,7 +318,7 @@
                     </div>
                     <!-- Rec 3 -->
                     <div class="card rounded-2xl overflow-hidden group" data-aos="fade-up" data-aos-delay="300">
-                        <img src="https://i.postimg.cc/RZYbc6pZ/1.jpg" alt="劇本殺《病嬌男孩的精分日記》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <img src="https://i.postimg.cc/RZYbc6pZ/1.jpg" alt="劇本殺《病嬌男孩的精分日記》" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                         <div class="p-6">
                             <h3 class="text-2xl font-bold mb-2 text-white">《病嬌男孩的精分日記》</h3>
                             <p class="text-gray-400">細思極恐又充滿沉浸的劇本，看的到我精彩演繹。</p>
@@ -384,10 +387,10 @@
                     <!-- Testimonials will be dynamically populated here -->
                 </div>
                  <!-- Slider controls -->
-                <button id="prev-testimonial" class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors shadow-md backdrop-blur-sm">
+                <button id="prev-testimonial" class="absolute left-0 top-1/2 -translate-y-1/2 transform bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors shadow-md backdrop-blur-sm" aria-label="上一則評價">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
-                <button id="next-testimonial" class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors shadow-md backdrop-blur-sm">
+                <button id="next-testimonial" class="absolute right-0 top-1/2 -translate-y-1/2 transform bg-black/30 p-2 rounded-full hover:bg-black/50 transition-colors shadow-md backdrop-blur-sm" aria-label="下一則評價">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
             </section>
@@ -466,7 +469,8 @@
                                 frameborder="0" 
                                 scrolling="yes"
                                 allow="calendar"
-                                loading="eager">
+                                loading="lazy"
+                                title="預約日曆">
                             </iframe>
                         </div>
                     </div>
@@ -552,7 +556,7 @@
     </div>
 
     <!-- 12. Footer -->
-    <footer id="footer" class="bg-black/30 text-gray-400 py-12 border-t border-gray-800/50">
+    <footer class="bg-black/30 text-gray-400 py-12 border-t border-gray-800/50">
         <div class="container mx-auto px-6 text-center">
             <p class="font-bold text-lg text-white mb-4">© 海星。劇本殺主持人｜也許也是你的脫單月老</p>
             <div class="flex justify-center flex-wrap gap-x-4 gap-y-2 mb-6">
@@ -574,186 +578,243 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initialize AOS
-            AOS.init({ duration: 800, once: true, offset: 50 });
-
-            // --- Mobile Menu ---
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-            mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
-
-            // --- Active Nav Link Highlighting on Scroll ---
-            const sections = document.querySelectorAll('section[id]');
-            const navLinks = document.querySelectorAll('.nav-link');
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const id = entry.target.getAttribute('id');
-                        navLinks.forEach(link => {
-                            link.classList.remove('active');
-                            if (link.getAttribute('href') === `#${id}`) link.classList.add('active');
-                        });
-                    }
-                });
-            }, { root: null, rootMargin: '0px', threshold: 0.4 });
-            sections.forEach(section => observer.observe(section));
-
-            // --- About Me Image Slider ---
-            const sliderWrapper = document.querySelector('.slider-wrapper');
-            const slides = document.querySelectorAll('.slider-slide');
-            const prevBtn = document.querySelector('.slider-button.prev');
-            const nextBtn = document.querySelector('.slider-button.next');
-            let currentIndex = 0;
-            function updateSlider() {
-                if(sliderWrapper) sliderWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-            }
-            if(nextBtn) nextBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex + 1) % slides.length;
-                updateSlider();
-            });
-            if(prevBtn) prevBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-                updateSlider();
-            });
-
-            // --- Testimonial Slider ---
-            const testimonials = [
-                { name: 'Kenny', quote: '第一次玩就愛上。規則講解很清楚，過程完全不尷尬，收尾還被故事戳中眼淚。' },
-                { name: '李立', quote: '節奏拿捏剛剛好，推理與情感都能兼顧；朋友玩完當場敲下一場。' },
-                { name: '怡霓', quote: '海星很會看桌，知道何時推、何時收。原來我的選擇真的能改變結局。' },
-                { name: 'Zoe', quote: '燈光跟音樂都很到位，跟外面店家一樣的體驗，但價格便宜很多！' },
-                { name: '萌卉', quote: '情感本的演繹超強，氣氛烘托得很好，害我哭得像個水龍頭！' },
-                { name: 'Wenwen', quote: '新手大推薦！海星會一步步引導，完全不會有壓力，只會覺得超好玩！' },
-                { name: 'Sinsin', quote: '控場能力一流，就算是歡樂本也不會失控，每個人都有發揮空間。' },
-                { name: 'Mumu', quote: '道具跟場景佈置都很用心，沉浸感直接拉滿，CP值超高！' },
-                { name: 'Wade', quote: '不只是帶本，更像是在跟一個懂故事的朋友一起玩，體驗很舒服。' },
-                { name: 'Na菜', quote: '復盤環節很精彩，能聽到很多我們沒盤到的細節，學到很多。' },
-                { name: '思澔', quote: '海星的演繹真的沒話說，NPC一出場就讓人瞬間入戲！' },
-                { name: '子媛', quote: '很會照顧邊緣玩家，確保每個人都能參與到故事核心，超貼心！' }
-            ];
-            const testimonialSlider = document.getElementById('testimonial-slider');
-            if (testimonialSlider) {
-                testimonials.forEach((t, index) => {
-                    const item = document.createElement('div');
-                    item.className = `testimonial-item absolute w-full h-full transition-opacity duration-500 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
-                    item.innerHTML = `
-                        <div class="card p-8 rounded-2xl text-center h-full flex flex-col justify-center">
-                            <p class="text-lg text-gray-300 italic mb-4">“${t.quote}”</p>
-                            <p class="font-bold text-gray-500">— ${t.name}</p>
-                        </div>`;
-                    testimonialSlider.appendChild(item);
-                });
-            }
+        (function() {
+            'use strict';
             
-            const testimonialItems = document.querySelectorAll('.testimonial-item');
-            const prevTestimonialButton = document.getElementById('prev-testimonial');
-            const nextTestimonialButton = document.getElementById('next-testimonial');
-            let currentTestimonial = 0;
-            function showTestimonial(index) {
-                testimonialItems.forEach(item => item.classList.add('opacity-0'));
-                if(testimonialItems[index]) testimonialItems[index].classList.remove('opacity-0');
-            }
-            if(nextTestimonialButton) nextTestimonialButton.addEventListener('click', () => {
-                currentTestimonial = (currentTestimonial + 1) % testimonialItems.length;
-                showTestimonial(currentTestimonial);
-            });
-            if(prevTestimonialButton) prevTestimonialButton.addEventListener('click', () => {
-                currentTestimonial = (currentTestimonial - 1 + testimonialItems.length) % testimonialItems.length;
-                showTestimonial(currentTestimonial);
-            });
-            if (testimonialItems.length > 1) {
-                setInterval(() => {
-                    if(nextTestimonialButton) nextTestimonialButton.click()
-                }, 5000);
-            }
+            // 工具函數：安全的元素選擇器
+            const $ = (selector, context = document) => context.querySelector(selector);
+            const $$ = (selector, context = document) => context.querySelectorAll(selector);
+            
+            // 工具函數：節流函數
+            const throttle = (func, delay) => {
+                let lastCall = 0;
+                return (...args) => {
+                    const now = Date.now();
+                    if (now - lastCall >= delay) {
+                        lastCall = now;
+                        func(...args);
+                    }
+                };
+            };
 
-            // --- FAQ Accordion ---
-            document.querySelectorAll('.faq-question').forEach(button => {
-                button.addEventListener('click', () => {
-                    const answer = button.nextElementSibling;
-                    const icon = button.querySelector('.faq-icon');
-                    const item = button.parentElement;
-                    const isOpening = !item.classList.contains('open');
+            document.addEventListener('DOMContentLoaded', () => {
+                // 初始化 AOS
+                AOS.init({ duration: 800, once: true, offset: 50 });
 
-                    document.querySelectorAll('.faq-item.open').forEach(openItem => {
-                        if (openItem !== item) {
-                            openItem.classList.remove('open');
-                            openItem.querySelector('.faq-answer').style.maxHeight = '0px';
-                            openItem.querySelector('.faq-icon').classList.remove('rotate-180');
+                // 移動端選單
+                const initMobileMenu = () => {
+                    const button = $('#mobile-menu-button');
+                    const menu = $('#mobile-menu');
+                    if (!button || !menu) return;
+                    
+                    button.addEventListener('click', () => menu.classList.toggle('hidden'));
+                    $$('a', menu).forEach(link => {
+                        link.addEventListener('click', () => menu.classList.add('hidden'));
+                    });
+                };
+
+                // 導航連結高亮
+                const initNavHighlight = () => {
+                    const sections = $$('section[id]');
+                    const navLinks = $$('.nav-link');
+                    if (!sections.length || !navLinks.length) return;
+
+                    const observer = new IntersectionObserver(entries => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const id = entry.target.id;
+                                navLinks.forEach(link => {
+                                    link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                                });
+                            }
+                        });
+                    }, { threshold: 0.4 });
+                    
+                    sections.forEach(section => observer.observe(section));
+                };
+
+                // 圖片輪播
+                const initImageSlider = () => {
+                    const wrapper = $('.slider-wrapper');
+                    const slides = $$('.slider-slide');
+                    const prevBtn = $('.slider-button.prev');
+                    const nextBtn = $('.slider-button.next');
+                    
+                    if (!wrapper || !slides.length) return;
+                    
+                    let currentIndex = 0;
+                    const updateSlider = () => {
+                        wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    };
+                    
+                    const navigate = (direction) => {
+                        currentIndex = (currentIndex + direction + slides.length) % slides.length;
+                        updateSlider();
+                    };
+                    
+                    prevBtn?.addEventListener('click', () => navigate(-1));
+                    nextBtn?.addEventListener('click', () => navigate(1));
+                };
+
+                // 評價輪播
+                const initTestimonialSlider = () => {
+                    const testimonials = [
+                        { name: 'Kenny', quote: '第一次玩就愛上。規則講解很清楚，過程完全不尷尬，收尾還被故事戳中眼淚。' },
+                        { name: '李立', quote: '節奏拿捏剛剛好，推理與情感都能兼顧；朋友玩完當場敲下一場。' },
+                        { name: '怡霓', quote: '海星很會看桌，知道何時推、何時收。原來我的選擇真的能改變結局。' },
+                        { name: 'Zoe', quote: '燈光跟音樂都很到位，跟外面店家一樣的體驗，但價格便宜很多！' },
+                        { name: '萌卉', quote: '情感本的演繹超強，氣氛烘托得很好，害我哭得像個水龍頭！' },
+                        { name: 'Wenwen', quote: '新手大推薦！海星會一步步引導，完全不會有壓力，只會覺得超好玩！' },
+                        { name: 'Sinsin', quote: '控場能力一流，就算是歡樂本也不會失控，每個人都有發揮空間。' },
+                        { name: 'Mumu', quote: '道具跟場景佈置都很用心，沉浸感直接拉滿，CP值超高！' },
+                        { name: 'Wade', quote: '不只是帶本，更像是在跟一個懂故事的朋友一起玩，體驗很舒服。' },
+                        { name: 'Na菜', quote: '復盤環節很精彩，能聽到很多我們沒盤到的細節，學到很多。' },
+                        { name: '思澔', quote: '海星的演繹真的沒話說，NPC一出場就讓人瞬間入戲！' },
+                        { name: '子媛', quote: '很會照顧邊緣玩家，確保每個人都能參與到故事核心，超貼心！' }
+                    ];
+                    
+                    const slider = $('#testimonial-slider');
+                    const prevBtn = $('#prev-testimonial');
+                    const nextBtn = $('#next-testimonial');
+                    if (!slider) return;
+                    
+                    // 建立評價項目
+                    const fragment = document.createDocumentFragment();
+                    testimonials.forEach((t, index) => {
+                        const item = document.createElement('div');
+                        item.className = `testimonial-item absolute w-full h-full transition-opacity duration-500 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+                        item.innerHTML = `
+                            <div class="card p-8 rounded-2xl text-center h-full flex flex-col justify-center">
+                                <p class="text-lg text-gray-300 italic mb-4">"${t.quote}"</p>
+                                <p class="font-bold text-gray-500">— ${t.name}</p>
+                            </div>`;
+                        fragment.appendChild(item);
+                    });
+                    slider.appendChild(fragment);
+                    
+                    const items = $$('.testimonial-item');
+                    let current = 0;
+                    
+                    const show = (index) => {
+                        items.forEach((item, i) => {
+                            item.classList.toggle('opacity-0', i !== index);
+                        });
+                    };
+                    
+                    const navigate = (direction) => {
+                        current = (current + direction + items.length) % items.length;
+                        show(current);
+                    };
+                    
+                    prevBtn?.addEventListener('click', () => navigate(-1));
+                    nextBtn?.addEventListener('click', () => navigate(1));
+                    
+                    // 自動輪播
+                    if (items.length > 1) {
+                        setInterval(() => navigate(1), 5000);
+                    }
+                };
+
+                // FAQ 手風琴
+                const initFAQ = () => {
+                    const closeAllExcept = (currentItem) => {
+                        $$('.faq-item.open').forEach(item => {
+                            if (item !== currentItem) {
+                                item.classList.remove('open');
+                                $('.faq-answer', item).style.maxHeight = '0px';
+                                $('.faq-icon', item).classList.remove('rotate-180');
+                            }
+                        });
+                    };
+                    
+                    $$('.faq-question').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const item = button.parentElement;
+                            const answer = button.nextElementSibling;
+                            const icon = $('.faq-icon', button);
+                            const isOpening = !item.classList.contains('open');
+                            
+                            closeAllExcept(item);
+                            
+                            if (isOpening) {
+                                item.classList.add('open');
+                                answer.style.maxHeight = answer.scrollHeight + 'px';
+                                icon.classList.add('rotate-180');
+                            } else {
+                                item.classList.remove('open');
+                                answer.style.maxHeight = '0px';
+                                icon.classList.remove('rotate-180');
+                            }
+                        });
+                    });
+                };
+
+                // 聯絡表單
+                const initContactForm = () => {
+                    const locationSelect = $('#location');
+                    const customWrapper = $('#custom-location-wrapper');
+                    const customInput = $('#custom-location');
+                    
+                    locationSelect?.addEventListener('change', () => {
+                        const isCustom = locationSelect.value === 'custom';
+                        customWrapper?.classList.toggle('hidden', !isCustom);
+                        if (customInput) customInput.required = isCustom;
+                    });
+                    
+                    const form = $('#booking-form');
+                    const successMsg = $('#form-success-message');
+                    
+                    form?.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+                        
+                        try {
+                            const response = await fetch(form.action, {
+                                method: form.method,
+                                body: formData,
+                                headers: { 'Accept': 'application/json' }
+                            });
+                            
+                            if (response.ok) {
+                                form.classList.add('hidden');
+                                successMsg.classList.remove('hidden');
+                            } else {
+                                alert('表單送出失敗，請稍後再試或直接聯絡我。');
+                            }
+                        } catch (error) {
+                            alert('發生網路錯誤，請檢查您的連線。');
                         }
                     });
+                };
 
-                    if (isOpening) {
-                        item.classList.add('open');
-                        answer.style.maxHeight = answer.scrollHeight + 'px';
-                        icon.classList.add('rotate-180');
-                    } else {
-                        item.classList.remove('open');
-                        answer.style.maxHeight = '0px';
-                        icon.classList.remove('rotate-180');
-                    }
-                });
+                // 固定 CTA 按鈕
+                const initStickyCTA = () => {
+                    const cta = $('#sticky-cta');
+                    const contactSection = $('#contact');
+                    if (!cta || !contactSection) return;
+                    
+                    const updateCTA = throttle(() => {
+                        const contactRect = contactSection.getBoundingClientRect();
+                        const isContactVisible = contactRect.top < window.innerHeight;
+                        const shouldShow = window.scrollY > window.innerHeight / 2 && !isContactVisible;
+                        cta.classList.toggle('translate-y-full', !shouldShow);
+                    }, 100);
+                    
+                    window.addEventListener('scroll', updateCTA, { passive: true });
+                    updateCTA();
+                };
+
+                // 初始化所有模組
+                initMobileMenu();
+                initNavHighlight();
+                initImageSlider();
+                initTestimonialSlider();
+                initFAQ();
+                initContactForm();
+                initStickyCTA();
             });
-
-            // --- Contact Form Logic ---
-            const locationSelect = document.getElementById('location');
-            const customLocationWrapper = document.getElementById('custom-location-wrapper');
-            const customLocationInput = document.getElementById('custom-location');
-            if(locationSelect) {
-                locationSelect.addEventListener('change', () => {
-                    if (locationSelect.value === 'custom') {
-                        customLocationWrapper.classList.remove('hidden');
-                        customLocationInput.required = true;
-                    } else {
-                        customLocationWrapper.classList.add('hidden');
-                        customLocationInput.required = false;
-                    }
-                });
-            }
-            const bookingForm = document.getElementById('booking-form');
-            const successMessage = document.getElementById('form-success-message');
-            if(bookingForm) {
-                bookingForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    const form = e.target;
-                    const data = new FormData(form);
-                    try {
-                        const response = await fetch(form.action, {
-                            method: form.method,
-                            body: data,
-                            headers: { 'Accept': 'application/json' }
-                        });
-                        if (response.ok) {
-                            bookingForm.classList.add('hidden');
-                            successMessage.classList.remove('hidden');
-                        } else {
-                            // Handle server errors
-                            alert('表單送出失敗，請稍後再試或直接聯絡我。');
-                        }
-                    } catch (error) {
-                        // Handle network errors
-                        alert('發生網路錯誤，請檢查您的連線。');
-                    }
-                });
-            }
-
-            // --- Sticky CTA Visibility ---
-            const stickyCTA = document.getElementById('sticky-cta');
-            const contactSection = document.getElementById('contact');
-            if(stickyCTA && contactSection) {
-                const ctaObserver = new IntersectionObserver(entries => {
-                    const isContactVisible = contactSection.getBoundingClientRect().top < window.innerHeight;
-                    if (window.scrollY > window.innerHeight / 2 && !isContactVisible) {
-                        stickyCTA.classList.remove('translate-y-full');
-                    } else {
-                        stickyCTA.classList.add('translate-y-full');
-                    }
-                }, { threshold: 0.1 });
-                ctaObserver.observe(document.body);
-            }
-        });
+        })();
     </script>
 </body>
 </html>
+
