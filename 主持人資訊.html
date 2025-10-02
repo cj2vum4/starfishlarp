@@ -451,13 +451,28 @@
 
             <!-- 9. Schedule Section -->
             <section id="schedule">
-                <h2 class="text-4xl font-bold mb-16 text-center gradient-text" data-aos="fade-up">我的檔期</h2>
-                <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                    <div class="card rounded-2xl overflow-hidden p-2 md:p-4">
-                        <!-- Responsive iframe container with mobile-optimized aspect ratio -->
-                        <div class="relative w-full" style="padding-bottom: 120%;"> <!-- Mobile-optimized aspect ratio -->
-                            <iframe src="https://calendar.google.com/calendar/embed?src=cj2vum4%40gmail.com&ctz=Asia%2FTaipei" class="absolute top-0 left-0 w-full h-full" style="border: 0;" frameborder="0" scrolling="no"></iframe>
+                <h2 class="text-4xl font-bold mb-16 text-center gradient-text" data-aos="fade-up">選擇可預約日期</h2>
+                <div class="max-w-5xl mx-auto" data-aos="fade-up">
+                    <div class="text-center mb-8">
+                        <p class="text-gray-300 text-lg mb-6">📅 在下方月曆中點選想預約的日期，系統會彈出當天的可預約時段</p>
+                    </div>
+                    <div class="card rounded-2xl overflow-hidden p-3 md:p-4">
+                        <!-- Google Calendar Appointment Schedule - Calendar-focused view -->
+                        <div class="relative w-full bg-white rounded-lg overflow-hidden" style="height: 700px;">
+                            <iframe 
+                                src="https://calendar.app.google/AFaBe7AKr8robkVZ6" 
+                                class="w-full rounded-lg" 
+                                style="border: 0; height: 700px; min-height: 700px;" 
+                                frameborder="0" 
+                                scrolling="yes"
+                                allow="calendar"
+                                loading="eager">
+                            </iframe>
                         </div>
+                    </div>
+                    <div class="text-center mt-6 space-y-2">
+                        <p class="text-gray-400 text-sm">💡 點選月曆日期後，系統將彈出視窗顯示該日的可預約時段</p>
+                        <p class="text-gray-300 text-xs">選擇時段 → 填寫您的聯絡資料 → 送出預約</p>
                     </div>
                 </div>
             </section>
