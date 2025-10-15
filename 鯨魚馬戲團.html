@@ -908,34 +908,6 @@
             if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
         });
 
-        // 頁面載入音效提示
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                const audioHint = document.createElement('div');
-                audioHint.style.cssText = `
-                    position: fixed; 
-                    bottom: 20px; 
-                    right: 20px; 
-                    background: rgba(58, 89, 152, 0.9); 
-                    color: white; 
-                    padding: 10px 15px; 
-                    border-radius: 10px; 
-                    font-size: 0.9rem;
-                    z-index: 1001;
-                    animation: fadeIn 0.5s ease-out;
-                `;
-                audioHint.textContent = '🎵 點擊電台圖標聆聽時光漫談';
-                document.body.appendChild(audioHint);
-                
-                setTimeout(() => {
-                    audioHint.style.animation = 'fadeOut 0.5s ease-out';
-                    setTimeout(() => {
-                        document.body.removeChild(audioHint);
-                    }, 500);
-                }, 3000);
-            }, 2000);
-        });
-
         // CSS 動畫補充
         const style = document.createElement('style');
         style.textContent = `
@@ -949,6 +921,17 @@
             }
         `;
         document.head.appendChild(style);
+    </script>
+    
+    <audio id="bgm" src="鯨魚馬戲團.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            const bgm = document.getElementById('bgm');
+            if (bgm) {
+                bgm.muted = false;
+            }
+        }, {once: true});
     </script>
 
 </body>

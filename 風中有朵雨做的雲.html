@@ -24,30 +24,7 @@
             position: relative;
         }
 
-        /* 添加雨滴效果 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.1), transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.05), transparent),
-                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.1), transparent),
-                radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.05), transparent);
-            background-repeat: repeat;
-            background-size: 200px 200px;
-            animation: rain 20s linear infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        @keyframes rain {
-            0% { transform: translateY(-100vh); }
-            100% { transform: translateY(100vh); }
-        }
+        /* 雨滴效果已優化 */
 
         /* 霓虹燈飄浮效果 */
         .neon-effects {
@@ -162,12 +139,8 @@
             font-weight: 700;
             color: #fff;
             text-shadow: 
-                0 0 10px #ff1493,
-                0 0 20px #ff1493,
-                0 0 30px #ff1493,
-                0 0 40px #daa520,
-                0 0 50px #daa520,
-                0 0 60px #daa520;
+                0 0 15px #ff1493,
+                0 0 30px #daa520;
             margin-bottom: 10px;
             background: linear-gradient(45deg, #fff, #daa520, #ff1493, #00ffff);
             -webkit-background-clip: text;
@@ -175,73 +148,14 @@
             background-clip: text;
             letter-spacing: 2px;
             font-family: 'Georgia', serif;
-            animation: neonPulse 2s ease-in-out infinite alternate;
             position: relative;
-        }
-
-        .title::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 20, 147, 0.3), transparent);
-            border-radius: 10px;
-            animation: neonSweep 3s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes neonPulse {
-            0% {
-                text-shadow: 
-                    0 0 10px #ff1493,
-                    0 0 20px #ff1493,
-                    0 0 30px #ff1493,
-                    0 0 40px #daa520,
-                    0 0 50px #daa520,
-                    0 0 60px #daa520;
-            }
-            100% {
-                text-shadow: 
-                    0 0 20px #ff1493,
-                    0 0 30px #ff1493,
-                    0 0 40px #ff1493,
-                    0 0 50px #daa520,
-                    0 0 60px #daa520,
-                    0 0 70px #daa520;
-            }
-        }
-
-        @keyframes neonSweep {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
 
         .subtitle {
             font-size: 1.2rem;
             color: rgba(255,255,255,0.9);
             font-weight: 300;
-            text-shadow: 
-                0 0 5px #00ffff,
-                0 0 10px #00ffff,
-                0 0 15px #00ffff;
-            animation: neonFlicker 4s ease-in-out infinite;
-        }
-
-        @keyframes neonFlicker {
-            0%, 100% { 
-                text-shadow: 
-                    0 0 5px #00ffff,
-                    0 0 10px #00ffff,
-                    0 0 15px #00ffff;
-            }
-            50% { 
-                text-shadow: 
-                    0 0 2px #00ffff,
-                    0 0 5px #00ffff,
-                    0 0 8px #00ffff;
-            }
+            text-shadow: 0 0 10px #00ffff;
         }
 
         .poster-section {
@@ -295,46 +209,24 @@
         }
 
         .card {
-            background: 
-                linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.6) 50%, rgba(15, 52, 96, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.6) 50%, rgba(15, 52, 96, 0.8) 100%);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.4),
-                0 0 30px rgba(255, 20, 147, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 20, 147, 0.2);
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(50px);
             animation: fadeInUp 1s ease-out 0.3s forwards;
             position: relative;
-            overflow: hidden;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 20, 147, 0.1), transparent);
-            animation: cardSweep 8s linear infinite;
-        }
-
-        @keyframes cardSweep {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
+        /* 卡片掃光動畫已移除以提升效能 */
 
         .card:hover {
             transform: translateY(-10px);
-            box-shadow: 
-                0 30px 60px rgba(0,0,0,0.6),
-                0 0 40px rgba(255, 20, 147, 0.3),
-                0 0 60px rgba(0, 255, 255, 0.2);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
             border-color: rgba(255, 20, 147, 0.4);
         }
 
@@ -347,51 +239,10 @@
             font-weight: 600;
             color: #fff;
             margin-bottom: 20px;
-            border-bottom: 3px solid transparent;
-            background: linear-gradient(90deg, #ff1493, #00ffff, #daa520, #ff1493);
-            background-size: 200% 200%;
-            background-clip: border-box;
-            -webkit-background-clip: border-box;
+            border-bottom: 3px solid #ff1493;
             padding-bottom: 10px;
-            text-shadow: 
-                0 0 10px #00ffff,
-                0 0 20px #00ffff,
-                0 0 30px #00ffff;
-            animation: neonTitleGlow 3s ease-in-out infinite alternate;
+            text-shadow: 0 0 15px #00ffff;
             position: relative;
-        }
-
-        .card-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff1493, #00ffff, #daa520, #ff1493);
-            background-size: 200% 200%;
-            animation: neonBorderFlow 2s linear infinite;
-        }
-
-        @keyframes neonTitleGlow {
-            0% {
-                text-shadow: 
-                    0 0 10px #00ffff,
-                    0 0 20px #00ffff,
-                    0 0 30px #00ffff;
-            }
-            100% {
-                text-shadow: 
-                    0 0 15px #00ffff,
-                    0 0 30px #00ffff,
-                    0 0 45px #00ffff,
-                    0 0 60px #ff1493;
-            }
-        }
-
-        @keyframes neonBorderFlow {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
         }
 
         .info-item {
@@ -459,49 +310,12 @@
             transition: all 0.3s ease;
             cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 
-                0 4px 15px rgba(218, 165, 32, 0.3),
-                0 0 20px rgba(255, 20, 147, 0.4);
-            animation: neonTagPulse 2s ease-in-out infinite alternate;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
         }
 
         .tag:hover {
             transform: scale(1.05);
-            box-shadow: 
-                0 8px 25px rgba(218, 165, 32, 0.5),
-                0 0 30px rgba(255, 20, 147, 0.8),
-                0 0 50px rgba(0, 255, 255, 0.6);
-            animation: neonTagGlow 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes neonTagPulse {
-            0% {
-                box-shadow: 
-                    0 4px 15px rgba(218, 165, 32, 0.3),
-                    0 0 20px rgba(255, 20, 147, 0.4);
-            }
-            100% {
-                box-shadow: 
-                    0 4px 15px rgba(218, 165, 32, 0.3),
-                    0 0 30px rgba(255, 20, 147, 0.6),
-                    0 0 40px rgba(0, 255, 255, 0.4);
-            }
-        }
-
-        @keyframes neonTagGlow {
-            0% {
-                box-shadow: 
-                    0 8px 25px rgba(218, 165, 32, 0.5),
-                    0 0 30px rgba(255, 20, 147, 0.8),
-                    0 0 50px rgba(0, 255, 255, 0.6);
-            }
-            100% {
-                box-shadow: 
-                    0 8px 25px rgba(218, 165, 32, 0.5),
-                    0 0 40px rgba(255, 20, 147, 1),
-                    0 0 60px rgba(0, 255, 255, 0.8);
-            }
+            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.5);
         }
 
         .characters-grid {
@@ -523,38 +337,11 @@
             overflow: hidden;
         }
 
-        .character-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 15px;
-            padding: 2px;
-            background: linear-gradient(45deg, #ff1493, #00ffff, #daa520, #ff1493);
-            background-size: 300% 300%;
-            animation: neonBorder 3s ease infinite;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            z-index: -1;
-        }
-
         .character-card:hover {
             background: rgba(218, 165, 32, 0.25);
             transform: translateY(-5px);
-            box-shadow: 
-                0 10px 25px rgba(218, 165, 32, 0.4),
-                0 0 30px rgba(255, 20, 147, 0.6),
-                0 0 50px rgba(0, 255, 255, 0.4);
-        }
-
-        @keyframes neonBorder {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            box-shadow: 0 10px 25px rgba(218, 165, 32, 0.4);
+            border: 2px solid rgba(255, 20, 147, 0.5);
         }
 
         .character-image {
@@ -580,27 +367,7 @@
             color: #fff;
             margin-bottom: 8px;
             font-size: 1rem;
-            text-shadow: 
-                0 0 5px #ff1493,
-                0 0 10px #ff1493,
-                0 0 15px #ff1493;
-            animation: neonGlow 2.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes neonGlow {
-            0% {
-                text-shadow: 
-                    0 0 5px #ff1493,
-                    0 0 10px #ff1493,
-                    0 0 15px #ff1493;
-            }
-            100% {
-                text-shadow: 
-                    0 0 10px #ff1493,
-                    0 0 20px #ff1493,
-                    0 0 30px #ff1493,
-                    0 0 40px #00ffff;
-            }
+            text-shadow: 0 0 10px #ff1493;
         }
 
         .character-info {
@@ -626,39 +393,17 @@
         }
 
         .highlight {
-            background: linear-gradient(120deg, transparent 0%, rgba(255, 20, 147, 0.2) 50%, transparent 100%);
+            background: rgba(255, 20, 147, 0.2);
             padding: 2px 6px;
             border-radius: 6px;
             font-weight: 600;
             color: #ff69b4;
-            text-shadow: 
-                0 0 8px rgba(255, 20, 147, 0.6),
-                0 0 16px rgba(0, 255, 255, 0.3);
-            position: relative;
-        }
-
-        .highlight::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 20, 147, 0.1), transparent);
-            border-radius: 6px;
-            animation: highlightPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes highlightPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
+            text-shadow: 0 0 8px rgba(255, 20, 147, 0.6);
         }
 
         .quote-section {
-            background: 
-                linear-gradient(135deg, rgba(26, 26, 46, 0.6) 0%, rgba(22, 33, 62, 0.4) 100%);
-            border-left: 4px solid transparent;
-            border-image: linear-gradient(180deg, #ff1493, #00ffff, #daa520) 1;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.6) 0%, rgba(22, 33, 62, 0.4) 100%);
+            border-left: 4px solid #ff1493;
             padding: 25px;
             margin: 20px 0;
             border-radius: 0 15px 15px 0;
@@ -666,27 +411,6 @@
             color: #e0e0e0;
             line-height: 1.8;
             font-size: 1.1rem;
-            text-shadow: 
-                0 0 10px rgba(255, 20, 147, 0.3),
-                0 0 20px rgba(0, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .quote-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 20, 147, 0.05), transparent);
-            animation: quoteGlow 6s ease-in-out infinite;
-        }
-
-        @keyframes quoteGlow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
         }
 
         .cta-section {
@@ -708,74 +432,14 @@
             font-size: 1.1rem;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 
-                0 10px 30px rgba(218, 165, 32, 0.3), 
-                0 0 40px rgba(218, 165, 32, 0.1),
-                0 0 20px rgba(255, 20, 147, 0.4);
+            box-shadow: 0 10px 30px rgba(218, 165, 32, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.3);
-            animation: neonButtonPulse 2s ease-in-out infinite alternate;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
             position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            animation: neonButtonSweep 3s linear infinite;
         }
 
         .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 
-                0 20px 40px rgba(218, 165, 32, 0.4), 
-                0 0 60px rgba(218, 165, 32, 0.2),
-                0 0 30px rgba(255, 20, 147, 0.8),
-                0 0 50px rgba(0, 255, 255, 0.6);
-            animation: neonButtonGlow 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes neonButtonPulse {
-            0% {
-                box-shadow: 
-                    0 10px 30px rgba(218, 165, 32, 0.3), 
-                    0 0 40px rgba(218, 165, 32, 0.1),
-                    0 0 20px rgba(255, 20, 147, 0.4);
-            }
-            100% {
-                box-shadow: 
-                    0 10px 30px rgba(218, 165, 32, 0.3), 
-                    0 0 40px rgba(218, 165, 32, 0.1),
-                    0 0 30px rgba(255, 20, 147, 0.6),
-                    0 0 40px rgba(0, 255, 255, 0.4);
-            }
-        }
-
-        @keyframes neonButtonSweep {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        @keyframes neonButtonGlow {
-            0% {
-                box-shadow: 
-                    0 20px 40px rgba(218, 165, 32, 0.4), 
-                    0 0 60px rgba(218, 165, 32, 0.2),
-                    0 0 30px rgba(255, 20, 147, 0.8),
-                    0 0 50px rgba(0, 255, 255, 0.6);
-            }
-            100% {
-                box-shadow: 
-                    0 20px 40px rgba(218, 165, 32, 0.4), 
-                    0 0 60px rgba(218, 165, 32, 0.2),
-                    0 0 40px rgba(255, 20, 147, 1),
-                    0 0 60px rgba(0, 255, 255, 0.8);
-            }
+            box-shadow: 0 20px 40px rgba(218, 165, 32, 0.5);
         }
 
         .floating-elements {
@@ -899,134 +563,7 @@
             font-size: 1.1rem;
         }
 
-        .disco-ball {
-            position: fixed;
-            top: 20%;
-            right: 10%;
-            width: 80px;
-            height: 80px;
-            background: 
-                radial-gradient(circle at 30% 30%, #ff1493, #00ffff, #daa520, #ff1493);
-            border-radius: 50%;
-            animation: discoBall 4s linear infinite;
-            box-shadow: 
-                0 0 30px rgba(255, 20, 147, 0.6),
-                0 0 50px rgba(0, 255, 255, 0.4),
-                0 0 70px rgba(218, 165, 32, 0.3);
-            z-index: -1;
-            position: relative;
-        }
-
-        .disco-ball::before {
-            content: '';
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            width: 80%;
-            height: 80%;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.3), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.2), transparent 50%);
-            border-radius: 50%;
-            animation: discoShine 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes discoShine {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.8; }
-        }
-
-        @keyframes discoBall {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 霓虹燈文字效果 */
-        .neon-text-effects {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .neon-text {
-            position: absolute;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: transparent;
-            text-shadow: 
-                0 0 5px #ff1493,
-                0 0 10px #ff1493,
-                0 0 15px #ff1493,
-                0 0 20px #00ffff,
-                0 0 35px #00ffff,
-                0 0 40px #00ffff;
-            animation: neonTextFlicker 4s ease-in-out infinite;
-            font-family: 'Arial', sans-serif;
-            letter-spacing: 2px;
-        }
-
-        @keyframes neonTextFlicker {
-            0%, 100% {
-                opacity: 0.8;
-                text-shadow: 
-                    0 0 5px #ff1493,
-                    0 0 10px #ff1493,
-                    0 0 15px #ff1493,
-                    0 0 20px #00ffff,
-                    0 0 35px #00ffff,
-                    0 0 40px #00ffff;
-            }
-            50% {
-                opacity: 0.4;
-                text-shadow: 
-                    0 0 2px #ff1493,
-                    0 0 5px #ff1493,
-                    0 0 8px #ff1493,
-                    0 0 10px #00ffff,
-                    0 0 15px #00ffff,
-                    0 0 20px #00ffff;
-            }
-        }
-
-        /* 霓虹燈線條效果 */
-        .neon-lines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .neon-line {
-            position: absolute;
-            background: linear-gradient(90deg, transparent, #ff1493, #00ffff, #ff1493, transparent);
-            background-size: 200% 100%;
-            animation: neonLineFlow 3s linear infinite;
-        }
-
-        .neon-line.horizontal {
-            width: 100%;
-            height: 2px;
-            left: 0;
-        }
-
-        .neon-line.vertical {
-            height: 100%;
-            width: 2px;
-            top: 0;
-            background: linear-gradient(180deg, transparent, #ff1493, #00ffff, #ff1493, transparent);
-        }
-
-        @keyframes neonLineFlow {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
+        /* 已移除過多的裝飾效果以提升效能 */
     </style>
 </head>
 <body>
@@ -1046,46 +583,13 @@
         <div class="neon-particle">💃</div>
         <div class="neon-particle">🎤</div>
         <div class="neon-particle">🕺</div>
-        <div class="neon-particle">🎵</div>
-        <div class="neon-particle">💃</div>
-        <div class="neon-particle">🎤</div>
-        <div class="neon-particle">🕺</div>
-        <div class="neon-particle">🎵</div>
-        <div class="neon-particle">💃</div>
-        <div class="neon-particle">🎤</div>
-        <div class="neon-particle">🕺</div>
-    </div>
-
-    <!-- 霓虹燈文字效果 -->
-    <div class="neon-text-effects">
-        <div class="neon-text" style="top: 15%; left: 5%; animation-delay: 0s;">火鳳凰</div>
-        <div class="neon-text" style="top: 25%; right: 8%; animation-delay: 1s;">歌舞廳</div>
-        <div class="neon-text" style="top: 60%; left: 3%; animation-delay: 2s;">千禧年</div>
-        <div class="neon-text" style="top: 70%; right: 5%; animation-delay: 3s;">港風</div>
-        <div class="neon-text" style="top: 40%; left: 50%; animation-delay: 1.5s;">迪廳</div>
-        <div class="neon-text" style="top: 10%; right: 20%; animation-delay: 2.5s;">空港島</div>
-        <div class="neon-text" style="top: 80%; left: 15%; animation-delay: 4s;">歌王爭霸</div>
-        <div class="neon-text" style="top: 35%; right: 15%; animation-delay: 0.5s;">雨做的雲</div>
-    </div>
-
-    <!-- 霓虹燈線條效果 -->
-    <div class="neon-lines">
-        <div class="neon-line horizontal" style="top: 20%; animation-delay: 0s;"></div>
-        <div class="neon-line horizontal" style="top: 80%; animation-delay: 2s;"></div>
-        <div class="neon-line vertical" style="left: 10%; animation-delay: 1s;"></div>
-        <div class="neon-line vertical" style="right: 10%; animation-delay: 3s;"></div>
     </div>
 
     <div class="floating-elements">
         <div class="floating-element">🏙️</div>
         <div class="floating-element">🎪</div>
         <div class="floating-element">🌃</div>
-        <div class="floating-element">🎭</div>
-        <div class="floating-element">💫</div>
-        <div class="floating-element">🌧️</div>
     </div>
-
-    <div class="disco-ball"></div>
 
     <div class="container">
         <div class="header">
@@ -1355,21 +859,22 @@
                 }
             }
 
-            // 滾動視差效果
+            // 滾動視差效果（已優化）
+            let parallaxTicking = false;
             window.addEventListener('scroll', () => {
-                const scrolled = window.pageYOffset;
-                const parallaxElements = document.querySelectorAll('.floating-element');
-                
-                parallaxElements.forEach((element, index) => {
-                    const speed = 0.4 + (index * 0.1);
-                    element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.08}deg)`;
-                });
-
-                // 迪斯可球旋轉速度隨滾動變化
-                const discoBall = document.querySelector('.disco-ball');
-                if (discoBall) {
-                    const rotationSpeed = scrolled * 0.5;
-                    discoBall.style.transform = `rotate(${rotationSpeed}deg)`;
+                if (!parallaxTicking) {
+                    window.requestAnimationFrame(() => {
+                        const scrolled = window.pageYOffset;
+                        const parallaxElements = document.querySelectorAll('.floating-element');
+                        
+                        parallaxElements.forEach((element, index) => {
+                            const speed = 0.4 + (index * 0.1);
+                            element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.08}deg)`;
+                        });
+                        
+                        parallaxTicking = false;
+                    });
+                    parallaxTicking = true;
                 }
             });
 
@@ -1515,48 +1020,7 @@
 
             window.addEventListener('scroll', updateScrollEffects);
 
-            // 迪廳燈光閃爍效果
-            function createDiscoLights() {
-                const colors = ['#ff1493', '#daa520', '#00ffff', '#ff4500', '#9400d3'];
-                const lightCount = 5;
-                
-                for (let i = 0; i < lightCount; i++) {
-                    const light = document.createElement('div');
-                    light.style.position = 'fixed';
-                    light.style.width = '20px';
-                    light.style.height = '20px';
-                    light.style.borderRadius = '50%';
-                    light.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    light.style.boxShadow = `0 0 20px ${colors[Math.floor(Math.random() * colors.length)]}`;
-                    light.style.top = Math.random() * window.innerHeight + 'px';
-                    light.style.left = Math.random() * window.innerWidth + 'px';
-                    light.style.pointerEvents = 'none';
-                    light.style.zIndex = '-1';
-                    light.style.opacity = '0.7';
-                    light.style.animation = `flash ${Math.random() * 2 + 1}s ease-in-out infinite alternate`;
-                    
-                    document.body.appendChild(light);
-                    
-                    setTimeout(() => {
-                        if (document.body.contains(light)) {
-                            document.body.removeChild(light);
-                        }
-                    }, 3000);
-                }
-            }
-
-            // 添加閃爍動畫
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes flash {
-                    0% { opacity: 0.3; transform: scale(0.8); }
-                    100% { opacity: 1; transform: scale(1.2); }
-                }
-            `;
-            document.head.appendChild(style);
-
-            // 定期創建迪廳燈光效果
-            setInterval(createDiscoLights, 5000);
+            // 迪廳燈光閃爍效果已優化移除以提升效能
 
             // 圖片載入處理
             const images = document.querySelectorAll('img');
@@ -1596,16 +1060,17 @@
         });
     </script>
 
-<audio id="bgm" src="風中有朵雨做的雲.mp3" autoplay loop muted></audio>
-    <script>解除靜音
-    document.addEventListener('click', function(){
-        const bgm = document.getElementById('bgm');
-        if (bgm) {
-            bgm.muted = false;
-        }
-    }, {once: true});
-
-</script>
+    <!-- 背景音樂 -->
+    <audio id="bgm" src="風中有朵雨做的雲.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            const bgm = document.getElementById('bgm');
+            if (bgm) {
+                bgm.muted = false;
+            }
+        }, {once: true});
+    </script>
 
 </body>
 </html>

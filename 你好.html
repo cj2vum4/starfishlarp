@@ -1046,3 +1046,16 @@
 
             console.log('你好頁面特效已載入完成！');
         });
+    </script>
+
+    <!-- 背景音樂 -->
+    <audio id="bgm" src="你好.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+</body>
+</html>
