@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雪鄉連環殺人事件 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 30%, #2c5282 60%, #1a2332 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 雪花飄落效果 */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10%;
+            color: rgba(255, 255, 255, 0.8);
+            user-select: none;
+            pointer-events: none;
+            animation: snowfall linear infinite;
+            font-size: 1.5rem;
+        }
+
+        .snowflake:nth-child(1) { left: 5%; animation-duration: 10s; animation-delay: 0s; }
+        .snowflake:nth-child(2) { left: 15%; animation-duration: 12s; animation-delay: 2s; font-size: 1.2rem; }
+        .snowflake:nth-child(3) { left: 25%; animation-duration: 9s; animation-delay: 4s; font-size: 1.8rem; }
+        .snowflake:nth-child(4) { left: 35%; animation-duration: 11s; animation-delay: 1s; }
+        .snowflake:nth-child(5) { left: 45%; animation-duration: 13s; animation-delay: 3s; font-size: 1.3rem; }
+        .snowflake:nth-child(6) { left: 55%; animation-duration: 10s; animation-delay: 5s; }
+        .snowflake:nth-child(7) { left: 65%; animation-duration: 12s; animation-delay: 2.5s; font-size: 1.6rem; }
+        .snowflake:nth-child(8) { left: 75%; animation-duration: 11s; animation-delay: 1.5s; }
+        .snowflake:nth-child(9) { left: 85%; animation-duration: 13s; animation-delay: 4.5s; font-size: 1.4rem; }
+        .snowflake:nth-child(10) { left: 95%; animation-duration: 10s; animation-delay: 0.5s; }
+
+        @keyframes snowfall {
+            0% {
+                top: -10%;
+                opacity: 0;
+                transform: translateX(0px) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+                transform: translateX(50px) rotate(360deg);
+            }
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(44, 82, 130, 0.9);
+            color: #e0f2fe;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(224, 242, 254, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(44, 82, 130, 0.4);
+        }
+
+        .back-btn:hover {
+            background: rgba(44, 82, 130, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(224, 242, 254, 0.5);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(147, 197, 253, 0.8), 0 0 60px rgba(147, 197, 253, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #93c5fd, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(224, 242, 254, 0.9);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(147, 197, 253, 0.5);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            width: 500px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(147, 197, 253, 0.3);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(147, 197, 253, 0.4);
+            border-color: rgba(147, 197, 253, 0.6);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(147, 197, 253, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(147, 197, 253, 0.3);
+            border-color: rgba(147, 197, 253, 0.4);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #e0f2fe;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #60a5fa;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(147, 197, 253, 0.5);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(147, 197, 253, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(147, 197, 253, 0.2);
+        }
+
+        .info-item:hover {
+            background: rgba(147, 197, 253, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(147, 197, 253, 0.3);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #e0f2fe;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #60a5fa;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .star.empty {
+            color: #334155;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #2c5282, #1e3a5f);
+            color: #e0f2fe;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(224, 242, 254, 0.3);
+            box-shadow: 0 4px 15px rgba(44, 82, 130, 0.3);
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(147, 197, 253, 0.5);
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(147, 197, 253, 0.1);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(147, 197, 253, 0.3);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .character-card:hover::before {
+            left: 100%;
+        }
+
+        .character-card:hover {
+            background: rgba(147, 197, 253, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(147, 197, 253, 0.4);
+        }
+
+        .character-icon {
+            width: 100%;
+            height: 200px;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(147, 197, 253, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(147, 197, 253, 0.3);
+            object-fit: cover;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .character-card:hover .character-icon {
+            border-color: rgba(147, 197, 253, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(147, 197, 253, 0.5);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #e0f2fe;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(147, 197, 253, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            opacity: 0.9;
+            line-height: 1.3;
+            position: relative;
+            z-index: 1;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #e0f2fe;
+            text-align: justify;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(147, 197, 253, 0.4) 50%, transparent 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(147, 197, 253, 0.5);
+        }
+
+        .poem-section {
+            background: rgba(147, 197, 253, 0.1);
+            border-left: 4px solid #60a5fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            color: #e0f2fe;
+            line-height: 2;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #2c5282, #1e3a5f);
+            color: #e0f2fe;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(44, 82, 130, 0.4), 0 0 40px rgba(147, 197, 253, 0.2);
+            border: 2px solid rgba(224, 242, 254, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(147, 197, 253, 0.5), 0 0 60px rgba(147, 197, 253, 0.3);
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+            color: rgba(147, 197, 253, 0.5);
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #60a5fa;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(96, 165, 250, 0.5);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        /* 寒冷閃爍效果 */
+        .cold-flicker {
+            animation: coldFlicker 3s ease-in-out infinite;
+        }
+
+        @keyframes coldFlicker {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.8; filter: brightness(0.9); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .poster-image {
+                width: 90%;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="snowflakes">
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🏔️</div>
+        <div class="floating-element">🔪</div>
+        <div class="floating-element">🌨️</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title cold-flicker">雪鄉連環殺人事件</h1>
+            <p class="subtitle">驚悚懸疑推理劇本，在冰雪中揭開真相</p>
+        </div>
+
+        <div class="poster-section">
+            <img src="https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_1000,w_500,f_auto,q_auto/10858423/158745_191005.jpeg" 
+                 alt="雪鄉連環殺人事件劇本殺海報" 
+                 class="poster-image">
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">雪鄉連環殺人事件</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👨</span>
+                            <span>3男</span>
+                        </div>
+                        <div class="gender-icon">
+                            <span class="icon">👩</span>
+                            <span>3女</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star half">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">驚悚</span>
+                        <span class="tag">微恐</span>
+                        <span class="tag">演繹</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">還原</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/5th1DXbn/202404241441-024.jpg" alt="陳吉" class="character-icon">
+                        <div class="character-name">陳吉</div>
+                        <div class="character-info">男性角色 18歲<br>煉鋼廠廠長兒子</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/3w4YLX5Y/202404241441-023.jpg" alt="卓司元" class="character-icon">
+                        <div class="character-name">卓司元</div>
+                        <div class="character-info">男性角色 18歲<br>煉鋼廠會計兒子</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/XvG42fSn/202404241441-025.jpg" alt="崔鎧強" class="character-icon">
+                        <div class="character-name">崔鎧強</div>
+                        <div class="character-info">男性角色 18歲<br>北道河子村村長兒子</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/W1fs69ym/202404241441-022.jpg" alt="李開心" class="character-icon">
+                        <div class="character-name">李開心</div>
+                        <div class="character-info">女性角色 18歲<br>三朵村花之一，性感火辣</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/DZ1Fh7w5/202404241441-027.jpg" alt="蕭萌" class="character-icon">
+                        <div class="character-name">蕭萌</div>
+                        <div class="character-info">女性角色 18歲<br>三朵村花之一，活潑可愛</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/hPkkSHN3/202404241441-021.jpg" alt="王琪" class="character-icon">
+                        <div class="character-name">王琪</div>
+                        <div class="character-info">女性角色 18歲<br>三朵村花之一，知書識禮</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="poem-section">
+                    年三十，北道河，<br>
+                    村裏出了個殺人魔。<br>
+                    殺了一個又一個，<br>
+                    殺到最後殺老婆。<br>
+                    七個小孩來探訪，<br>
+                    聯起手來把案破。
+                </div>
+                <div class="description-text">
+                    在<span class="highlight">北道河村</span>這個偏遠的雪鄉，年三十的夜晚本該是團圓喜慶的時刻，卻被一連串離奇的殺人事件籠罩在恐怖的陰影之下。
+                    <br><br>
+                    一個神秘的<span class="highlight">殺人魔</span>在村中作案，手法殘忍，接連奪走多條性命，甚至連自己的妻子也不放過。整個村莊陷入了前所未有的恐慌之中。
+                    <br><br>
+                    七個年輕人因為各種原因來到了這個被冰雪覆蓋的村莊。他們是煉鋼廠高層的子女，是村中備受矚目的年輕一代。在這個寒冷的冬夜，他們將聯手揭開隱藏在雪地深處的<span class="highlight">駭人真相</span>。
+                    <br><br>
+                    當白雪逐漸被鮮血染紅，當真相一層層被剝開，每個人心中都藏著不為人知的秘密。在這場生死較量中，誰是兇手？誰又是無辜的受害者？
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    《雪鄉連環殺人事件》是一部<span class="highlight">驚悚懸疑推理劇本</span>，以連環殺人案為核心，融合了微恐元素和角色演繹，為玩家帶來沉浸式的推理體驗。
+                    <br><br>
+                    <strong>🔍 經典本格推理：</strong><br>
+                    劇本採用<span class="highlight">傳統本格推理</span>的敘事結構，玩家需要通過收集線索、分析證據、推理兇手身份，最終還原整個案件的真相。每個角色都有不可告人的秘密。
+                    <br><br>
+                    <strong>❄️ 冰冷氛圍營造：</strong><br>
+                    故事發生在<span class="highlight">冰雪覆蓋的北方村莊</span>，寒冷的環境與冷酷的殺人魔相互映襯，營造出令人毛骨悚然的恐怖氛圍。配合音效與演藝，讓大家完全沉浸其中。
+                    <br><br>
+                    <strong>🎭 角色演繹重要：</strong><br>
+                    劇本強調<span class="highlight">角色扮演與演繹</span>，玩家不僅需要推理，更需要通過對話、表演來挖掘其他角色的秘密，同時隱藏自己的動機和目的。
+                    <br><br>
+                    <strong>⏰ 適中難度：</strong><br>
+                    推理難度為2.5星（滿分5星），<span class="highlight">適合喜歡感受劇情和輕度推理的玩家</span>，既有挑戰性又不會過於艱深，即使是新手在我的引導下也能擁有完美劇本體驗。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約，揭開雪鄉的秘密</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#93c5fd';
+                        } else {
+                            s.style.color = '#60a5fa';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#60a5fa';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                    
+                    // 創建雪花爆炸效果
+                    createSnowBurst(tag);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(147, 197, 253, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(147, 197, 253, 0.15) 0%, rgba(15, 23, 42, 0.7) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(15, 23, 42, 0.7)';
+                });
+            });
+
+            // 創建雪花爆炸效果函數
+            function createSnowBurst(element) {
+                const rect = element.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                for (let i = 0; i < 8; i++) {
+                    const snowflake = document.createElement('div');
+                    snowflake.innerHTML = '❄';
+                    snowflake.style.position = 'fixed';
+                    snowflake.style.left = centerX + 'px';
+                    snowflake.style.top = centerY + 'px';
+                    snowflake.style.fontSize = '1.5rem';
+                    snowflake.style.color = '#93c5fd';
+                    snowflake.style.pointerEvents = 'none';
+                    snowflake.style.zIndex = '9999';
+                    snowflake.style.transition = 'all 0.8s ease-out';
+                    
+                    document.body.appendChild(snowflake);
+                    
+                    const angle = (i * 45) * Math.PI / 180;
+                    const distance = 100;
+                    const targetX = centerX + Math.cos(angle) * distance;
+                    const targetY = centerY + Math.sin(angle) * distance;
+                    
+                    setTimeout(() => {
+                        snowflake.style.left = targetX + 'px';
+                        snowflake.style.top = targetY + 'px';
+                        snowflake.style.opacity = '0';
+                        snowflake.style.transform = 'scale(0.5) rotate(360deg)';
+                    }, 50);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(snowflake);
+                    }, 800);
+                }
+            }
+
+            // 滾動視差效果
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.floating-element');
+                
+                parallaxElements.forEach((element, index) => {
+                    const speed = 0.3 + (index * 0.1);
+                    element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.05}deg)`;
+                });
+            });
+
+            // 海報圖片點擊放大效果
+            const posterImage = document.querySelector('.poster-image');
+            posterImage.addEventListener('click', () => {
+                posterImage.style.transform = 'scale(1.1)';
+                posterImage.style.zIndex = '1000';
+                setTimeout(() => {
+                    posterImage.style.transform = 'scale(1.02)';
+                    posterImage.style.zIndex = 'auto';
+                }, 300);
+            });
+
+            // 點擊創建雪花軌跡
+            document.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON' && !e.target.classList.contains('tag')) {
+                    createClickSnow(e.clientX, e.clientY);
+                }
+            });
+
+            function createClickSnow(x, y) {
+                const snow = document.createElement('div');
+                snow.innerHTML = '❄';
+                snow.style.position = 'fixed';
+                snow.style.left = x + 'px';
+                snow.style.top = y + 'px';
+                snow.style.fontSize = '2rem';
+                snow.style.color = '#93c5fd';
+                snow.style.pointerEvents = 'none';
+                snow.style.zIndex = '9999';
+                snow.style.transition = 'all 1s ease-out';
+                snow.style.transform = 'scale(0)';
+                
+                document.body.appendChild(snow);
+                
+                setTimeout(() => {
+                    snow.style.transform = 'scale(1) translateY(-50px) rotate(360deg)';
+                    snow.style.opacity = '0';
+                }, 50);
+                
+                setTimeout(() => {
+                    document.body.removeChild(snow);
+                }, 1000);
+            }
+
+            console.log('雪鄉連環殺人事件頁面特效已載入完成！');
+        });
+    </script>
+
+</script>
+
+<audio id="bgm" src="雪鄉連環殺人事件.mp3" autoplay loop muted></audio>
+<script>
+    // 點擊頁面解除靜音
+    document.addEventListener('click', function(){
+        document.getElementById('bgm').muted = false;
+    }, {once:true});
+</script>
+
+</body>
+</html>
