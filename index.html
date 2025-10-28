@@ -285,6 +285,7 @@
             opacity: 0;
             transform: translateY(50px);
             animation: fadeInUp 1s ease-out forwards;
+            animation-play-state: paused;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -778,7 +779,7 @@
         <div class="filter-section">
             <h2 class="filter-title">🔍 劇本篩選</h2>
             <div class="filter-result">
-                <span class="result-text">找到 <span id="filteredCount">43</span> 個符合條件的劇本</span>
+                <span class="result-text">找到 <span id="filteredCount">47</span> 個符合條件的劇本</span>
             </div>
             
             <!-- 搜索框 -->
@@ -920,7 +921,7 @@
                 <button class="detail-btn" onclick="goToScript('fengtian')">查看詳細介紹</button>
             </div>
 
-            <div class="script-card" data-theme="desert" data-players="7" data-types="陣營,機制,情感,民國,謀戰" data-difficulty="2">
+            <div class="script-card" data-theme="desert" data-players="7" data-types="陣營,機制,情感,民國,諜戰" data-difficulty="2">
                 <img src="https://i.postimg.cc/cCsdmcGG/b644a7b3-c9a4-4d08-b36d-c69cc70a0b39-S.png" alt="孤城" class="script-image">
                 <h3 class="script-title">孤城</h3>
                 <div class="script-info">
@@ -933,7 +934,7 @@
                     <span class="type-tag">機制</span>
                     <span class="type-tag">情感</span>
                     <span class="type-tag">民國</span>
-                    <span class="type-tag">謀戰</span>
+                    <span class="type-tag">諜戰</span>
                 </div>
                 <button class="detail-btn" onclick="goToScript('gucheng')">查看詳細介紹</button>
             </div>
@@ -1490,9 +1491,9 @@
                 <button class="detail-btn" onclick="goToScript('nihao')">查看詳細介紹</button>
             </div>
 
-            <div class="script-card" data-theme="history" data-players="8" data-types="民國,陣營,謀戰,還原,本格" data-difficulty="4">
-                <img src="https://i.postimg.cc/FHhLrJhf/page-0001.jpg" alt="謀影南京風沙" class="script-image">
-                <h3 class="script-title">謀影南京風沙</h3>
+            <div class="script-card" data-theme="history" data-players="8" data-types="民國,陣營,諜戰,還原,本格" data-difficulty="4">
+                <img src="https://i.postimg.cc/FHhLrJhf/page-0001.jpg" alt="諜影南京風沙" class="script-image">
+                <h3 class="script-title">諜影南京風沙</h3>
                 <div class="script-info">
                     <span class="info-badge">👥 5男3女</span>
                     <span class="info-badge">⏰ 5小時</span>
@@ -1501,7 +1502,7 @@
                 <div class="script-types">
                     <span class="type-tag">民國</span>
                     <span class="type-tag">陣營</span>
-                    <span class="type-tag">謀戰</span>
+                    <span class="type-tag">諜戰</span>
                     <span class="type-tag">還原</span>
                     <span class="type-tag">本格</span>
                 </div>
@@ -1587,16 +1588,16 @@
                 <button class="detail-btn" onclick="goToScript('hezi')">查看詳細介紹</button>
             </div>
 
-            <div class="script-card" data-theme="mystery" data-players="8" data-types="謀戰,硬核,推理,還原,陣營,本格" data-difficulty="5">
-                <img src="https://i.postimg.cc/DyZDgnDN/2025-09-05-154322.png" alt="謀影重慶迷霧" class="script-image">
-                <h3 class="script-title">謀影重慶迷霧</h3>
+            <div class="script-card" data-theme="mystery" data-players="8" data-types="諜戰,硬核,推理,還原,陣營,本格" data-difficulty="5">
+                <img src="https://i.postimg.cc/DyZDgnDN/2025-09-05-154322.png" alt="諜影重慶迷霧" class="script-image">
+                <h3 class="script-title">諜影重慶迷霧</h3>
                 <div class="script-info">
                     <span class="info-badge">👥 6男2女</span>
                     <span class="info-badge">⏰ 5小時</span>
                     <span class="info-badge">⭐ 5星</span>
                 </div>
                 <div class="script-types">
-                    <span class="type-tag">謀戰</span>
+                    <span class="type-tag">諜戰</span>
                     <span class="type-tag">硬核</span>
                     <span class="type-tag">推理</span>
                     <span class="type-tag">還原</span>
@@ -1661,6 +1662,84 @@
                 <button class="detail-btn" onclick="goToScript('jingyu')">查看詳細介紹</button>
             </div>
 
+            <!-- 新增：吾皇在上 -->
+            <div class="script-card" data-theme="ancient" data-players="8" data-types="宮鬥,歡樂,推理,角色扮演,古風,陣營,機制,新手" data-difficulty="3">
+                <img src="https://i.postimg.cc/W1T17C8Z/feng-mian1-page-0001.jpg" alt="吾皇在上" class="script-image">
+                <h3 class="script-title">吾皇在上</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 8-9人</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">宮鬥</span>
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">古風</span>
+                    <span class="type-tag">陣營</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">新手</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('wuhuang')">查看詳細介紹</button>
+            </div>
+
+            <!-- 新增：臥底模擬訓練 -->
+            <div class="script-card" data-theme="modern" data-players="7" data-types="硬核,推理,新手友善,警匪,現代" data-difficulty="4">
+                <img src="https://i.postimg.cc/k4N07QBP/202404241547-031-orig.jpg" alt="臥底模擬訓練" class="script-image">
+                <h3 class="script-title">臥底模擬訓練</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 7人不限</span>
+                    <span class="info-badge">⏰ 3.5-4小時</span>
+                    <span class="info-badge">⭐ 4星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">硬核</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">新手友善</span>
+                    <span class="type-tag">警匪</span>
+                    <span class="type-tag">現代</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('wodi')">查看詳細介紹</button>
+            </div>
+
+            <!-- 新增：漫畫裡的小黑人 -->
+            <div class="script-card" data-theme="happy" data-players="6" data-types="歡樂,還原,童話,機制,新手友善" data-difficulty="3">
+                <img src="https://i.postimg.cc/yNpptNdn/202304130041-059.jpg" alt="漫畫裡的小黑人" class="script-image">
+                <h3 class="script-title">漫畫裡的小黑人</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 6人</span>
+                    <span class="info-badge">⏰ 4-5小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">歡樂</span>
+                    <span class="type-tag">還原</span>
+                    <span class="type-tag">童話</span>
+                    <span class="type-tag">機制</span>
+                    <span class="type-tag">新手友善</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('manhua')">查看詳細介紹</button>
+            </div>
+
+            <!-- 新增：雪鄉連環殺人事件 -->
+            <div class="script-card" data-theme="horror" data-players="6" data-types="驚悚,微恐,演繹,推理,還原" data-difficulty="3">
+                <img src="https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_1000,w_500,f_auto,q_auto/10858423/158745_191005.jpeg" alt="雪鄉連環殺人事件" class="script-image">
+                <h3 class="script-title">雪鄉連環殺人事件</h3>
+                <div class="script-info">
+                    <span class="info-badge">👥 3男3女</span>
+                    <span class="info-badge">⏰ 4小時</span>
+                    <span class="info-badge">⭐ 3星</span>
+                </div>
+                <div class="script-types">
+                    <span class="type-tag">驚悚</span>
+                    <span class="type-tag">微恐</span>
+                    <span class="type-tag">演繹</span>
+                    <span class="type-tag">推理</span>
+                    <span class="type-tag">還原</span>
+                </div>
+                <button class="detail-btn" onclick="goToScript('xuexiang')">查看詳細介紹</button>
+            </div>
+
         </div>
 
         <div class="no-results hidden" id="noResults">
@@ -1716,7 +1795,7 @@
             id: 'gucheng',
             name: '孤城',
             players: 7,
-            types: ['陣營', '機制', '情感', '民國', '謀戰'],
+            types: ['陣營', '機制', '情感', '民國', '諜戰'],
             difficulty: 2,
             theme: 'desert',
             time: 4.5,
@@ -2014,9 +2093,9 @@
         },
         {
             id: 'nanjing',
-            name: '謀影南京風沙',
+            name: '諜影南京風沙',
             players: 8,
-            types: ['民國', '陣營', '謀戰', '還原', '本格'],
+            types: ['民國', '陣營', '諜戰', '還原', '本格'],
             difficulty: 4,
             theme: 'history',
             time: 5,
@@ -2064,9 +2143,9 @@
         },
         {
             id: 'chongqing',
-            name: '謀影重慶迷霧',
+            name: '諜影重慶迷霧',
             players: 8,
-            types: ['謀戰', '硬核', '推理', '還原', '陣營', '本格'],
+            types: ['諜戰', '硬核', '推理', '還原', '陣營', '本格'],
             difficulty: 5,
             theme: 'mystery',
             time: 5,
@@ -2103,6 +2182,49 @@
             file: '鯨魚馬戲團.html'
         }
     ];
+    // 追加新增四個劇本的映射
+    scripts.push(
+        {
+            id: 'wuhuang',
+            name: '吾皇在上',
+            players: 8,
+            types: ['宮鬥', '歡樂', '推理', '角色扮演', '古風', '陣營', '機制', '新手'],
+            difficulty: 3,
+            theme: 'ancient',
+            time: 4,
+            file: '吾皇在上.html'
+        },
+        {
+            id: 'wodi',
+            name: '臥底模擬訓練',
+            players: 7,
+            types: ['硬核', '推理', '新手友善', '警匪', '現代'],
+            difficulty: 4,
+            theme: 'modern',
+            time: 4,
+            file: '臥底模擬訓練.html'
+        },
+        {
+            id: 'manhua',
+            name: '漫畫裡的小黑人',
+            players: 6,
+            types: ['歡樂', '還原', '童話', '機制', '新手友善'],
+            difficulty: 3,
+            theme: 'happy',
+            time: 4.5,
+            file: '漫畫裡的小黑人.html'
+        },
+        {
+            id: 'xuexiang',
+            name: '雪鄉連環殺人事件',
+            players: 6,
+            types: ['驚悚', '微恐', '演繹', '推理', '還原'],
+            difficulty: 3,
+            theme: 'horror',
+            time: 4,
+            file: '雪鄉連環殺人事件.html'
+        }
+    );
 
     // DOM載入後執行的初始化函式
     document.addEventListener('DOMContentLoaded', () => {
@@ -2133,6 +2255,7 @@
         // 初始化可用選項和篩選
         updateAvailableOptions();
         filterScripts();
+        applyStaggerAnimationWithinTwoSeconds();
     });
     
     // 更新可用選項的函式
@@ -2270,6 +2393,35 @@
         }
     }
 
+    // 解析 CSS 時間字串為秒數（支援 s / ms）
+    function parseCssTimeToSeconds(timeString) {
+        if (!timeString) return 0;
+        const first = String(timeString).split(',')[0].trim();
+        if (first.endsWith('ms')) return parseFloat(first) / 1000;
+        if (first.endsWith('s')) return parseFloat(first);
+        const val = parseFloat(first);
+        return isNaN(val) ? 0 : val;
+    }
+
+    // 將可見的卡片動畫錯開時間壓縮在 2 秒內完成顯示
+    function applyStaggerAnimationWithinTwoSeconds() {
+        const container = document.getElementById('scriptsGrid');
+        if (!container) return;
+        const cards = Array.from(container.querySelectorAll('.script-card'));
+        const visibleCards = cards.filter(card => !card.classList.contains('hidden'));
+        if (visibleCards.length === 0) return;
+
+        const durationSec = parseCssTimeToSeconds(getComputedStyle(visibleCards[0]).animationDuration);
+        const maxTotalSec = 2; // 最晚在 2 秒內完成（含動畫本身的時間）
+        const latestStartSec = Math.max(0, maxTotalSec - durationSec);
+        const stepSec = visibleCards.length > 1 ? (latestStartSec / (visibleCards.length - 1)) : 0;
+
+        visibleCards.forEach((card, index) => {
+            card.style.animationDelay = (index * stepSec).toFixed(3) + 's';
+            card.style.animationPlayState = 'running';
+        });
+    }
+
     // 篩選功能
     function filterScripts() {
         const playerFilter = document.getElementById('playerFilter').value;
@@ -2318,6 +2470,8 @@
         
         // 更新篩選結果數量
         updateFilteredCount(visibleCount);
+        // 重新計算動畫延遲，確保可見卡片在 2 秒內完成顯示
+        applyStaggerAnimationWithinTwoSeconds();
     }
 
     // 更新篩選結果數量
@@ -2390,6 +2544,8 @@
         scriptCards.forEach(card => {
             scriptsGrid.appendChild(card);
         });
+        // 重新計算動畫延遲，確保可見卡片在 2 秒內完成顯示
+        applyStaggerAnimationWithinTwoSeconds();
     }
 
     // 前往劇本詳細頁面的函式

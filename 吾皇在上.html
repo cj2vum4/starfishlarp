@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吾皇在上 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+            background: linear-gradient(135deg, #8B0000 0%, #CD5C5C 30%, #DC143C 60%, #B22222 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(218, 165, 32, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4);
+        }
+
+        .back-btn:hover {
+            background: rgba(218, 165, 32, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.6);
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.9), 0 0 60px rgba(255, 215, 0, 0.7), 0 4px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 8px;
+            font-family: 'KaiTi', 'STKaiti', 'SimSun', serif;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 215, 0, 0.95);
+            font-weight: 400;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 3px;
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255, 215, 0, 0.6);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 60px rgba(255, 215, 0, 0.6);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.7) 0%, rgba(178, 34, 34, 0.7) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 0.4);
+            border-color: rgba(255, 215, 0, 0.7);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #FFD700;
+            padding-bottom: 10px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            font-family: 'KaiTi', 'STKaiti', serif;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 215, 0, 0.15);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .info-item:hover {
+            background: rgba(255, 215, 0, 0.25);
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #FFF8DC;
+            font-size: 1.05rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #FFD700;
+            font-size: 1.05rem;
+        }
+
+        .stars {
+            display: flex;
+            gap: 5px;
+        }
+
+        .star {
+            color: #FFD700;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));
+        }
+
+        .star.empty {
+            color: #8B4513;
+            filter: none;
+        }
+
+        .star:hover {
+            transform: scale(1.3) rotate(15deg);
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #8B0000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .tag:hover {
+            transform: scale(1.1) rotate(-2deg);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(255, 215, 0, 0.15);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .character-image {
+            width: 100%;
+            height: auto;
+            max-height: 240px;
+            border-radius: 12px;
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            object-fit: cover;
+            margin-bottom: 12px;
+        }
+
+        .character-card:hover {
+            background: rgba(255, 215, 0, 0.25);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.5);
+            border-color: rgba(255, 215, 0, 0.7);
+        }
+
+        .character-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 215, 0, 0.6);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.8), rgba(178, 34, 34, 0.8));
+        }
+
+        .character-card:hover .character-icon {
+            border-color: rgba(255, 215, 0, 0.9);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
+        }
+
+        .character-name {
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        .character-info {
+            font-size: 0.9rem;
+            color: #FFF8DC;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        .description-text {
+            font-size: 1.15rem;
+            line-height: 2;
+            color: #FFF8DC;
+            text-align: justify;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 215, 0, 0.4) 50%, transparent 100%);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            color: #FFD700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% auto;
+            color: #8B0000;
+            padding: 18px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5), 0 0 50px rgba(255, 215, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            animation: buttonShine 3s linear infinite;
+        }
+
+        @keyframes buttonShine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.7), 0 0 70px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+                opacity: 0.5;
+            }
+            50% { 
+                transform: translateY(-30px) rotate(15deg); 
+                opacity: 0.8;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+                letter-spacing: 4px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .poster-image {
+                max-height: 400px;
+            }
+
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .characters-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1rem;
+            color: #FFD700;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        .icon {
+            font-size: 1.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">吾皇在上</h1>
+            <p class="subtitle">深宮謎案 · 後宮爭寵 · 真相何在</p>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/W1T17C8Z/feng-mian1-page-0001.jpg" alt="吾皇在上劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/7Z9Yt9tJ/feng-mian2-page-0001.jpg" alt="吾皇在上劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">吾皇在上</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <span class="info-value">8-9人</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">😄 娛樂程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">宮鬥</span>
+                        <span class="tag">歡樂</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">角色扮演</span>
+                        <span class="tag">古風</span>
+                        <span class="tag">陣營</span>
+                        <span class="tag">機制</span>
+                        <span class="tag">新手</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/SNWKCkW3/ren-wu-jian-jie-page-0006.jpg" alt="皇帝·李諳 海報" class="character-image">
+                        <div class="character-name">李諳</div>
+                        <div class="character-info">26歲 男性<br>掌控全局的九五之尊</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/9FGfZCG6/ren-wu-jian-jie-page-0007.jpg" alt="金統領·金尚武 海報" class="character-image">
+                        <div class="character-name">金統領</div>
+                        <div class="character-info">24歲 男性<br>武藝高強的侍衛隊長</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/K8x85wfF/ren-wu-jian-jie-page-0010.jpg" alt="林老公公·林書源 海報" class="character-image">
+                        <div class="character-name">林老公公</div>
+                        <div class="character-info">50歲 男性<br>老當益壯的太監總管</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/HsQLXdwW/ren-wu-jian-jie-page-0009.jpg" alt="小卓子·趙卓輝 海報" class="character-image">
+                        <div class="character-name">小卓子</div>
+                        <div class="character-info">18歲 男性<br>年輕有為的宮中太監</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/wThBLghF/ren-wu-jian-jie-page-0005.jpg" alt="劉貴妃·劉念君 海報" class="character-image">
+                        <div class="character-name">劉貴妃</div>
+                        <div class="character-info">24歲 女性<br>琴棋書畫樣樣精通</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Yqc9vhmf/ren-wu-jian-jie-page-0002.jpg" alt="啡貴人·張小啡 海報" class="character-image">
+                        <div class="character-name">啡貴人</div>
+                        <div class="character-info">20歲 女性<br>活潑好動，咖妃之妹</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/NfhMK5rx/ren-wu-jian-jie-page-0003.jpg" alt="王貴人·王可兒 海報" class="character-image">
+                        <div class="character-name">王貴人</div>
+                        <div class="character-info">22歲 女性<br>溫文爾雅，平易近人</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/9F3MDrqP/ren-wu-jian-jie-page-0001.jpg" alt="侍女環兒·王環兒 海報" class="character-image">
+                        <div class="character-name">侍女環兒</div>
+                        <div class="character-info">16歲 女性<br>咖妃貼身侍女，情同姊妹</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/Nf10mB6v/ren-wu-jian-jie-page-0008.jpg" alt="王太醫·王平鶴 海報" class="character-image">
+                        <div class="character-name">王太醫</div>
+                        <div class="character-info">30歲 男性<br>傳奇藥王，婦科聖手</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    <span class="highlight">南唐天禧二年</span>，新帝李諳登基伊始，大赦天下，百姓安居樂業，風調雨順。雖有個別宵小作亂，但難成大器。
+                    <br><br>
+                    去年十月，皇帝選妃，各方秀女爭奇鬥艷，其中有<span class="highlight">張家姐妹</span>雙雙獲得青睞，聯袂入宮。姐姐<span class="highlight">咖妃</span>溫柔可人，溫文爾雅，琴棋書畫樣樣精通，深受皇帝喜愛，獨得聖寵。妹妹<span class="highlight">啡貴人</span>卻因活潑好動，口不擇言被皇帝厭惡，深鎖冷宮。
+                    <br><br>
+                    今年二月，咖妃有孕，龍顏大悅，更為寵愛，甚至有傳聞欲立咖妃為后。好景不長，時至<span class="highlight">六月二十九</span>，咖妃突然小產，失血過多亡故。
+                    <br><br>
+                    八月初一，皇帝突然召集眾人，說昨夜得<span class="highlight">咖妃托夢</span>，深感咖妃之死有異，決定徹查此案！
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《吾皇在上》是一部以<span class="highlight">宮廷爭鬥</span>為背景的歡樂推理劇本。在這個充滿權謀與愛恨的後宮中，每個角色都有著自己的秘密和目的。
+                    <br><br>
+                    遊戲分為<span class="highlight">白天與夜間</span>兩個時段。白天，皇帝可以任命親信（大太監、小太監、侍衛，最多兩位）前往相關地點探案，探查後向皇帝呈交證據並匯報結果。夜間，皇帝<span class="highlight">翻牌侍寢</span>，未被翻牌的娘娘們閒著無事，可以替皇上分憂，暗中探查相關地點，白天再告知皇帝。
+                    <br><br>
+                    數日過後，皇帝綜合調查到的所有線索來判定結果，給予相應罪名。最高可處死<span class="highlight">4人</span>，最少也可以處死1人。每個角色都需要<span class="highlight">避免被皇上砍頭</span>，並且會有相應的結局。
+                    <br><br>
+                    這是一個<span class="highlight">宮鬥歡樂撕逼本</span>，後宮佳麗三千，為得皇上的寵愛爭奇鬥艷。大家來猜猜，今晚皇上會翻誰的牌呢？<span class="highlight">吾皇在上，你可要做到雨露均沾呀！</span>
+                </div>
+            </div>
+
+            
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">🎭 立即預約遊戲 🎭</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#FF6347';
+                        } else {
+                            s.style.color = '#FFD700';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#FFD700';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.9) rotate(-5deg)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.1) rotate(-2deg)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 20px 45px rgba(255, 215, 0, 0.6)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 215, 0, 0.3) 0%, rgba(139, 0, 0, 0.7) 50%, rgba(178, 34, 34, 0.7) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'linear-gradient(135deg, rgba(139, 0, 0, 0.7) 0%, rgba(178, 34, 34, 0.7) 100%)';
+                });
+            });
+
+            // 標題脈動效果
+            const title = document.querySelector('.title');
+            setInterval(() => {
+                title.style.textShadow = '0 0 50px rgba(255, 215, 0, 1), 0 0 100px rgba(255, 215, 0, 0.9), 0 4px 8px rgba(0, 0, 0, 0.5)';
+                setTimeout(() => {
+                    title.style.textShadow = '0 0 30px rgba(255, 215, 0, 0.9), 0 0 60px rgba(255, 215, 0, 0.7), 0 4px 8px rgba(0, 0, 0, 0.5)';
+                }, 500);
+            }, 3000);
+
+            // 按鈕閃爍效果
+            const ctaButton = document.querySelector('.cta-button');
+            setInterval(() => {
+                ctaButton.style.boxShadow = '0 15px 50px rgba(255, 215, 0, 0.8), 0 0 80px rgba(255, 215, 0, 0.6)';
+                setTimeout(() => {
+                    ctaButton.style.boxShadow = '0 10px 30px rgba(255, 215, 0, 0.5), 0 0 50px rgba(255, 215, 0, 0.3)';
+                }, 600);
+            }, 2000);
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const palace = null;
+            const floating = null;
+            
+            if (palace) palace.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // 隨機飄落效果增強
+        setInterval(() => {
+            // 已移除此效果
+        }, 2000);
+    </script>
+    <audio id="bgm" src="吾皇在上.mp3" autoplay loop muted></audio>
+    <script>
+        // 點擊頁面解除靜音
+        document.addEventListener('click', function(){
+            document.getElementById('bgm').muted = false;
+        }, {once:true});
+    </script>
+
+</body>
+</html>

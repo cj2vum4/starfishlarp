@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臥底模擬訓練 - 劇本殺</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', '微軟正黑體', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 30%, #243447 60%, #2d4a63 100%);
+            min-height: 100vh;
+            color: #e0e6ed;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 返回按鈕樣式 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(52, 152, 219, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(52, 152, 219, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(52, 152, 219, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+        }
+
+        /* 警示燈效果 */
+        .alert-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .alert-light {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(231, 76, 60, 0.3) 0%, transparent 70%);
+            animation: pulse-red 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        .alert-light:nth-child(1) { top: 10%; left: 15%; animation-delay: 0s; }
+        .alert-light:nth-child(2) { top: 60%; right: 20%; animation-delay: 1s; }
+        .alert-light:nth-child(3) { bottom: 20%; left: 25%; animation-delay: 2s; background: radial-gradient(circle, rgba(52, 152, 219, 0.3) 0%, transparent 70%); animation-name: pulse-blue; }
+        .alert-light:nth-child(4) { top: 30%; right: 10%; animation-delay: 1.5s; background: radial-gradient(circle, rgba(52, 152, 219, 0.3) 0%, transparent 70%); animation-name: pulse-blue; }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        @keyframes pulse-blue {
+            0%, 100% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(52, 152, 219, 0.8), 0 0 60px rgba(52, 152, 219, 0.6);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #3498db, #e74c3c, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            font-family: 'Noto Sans TC', sans-serif;
+            position: relative;
+        }
+
+        .title::after {
+            content: '🔒';
+            position: absolute;
+            font-size: 2rem;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: lock-rotate 3s ease-in-out infinite;
+        }
+
+        @keyframes lock-rotate {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(-15deg); }
+            75% { transform: translateY(-50%) rotate(15deg); }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(52, 152, 219, 0.9);
+            font-weight: 600;
+            text-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .mission-quote {
+            font-size: 1.15rem;
+            color: rgba(231, 76, 60, 0.95);
+            margin: 25px auto;
+            text-align: center;
+            line-height: 1.7;
+            font-weight: 600;
+            max-width: 700px;
+            padding: 20px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(231, 76, 60, 0.3);
+            text-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+        }
+
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(52, 152, 219, 0.4), 0 0 80px rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(52, 152, 219, 0.4);
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(52, 152, 219, 0.5), 0 0 100px rgba(52, 152, 219, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(26, 35, 50, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(52, 152, 219, 0.3);
+            border-color: rgba(52, 152, 219, 0.5);
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.3);
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(52, 152, 219, 0.15);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #3498db;
+            font-size: 1rem;
+        }
+
+        .info-value {
+            color: #e0e6ed;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .stars-rating {
+            display: flex;
+            gap: 5px;
+        }
+
+        .star-rating {
+            color: #f39c12;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+        }
+
+        .star-rating.empty {
+            color: rgba(243, 156, 18, 0.2);
+            text-shadow: none;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(52, 152, 219, 0.15));
+            color: #3498db;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(52, 152, 219, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .tag:hover {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.5), rgba(52, 152, 219, 0.3));
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .description {
+            grid-column: 1 / -1;
+        }
+
+        .description-text {
+            color: #e0e6ed;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        .highlight {
+            color: #3498db;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .highlight-red {
+            color: #e74c3c;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 18px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.4);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(52, 152, 219, 0.5);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(52, 152, 219, 0.6);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .character-card {
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(52, 152, 219, 0.2);
+            cursor: pointer;
+        }
+
+        .character-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            background: rgba(52, 152, 219, 0.2);
+            border-color: rgba(52, 152, 219, 0.5);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .character-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover .character-image {
+            border-color: rgba(52, 152, 219, 0.6);
+            transform: scale(1.05);
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .character-info {
+            font-size: 0.85rem;
+            color: #95a5a6;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #e0e6ed;
+            font-weight: 600;
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+
+        .special-note {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid rgba(231, 76, 60, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #e74c3c;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .title {
+                font-size: 2.5rem;
+            }
+            .title::after {
+                right: -40px;
+                font-size: 1.5rem;
+            }
+            .card {
+                padding: 20px;
+            }
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .tags {
+                justify-content: flex-start;
+            }
+            .poster-image {
+                max-height: 400px;
+            }
+            .back-to-overview {
+                top: 10px;
+                left: 10px;
+            }
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">
+            ← 返回劇本總覽
+        </a>
+    </div>
+
+    <div class="alert-lights">
+        <div class="alert-light"></div>
+        <div class="alert-light"></div>
+        <div class="alert-light"></div>
+        <div class="alert-light"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">臥底模擬訓練</h1>
+            <div class="subtitle">UNDERCOVER SIMULATION TRAINING</div>
+            <div class="mission-quote">
+                同志，我們的城市需要你！
+            </div>
+        </div>
+
+        <div class="poster-section">
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <img src="https://i.postimg.cc/k4N07QBP/202404241547-031-orig.jpg" alt="臥底模擬訓練 劇本海報 1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img src="https://i.postimg.cc/PxkGG3fR/202404241547-032-orig.jpg" alt="臥底模擬訓練 劇本海報 2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">任務資訊</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">🎯 劇本名稱</span>
+                    <span class="info-value">臥底模擬訓練</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">⏰ 任務時間</span>
+                    <span class="info-value">3.5 - 4 小時</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">👥 特工人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon">
+                            <span class="icon">👤</span>
+                            <span>7人</span>
+                        </div>
+                        <span style="color: #95a5a6; font-size: 0.85rem; margin-left: 10px;">（不限男女）</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🧠 推理難度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">📖 閱讀量</span>
+                    <span class="info-value">約 4000 字/人</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">🏷️ 任務標籤</span>
+                    <div class="tags">
+                        <span class="tag">硬核刑偵</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">新手友善</span>
+                        <span class="tag">警匪</span>
+                        <span class="tag">現代</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">特工候選人</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/FRQttWFD/202404241548-033-orig.jpg" alt="臥底模擬訓練 角色海報 1" class="character-image">
+                        <div class="character-name">候選人 A</div>
+                        <div class="character-info">身份待驗證</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/JhXw2V86/202404241548-034-orig.jpg" alt="臥底模擬訓練 角色海報 2" class="character-image">
+                        <div class="character-name">候選人 B</div>
+                        <div class="character-info">身份待驗證</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/VNtyVQw5/202404241548-035-orig.jpg" alt="臥底模擬訓練 角色海報 3" class="character-image">
+                        <div class="character-name">候選人 C</div>
+                        <div class="character-info">身份待驗證</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/JzGCjHdg/202404241548-036-orig.jpg" alt="臥底模擬訓練 角色海報 4" class="character-image">
+                        <div class="character-name">候選人 D</div>
+                        <div class="character-info">身份待驗證</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/FH7X0kBm/202404241548-037-orig.jpg" alt="臥底模擬訓練 角色海報 5" class="character-image">
+                        <div class="character-name">候選人 E</div>
+                        <div class="character-info">身份待驗證</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/JzvVx7f1/202404241548-038-orig.jpg" alt="臥底模擬訓練 角色海報 6" class="character-image">
+                        <div class="character-name">候選人 F</div>
+                        <div class="character-info">身份待驗證</div>
+                    </div>
+                    <div class="character-card">
+                        <img src="https://i.postimg.cc/VkdPX0HF/202404241549-039-orig.jpg" alt="臥底模擬訓練 角色海報 7" class="character-image">
+                        <div class="character-name">候選人 G</div>
+                        <div class="character-info">身份待驗證</div>
+                    </div>
+                </div>
+                <div class="special-note">
+                    ⚠️ 所有候選人身份均為機密，需通過終極測試才能揭曉
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">任務背景</h2>
+                <div class="description-text">
+                    「<span class="highlight">臥底</span>」這兩個字近幾年在影視劇中頻繁出現，這些作品大多都展現了警隊隱蔽戰線的警員們<span class="highlight-red">曲折離奇的潛伏過程</span>，以及他們在緊要關頭的<span class="highlight-red">生死抉擇</span>。
+                    <br><br>
+                    這項工作不僅非常<span class="highlight-red">危險</span>，而且會面臨很大的<span class="highlight-red">誘惑和壓力</span>。為了能完成任務，他們做了很多不為人知的努力和準備。
+                    <br><br>
+                    近年來，<span class="highlight">香港警隊</span>的臥底工作越來越困難，加上各個社團對警方越來越警惕，本地警員做臥底並被發現機率大大提升。因此，我們現在決定<span class="highlight">招募一些優秀的內地人才</span>成為我們的臥底。
+                    <br><br>
+                    《<span class="highlight">臥底模擬訓練</span>》就是警隊在本次挑選精英的過程中，<span class="highlight-red">最為重要的一環</span>。而你就是通過層層選拔，接受這次<span class="highlight-red">終極測試</span>的警員。
+                </div>
+            </div>
+
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    《臥底模擬訓練》是一部<span class="highlight">形式感和儀式感極強</span>的硬核刑偵劇本。作品努力還原<span class="highlight">香港警隊和深圳警隊</span>的一次交流演習，讓玩家在體驗高立意的同時，也能獲得較強的成就感。
+                    <br><br>
+                    <span class="highlight">作者作為愛國愛港自媒體</span>，有機會採訪到一線警員，因此作品中很多細節和推理模式都是以<span class="highlight-red">真實的警隊刑偵思路</span>進行創作的。
+                    <br><br>
+                    <strong>核心亮點：</strong>
+                    <ul style="margin-top: 15px; padding-left: 25px; line-height: 2;">
+                        <li>📖 深度優化閱讀體驗，人物劇本<span class="highlight">僅 4000 字</span>，一半閱讀由玩家互動劇場構成</li>
+                        <li>⏱️ 遊戲時間 <span class="highlight">3.5-4 小時</span>，節奏緊湊，一環扣一環</li>
+                        <li>🎭 雖然是硬核刑偵作品，但努力降低文本量的同時，讓玩家產生<span class="highlight">交流和互動</span></li>
+                        <li>👥 能讓玩家產生<span class="highlight-red">互動和對抗</span>，新老玩家始終在線</li>
+                    </ul>
+                    <br>
+                    這是一部文本閱讀量低、形式感儀式感強、玩家負擔小的盒裝劇本，每個細節和段落都進行了精心設計。一部<span class="highlight-red">好玩、正能量、有社會責任感</span>的硬核刑偵作品！
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">🎯 接受任務挑戰</a>
+        </div>
+    </div>
+
+    <script>
+        // 添加互動效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.style.color = '#e67e22';
+                            s.style.textShadow = '0 0 15px rgba(230, 126, 34, 0.8)';
+                        } else {
+                            s.style.color = '#f39c12';
+                            s.style.textShadow = '0 0 10px rgba(243, 156, 18, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#f39c12';
+                        s.style.textShadow = '0 0 10px rgba(243, 156, 18, 0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = 'scale(1.05)';
+                    }, 100);
+                });
+            });
+
+            // 角色卡片懸停效果
+            const characterCards = document.querySelectorAll('.character-card');
+            characterCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(52, 152, 219, 0.4)';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            // 卡片懸停時的光效
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(52, 152, 219, 0.25) 0%, rgba(26, 35, 50, 0.8) 100%)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(26, 35, 50, 0.8)';
+                });
+            });
+
+            // 任務標題脈動效果
+            const title = document.querySelector('.title');
+            setInterval(() => {
+                title.style.textShadow = '0 0 40px rgba(52, 152, 219, 1), 0 0 80px rgba(52, 152, 219, 0.8)';
+                setTimeout(() => {
+                    title.style.textShadow = '0 0 30px rgba(52, 152, 219, 0.8), 0 0 60px rgba(52, 152, 219, 0.6)';
+                }, 500);
+            }, 3000);
+        });
+
+        // 添加滾動視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const alertLights = document.querySelector('.alert-lights');
+            
+            if (alertLights) alertLights.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+    </script>
+
+    <audio id="bgm" src="臥底模擬訓練.mp3" autoplay loop muted></audio>
+    <script>
+      // 點擊頁面解除靜音
+      document.addEventListener('click', function(){
+        document.getElementById('bgm').muted = false;
+      }, {once:true});
+    </script>
+
+</body>
+</html>
