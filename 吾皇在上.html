@@ -717,12 +717,64 @@
             // 已移除此效果
         }, 2000);
     </script>
-    <audio id="bgm" src="吾皇在上.mp3" autoplay loop muted></audio>
+    <audio id="bgm" src="吾皇在上.mp3" autoplay loop muted playsinline preload="auto"></audio>
     <script>
-        // 點擊頁面解除靜音
-        document.addEventListener('click', function(){
-            document.getElementById('bgm').muted = false;
-        }, {once:true});
+        (function(){
+            const audio = document.getElementById('bgm');
+            if (!audio) return;
+
+            // 嘗試在可行時先以靜音方式自動播放，提升後續解鎖成功率
+            const startMutedAutoplay = () => {
+                if (!audio.paused) return;
+                audio.muted = true;
+                const p = audio.play();
+                if (p && typeof p.then === 'function') {
+                    p.catch(() => {/* 忽略：部分瀏覽器仍需手勢 */});
+                }
+            };
+
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                startMutedAutoplay();
+            } else {
+                document.addEventListener('DOMContentLoaded', startMutedAutoplay, { once: true });
+            }
+
+            let unlocked = false;
+            const cleanup = () => {
+                ['click','touchstart','pointerdown','keydown'].forEach(evt => {
+                    document.removeEventListener(evt, unlockAndPlay, { passive: true });
+                });
+                document.removeEventListener('visibilitychange', onVisibilityChange);
+            };
+
+            const unlockAndPlay = () => {
+                if (unlocked) return;
+                audio.muted = false;
+                const p = audio.play();
+                if (p && typeof p.then === 'function') {
+                    p.then(() => {
+                        unlocked = true;
+                        cleanup();
+                    }).catch(() => {
+                        // 若失敗，維持監聽以待下次手勢
+                    });
+                } else {
+                    unlocked = true;
+                    cleanup();
+                }
+            };
+
+            const onVisibilityChange = () => {
+                if (document.visibilityState === 'visible' && !unlocked) {
+                    startMutedAutoplay();
+                }
+            };
+
+            ['click','touchstart','pointerdown','keydown'].forEach(evt => {
+                document.addEventListener(evt, unlockAndPlay, { passive: true });
+            });
+            document.addEventListener('visibilitychange', onVisibilityChange);
+        })();
     </script>
 
 </body>
