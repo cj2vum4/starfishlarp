@@ -152,7 +152,7 @@
              cursor: pointer;
         }
         
-        /* 清除泡泡按鈕樣式 */
+        /* 清除便利貼按鈕樣式 */
         .clear-bubbles-btn {
             padding: 10px 15px;
             font-size: 1rem;
@@ -449,7 +449,7 @@
             transform: translate(-50%, -50%) scale(1); /* 恢復正常大小 */
         }
         
-        /* --- 全新評論泡泡樣式 --- */
+        /* --- 便利貼容器樣式 --- */
         .comment-bubble-container {
             position: fixed;
             top: 0;
@@ -458,183 +458,211 @@
             height: 100%;
             pointer-events: none; /* 讓滑鼠可以穿透容器 */
             z-index: 1000;
+            overflow: hidden; /* 防止便利貼超出視窗 */
         }
         
-        /* 新增：泡泡的外層容器，負責定位與向上漂浮動畫 */
+        /* 便利貼外層容器 */
         .comment-bubble-wrapper {
             position: absolute;
-            animation: floatUp linear forwards;
             cursor: pointer;
             pointer-events: auto;
-            will-change: transform;
+            will-change: transform, opacity;
             backface-visibility: hidden;
-            /* JS 會動態設定 left, bottom, width, height, animation-duration, animation-delay */
+            /* JS 會動態設定 left, top, width, height, transform */
         }
 
-        /* 泡泡本體，負責外觀與原地擺動動畫 */
+        /* 便利貼本體 */
         .comment-bubble {
             width: 100%;
             height: 100%;
             box-sizing: border-box;
-            color: #1a1a1a; /* 深色文字，提升可讀性 */
-            border-radius: 50%;
-            padding: 20px;
+            color: #1a1a1a;
+            padding: 18px 22px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            animation: bubbleFloat 3s ease-in-out infinite;
-            font-weight: 600; /* 加粗字體提升可讀性 */
-            line-height: 1.4;
+            font-weight: 500;
+            line-height: 1.6;
             word-wrap: break-word;
-            
-            /* 泡泡質感 - 更深的背景色提升對比度 */
-            background: radial-gradient(circle at 30% 30%, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(255, 255, 255, 0.8) 50%, 
-                rgba(255, 255, 255, 0.4) 100%);
-            
-            /* 泡泡邊框效果 - 更深的邊框 */
-            border: 2px solid rgba(255, 255, 255, 0.9);
-            
-            /* 泡泡光澤效果 - 增強陰影提升立體感 */
-            box-shadow: 
-                inset 0 0 15px rgba(255, 255, 255, 0.4),
-                0 0 15px rgba(255, 255, 255, 0.3),
-                0 4px 20px rgba(0, 0, 0, 0.2);
-            
-            /* 泡泡內部光點 */
-            position: relative;
             overflow: hidden;
-            
-            /* 硬體加速 */
-            will-change: transform;
+            position: relative;
             transform: translateZ(0);
-            backface-visibility: hidden;
-            
-            /* 文字陰影提升可讀性 */
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
         
-        /* 泡泡內部光點 */
+        /* 便利貼內容容器 */
+        .sticky-note-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 便利貼星星評分 */
+        .sticky-note-rating {
+            font-size: 1.3rem;
+            color: #ff6b00;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        
+        /* 便利貼評論文字 */
+        .sticky-note-comment {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            
+            /* 不規則邊緣 - 使用 clip-path 創造自然形狀 */
+            clip-path: polygon(
+                2% 0%, 
+                98% 0%, 
+                100% 3%, 
+                99% 8%, 
+                100% 15%, 
+                98% 20%, 
+                100% 30%, 
+                98% 40%, 
+                100% 50%, 
+                98% 60%, 
+                100% 70%, 
+                98% 80%, 
+                100% 90%, 
+                98% 95%, 
+                100% 100%, 
+                2% 100%, 
+                0% 95%, 
+                1% 90%, 
+                0% 80%, 
+                2% 70%, 
+                0% 60%, 
+                2% 50%, 
+                0% 40%, 
+                2% 30%, 
+                0% 20%, 
+                1% 15%, 
+                0% 8%, 
+                1% 3%
+            );
+            
+            /* 便利貼質感 - 基礎顏色（會被 JavaScript 覆蓋） */
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 240, 0.98) 0%, 
+                rgba(255, 252, 235, 0.96) 50%,
+                rgba(255, 250, 230, 0.95) 100%);
+            
+            /* 紙張紋理效果 - 基礎樣式（會被 JavaScript 覆蓋） */
+            background-image: 
+                repeating-linear-gradient(0deg, 
+                    transparent, 
+                    transparent 1px, 
+                    rgba(0, 0, 0, 0.015) 1px, 
+                    rgba(0, 0, 0, 0.015) 2px
+                ),
+                repeating-linear-gradient(90deg, 
+                    transparent, 
+                    transparent 1px, 
+                    rgba(0, 0, 0, 0.015) 1px, 
+                    rgba(0, 0, 0, 0.015) 2px
+                );
+            
+            /* 更立體的陰影效果 */
+            box-shadow: 
+                0 3px 12px rgba(0, 0, 0, 0.2),
+                0 6px 20px rgba(0, 0, 0, 0.15),
+                0 1px 3px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            
+            /* 輕微的邊框，模擬紙張邊緣 */
+            border: none;
+        }
+        
+        /* 便利貼頂部膠帶效果 - 更真實 */
         .comment-bubble::before {
             content: '';
             position: absolute;
-            top: 15%;
-            left: 20%;
-            width: 20%;
-            height: 20%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
-            border-radius: 50%;
+            top: -2px;
+            left: 10%;
+            right: 10%;
+            height: 12px;
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                rgba(255, 255, 255, 0.4) 10%,
+                rgba(255, 255, 255, 0.6) 20%,
+                rgba(255, 255, 255, 0.7) 30%,
+                rgba(255, 255, 255, 0.75) 40%,
+                rgba(255, 255, 255, 0.75) 60%,
+                rgba(255, 255, 255, 0.7) 70%,
+                rgba(255, 255, 255, 0.6) 80%,
+                rgba(255, 255, 255, 0.4) 90%,
+                transparent 100%
+            );
+            opacity: 0.7;
             pointer-events: none;
+            border-radius: 0 0 3px 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
         
-        /* 泡泡內部光點2 */
+        /* 便利貼底部輕微捲曲效果 */
         .comment-bubble::after {
             content: '';
             position: absolute;
-            top: 25%;
-            left: 60%;
-            width: 15%;
-            height: 15%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
-            border-radius: 50%;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(0, 0, 0, 0.05) 0%,
+                transparent 50%,
+                rgba(0, 0, 0, 0.05) 100%
+            );
             pointer-events: none;
         }
 
-        /* 點擊破裂效果：外層容器暫停並淡出 */
-        .comment-bubble-wrapper.popped {
-            animation-play-state: paused;
+        /* 便利貼撕下動畫 */
+        .comment-bubble-wrapper.ripped {
+            animation: ripOff 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes ripOff {
+            0% {
+                transform: translate(0, 0) rotate(var(--initial-rotate, 0deg)) scale(1) translateZ(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(var(--rip-x, 50px), var(--rip-y, -100px)) rotate(calc(var(--initial-rotate, 0deg) + 45deg)) scale(0.9) translateZ(0);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translate(var(--rip-x, 100px), var(--rip-y, -200px)) rotate(calc(var(--initial-rotate, 0deg) + 90deg)) scale(0.3) translateZ(0);
+                opacity: 0;
+            }
+        }
+        
+        /* 便利貼出現動畫 */
+        .comment-bubble-wrapper {
+            animation: stickOn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             opacity: 0;
-            transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* 點擊破裂效果：內部泡泡放大 */
-        .comment-bubble-wrapper.popped .comment-bubble {
-            animation-play-state: paused;
-            transform: scale(1.2) translateZ(0);
-            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes floatUp {
-            to {
-                transform: translateY(-100vh) translateZ(0);
-            }
-        }
-        
-        /* 泡泡漂浮動畫 - 優化效能 */
-        @keyframes bubbleFloat {
-            0%, 100% { 
-                transform: translateY(0px) rotate(0deg) translateZ(0); 
-            }
-            25% { 
-                transform: translateY(-6px) rotate(0.5deg) translateZ(0); 
-            }
-            50% { 
-                transform: translateY(-3px) rotate(-0.3deg) translateZ(0); 
-            }
-            75% { 
-                transform: translateY(-8px) rotate(0.3deg) translateZ(0); 
-            }
-        }
-        
-        /* 泡泡破裂粒子特效 - 優化效能 */
-        .pop-particle {
-            position: absolute;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 100%);
-            border-radius: 50%;
-            opacity: 1;
-            animation: pop-out 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            pointer-events: none;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-            transform: translate(0, 0) translateZ(0);
-            
-            /* 硬體加速 */
-            will-change: transform, opacity;
-            backface-visibility: hidden;
-        }
-
-        @keyframes pop-out {
+        @keyframes stickOn {
             0% {
-                transform: translate(0, 0) scale(1) rotate(0deg) translateZ(0);
-                opacity: 1;
-            }
-            50% {
-                transform: translate(var(--x), var(--y)) scale(1.3) rotate(90deg) translateZ(0);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translate(calc(var(--x) * 1.2), calc(var(--y) * 1.2)) scale(0) rotate(180deg) translateZ(0);
+                transform: translate(0, -20px) rotate(var(--initial-rotate, 0deg)) scale(0.8) translateZ(0);
                 opacity: 0;
             }
-        }
-        
-        /* 泡泡水花特效 - 優化效能 */
-        .water-splash {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            pointer-events: none;
-            animation: waterSplash 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            
-            /* 硬體加速 */
-            will-change: transform, opacity;
-            transform: translateZ(0);
-            backface-visibility: hidden;
-        }
-        
-        @keyframes waterSplash {
-            0% {
-                transform: scale(0) rotate(0deg) translateZ(0);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1) rotate(90deg) translateZ(0);
-                opacity: 0.7;
-            }
             100% {
-                transform: scale(1.8) rotate(180deg) translateZ(0);
-                opacity: 0;
+                transform: translate(0, 0) rotate(var(--initial-rotate, 0deg)) scale(1) translateZ(0);
+                opacity: 1;
             }
         }
 
@@ -663,7 +691,7 @@
                     <li>根據登記姓名找到自己的玩本記錄</li>
                     <li>點選排行榜的玩家名字，只顯示已玩過的劇本</li>
                     <li>點選劇本可以看到歷史玩家評論</li>
-                    <li>泡泡可以提前戳破</li>
+                    <li>點擊便利貼可以撕下來</li>
                     <li>有建議可以跟海星說，畢竟是我第一次寫網站</li>
                 </ol>
             </div>
@@ -675,7 +703,7 @@
                 <option value="">-- 讀取資料中 --</option>
             </select>
             <input type="text" id="playerSearch" placeholder="搜尋玩家...">
-            <button id="clearBubblesBtn" class="clear-bubbles-btn">清除泡泡</button>
+            <button id="clearBubblesBtn" class="clear-bubbles-btn">清除便利貼</button>
         </div>
         
         <div class="leaderboard-container collapsed">
@@ -999,143 +1027,244 @@
                 });
             }
             
-            // 5. 顯示評論泡泡 - 優化顯示效果
+            // 5. 顯示評論便利貼
             function showComments(scriptId, playRecords) {
                 const allComments = [];
                 for (const playerName in playRecords) {
                     if (playRecords[playerName][scriptId]) {
                         playRecords[playerName][scriptId].forEach(record => {
                             if (record.comment) {
-                                allComments.push(record.comment);
+                                allComments.push({
+                                    comment: record.comment,
+                                    rating: record.rating,
+                                    playerName: playerName
+                                });
                             }
                         });
                     }
                 }
                 
                 if (allComments.length === 0) {
-                    allComments.push("這個劇本還沒有人留下評論喔！");
+                    allComments.push({
+                        comment: "這個劇本還沒有人留下評論喔！",
+                        rating: null,
+                        playerName: null
+                    });
                 }
-                
-                const scriptIndex = scriptsData.findIndex(script => script.id === scriptId);
-                const color = bubbleColors[scriptIndex % bubbleColors.length];
 
-                // 清除現有的泡泡
+                // 便利貼顏色（經典便利貼顏色，更鮮豔真實）
+                const stickyNoteColors = [
+                    { 
+                        bg: 'linear-gradient(135deg, rgba(255, 251, 180, 0.98) 0%, rgba(255, 248, 160, 0.96) 100%)',
+                        overlay: 'rgba(255, 240, 120, 0.1)'
+                    }, // 黃色
+                    { 
+                        bg: 'linear-gradient(135deg, rgba(255, 200, 220, 0.98) 0%, rgba(255, 180, 200, 0.96) 100%)',
+                        overlay: 'rgba(255, 150, 180, 0.1)'
+                    }, // 粉色
+                    { 
+                        bg: 'linear-gradient(135deg, rgba(200, 255, 200, 0.98) 0%, rgba(180, 255, 180, 0.96) 100%)',
+                        overlay: 'rgba(150, 255, 150, 0.1)'
+                    }, // 綠色
+                    { 
+                        bg: 'linear-gradient(135deg, rgba(200, 220, 255, 0.98) 0%, rgba(180, 200, 255, 0.96) 100%)',
+                        overlay: 'rgba(150, 180, 255, 0.1)'
+                    }, // 藍色
+                    { 
+                        bg: 'linear-gradient(135deg, rgba(255, 220, 180, 0.98) 0%, rgba(255, 200, 160, 0.96) 100%)',
+                        overlay: 'rgba(255, 180, 120, 0.1)'
+                    }, // 橙色
+                    { 
+                        bg: 'linear-gradient(135deg, rgba(240, 200, 255, 0.98) 0%, rgba(230, 180, 255, 0.96) 100%)',
+                        overlay: 'rgba(220, 150, 255, 0.1)'
+                    }, // 紫色
+                ];
+
+                // 清除現有的便利貼
                 commentBubbleContainer.innerHTML = '';
 
-                // 優化泡泡間距和位置計算 - 允許重疊但減少過度重疊
-                const bubbleSpacing = 120; // 減少間距，允許適度重疊
-                const startPositions = [];
-                
-                // 使用 requestAnimationFrame 優化動畫效能
-                const createBubble = (commentText, index) => {
+                // 已使用的位置，用於避免重疊
+                const usedPositions = [];
+                const minDistance = 80; // 便利貼之間的最小距離
+
+                // 檢查位置是否與現有便利貼重疊
+                function isPositionValid(x, y, width, height) {
+                    for (const pos of usedPositions) {
+                        const distance = Math.sqrt(
+                            Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2)
+                        );
+                        if (distance < minDistance) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
+                // 生成不規則的 clip-path
+                function generateIrregularShape() {
+                    const points = 12; // 每邊的點數
+                    const variation = 3; // 不規則程度（百分比）
+                    const path = [];
+                    
+                    // 生成頂邊點（從左到右）
+                    for (let i = 0; i <= points; i++) {
+                        const x = (i / points) * 100;
+                        const y = (Math.random() - 0.5) * variation;
+                        path.push(`${x}% ${Math.max(0, y)}%`);
+                    }
+                    
+                    // 生成右邊點（從上到下）
+                    for (let i = 1; i <= points; i++) {
+                        const y = (i / points) * 100;
+                        const x = 100 + (Math.random() - 0.5) * variation;
+                        path.push(`${Math.min(100, x)}% ${y}%`);
+                    }
+                    
+                    // 生成底邊點（從右到左）
+                    for (let i = points - 1; i >= 0; i--) {
+                        const x = (i / points) * 100;
+                        const y = 100 + (Math.random() - 0.5) * variation;
+                        path.push(`${x}% ${Math.min(100, y)}%`);
+                    }
+                    
+                    // 生成左邊點（從下到上）
+                    for (let i = points - 1; i > 0; i--) {
+                        const y = (i / points) * 100;
+                        const x = (Math.random() - 0.5) * variation;
+                        path.push(`${Math.max(0, x)}% ${y}%`);
+                    }
+                    
+                    return `polygon(${path.join(', ')})`;
+                }
+
+                // 創建便利貼
+                const createStickyNote = (commentData, index) => {
                     requestAnimationFrame(() => {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'comment-bubble-wrapper';
 
-                        const bubble = document.createElement('div');
-                        bubble.className = 'comment-bubble';
-                        bubble.textContent = commentText;
+                        const stickyNote = document.createElement('div');
+                        stickyNote.className = 'comment-bubble';
                         
-                        wrapper.appendChild(bubble);
+                        // 創建便利貼內容結構
+                        const content = document.createElement('div');
+                        content.className = 'sticky-note-content';
                         
-                        // 優化泡泡大小計算
-                        const baseSize = Math.max(100, Math.min(180, commentText.length * 6));
-                        const size = baseSize + Math.random() * 30;
-                        wrapper.style.width = `${size}px`;
-                        wrapper.style.height = `${size}px`;
+                        // 星星評分區域
+                        if (commentData.rating) {
+                            const ratingDiv = document.createElement('div');
+                            ratingDiv.className = 'sticky-note-rating';
+                            ratingDiv.textContent = generateStars(commentData.rating);
+                            content.appendChild(ratingDiv);
+                        }
                         
-                        // 改進位置分配算法 - 泡泡從底部開始往上飄
-                        let startX;
+                        // 評論文字區域
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'sticky-note-comment';
+                        commentDiv.textContent = commentData.comment;
+                        content.appendChild(commentDiv);
+                        
+                        stickyNote.appendChild(content);
+                        wrapper.appendChild(stickyNote);
+                        
+                        // 根據文字長度計算便利貼大小
+                        const textLength = commentData.comment.length;
+                        const minWidth = 150;
+                        const maxWidth = 300;
+                        const minHeight = 120;
+                        const maxHeight = 250;
+                        
+                        // 計算寬度（根據文字長度和換行，加上星星評分的高度）
+                        const ratingHeight = commentData.rating ? 30 : 0;
+                        const estimatedWidth = Math.min(maxWidth, Math.max(minWidth, textLength * 8 + 40));
+                        const estimatedHeight = Math.min(maxHeight, Math.max(minHeight, Math.ceil(textLength / 20) * 30 + 60 + ratingHeight));
+                        
+                        const width = estimatedWidth;
+                        const height = estimatedHeight;
+                        
+                        wrapper.style.width = `${width}px`;
+                        wrapper.style.height = `${height}px`;
+                        
+                        // 為每個便利貼生成獨特的不規則形狀
+                        const irregularShape = generateIrregularShape();
+                        stickyNote.style.clipPath = irregularShape;
+                        
+                        // 隨機選擇便利貼顏色
+                        const color = stickyNoteColors[Math.floor(Math.random() * stickyNoteColors.length)];
+                        
+                        // 設置完整的背景（包括顏色和紋理）
+                        stickyNote.style.backgroundImage = `
+                            ${color.bg},
+                            radial-gradient(circle at 30% 30%, ${color.overlay} 0%, transparent 50%),
+                            radial-gradient(circle at 70% 70%, ${color.overlay} 0%, transparent 50%),
+                            repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 0, 0, 0.015) 1px, rgba(0, 0, 0, 0.015) 2px),
+                            repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0, 0, 0, 0.015) 1px, rgba(0, 0, 0, 0.015) 2px)
+                        `;
+                        
+                        // 隨機旋轉角度（-15度到15度）
+                        const rotation = (Math.random() - 0.5) * 30;
+                        wrapper.style.setProperty('--initial-rotate', `${rotation}deg`);
+                        
+                        // 隨機位置（避免與現有便利貼重疊）
+                        const safeMargin = 50;
+                        let x, y;
                         let attempts = 0;
-                        const maxAttempts = 15; // 增加嘗試次數
-                        
-                        // 計算安全的起始位置範圍 - 水平位置隨機，垂直位置固定在底部
-                        const safeMargin = 50; // 邊緣安全距離
-                        const minX = safeMargin;
-                        const maxX = window.innerWidth - size - safeMargin;
+                        const maxAttempts = 50;
                         
                         do {
-                            startX = Math.random() * (maxX - minX) + minX;
+                            x = Math.random() * (window.innerWidth - width - safeMargin * 2) + safeMargin;
+                            y = Math.random() * (window.innerHeight - height - safeMargin * 2) + safeMargin;
                             attempts++;
-                        } while (attempts < maxAttempts && startPositions.some(pos => 
-                            Math.abs(pos.x - startX) < bubbleSpacing
-                        ));
+                        } while (attempts < maxAttempts && !isPositionValid(x, y, width, height));
                         
-                        startPositions.push({ x: startX });
-                        wrapper.style.left = `${startX}px`;
-                        wrapper.style.bottom = `-${size}px`; // 從螢幕底部外開始
+                        // 如果找不到合適位置，使用隨機位置（允許重疊）
+                        if (attempts >= maxAttempts) {
+                            x = Math.random() * (window.innerWidth - width - safeMargin * 2) + safeMargin;
+                            y = Math.random() * (window.innerHeight - height - safeMargin * 2) + safeMargin;
+                        }
                         
-                        // 優化動畫時間和延遲 - 讓泡泡停留更久且不超出螢幕
-                        const baseDuration = 6; // 減少基礎停留時間，避免超出螢幕
-                        const speedVariation = 1.5; // 減少速度變化範圍
-                        const duration = baseDuration + (Math.random() * speedVariation);
-                        wrapper.style.animationDuration = `${duration}s`;
+                        usedPositions.push({ x: x + width / 2, y: y + height / 2 });
                         
-                        // 減少延遲時間，讓泡泡更密集出現
-                        const delay = index * 0.3; // 每個泡泡延遲 0.3 秒起飛
-                        wrapper.style.animationDelay = `${delay}s`;
-                        
-                        // 動畫結束時自動移除泡泡
-                        wrapper.addEventListener('animationend', () => {
-                            wrapper.remove();
-                        });
+                        wrapper.style.left = `${x}px`;
+                        wrapper.style.top = `${y}px`;
 
-                        // 優化點擊事件處理
+                        // 點擊事件 - 撕下便利貼
                         wrapper.addEventListener('click', (e) => {
                             e.stopPropagation();
                             startAudio();
                             
-                            // 播放泡泡破裂音效
-                            const popFreq = 800 + Math.random() * 400;
-                            popSound.triggerAttackRelease(popFreq + 'Hz', '16n');
+                            // 播放撕紙音效
+                            const ripFreq = 200 + Math.random() * 100;
+                            popSound.triggerAttackRelease(ripFreq + 'Hz', '8n');
                             
-                            // 優化粒子特效數量
-                            for (let i = 0; i < 6; i++) {
-                                const p = document.createElement('div');
-                                p.className = 'pop-particle';
-                                p.style.left = `${e.clientX}px`;
-                                p.style.top = `${e.clientY}px`;
-                                
-                                const particleSize = Math.random() * 6 + 3;
-                                p.style.width = `${particleSize}px`;
-                                p.style.height = `${particleSize}px`;
-                                
-                                const colors = ['#ffffff', '#e3f2fd', '#f3e5f5', '#e8f5e8'];
-                                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                                
-                                const angle = Math.random() * 360;
-                                const distance = Math.random() * 60 + 30;
-                                const x = Math.cos(angle * Math.PI / 180) * distance;
-                                const y = Math.sin(angle * Math.PI / 180) * distance;
-                                
-                                p.style.setProperty('--x', `${x}px`);
-                                p.style.setProperty('--y', `${y}px`);
-                                
-                                document.body.appendChild(p);
-                                setTimeout(() => p.remove(), 600);
-                            }
+                            // 計算撕下的方向（向上並稍微向右）
+                            const clickX = e.clientX;
+                            const clickY = e.clientY;
+                            const noteX = x + width / 2;
+                            const noteY = y + height / 2;
                             
-                            // 水花特效
-                            const splash = document.createElement('div');
-                            splash.className = 'water-splash';
-                            splash.style.left = `${e.clientX - 50}px`;
-                            splash.style.top = `${e.clientY - 50}px`;
-                            splash.style.background = `radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(135, 206, 235, 0.6) 50%, transparent 100%)`;
-                            document.body.appendChild(splash);
-                            setTimeout(() => splash.remove(), 500);
-
-                            // 泡泡破裂動畫
-                            wrapper.classList.add('popped');
-                            setTimeout(() => wrapper.remove(), 120);
+                            const ripX = (clickX - noteX) * 2 + (Math.random() - 0.5) * 50;
+                            const ripY = -Math.abs(clickY - noteY) * 2 - 100 - Math.random() * 50;
+                            
+                            wrapper.style.setProperty('--rip-x', `${ripX}px`);
+                            wrapper.style.setProperty('--rip-y', `${ripY}px`);
+                            
+                            // 觸發撕下動畫
+                            wrapper.classList.add('ripped');
+                            
+                            // 動畫結束後移除
+                            wrapper.addEventListener('animationend', () => {
+                                wrapper.remove();
+                            }, { once: true });
                         });
                         
                         commentBubbleContainer.appendChild(wrapper);
                     });
                 };
                 
-                // 分批創建泡泡，避免阻塞主線程
-                allComments.forEach((commentText, index) => {
-                    setTimeout(() => createBubble(commentText, index), index * 30); // 減少間隔時間
+                // 分批創建便利貼，避免阻塞主線程
+                allComments.forEach((commentData, index) => {
+                    setTimeout(() => createStickyNote(commentData, index), index * 50);
                 });
             }
 
@@ -1230,7 +1359,7 @@
                 });
             });
             
-            // K. 監聽清除泡泡按鈕的點擊事件
+            // K. 監聽清除便利貼按鈕的點擊事件
             const clearBubblesBtn = document.getElementById('clearBubblesBtn');
             clearBubblesBtn.addEventListener('click', () => {
                 startAudio();
@@ -1238,12 +1367,12 @@
                 commentBubbleContainer.innerHTML = '';
             });
             
-            // L. 監聽視窗大小變更，重新調整泡泡位置
+            // L. 監聽視窗大小變更，重新調整便利貼位置
             window.addEventListener('resize', () => {
                 // 延遲執行，避免頻繁觸發
                 clearTimeout(window.resizeTimeout);
                 window.resizeTimeout = setTimeout(() => {
-                    // 視窗大小改變時，清除所有泡泡讓用戶重新點擊顯示
+                    // 視窗大小改變時，清除所有便利貼讓用戶重新點擊顯示
                     commentBubbleContainer.innerHTML = '';
                 }, 250);
             });
