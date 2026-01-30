@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>劇本殺榮譽牆 (數據連動版)</title>
+    <!-- 引入 PapaParse 用於正確解析 CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- 引入 Tone.js 用於音效 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
@@ -479,6 +481,7 @@
             color: #1a1a1a;
             padding: 18px 22px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
@@ -488,6 +491,38 @@
             overflow: hidden;
             position: relative;
             transform: translateZ(0);
+        }
+        
+        /* 便利貼內容容器 */
+        .sticky-note-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 便利貼星星評分 */
+        .sticky-note-rating {
+            font-size: 1.3rem;
+            color: #ff6b00;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        
+        /* 便利貼評論文字 */
+        .sticky-note-comment {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
             
             /* 不規則邊緣 - 使用 clip-path 創造自然形狀 */
             clip-path: polygon(
@@ -763,15 +798,9 @@
                 { bg: 'rgba(75, 0, 130, 0.85)', border: 'rgba(75, 0, 130, 1)', text: '#ffffff' }  // 靛青色
             ];
 
-            // Google Sheet 發布到網路的 CSV 網址
+            const PROXY_URL = 'https://corsproxy.io/?';
             const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
-            // 多個 CORS 備援：先直接請求，失敗時依序嘗試代理（避免單一代理掛掉導致整頁失效）
-            const CORS_SOURCES = [
-                () => GOOGLE_SHEET_URL,
-                () => 'https://corsproxy.io/?' + encodeURIComponent(GOOGLE_SHEET_URL),
-                () => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GOOGLE_SHEET_URL),
-                () => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(GOOGLE_SHEET_URL)
-            ];
+            const CSV_URL = PROXY_URL + encodeURIComponent(GOOGLE_SHEET_URL);
 
 
             // --- DOM 元素 ---
@@ -808,250 +837,68 @@
 
             // --- 函式區 ---
 
-            // 正確的 CSV 解析函數（處理引號包裹的欄位）
-            function parseCSVRow(row) {
-                const result = [];
-                let current = '';
-                let inQuotes = false;
-                
-                for (let i = 0; i < row.length; i++) {
-                    const char = row[i];
-                    const nextChar = row[i + 1];
-                    
-                    if (char === '"') {
-                        if (inQuotes && nextChar === '"') {
-                            // 處理雙引號轉義（"" 表示一個引號）
-                            current += '"';
-                            i++; // 跳過下一個引號
-                        } else {
-                            // 切換引號狀態
-                            inQuotes = !inQuotes;
-                        }
-                    } else if (char === ',' && !inQuotes) {
-                        // 在引號外遇到逗號，表示欄位結束
-                        result.push(current.trim());
-                        current = '';
-                    } else {
-                        current += char;
-                    }
-                }
-                
-                // 加入最後一個欄位
-                result.push(current.trim());
-                return result;
-            }
-
-            // 正確解析整個 CSV 文件（處理包含換行符號的欄位）
-            function parseCSV(csvText) {
-                const rows = [];
-                let currentRow = [];
-                let currentField = '';
-                let inQuotes = false;
-                
-                for (let i = 0; i < csvText.length; i++) {
-                    const char = csvText[i];
-                    const nextChar = csvText[i + 1];
-                    
-                    if (char === '"') {
-                        if (inQuotes && nextChar === '"') {
-                            // 處理雙引號轉義（"" 表示一個引號）
-                            currentField += '"';
-                            i++; // 跳過下一個引號
-                        } else {
-                            // 切換引號狀態
-                            inQuotes = !inQuotes;
-                        }
-                    } else if (char === ',' && !inQuotes) {
-                        // 在引號外遇到逗號，表示欄位結束
-                        currentRow.push(currentField.trim());
-                        currentField = '';
-                    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-                        // 在引號外遇到換行符號，表示行結束
-                        if (char === '\r' && nextChar === '\n') {
-                            i++; // 跳過 \r\n 中的 \n
-                        }
-                        // 加入最後一個欄位
-                        currentRow.push(currentField.trim());
-                        // 只有當行不為空時才加入
-                        if (currentRow.some(field => field.length > 0)) {
-                            rows.push(currentRow);
-                        }
-                        currentRow = [];
-                        currentField = '';
-                    } else {
-                        // 其他字元（包括引號內的換行符號）
-                        currentField += char;
-                    }
-                }
-                
-                // 處理最後一行（如果沒有以換行符號結尾）
-                if (currentField.length > 0 || currentRow.length > 0) {
-                    currentRow.push(currentField.trim());
-                    if (currentRow.some(field => field.length > 0)) {
-                        rows.push(currentRow);
-                    }
-                }
-                
-                return rows;
-            }
-
-            // 1. 從 Google Sheet 獲取並解析 CSV 資料（多來源備援，避免 CORS 擋掉）
+            // 1. 從 Google Sheet 獲取並解析 CSV 資料
             async function fetchPlayData() {
-                const fetchOpts = { 
-                    cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                };
-                let lastError = null;
-                let csvText = null;
-                for (let i = 0; i < CORS_SOURCES.length; i++) {
-                    const url = CORS_SOURCES[i]();
-                    const label = i === 0 ? '直接請求' : `代理 ${i}`;
-                    try {
-                        console.log(`🔄 讀取資料 (${label})...`);
-                        const response = await fetch(url, fetchOpts);
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}`);
-                        }
-                        csvText = await response.text();
-                        if (csvText.trim().startsWith('<')) {
-                            throw new Error('回應為 HTML，非 CSV');
-                        }
-                        console.log(`📥 收到資料長度: ${csvText.length} 字元 (${label})`);
-                        break;
-                    } catch (err) {
-                        lastError = err;
-                        console.warn(`⚠️ ${label} 失敗:`, err.message);
-                    }
-                }
-                if (!csvText) {
-                    throw lastError || new Error('無法取得資料，請檢查網路或 Google Sheet 是否已發布為 CSV');
-                }
-
                 try {
-                    // 使用改進的 CSV 解析函數（正確處理包含換行符號的欄位）
-                    const allRows = parseCSV(csvText.trim());
-                    const headerRow = allRows[0] || [];
-                    const dataRows = allRows.slice(1);
+                    const response = await fetch(CSV_URL, { cache: 'no-store' });
+                    if (!response.ok) {
+                        throw new Error(`網路回應錯誤: ${response.statusText}`);
+                    }
+                    const csvText = await response.text();
                     
-                    console.log(`📊 總共讀取到 ${dataRows.length} 行資料（不含標題行）`);
-                    console.log(`📋 標題行 (${headerRow.length} 個欄位):`, headerRow);
+                    if (csvText.trim().startsWith('<')) {
+                        throw new Error('讀取到的檔案格式不符，請確認 Google Sheet 是否已正確「發布到網路」為 CSV 格式。');
+                    }
+
+                    // 使用 PapaParse 正確解析 CSV（支援引號內的換行）
+                    const parseResult = Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        transformHeader: (header) => header.trim()
+                    });
+                    
+                    if (parseResult.errors.length > 0) {
+                        console.warn('CSV 解析警告:', parseResult.errors);
+                    }
                     
                     const playRecords = {};
                     const playerNames = new Set();
-                    let successCount = 0;
-                    let errorCount = 0;
-                    let emptyRowCount = 0;
-
-                    // 顯示前 3 筆資料的詳細解析結果（用於調試）
-                    let debugSampleCount = 0;
                     
-                    dataRows.forEach((parts, index) => {
-                        // parts 已經是解析後的欄位陣列
-                        if (!parts || parts.length === 0) {
-                            emptyRowCount++;
-                            return;
-                        }
+                    // 處理每一行資料
+                    parseResult.data.forEach(row => {
+                        const name = row['怎麼稱呼你呢']?.trim();
+                        const date = row['日期']?.trim();
+                        // 確保劇本名稱為字串，處理數字或其他類型
+                        const script = row['劇本'] ? String(row['劇本']).trim() : '';
+                        let comment = row['50字以內的心得推薦']?.trim() || '';
+                        const rating = row['給予評價']?.trim();
                         
-                        try {
-                            // 至少需要 4 個欄位（時間戳記、姓名、日期、劇本名稱）
-                            if (parts.length < 4) {
-                                const rowPreview = parts.join(',').substring(0, 100);
-                                console.warn(`⚠️ 第 ${index + 2} 行欄位不足 (${parts.length} 個欄位，需要至少 4 個):`, rowPreview);
-                                errorCount++;
-                                return;
+                        // 收集所有角色欄位
+                        const characters = [];
+                        for (let key in row) {
+                            if (key.startsWith('角色')) {
+                                const char = row[key]?.trim();
+                                if (char) characters.push(char);
                             }
-                            
-                            // 根據實際欄位位置調整（時間戳記、姓名、日期、劇本、評論、評分、角色）
-                            const timestamp = parts[0]?.trim() || '';
-                            const name = parts[1]?.trim() || '';
-                            const date = parts[2]?.trim() || '';
-                            const script = parts[3]?.trim() || '';
-                            const comment = (parts[4]?.trim() || '').replace(/^"|"$/g, '');
-                            const rating = parts[5]?.trim() || '';
-                            // 角色可能在第 6 欄或之後，合併所有剩餘欄位
-                            const character = parts.length > 6 
-                                ? parts.slice(6).filter(p => p.trim()).join(',').trim().replace(/^"|"$/g, '')
-                                : '';
-
-                            // 顯示前 3 筆資料的詳細資訊（用於調試）
-                            if (debugSampleCount < 3 && name && script) {
-                                console.log(`\n📝 範例資料 ${debugSampleCount + 1} (第 ${index + 2} 行):`);
-                                console.log(`   總欄位數: ${parts.length}`);
-                                console.log(`   欄位內容:`, parts.map((p, i) => `[${i}]: "${String(p).substring(0, 30)}${String(p).length > 30 ? '...' : ''}"`));
-                                console.log(`   解析結果:`, {
-                                    姓名: name,
-                                    日期: date,
-                                    劇本: script,
-                                    評論: String(comment).substring(0, 30) + (String(comment).length > 30 ? '...' : ''),
-                                    評分: rating,
-                                    角色: character
-                                });
-                                debugSampleCount++;
+                        }
+                        const character = characters.join(', ');
+                        
+                        if (name && script) {
+                            playerNames.add(name);
+                            if (!playRecords[name]) {
+                                playRecords[name] = {};
                             }
-
-                            if (name && script) {
-                                playerNames.add(name);
-                                if (!playRecords[name]) {
-                                    playRecords[name] = {};
-                                }
-                                if (!playRecords[name][script]) {
-                                    playRecords[name][script] = [];
-                                }
-                                playRecords[name][script].push({ date, character, rating, comment });
-                                successCount++;
-                                
-                                // 每 50 筆記錄顯示一次進度
-                                if (successCount % 50 === 0) {
-                                    console.log(`  ✓ 已處理 ${successCount} 筆記錄...`);
-                                }
-                            } else {
-                                if (name || script) {
-                                    const rowPreview = parts.join(',').substring(0, 100);
-                                    console.warn(`⚠️ 第 ${index + 2} 行缺少必要欄位 (姓名: "${name}", 劇本: "${script}"):`, rowPreview);
-                                }
-                                errorCount++;
+                            if (!playRecords[name][script]) {
+                                playRecords[name][script] = [];
                             }
-                        } catch (err) {
-                            console.error(`❌ 第 ${index + 2} 行解析錯誤:`, err.message);
-                            const rowPreview = parts ? parts.join(',').substring(0, 100) : '無法顯示';
-                            console.error(`   原始資料:`, rowPreview);
-                            errorCount++;
+                            playRecords[name][script].push({ date, character, rating, comment });
                         }
                     });
-
-                    console.log(`\n✅ 資料讀取完成！`);
-                    console.log(`   ✓ 成功解析: ${successCount} 筆記錄`);
-                    console.log(`   ✗ 跳過/錯誤: ${errorCount} 筆`);
-                    console.log(`   ○ 空行: ${emptyRowCount} 行`);
-                    console.log(`   👥 共 ${playerNames.size} 位玩家`);
-                    
-                    // 顯示每個玩家的記錄數（最多顯示前 10 位）
-                    const playerStats = Object.keys(playRecords).map(player => {
-                        let total = 0;
-                        Object.values(playRecords[player]).forEach(records => {
-                            total += records.length;
-                        });
-                        return { player, total };
-                    }).sort((a, b) => b.total - a.total);
-                    
-                    console.log(`\n📈 玩家記錄統計（前 10 名）:`);
-                    playerStats.slice(0, 10).forEach((stat, idx) => {
-                        console.log(`   ${idx + 1}. ${stat.player}: ${stat.total} 筆記錄`);
-                    });
-                    
-                    if (playerStats.length > 10) {
-                        console.log(`   ... 還有 ${playerStats.length - 10} 位玩家`);
-                    }
 
                     return { playRecords, playerNames: Array.from(playerNames).sort() };
                 } catch (error) {
-                    console.error('❌ 無法獲取劇本資料:', error);
-                    console.error('錯誤詳情:', error.stack);
-                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${error.message}<br><br>請檢查：<br>1. Google Sheet 是否已發布為 CSV<br>2. 網路連線是否正常<br>3. 開啟開發者工具查看詳細錯誤</p>`;
+                    console.error('無法獲取劇本資料:', error);
+                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${error.message}</p>`;
                     playerSelector.innerHTML = '<option value="">讀取失敗</option>';
                     return { playRecords: {}, playerNames: [] };
                 }
@@ -1105,7 +952,8 @@
                 allCards.forEach(card => {
                     const scriptId = card.dataset.scriptId;
                     const playerRecords = playRecords[selectedPlayer] || {};
-                    const records = playerRecords[scriptId] || [];
+                    // 確保 scriptId 比對時使用字串
+                    const records = playerRecords[scriptId] || playerRecords[String(scriptId)] || [];
                     
                     const stampOverlay = card.querySelector('.stamp-overlay');
                     stampOverlay.innerHTML = ''; 
@@ -1204,14 +1052,22 @@
                     if (playRecords[playerName][scriptId]) {
                         playRecords[playerName][scriptId].forEach(record => {
                             if (record.comment) {
-                                allComments.push(record.comment);
+                                allComments.push({
+                                    comment: record.comment,
+                                    rating: record.rating,
+                                    playerName: playerName
+                                });
                             }
                         });
                     }
                 }
                 
                 if (allComments.length === 0) {
-                    allComments.push("這個劇本還沒有人留下評論喔！");
+                    allComments.push({
+                        comment: "這個劇本還沒有人留下評論喔！",
+                        rating: null,
+                        playerName: null
+                    });
                 }
 
                 // 便利貼顏色（經典便利貼顏色，更鮮豔真實）
@@ -1300,27 +1156,46 @@
                 }
 
                 // 創建便利貼
-                const createStickyNote = (commentText, index) => {
+                const createStickyNote = (commentData, index) => {
                     requestAnimationFrame(() => {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'comment-bubble-wrapper';
 
                         const stickyNote = document.createElement('div');
                         stickyNote.className = 'comment-bubble';
-                        stickyNote.textContent = commentText;
                         
+                        // 創建便利貼內容結構
+                        const content = document.createElement('div');
+                        content.className = 'sticky-note-content';
+                        
+                        // 星星評分區域
+                        if (commentData.rating) {
+                            const ratingDiv = document.createElement('div');
+                            ratingDiv.className = 'sticky-note-rating';
+                            ratingDiv.textContent = generateStars(commentData.rating);
+                            content.appendChild(ratingDiv);
+                        }
+                        
+                        // 評論文字區域
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'sticky-note-comment';
+                        commentDiv.textContent = commentData.comment;
+                        content.appendChild(commentDiv);
+                        
+                        stickyNote.appendChild(content);
                         wrapper.appendChild(stickyNote);
                         
                         // 根據文字長度計算便利貼大小
-                        const textLength = commentText.length;
+                        const textLength = commentData.comment.length;
                         const minWidth = 150;
                         const maxWidth = 300;
                         const minHeight = 120;
                         const maxHeight = 250;
                         
-                        // 計算寬度（根據文字長度和換行）
+                        // 計算寬度（根據文字長度和換行，加上星星評分的高度）
+                        const ratingHeight = commentData.rating ? 30 : 0;
                         const estimatedWidth = Math.min(maxWidth, Math.max(minWidth, textLength * 8 + 40));
-                        const estimatedHeight = Math.min(maxHeight, Math.max(minHeight, Math.ceil(textLength / 20) * 30 + 60));
+                        const estimatedHeight = Math.min(maxHeight, Math.max(minHeight, Math.ceil(textLength / 20) * 30 + 60 + ratingHeight));
                         
                         const width = estimatedWidth;
                         const height = estimatedHeight;
@@ -1406,8 +1281,8 @@
                 };
                 
                 // 分批創建便利貼，避免阻塞主線程
-                allComments.forEach((commentText, index) => {
-                    setTimeout(() => createStickyNote(commentText, index), index * 50);
+                allComments.forEach((commentData, index) => {
+                    setTimeout(() => createStickyNote(commentData, index), index * 50);
                 });
             }
 
