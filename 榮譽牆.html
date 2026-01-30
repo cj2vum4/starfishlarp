@@ -858,7 +858,8 @@
 
             // 1. 從 Google Sheet 獲取並解析 CSV 資料（可選 GAS 代理 + 備援 + 逾時；Excel 儲存格內換行已由 PapaParse 正確處理）
             async function fetchPlayData() {
-                const fetchOpts = { 
+                // 直接請求 Google Sheet 時使用完整標頭；代理服務只用 cache，避免觸發 CORS preflight
+                const directFetchOpts = { 
                     cache: 'no-store',
                     headers: {
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -866,26 +867,31 @@
                         'Expires': '0'
                     }
                 };
+                const proxyFetchOpts = { cache: 'no-store' };  // 代理服務不設自訂標頭，避免 preflight
                 const sources = [];
                 const labels = [];
+                const isDirectSource = [];  // 標記是否為直接請求
                 if (GAS_PROXY_URL && GAS_PROXY_URL.trim()) {
                     const base = GAS_PROXY_URL.trim().replace(/\?.*$/, '');
                     const sep = base.includes('?') ? '&' : '?';
                     sources.push(() => base + sep + 'url=' + encodeURIComponent(GOOGLE_SHEET_URL));
                     labels.push('GAS 代理');
+                    isDirectSource.push(false);
                 }
                 CORS_SOURCES.forEach((fn, i) => {
                     sources.push(fn);
                     labels.push(i === 0 ? '直接請求' : `代理 ${i}`);
+                    isDirectSource.push(i === 0);  // 第一個是直接請求，其他是代理
                 });
                 let lastError = null;
                 let csvText = null;
                 for (let i = 0; i < sources.length; i++) {
                     const url = sources[i]();
                     const label = labels[i];
+                    const opts = isDirectSource[i] ? directFetchOpts : proxyFetchOpts;
                     try {
                         console.log(`🔄 讀取資料 (${label})...`);
-                        const response = await fetchWithTimeout(url, fetchOpts, FETCH_TIMEOUT_MS);
+                        const response = await fetchWithTimeout(url, opts, FETCH_TIMEOUT_MS);
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}`);
                         }
