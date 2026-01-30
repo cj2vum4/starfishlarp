@@ -798,10 +798,21 @@
                 { bg: 'rgba(75, 0, 130, 0.85)', border: 'rgba(75, 0, 130, 1)', text: '#ffffff' }  // 靛青色
             ];
 
-            // 使用AllOrigins作為CORS代理（更穩定）
+            // --- 資料來源設定 ---
+            // Google Sheet 發布到網路的 CSV 網址
             const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
-            const PROXY_URL = 'https://api.allorigins.win/raw?url=';
-            const CSV_URL = PROXY_URL + encodeURIComponent(GOOGLE_SHEET_URL);
+            // 【建議】自建 Google Apps Script 代理網址：可完全避開 CORS、讀取快又穩。留空則使用下方備援代理。
+            // 設定方式見同目錄「GoogleAppsScript_代理說明.txt」
+            const GAS_PROXY_URL = '';  // 例：'https://script.google.com/macros/s/你的部署ID/exec'
+            // 單一請求逾時（毫秒），避免某個代理卡住導致整頁等很久
+            const FETCH_TIMEOUT_MS = 6000;
+            // 備援來源（當 GAS_PROXY_URL 為空或失敗時依序嘗試）
+            const CORS_SOURCES = [
+                () => GOOGLE_SHEET_URL,
+                () => 'https://corsproxy.io/?' + encodeURIComponent(GOOGLE_SHEET_URL),
+                () => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GOOGLE_SHEET_URL),
+                () => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(GOOGLE_SHEET_URL)
+            ];
 
 
             // --- DOM 元素 ---
@@ -838,18 +849,63 @@
 
             // --- 函式區 ---
 
-            // 1. 從 Google Sheet 獲取並解析 CSV 資料
+            // 帶逾時的 fetch（避免某個來源卡住導致等很久）
+            function fetchWithTimeout(url, opts, timeoutMs) {
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), timeoutMs);
+                return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(id));
+            }
+
+            // 1. 從 Google Sheet 獲取並解析 CSV 資料（可選 GAS 代理 + 備援 + 逾時；Excel 儲存格內換行已由 PapaParse 正確處理）
             async function fetchPlayData() {
+                const fetchOpts = { 
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                const sources = [];
+                const labels = [];
+                if (GAS_PROXY_URL && GAS_PROXY_URL.trim()) {
+                    const base = GAS_PROXY_URL.trim().replace(/\?.*$/, '');
+                    const sep = base.includes('?') ? '&' : '?';
+                    sources.push(() => base + sep + 'url=' + encodeURIComponent(GOOGLE_SHEET_URL));
+                    labels.push('GAS 代理');
+                }
+                CORS_SOURCES.forEach((fn, i) => {
+                    sources.push(fn);
+                    labels.push(i === 0 ? '直接請求' : `代理 ${i}`);
+                });
+                let lastError = null;
+                let csvText = null;
+                for (let i = 0; i < sources.length; i++) {
+                    const url = sources[i]();
+                    const label = labels[i];
+                    try {
+                        console.log(`🔄 讀取資料 (${label})...`);
+                        const response = await fetchWithTimeout(url, fetchOpts, FETCH_TIMEOUT_MS);
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        csvText = await response.text();
+                        if (csvText.trim().startsWith('<')) {
+                            throw new Error('回應為 HTML，非 CSV');
+                        }
+                        console.log(`📥 收到資料長度: ${csvText.length} 字元 (${label})`);
+                        break;
+                    } catch (err) {
+                        lastError = err;
+                        const msg = err.name === 'AbortError' ? '逾時' : err.message;
+                        console.warn(`⚠️ ${label} 失敗:`, msg);
+                    }
+                }
+                if (!csvText) {
+                    throw lastError || new Error('無法取得資料，請檢查網路或 Google Sheet 是否已發布為 CSV');
+                }
+
                 try {
-                    const response = await fetch(CSV_URL, { cache: 'no-store' });
-                    if (!response.ok) {
-                        throw new Error(`網路回應錯誤: ${response.statusText}`);
-                    }
-                    const csvText = await response.text();
-                    
-                    if (csvText.trim().startsWith('<')) {
-                        throw new Error('讀取到的檔案格式不符，請確認 Google Sheet 是否已正確「發布到網路」為 CSV 格式。');
-                    }
 
                     // 使用 PapaParse 正確解析 CSV（支援引號內的換行）
                     const parseResult = Papa.parse(csvText, {
@@ -898,8 +954,9 @@
 
                     return { playRecords, playerNames: Array.from(playerNames).sort() };
                 } catch (error) {
-                    console.error('無法獲取劇本資料:', error);
-                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${error.message}</p>`;
+                    console.error('❌ 無法獲取劇本資料:', error);
+                    console.error('錯誤詳情:', error.stack);
+                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${error.message}<br><br>請檢查：<br>1. Google Sheet 是否已發布為 CSV<br>2. 網路連線是否正常<br>3. 開啟開發者工具查看詳細錯誤</p>`;
                     playerSelector.innerHTML = '<option value="">讀取失敗</option>';
                     return { playRecords: {}, playerNames: [] };
                 }
