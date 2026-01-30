@@ -763,9 +763,15 @@
                 { bg: 'rgba(75, 0, 130, 0.85)', border: 'rgba(75, 0, 130, 1)', text: '#ffffff' }  // 靛青色
             ];
 
-            const PROXY_URL = 'https://corsproxy.io/?';
+            // Google Sheet 發布到網路的 CSV 網址
             const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
-            const CSV_URL = PROXY_URL + encodeURIComponent(GOOGLE_SHEET_URL);
+            // 多個 CORS 備援：先直接請求，失敗時依序嘗試代理（避免單一代理掛掉導致整頁失效）
+            const CORS_SOURCES = [
+                () => GOOGLE_SHEET_URL,
+                () => 'https://corsproxy.io/?' + encodeURIComponent(GOOGLE_SHEET_URL),
+                () => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GOOGLE_SHEET_URL),
+                () => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(GOOGLE_SHEET_URL)
+            ];
 
 
             // --- DOM 元素 ---
@@ -889,30 +895,43 @@
                 return rows;
             }
 
-            // 1. 從 Google Sheet 獲取並解析 CSV 資料（改進版）
+            // 1. 從 Google Sheet 獲取並解析 CSV 資料（多來源備援，避免 CORS 擋掉）
             async function fetchPlayData() {
-                try {
-                    console.log('🔄 開始讀取資料...');
-                    const response = await fetch(CSV_URL, { 
-                        cache: 'no-store',
-                        headers: {
-                            'Cache-Control': 'no-cache, no-store, must-revalidate',
-                            'Pragma': 'no-cache',
-                            'Expires': '0'
+                const fetchOpts = { 
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                let lastError = null;
+                let csvText = null;
+                for (let i = 0; i < CORS_SOURCES.length; i++) {
+                    const url = CORS_SOURCES[i]();
+                    const label = i === 0 ? '直接請求' : `代理 ${i}`;
+                    try {
+                        console.log(`🔄 讀取資料 (${label})...`);
+                        const response = await fetch(url, fetchOpts);
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
                         }
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`網路回應錯誤: ${response.status} ${response.statusText}`);
+                        csvText = await response.text();
+                        if (csvText.trim().startsWith('<')) {
+                            throw new Error('回應為 HTML，非 CSV');
+                        }
+                        console.log(`📥 收到資料長度: ${csvText.length} 字元 (${label})`);
+                        break;
+                    } catch (err) {
+                        lastError = err;
+                        console.warn(`⚠️ ${label} 失敗:`, err.message);
                     }
-                    
-                    const csvText = await response.text();
-                    console.log(`📥 收到資料長度: ${csvText.length} 字元`);
-                    
-                    if (csvText.trim().startsWith('<')) {
-                        throw new Error('讀取到的檔案格式不符，請確認 Google Sheet 是否已正確「發布到網路」為 CSV 格式。');
-                    }
+                }
+                if (!csvText) {
+                    throw lastError || new Error('無法取得資料，請檢查網路或 Google Sheet 是否已發布為 CSV');
+                }
 
+                try {
                     // 使用改進的 CSV 解析函數（正確處理包含換行符號的欄位）
                     const allRows = parseCSV(csvText.trim());
                     const headerRow = allRows[0] || [];
