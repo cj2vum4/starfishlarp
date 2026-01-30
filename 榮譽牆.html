@@ -798,8 +798,9 @@
                 { bg: 'rgba(75, 0, 130, 0.85)', border: 'rgba(75, 0, 130, 1)', text: '#ffffff' }  // 靛青色
             ];
 
-            const PROXY_URL = 'https://corsproxy.io/?';
+            // 使用AllOrigins作為CORS代理（更穩定）
             const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
+            const PROXY_URL = 'https://api.allorigins.win/raw?url=';
             const CSV_URL = PROXY_URL + encodeURIComponent(GOOGLE_SHEET_URL);
 
 
