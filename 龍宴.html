@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>龍宴 - 劇本殺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0500 0%, #2d1000 30%, #1f0a00 60%, #0d0500 100%);
+            min-height: 100vh;
+            color: #f0e0c0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 燈籠飄浮效果 */
+        .ember-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ember-particle {
+            position: absolute;
+            user-select: none;
+            pointer-events: none;
+            animation: emberFloat 20s linear infinite;
+            opacity: 0;
+            color: #ffa040;
+        }
+
+        .ember-particle:nth-child(1)  { left: 5%;  animation-delay: 0s;  font-size: 0.6em; }
+        .ember-particle:nth-child(2)  { left: 15%; animation-delay: 3s;  font-size: 0.4em; }
+        .ember-particle:nth-child(3)  { left: 25%; animation-delay: 7s;  font-size: 0.7em; }
+        .ember-particle:nth-child(4)  { left: 40%; animation-delay: 1s;  font-size: 0.5em; }
+        .ember-particle:nth-child(5)  { left: 55%; animation-delay: 5s;  font-size: 0.6em; }
+        .ember-particle:nth-child(6)  { left: 65%; animation-delay: 9s;  font-size: 0.4em; }
+        .ember-particle:nth-child(7)  { left: 75%; animation-delay: 2s;  font-size: 0.8em; }
+        .ember-particle:nth-child(8)  { left: 85%; animation-delay: 6s;  font-size: 0.5em; }
+        .ember-particle:nth-child(9)  { left: 92%; animation-delay: 4s;  font-size: 0.6em; }
+        .ember-particle:nth-child(10) { left: 48%; animation-delay: 8s;  font-size: 0.4em; }
+
+        @keyframes emberFloat {
+            0%   { bottom: -5%; opacity: 0; transform: translateX(0); }
+            10%  { opacity: 0.8; }
+            90%  { opacity: 0.4; }
+            100% { bottom: 105%; opacity: 0; transform: translateX(30px); }
+        }
+
+        /* 龍紋光暈 */
+        .dragon-glow {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 300px;
+            background: radial-gradient(ellipse, rgba(200, 80, 0, 0.1) 0%, rgba(150, 50, 0, 0.05) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: dragonPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes dragonPulse {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50%       { opacity: 1;   transform: translateX(-50%) scale(1.1); }
+        }
+
+        /* 返回按鈕 */
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+
+        .back-btn {
+            background: rgba(180, 80, 0, 0.3);
+            color: #ffd080;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(220, 140, 0, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(180, 80, 0, 0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(180, 80, 0, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(200, 100, 0, 0.4);
+        }
+
+        @keyframes slideInLeft {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 滾動進度條 */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(200, 100, 0, 0.15);
+            z-index: 1001;
+        }
+
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #d4a017, #ffd700);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 標題區 */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(-40px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .dragon-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+            animation: dragonPulse 4s ease-in-out infinite;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #ffd700, #ff8c00, #ffd700, #d4a017);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 6px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(240, 200, 120, 0.8);
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        /* 主要內容格線 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(200, 140, 0, 0.25);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(180, 80, 0, 0.2);
+            border-color: rgba(220, 160, 0, 0.45);
+        }
+
+        .card:nth-child(2) { animation-delay: 0.5s; }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffd080;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(200, 140, 0, 0.4);
+            padding-bottom: 10px;
+        }
+
+        /* 資訊列表 */
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            background: rgba(180, 80, 0, 0.08);
+            border-radius: 10px;
+            border: 1px solid rgba(200, 140, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: rgba(180, 80, 0, 0.15);
+            transform: translateX(5px);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #e8a060;
+            font-size: 0.95rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #f5e0b0;
+        }
+
+        /* 難度星星 */
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .star {
+            color: #d4a017;
+            font-size: 1.2rem;
+        }
+
+        .star.empty {
+            color: rgba(200, 140, 0, 0.2);
+        }
+
+        /* 標籤 */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, rgba(160, 60, 0, 0.5), rgba(200, 100, 0, 0.5));
+            color: #ffd080;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(220, 140, 0, 0.35);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .tag:hover {
+            background: linear-gradient(45deg, rgba(160, 60, 0, 0.7), rgba(200, 100, 0, 0.7));
+            transform: scale(1.05);
+        }
+
+        /* 性別圖示 */
+        .gender-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .gender-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #e8c080;
+            font-weight: 600;
+        }
+
+        /* 角色格線 */
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: rgba(160, 60, 0, 0.08);
+            border-radius: 14px;
+            padding: 16px 10px;
+            text-align: center;
+            border: 1px solid rgba(200, 140, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover {
+            background: rgba(160, 60, 0, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(180, 80, 0, 0.25);
+            border-color: rgba(220, 160, 0, 0.45);
+        }
+
+        .character-card.female {
+            border-color: rgba(220, 120, 150, 0.25);
+        }
+
+        .character-card.female:hover {
+            border-color: rgba(220, 120, 150, 0.5);
+        }
+
+        .character-avatar {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .character-name {
+            font-weight: 700;
+            color: #ffd080;
+            margin-bottom: 3px;
+            font-size: 0.95rem;
+        }
+
+        .character-title {
+            font-size: 0.72rem;
+            color: rgba(240, 180, 80, 0.7);
+            margin-bottom: 6px;
+        }
+
+        .character-desc {
+            font-size: 0.75rem;
+            color: rgba(240, 210, 150, 0.75);
+            line-height: 1.4;
+        }
+
+        /* 全寬區塊 */
+        .full-width {
+            grid-column: 1 / -1;
+            animation-delay: 0.7s;
+        }
+
+        /* 引言區 */
+        .quote-section {
+            background: rgba(160, 60, 0, 0.1);
+            border-left: 3px solid rgba(220, 160, 0, 0.7);
+            padding: 20px 24px;
+            margin: 15px 0;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            color: #f0d090;
+            line-height: 1.9;
+            font-size: 1.05rem;
+        }
+
+        .description-text {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: #e8d0a0;
+            text-align: justify;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(180, 80, 0, 0.35) 50%, transparent 100%);
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #ffd080;
+        }
+
+        /* 陣營說明 */
+        .faction-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .faction-card {
+            background: rgba(160, 60, 0, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(200, 140, 0, 0.2);
+        }
+
+        .faction-name {
+            font-weight: 700;
+            color: #ffd080;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .faction-desc {
+            font-size: 0.88rem;
+            color: rgba(240, 210, 150, 0.8);
+            line-height: 1.6;
+        }
+
+        /* 浮動裝飾 */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.2;
+            animation: float 12s ease-in-out infinite;
+            font-size: 2.5rem;
+        }
+
+        .floating-element:nth-child(1) { top: 10%; left: 5%;   animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 20%; right: 5%;  animation-delay: 4s; }
+        .floating-element:nth-child(3) { bottom: 20%; left: 8%; animation-delay: 8s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50%       { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CTA */
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            padding-bottom: 50px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #8b2000, #c84000);
+            color: #ffd080;
+            padding: 15px 45px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(180, 60, 0, 0.4);
+            border: 1px solid rgba(220, 160, 0, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(200, 80, 0, 0.6);
+            background: linear-gradient(45deg, #a02800, #e05000);
+        }
+
+        @media (max-width: 768px) {
+            .main-content { grid-template-columns: 1fr; gap: 20px; }
+            .title { font-size: 2.4rem; letter-spacing: 3px; }
+            .card { padding: 20px; }
+            .characters-grid { grid-template-columns: repeat(2, 1fr); }
+            .faction-grid { grid-template-columns: 1fr; }
+            .info-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .back-to-overview { top: 10px; left: 10px; }
+            .back-btn { padding: 10px 15px; font-size: 0.8rem; }
+            .container { padding-top: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="dragon-glow"></div>
+
+    <div class="back-to-overview">
+        <a href="index.html" class="back-btn">← 返回劇本總覽</a>
+    </div>
+
+    <!-- 火星粒子 -->
+    <div class="ember-effects">
+        <div class="ember-particle">✦</div>
+        <div class="ember-particle">·</div>
+        <div class="ember-particle">✦</div>
+        <div class="ember-particle">·</div>
+        <div class="ember-particle">✦</div>
+        <div class="ember-particle">·</div>
+        <div class="ember-particle">✦</div>
+        <div class="ember-particle">·</div>
+        <div class="ember-particle">✦</div>
+        <div class="ember-particle">·</div>
+    </div>
+
+    <div class="floating-elements">
+        <div class="floating-element">🐉</div>
+        <div class="floating-element">🏮</div>
+        <div class="floating-element">⚔️</div>
+    </div>
+
+    <div class="container">
+
+        <div class="header">
+            <span class="dragon-icon">🐉</span>
+            <h1 class="title">龍　宴</h1>
+            <p class="subtitle">龍椅之下，暗流洶湧——酒香未散，殺機已至</p>
+        </div>
+
+        <div class="main-content">
+
+            <!-- 遊戲資訊 -->
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+
+                <div class="info-item">
+                    <span class="info-label">🎭 劇本名稱</span>
+                    <span class="info-value">龍宴</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">4 小時</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon"><span>👨</span><span>5男</span></div>
+                        <div class="gender-icon"><span>👩</span><span>3女</span></div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">古裝</span>
+                        <span class="tag">宮廷</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">陣營</span>
+                        <span class="tag">機制</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🔁 反串</span>
+                    <span class="info-value">不影響遊戲</span>
+                </div>
+            </div>
+
+            <!-- 角色介紹 -->
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <!-- 女性角色 -->
+                    <div class="character-card female">
+                        <span class="character-avatar">🎭</span>
+                        <div class="character-name">宋婷</div>
+                        <div class="character-title">密院院長</div>
+                        <div class="character-desc">神秘莫測，常以面具示人，行走暗處為皇帝蒐查密事</div>
+                    </div>
+                    <div class="character-card female">
+                        <span class="character-avatar">⚔️</span>
+                        <div class="character-name">林婉兒</div>
+                        <div class="character-title">禁軍統領</div>
+                        <div class="character-desc">十八歲御前紅人，能文能武，心思縝密，手握禁軍兵符</div>
+                    </div>
+                    <div class="character-card female">
+                        <span class="character-avatar">🌸</span>
+                        <div class="character-name">陳曦</div>
+                        <div class="character-title">密院副院長</div>
+                        <div class="character-desc">清廉明智，被百姓稱為「良臣之女」，其謀深不可測</div>
+                    </div>
+                    <!-- 男性角色 -->
+                    <div class="character-card">
+                        <span class="character-avatar">👑</span>
+                        <div class="character-name">韓淳</div>
+                        <div class="character-title">皇帝</div>
+                        <div class="character-desc">雷厲風行的新皇，力推改革，不容任何挑戰皇權之人</div>
+                    </div>
+                    <div class="character-card">
+                        <span class="character-avatar">📜</span>
+                        <div class="character-name">李清文</div>
+                        <div class="character-title">丞相</div>
+                        <div class="character-desc">忠肝義膽的一代名相，受先帝託孤，是朝堂之楷模</div>
+                    </div>
+                    <div class="character-card">
+                        <span class="character-avatar">⚖️</span>
+                        <div class="character-name">陳敬之</div>
+                        <div class="character-title">詔獄都統</div>
+                        <div class="character-desc">皇城之刃，執法無情，心中卻藏著對家族深深的掛念</div>
+                    </div>
+                    <div class="character-card">
+                        <span class="character-avatar">🛡️</span>
+                        <div class="character-name">韓忠</div>
+                        <div class="character-title">護軍統領</div>
+                        <div class="character-desc">忠於皇室，背負先父捨命護主之名，守護著皇朝安危</div>
+                    </div>
+                    <div class="character-card">
+                        <span class="character-avatar">🗡️</span>
+                        <div class="character-name">趙衛</div>
+                        <div class="character-title">禁軍副統領</div>
+                        <div class="character-desc">冷面寡言，步步驚心，是場中最難以捉摸的一枚棋子</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 故事背景 -->
+            <div class="card full-width">
+                <h2 class="card-title">故事背景</h2>
+                <div class="quote-section">
+                    新皇韓淳登基，誓要革除積弊，重振皇威。<br>
+                    然而改革之路從未坦途——朝中貴族明爭暗鬥，各懷鬼胎；<br>
+                    江湖之上，「弒龍幫」蠢蠢欲動，欲推翻皇朝重塑天下。<br><br>
+                    <strong>適逢皇帝壽辰，龍宴盛開，暗局悄然落子。</strong>
+                </div>
+                <div class="description-text">
+                    八位玩家將分別扮演<span class="highlight">朝廷重臣、禁軍將領與密院要員</span>，在皇帝壽辰的宴席之夜，共同揭開一場精心布局的宮廷陰謀。
+                    <br><br>
+                    <strong>⚔️ 陣營對抗機制：</strong><br>
+                    劇本採用<span class="highlight">多陣營對抗</span>設計，皇黨、逆黨與中立勢力各有隱藏目標，玩家需在推理的同時謹慎選擇立場——盟友可能是刀刃，敵人或許是退路。
+                    <br><br>
+                    <strong>🔍 深度推理體驗：</strong><br>
+                    中等難度的線索系統與精密機制，適合有推理基礎的玩家。每一個細節都可能是破局關鍵，<span class="highlight">每一個謊言都藏著真相的碎片</span>。
+                    <br><br>
+                    <strong>🏮 沉浸古裝氛圍：</strong><br>
+                    濃厚的宮廷古裝背景，金碧輝煌的龍宴之夜，卻是最危機四伏的一場盛宴。酒香未散，殺機已至。
+                </div>
+
+                <div class="faction-grid">
+                    <div class="faction-card">
+                        <div class="faction-name">👑 皇黨</div>
+                        <div class="faction-desc">忠於新皇韓淳，守護皇朝穩定，阻止任何顛覆皇權的陰謀得逞。</div>
+                    </div>
+                    <div class="faction-card">
+                        <div class="faction-name">🗡️ 逆黨</div>
+                        <div class="faction-desc">暗中聯繫「弒龍幫」，伺機在龍宴之夜完成改朝換代的壯舉。</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">🐉 立即預約遊戲</a>
+        </div>
+
+    </div>
+
+    <!-- 背景音樂（托管於 GitHub Releases，不佔 repo 空間） -->
+    <audio id="bgm" src="https://github.com/cj2vum4/starfishlarp/releases/download/bgm/lxe8.mp3" autoplay loop muted></audio>
+    <script>
+        document.addEventListener('click', function() {
+            document.getElementById('bgm').muted = false;
+        }, { once: true });
+    </script>
+
+    <script src="bgm-control.js"></script>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const el = document.getElementById('scrollProgress');
+            if (el) {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                el.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+            }
+        });
+    </script>
+
+</body>
+</html>
