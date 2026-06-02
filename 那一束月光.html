@@ -334,7 +334,36 @@
             border: 2px solid rgba(140, 170, 255, 0.4);
         }
 
-        /* 海報區 */
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-section-inner {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .poster-image {
+            max-width: 45%;
+            min-width: 280px;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,20,0.4);
+            border: 1px solid rgba(140, 170, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* 海報區（舊，保留相容） */
         .poster-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -533,6 +562,13 @@
             <p class="subtitle">人有悲歡離合，月有陰晴圓缺，那一束月光，照不到每一個人身上</p>
         </div>
 
+        <div class="poster-section">
+            <div class="poster-section-inner">
+                <img src="https://i.postimg.cc/SRQ7nsLC/hai-bao1.jpg" alt="那一束月光海報1" class="poster-image">
+                <img src="https://i.postimg.cc/TwJJ2mbW/hai-bao2.jpg" alt="那一束月光海報2" class="poster-image">
+            </div>
+        </div>
+
         <div class="main-content">
 
             <!-- 遊戲資訊 -->
@@ -634,6 +670,11 @@
                     此事自古就難全——<br><br>
                     <strong>那一束月光，照不到每一個人身上。</strong>
                 </div>
+            </div>
+
+            <!-- 劇本介紹 -->
+            <div class="card full-width">
+                <h2 class="card-title">劇本介紹</h2>
                 <div class="description-text">
                     六位玩家將共同參加一檔<span class="highlight">戀愛綜藝節目</span>的錄製，開啟一段奇妙的感情之旅。
                     這是首部以戀綜為核心題材的劇本，全新的開本模式將戀綜貫穿始終，完美融入劇本殺玩法。
@@ -652,15 +693,6 @@
                 </div>
             </div>
 
-        </div>
-
-        <!-- 劇本海報 -->
-        <div class="card" style="animation-delay:0.8s;">
-            <h2 class="card-title">劇本海報</h2>
-            <div class="poster-grid">
-                <img class="poster-img" src="https://i.postimg.cc/SRQ7nsLC/hai-bao1.jpg" alt="那一束月光海報1">
-                <img class="poster-img" src="https://i.postimg.cc/TwJJ2mbW/hai-bao2.jpg" alt="那一束月光海報2">
-            </div>
         </div>
 
         <div class="cta-section">

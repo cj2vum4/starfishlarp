@@ -346,7 +346,36 @@
             border-color: rgba(220, 120, 150, 0.5);
         }
 
-        /* 海報區 */
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-section-inner {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .poster-image {
+            max-width: 45%;
+            min-width: 280px;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(200, 140, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .poster-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* 海報區（舊，保留相容） */
         .poster-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -560,6 +589,13 @@
             <p class="subtitle">龍椅之下，暗流洶湧——酒香未散，殺機已至</p>
         </div>
 
+        <div class="poster-section">
+            <div class="poster-section-inner">
+                <img src="https://i.postimg.cc/4dxTwvXZ/SKM-C30820072713280-0001.jpg" alt="龍宴海報1" class="poster-image">
+                <img src="https://i.postimg.cc/50KWrHtY/SKM-C30820072713280-0002.jpg" alt="龍宴海報2" class="poster-image">
+            </div>
+        </div>
+
         <div class="main-content">
 
             <!-- 遊戲資訊 -->
@@ -572,7 +608,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">⏰ 遊戲時間</span>
-                    <span class="info-value">4 小時</span>
+                    <span class="info-value">5 小時</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">👥 遊戲人數</span>
@@ -673,6 +709,11 @@
                     江湖之上，「弒龍幫」蠢蠢欲動，欲推翻皇朝重塑天下。<br><br>
                     <strong>適逢皇帝壽辰，龍宴盛開，暗局悄然落子。</strong>
                 </div>
+            </div>
+
+            <!-- 劇本介紹 -->
+            <div class="card full-width">
+                <h2 class="card-title">劇本介紹</h2>
                 <div class="description-text">
                     八位玩家將分別扮演<span class="highlight">朝廷重臣、禁軍將領與密院要員</span>，在皇帝壽辰的宴席之夜，共同揭開一場精心布局的宮廷陰謀。
                     <br><br>
@@ -697,15 +738,6 @@
                     </div>
                 </div>
             </div>
-
-        <!-- 劇本海報 -->
-        <div class="card" style="animation-delay:0.8s;">
-            <h2 class="card-title">劇本海報</h2>
-            <div class="poster-grid">
-                <img class="poster-img" src="https://i.postimg.cc/4dxTwvXZ/SKM-C30820072713280-0001.jpg" alt="龍宴海報1">
-                <img class="poster-img" src="https://i.postimg.cc/50KWrHtY/SKM-C30820072713280-0002.jpg" alt="龍宴海報2">
-            </div>
-        </div>
 
         </div>
 
