@@ -332,9 +332,37 @@
         }
 
         .character-avatar {
-            font-size: 2rem;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: top;
             display: block;
-            margin-bottom: 8px;
+            margin: 0 auto 8px;
+            border: 2px solid rgba(200, 140, 0, 0.4);
+        }
+
+        .character-card.female .character-avatar {
+            border-color: rgba(220, 120, 150, 0.5);
+        }
+
+        /* 海報區 */
+        .poster-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .poster-img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(200, 140, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .poster-img:hover {
+            transform: scale(1.02);
         }
 
         .character-name {
@@ -585,50 +613,50 @@
                 <div class="characters-grid">
                     <!-- 女性角色 -->
                     <div class="character-card female">
-                        <span class="character-avatar">🎭</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/VNR8jZQB/ying-mu-xie-qu-hua-mian-2026-06-02-151120.png" alt="宋婷">
                         <div class="character-name">宋婷</div>
                         <div class="character-title">密院院長</div>
                         <div class="character-desc">神秘莫測，常以面具示人，行走暗處為皇帝蒐查密事</div>
                     </div>
                     <div class="character-card female">
-                        <span class="character-avatar">⚔️</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/0NfspXR3/ying-mu-xie-qu-hua-mian-2026-06-02-151000.png" alt="林婉兒">
                         <div class="character-name">林婉兒</div>
                         <div class="character-title">禁軍統領</div>
                         <div class="character-desc">十八歲御前紅人，能文能武，心思縝密，手握禁軍兵符</div>
                     </div>
                     <div class="character-card female">
-                        <span class="character-avatar">🌸</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/TP96rNMZ/ying-mu-xie-qu-hua-mian-2026-06-02-150938.png" alt="陳曦">
                         <div class="character-name">陳曦</div>
                         <div class="character-title">密院副院長</div>
                         <div class="character-desc">清廉明智，被百姓稱為「良臣之女」，其謀深不可測</div>
                     </div>
                     <!-- 男性角色 -->
                     <div class="character-card">
-                        <span class="character-avatar">👑</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/rpJkSZXg/ying-mu-xie-qu-hua-mian-2026-06-02-151030.png" alt="韓淳">
                         <div class="character-name">韓淳</div>
                         <div class="character-title">皇帝</div>
                         <div class="character-desc">雷厲風行的新皇，力推改革，不容任何挑戰皇權之人</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">📜</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/k5cmxY3Q/ying-mu-xie-qu-hua-mian-2026-06-02-151107.png" alt="李清文">
                         <div class="character-name">李清文</div>
                         <div class="character-title">丞相</div>
                         <div class="character-desc">忠肝義膽的一代名相，受先帝託孤，是朝堂之楷模</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">⚖️</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/1zHQp7hD/ying-mu-xie-qu-hua-mian-2026-06-02-151053.png" alt="陳敬之">
                         <div class="character-name">陳敬之</div>
                         <div class="character-title">詔獄都統</div>
                         <div class="character-desc">皇城之刃，執法無情，心中卻藏著對家族深深的掛念</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">🛡️</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/YS3H1DKP/ying-mu-xie-qu-hua-mian-2026-06-02-151018.png" alt="韓忠">
                         <div class="character-name">韓忠</div>
                         <div class="character-title">護軍統領</div>
                         <div class="character-desc">忠於皇室，背負先父捨命護主之名，守護著皇朝安危</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">🗡️</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/nLkJvSbK/ying-mu-xie-qu-hua-mian-2026-06-02-151041.png" alt="趙衛">
                         <div class="character-name">趙衛</div>
                         <div class="character-title">禁軍副統領</div>
                         <div class="character-desc">冷面寡言，步步驚心，是場中最難以捉摸的一枚棋子</div>
@@ -669,6 +697,15 @@
                     </div>
                 </div>
             </div>
+
+        <!-- 劇本海報 -->
+        <div class="card" style="animation-delay:0.8s;">
+            <h2 class="card-title">劇本海報</h2>
+            <div class="poster-grid">
+                <img class="poster-img" src="https://i.postimg.cc/4dxTwvXZ/SKM-C30820072713280-0001.jpg" alt="龍宴海報1">
+                <img class="poster-img" src="https://i.postimg.cc/50KWrHtY/SKM-C30820072713280-0002.jpg" alt="龍宴海報2">
+            </div>
+        </div>
 
         </div>
 
