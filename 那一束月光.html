@@ -324,9 +324,33 @@
         }
 
         .character-avatar {
-            font-size: 2.2rem;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: top;
             display: block;
-            margin-bottom: 8px;
+            margin: 0 auto 8px;
+            border: 2px solid rgba(140, 170, 255, 0.4);
+        }
+
+        /* 海報區 */
+        .poster-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .poster-img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(140, 170, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .poster-img:hover {
+            transform: scale(1.02);
         }
 
         .character-name {
@@ -562,37 +586,37 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <span class="character-avatar">🌸</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/fLCYQs4J/jiang-an-xin.jpg" alt="姜安心">
                         <div class="character-name">姜安心</div>
                         <div class="character-gender">女性角色</div>
                         <div class="character-quote">「你不知道無數個想你的夜裡，是自尊心救了我」</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">🌿</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/63JMptmN/song-yi-yu.jpg" alt="宋一嶼">
                         <div class="character-name">宋一嶼</div>
                         <div class="character-gender">女性角色</div>
                         <div class="character-quote">「我越難過說話越難聽，那些咄咄逼人的狠話，比你更難過」</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">🌷</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/63JMptmw/wu-qian-yin.jpg" alt="吳倩尹">
                         <div class="character-name">吳倩尹</div>
                         <div class="character-gender">女性角色</div>
                         <div class="character-quote">「我決定放過你了，你走吧，我再好好看看你」</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">🌊</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/3RFFrpGn/gu-nuo.jpg" alt="顧諾">
                         <div class="character-name">顧諾</div>
                         <div class="character-gender">男性角色</div>
                         <div class="character-quote">「可我一開始，也是真的想陪你走到最後」</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">🔥</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/NMDRvthy/lin-mu-yang.jpg" alt="林沐陽">
                         <div class="character-name">林沐陽</div>
                         <div class="character-gender">男性角色</div>
                         <div class="character-quote">「原來愛不是合適，愛是執著，是偏愛，是非她不可」</div>
                     </div>
                     <div class="character-card">
-                        <span class="character-avatar">🌙</span>
+                        <img class="character-avatar" src="https://i.postimg.cc/MHZbnT0C/xu-zhi-yan.jpg" alt="許知言">
                         <div class="character-name">許知言</div>
                         <div class="character-gender">男性角色</div>
                         <div class="character-quote">「忙忙碌碌於塵世間奔波，我弄丟了自己，也弄丟了她」</div>
@@ -628,6 +652,15 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- 劇本海報 -->
+        <div class="card" style="animation-delay:0.8s;">
+            <h2 class="card-title">劇本海報</h2>
+            <div class="poster-grid">
+                <img class="poster-img" src="https://i.postimg.cc/SRQ7nsLC/hai-bao1.jpg" alt="那一束月光海報1">
+                <img class="poster-img" src="https://i.postimg.cc/TwJJ2mbW/hai-bao2.jpg" alt="那一束月光海報2">
+            </div>
         </div>
 
         <div class="cta-section">
