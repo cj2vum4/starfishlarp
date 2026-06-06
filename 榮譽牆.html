@@ -668,6 +668,103 @@
             }
         }
 
+        /* ===== 稱號系統 ===== */
+        .player-title {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 10px;
+            margin-left: 8px;
+            vertical-align: middle;
+            letter-spacing: 0.5px;
+        }
+        .title-legend   { background: rgba(255,215,0,0.2); color: #ffd700; border: 1px solid rgba(255,215,0,0.5); }
+        .title-master   { background: rgba(180,100,255,0.2); color: #d580ff; border: 1px solid rgba(180,100,255,0.5); }
+        .title-expert   { background: rgba(80,180,255,0.2); color: #60c8ff; border: 1px solid rgba(80,180,255,0.5); }
+        .title-senior   { background: rgba(100,220,140,0.2); color: #60e890; border: 1px solid rgba(100,220,140,0.5); }
+        .title-beginner { background: rgba(200,200,200,0.15); color: #ccc; border: 1px solid rgba(200,200,200,0.3); }
+        .title-novice   { background: rgba(180,180,180,0.1); color: #aaa; border: 1px solid rgba(180,180,180,0.25); }
+
+        /* ===== 卡片徽章 ===== */
+        .card-badges {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .recommend-badge {
+            background: rgba(80, 80, 80, 0.85);
+            color: #ccc;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .recommend-badge.silver {
+            background: rgba(192,192,192,0.85);
+            color: #333;
+            border-color: rgba(255,255,255,0.4);
+        }
+        .recommend-badge.gold {
+            background: rgba(255,200,0,0.9);
+            color: #333;
+            border-color: rgba(255,215,0,0.8);
+            box-shadow: 0 0 8px rgba(255,200,0,0.4);
+        }
+
+        .rare-badge {
+            background: rgba(220, 40, 0, 0.88);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+            backdrop-filter: blur(4px);
+            animation: rarePulse 2.5s ease-in-out infinite;
+            cursor: help;
+        }
+
+        @keyframes rarePulse {
+            0%, 100% { box-shadow: 0 0 4px rgba(255,60,0,0.5); }
+            50%       { box-shadow: 0 0 14px rgba(255,60,0,0.9); }
+        }
+
+        /* ===== 心情標籤（便利貼） ===== */
+        .mood-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+
+        .mood-tag {
+            font-size: 0.75rem;
+            background: rgba(0,0,0,0.12);
+            border-radius: 8px;
+            padding: 1px 6px;
+        }
+
+        /* ===== 成就統計區（排行榜下方） ===== */
+        .achievement-section {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #444;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
     </style>
 </head>
 <body>
@@ -935,6 +1032,7 @@
                         const script = row['劇本'] ? String(row['劇本']).trim() : '';
                         let comment = row['50字以內的心得推薦']?.trim() || '';
                         const rating = row['給予評價']?.trim();
+                        const mood = row['心情']?.trim() || '';  // 心情標籤欄位（需在 Google Form 新增此問題）
                         
                         // 收集所有角色欄位
                         const characters = [];
@@ -954,7 +1052,7 @@
                             if (!playRecords[name][script]) {
                                 playRecords[name][script] = [];
                             }
-                            playRecords[name][script].push({ date, character, rating, comment });
+                            playRecords[name][script].push({ date, character, rating, comment, mood });
                         }
                     });
 
@@ -983,6 +1081,9 @@
                         <div class="stamp-overlay">
                             <!-- 印章將會動態生成於此 -->
                         </div>
+                        <div class="card-badges">
+                            <!-- 推薦徽章與稀有標記將由 updateScriptBadges 動態生成 -->
+                        </div>
                     </div>
                     <div class="script-info">
                         <h3 class="script-title">${script.title}</h3>
@@ -1000,6 +1101,76 @@
                 const filled = '★'.repeat(rating);
                 const empty = '☆'.repeat(5 - rating);
                 return filled + empty;
+            }
+
+            // ===== 稱號系統 =====
+            function calculateTitle(playCount) {
+                if (playCount >= 30) return { text: '👑 傳奇旅人', cls: 'title-legend' };
+                if (playCount >= 20) return { text: '🧠 推理大師', cls: 'title-master' };
+                if (playCount >= 15) return { text: '✨ 劇本殺達人', cls: 'title-expert' };
+                if (playCount >= 10) return { text: '🕵️ 資深偵探', cls: 'title-senior' };
+                if (playCount >= 5)  return { text: '🔍 入門探案師', cls: 'title-beginner' };
+                if (playCount >= 1)  return { text: '🌱 初入江湖', cls: 'title-novice' };
+                return null;
+            }
+
+            // ===== 推薦徽章 & 稀有標記 =====
+            function updateScriptBadges(playRecords) {
+                const scriptStats = {};
+
+                for (const playerName in playRecords) {
+                    for (const scriptId in playRecords[playerName]) {
+                        if (!scriptStats[scriptId]) {
+                            scriptStats[scriptId] = { uniquePlayers: 0, recommendCount: 0, firstPlayer: null, firstDate: null };
+                        }
+                        scriptStats[scriptId].uniquePlayers++;
+
+                        playRecords[playerName][scriptId].forEach(record => {
+                            if (parseInt(record.rating, 10) >= 4) {
+                                scriptStats[scriptId].recommendCount++;
+                            }
+                            // 找最早遊玩者
+                            if (record.date) {
+                                const parts = record.date.split(/[\/\-]/);
+                                const d = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+                                if (!scriptStats[scriptId].firstDate || d < scriptStats[scriptId].firstDate) {
+                                    scriptStats[scriptId].firstDate = d;
+                                    scriptStats[scriptId].firstPlayer = playerName;
+                                }
+                            }
+                        });
+                    }
+                }
+
+                document.querySelectorAll('.script-card').forEach(card => {
+                    const scriptId = card.dataset.scriptId;
+                    const stats = scriptStats[scriptId];
+                    const badgeContainer = card.querySelector('.card-badges');
+                    if (!badgeContainer) return;
+                    badgeContainer.innerHTML = '';
+                    if (!stats) return;
+
+                    // 推薦徽章
+                    if (stats.recommendCount >= 1) {
+                        const badge = document.createElement('div');
+                        let cls = 'recommend-badge';
+                        if (stats.recommendCount >= 5) cls += ' gold';
+                        else if (stats.recommendCount >= 3) cls += ' silver';
+                        badge.className = cls;
+                        badge.textContent = `👍 ${stats.recommendCount} 人推薦`;
+                        badgeContainer.appendChild(badge);
+                    }
+
+                    // 稀有標記（≤ 2 人玩過）
+                    if (stats.uniquePlayers <= 2) {
+                        const rareBadge = document.createElement('div');
+                        rareBadge.className = 'rare-badge';
+                        const firstInfo = stats.firstPlayer ? `首位探索者：${stats.firstPlayer}` : '幾乎無人涉足';
+                        rareBadge.title = firstInfo;
+                        rareBadge.textContent = `🔥 稀有`;
+                        badgeContainer.appendChild(rareBadge);
+                    }
+                });
             }
 
             // 3. 根據選擇的玩家更新榮譽牆
@@ -1086,9 +1257,12 @@
                     let rankDisplay = rank;
                     if (rank === 1) rankDisplay = '👑';
 
+                    const title = calculateTitle(player.count);
+                    const titleHtml = title ? `<span class="player-title ${title.cls}">${title.text}</span>` : '';
+
                     li.innerHTML = `
                         <span class="rank">${rankDisplay}</span>
-                        <span class="player-name" data-player="${player.name}">${player.name}</span>
+                        <span class="player-name" data-player="${player.name}">${player.name}${titleHtml}</span>
                         <span class="play-count">${player.count} 次</span>
                     `;
                     
@@ -1119,6 +1293,7 @@
                                 allComments.push({
                                     comment: record.comment,
                                     rating: record.rating,
+                                    mood: record.mood || '',
                                     playerName: playerName
                                 });
                             }
@@ -1232,6 +1407,22 @@
                         const content = document.createElement('div');
                         content.className = 'sticky-note-content';
                         
+                        // 心情標籤
+                        if (commentData.mood) {
+                            const moodTags = commentData.mood.split(/[,，、\s]+/).filter(Boolean);
+                            if (moodTags.length > 0) {
+                                const moodDiv = document.createElement('div');
+                                moodDiv.className = 'mood-tags';
+                                moodTags.forEach(tag => {
+                                    const span = document.createElement('span');
+                                    span.className = 'mood-tag';
+                                    span.textContent = tag;
+                                    moodDiv.appendChild(span);
+                                });
+                                content.appendChild(moodDiv);
+                            }
+                        }
+
                         // 星星評分區域
                         if (commentData.rating) {
                             const ratingDiv = document.createElement('div');
@@ -1239,7 +1430,7 @@
                             ratingDiv.textContent = generateStars(commentData.rating);
                             content.appendChild(ratingDiv);
                         }
-                        
+
                         // 評論文字區域
                         const commentDiv = document.createElement('div');
                         commentDiv.className = 'sticky-note-comment';
@@ -1376,6 +1567,9 @@
             
             // D. 填充排行榜
             updateLeaderboard(playRecords);
+
+            // D2. 更新劇本卡片徽章（推薦數、稀有標記）
+            updateScriptBadges(playRecords);
 
             // E. 監聽下拉選單的變化
             playerSelector.addEventListener('change', (event) => {
