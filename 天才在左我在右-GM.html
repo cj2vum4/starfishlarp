@@ -531,6 +531,18 @@
         </table>
       </div>
 
+      <!-- 第二本 -->
+      <div class="clue-section">
+        <div class="scene-header">
+          <h3>📕 第二本劇本（聊天記錄系列）</h3>
+          <button class="unlock-all-btn" onclick="unlockAll('book2')">全部開放</button>
+        </div>
+        <table class="clue-table">
+          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
+          <tbody id="clues-book2"></tbody>
+        </table>
+      </div>
+
       <!-- 第五幕 -->
       <div class="clue-section">
         <div class="scene-header">
@@ -720,6 +732,14 @@ const CLUES = {
     { name:'舞台傾斜人偶', code:'V4-PUPPET', type:'public', desc:'舞台上有一半的傾斜人偶' },
     { name:'道具間魔術道具', code:'V4-MAGIC', type:'public', desc:'切割道具，確認他將自己一分為二' },
     { name:'狗窩碎肉', code:'V4-DOG', type:'public', desc:'別墅第一幕的狗窩，兩條狗（「花」和「ニ」），旁邊有「守護我們的家」木牌' },
+  ],
+  book2: [
+    { name:'開放第二本', code:'UNLOCK-BOOK2', type:'gm', desc:'解鎖玩家端「第二本劇本」分頁（顯示聊天記錄壹）' },
+    { name:'開放聊天貳', code:'UNLOCK-B2-2', type:'gm', desc:'解鎖聊天記錄一貳（沈先生提出四個問題）' },
+    { name:'開放個人信件', code:'UNLOCK-B2-LETTER', type:'gm', desc:'解鎖各角色的個人信件（獨立內容）' },
+    { name:'開放聊天叁', code:'UNLOCK-B2-3', type:'gm', desc:'解鎖私訊叁（找到的人就在聊天室）' },
+    { name:'開放聊天肆', code:'UNLOCK-B2-4', type:'gm', desc:'解鎖私訊肆（恭喜找到他/她）' },
+    { name:'開放聊天伍+結局', code:'UNLOCK-B2-5', type:'gm', desc:'解鎖聊天記錄伍（沈先生依次踢人）及最終抉擇頁' },
   ],
   act5: [
     { name:'開放第五幕', code:'UNLOCK-ACT5', type:'gm', desc:'解鎖所有玩家的第五幕劇本頁' },
@@ -952,7 +972,7 @@ function renderChars() {
 // CLUES
 // ============================================================
 function renderClues() {
-  ['act1','act2','act3','act4','act5'].forEach(act => {
+  ['act1','act2','act3','act4','act5','book2'].forEach(act => {
     const tbody = document.getElementById('clues-' + act);
     if (!tbody) return;
     tbody.innerHTML = '';

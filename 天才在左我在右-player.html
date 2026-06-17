@@ -440,6 +440,7 @@
     <button class="ptab-btn" onclick="switchPTab('clues')">🔍 線索解鎖</button>
     <button class="ptab-btn" onclick="switchPTab('broadcast')">📢 主持人通知</button>
     <button class="ptab-btn" onclick="switchPTab('timeline')">📅 案件時間軸</button>
+    <button class="ptab-btn" id="book2Tab" style="display:none" onclick="switchPTab('book2')">📕 第二本劇本</button>
   </div>
   <div class="pcontent">
 
@@ -481,6 +482,15 @@
       </div>
     </div>
 
+    <!-- BOOK 2 -->
+    <div class="ptab-panel" id="ptab-book2">
+      <div class="pcard">
+        <div class="pcard-title">📕 第二本劇本</div>
+        <div class="act-nav" id="book2Nav"></div>
+        <div id="book2Content"></div>
+      </div>
+    </div>
+
     <!-- TIMELINE -->
     <div class="ptab-panel" id="ptab-timeline">
       <div class="pcard">
@@ -505,6 +515,307 @@
 // ============================================================
 // DATA
 // ============================================================
+// ============================================================
+// BOOK 2 DATA
+// ============================================================
+const BOOK2_LETTERS = {
+  '01': `寄給沈先生：
+
+沈先生，您好。
+
+我是一名八卦記者。我的起步，靠的便是您給我的消息。那些獨家爆料讓我一路走到了今天的位置。
+
+但我有一件心事，一直壓在我心底——
+
+我的父母是普通工薪族，省吃儉用了一輩子。三年前，他們在網上買了一款保健品，被人騙了幾十萬。那些錢，是他們一生的積蓄。騙局被揭穿後，他們沒能承受那份打擊……他們選擇了自盡。
+
+事後我查了很久，那個騙子換了身份，繼續行騙，從未受到任何懲罰。
+
+沈先生，我希望能夠通過您的關係，幫我找到那個害死我父母的王八蛋。
+
+我要殺了他。`,
+
+  '02': `寄給沈先生：
+
+沈先生，您好。
+
+我曾是一名在讀大學生。三年前，我的室友在一家酒吧遭到侵害。我陪她去報案，也作了證，幫她找律師，替她出頭。
+
+但事情的走向完全超出我的預料。
+
+一個匿名博主在網上大肆發文，說我的室友是妓女，說我是共謀，說我們是為了勒索才報警。帖子轉發了幾十萬次。
+
+我父親看到那些帖子，活活氣死了。我母親被鄰居知道後，遭人毆打。
+
+我做了整容手術，換了一張新臉，重新開始了生活。
+
+但我找不到那個博主。
+
+沈先生，我希望能找到那個曾經在網上發表不實言論的人。
+
+我想，我已經推開了這一扇殺人之門。`,
+
+  '03': `寄給沈先生：
+
+沈先生，您好。
+
+我曾坐過三年冤獄。
+
+入獄的理由是強姦，但那件事從頭到尾都不是我做的。有人故意陷害我，有人作了假口供指認我。我在牢裡待了三年，出來的時候，我媽已經不在了——她沒能撐過那三年的羞辱。
+
+出獄後，我做了一名快遞員。我用業餘時間，把那些我認為不該活著的人，一個一個送走了。
+
+三年前，您公寓爆炸事件發生那天，我正好去您那邊送貨。我注意到了一個細節——一個人，在您家附近鬼鬼祟祟。
+
+沈先生，那個給我作了假口供、害死我媽的人，我一直沒找到。
+
+我希望您幫我找到他。`,
+
+  '04': `寄給沈先生：
+
+沈先生，您好。
+
+我是一名律師。
+
+我這一生都戴著面具活著——微笑、克制、無懈可擊。在法庭上，我為有錢人辯護，有時候是明知他們有罪的情況下。
+
+有一件事我從未對任何人說過：三年前，我代理了一宗房產詐騙案。我贏了，但我知道我的委託人是真的騙了人。那個被害人，後來跳樓了。
+
+我沒辦法繼續假裝什麼都沒發生。
+
+沈先生，我的願望不是復仇。我只想找一個地方，一個不需要偽裝的地方。
+
+如果世界上有那樣一個地方，我願意用一切去換。`,
+
+  '05': `寄給沈先生：
+
+沈先生，您好。
+
+我曾是一名網紅主播，靠您給我的資源一路走紅。
+
+但三年前發生了一件事，讓一切歸零。
+
+我的隔壁住著一個律師，他家的保姆和他有染。那天晚上，他們吵架，不知怎麼起了火。我的房間被殃及，我被燒傷了大半張臉。
+
+警察最後只抓了保姆，說是保姆蓄意縱火。那個律師毫髮無傷，繼續做他的人上人。
+
+他毀了我，我也要毀了他。
+
+沈先生，請幫我找到他。
+
+我要親手毀了他。`,
+
+  '06': `寄給沈先生：
+
+沈先生，您好。
+
+我曾是一個流浪漢。
+
+是您給我的那份資料，讓我有了翻身的機會——我拿著那份黑材料，勒索了一個富商，得到了將近一百萬。
+
+那段時間，我開始每天看直播，迷上了一個叫「可兒」的主播。我給她大量打賞，她對我說謝謝，叫我哥哥。
+
+我以為那是真的。
+
+後來錢花完了，她把我拉黑了。從此再找不到她。
+
+沈先生，我要找到那個婊子。
+
+我要殺了她，讓她知道騙我的後果。`,
+
+  '07': `寄給沈先生：
+
+沈先生，您好。
+
+我賣保健品，主要面向老年人。
+
+我知道那些東西沒有療效，但我需要錢，我就繼續賣。三年前，我騙了一對老夫婦幾十萬，他們後來雙雙自盡了。
+
+但事情到這裡還沒結束。
+
+有人拿到了我的犯罪記錄，開始勒索我。一點一點把我榨乾。我查不出他是誰，只知道他還活著，還在等著下一次開口。
+
+沈先生，我希望您能幫我找到他，永遠封上他的嘴。`,
+};
+
+// Book 2 common sections
+const BOOK2_COMMON = {
+  chat1: `【天才在左我在右聊天室(8)】
+2017年7月10日 凌晨2:53
+
+沈先生：各位，我是沈先生。不好意思在這個時間打擾大家。
+
+（一片沉默，所有人都剛剛被拉進一個陌生的群聊。）
+
+低語者：……這是什麼？
+
+牺牲者：誰拉我進來的？
+
+執刑者：沈先生？你不是死了嗎？
+
+沈先生：我沒有死，至少現在還沒有。
+
+偽面者：（笑）這個笑話不太好笑。
+
+沈先生：我知道你們有很多疑問。我今天把大家拉進這個群，是因為我拿到了一個東西——一個U盤。
+
+獵心師：U盤？
+
+沈先生：那個U盤裡，有關於2014年真相的所有文件。我花了三年時間才找到它。
+
+匿行者：……什麼真相？
+
+沈先生：現在，我要把那個U盤裡的文件清單告訴你們：
+
+《昨日救贖》殘頁
+《昨日救贖》簡介
+沈先生日記殘頁一
+沈先生日記殘頁二
+警方報告
+目擊者口供
+精神病院簡歷
+警方檔案
+警方信息
+記者口述
+一份電話錄音
+
+各位，你們可以選擇其中一份文件，我稍後發給你。
+
+筑夢師：為什麼是現在？
+
+沈先生：因為時間不多了。`,
+
+  wait: `╔════════════════════════════════════╗
+║                                    ║
+║   未經沈先生允許，不得繼續查看     ║
+║                                    ║
+║         等待主持人指示             ║
+║                                    ║
+╚════════════════════════════════════╝`,
+
+  chat2: `【天才在左我在右聊天室(8)】
+（繼續）
+
+低語者：沈先生，你到底在哪裡？
+
+牺牲者：你說的2014年的真相……是指什麼？
+
+沈先生：各位先別急著問我在哪裡。我現在安全，暫時。
+
+執刑者：你說永久九沒殺你，那爆炸是誰做的？
+
+沈先生：那是我接下來要告訴你們的。但在那之前，我需要你們先回答我幾個問題——
+
+關於雍九的。
+
+沈先生：第一個問題：雍九的兩本書，有什麼本質上的區別？
+
+沈先生：第二個問題：他的殺人邏輯是什麼？
+
+沈先生：第三個問題：他如何「完成」他的計劃？
+
+沈先生：第四個問題：三年前，你們每個人，都做了什麼？
+
+（沉默。）
+
+獵心師：這些問題……
+
+沈先生：思考吧。和彼此聊聊。
+
+沈先生：我在等你們的答案。`,
+
+  chat3_template: (charName) => `【私訊】沈先生 → ${charName}
+2017年7月10日 凌晨3:41
+
+沈先生：${charName}，你想要找的那個人就在今天的聊天室內。
+
+${charName}：什麼！真的嗎！他是誰！
+
+沈先生：和其他人聊聊吧，找到那個人，我會將他/她的地址給你。
+
+${charName}：好，我一定會找到他/她！`,
+
+  chat4_template: (charName) => `【私訊】沈先生 → ${charName}
+
+恭喜你，找到了他。
+
+現在只剩下一個問題——
+
+你要實現自己的願望嗎？
+
+時間正在流逝。
+
+機會只有一次。`,
+
+  chat5: `【天才在左我在右聊天室(8)】
+（最終章）
+
+沈先生：各位，感謝今晚的交流。
+
+沈先生：我想，你們現在都知道自己想做什麼了。
+
+（系統提示：低語者 已被移出群聊）
+（系統提示：牺牲者 已被移出群聊）
+（系統提示：執刑者 已被移出群聊）
+（系統提示：偽面者 已被移出群聊）
+（系統提示：獵心師 已被移出群聊）
+（系統提示：匿行者 已被移出群聊）
+（系統提示：筑夢師 已被移出群聊）
+
+沈先生：我給了你們機會，卻無人珍惜。
+
+沈先生：各位。
+
+你：再見。`,
+
+  final: `這一次，
+
+機會給到了你，
+
+你要怎麼選擇？`,
+};
+
+function getBook2Script(charId, charName) {
+  const letter = BOOK2_LETTERS[charId] || '（個人信件內容待補充）';
+  return [
+    {
+      title: '聊天記錄 · 壹',
+      lockCode: 'UNLOCK-BOOK2',
+      content: BOOK2_COMMON.chat1,
+    },
+    {
+      title: '聊天記錄 · 貳',
+      lockCode: 'UNLOCK-B2-2',
+      content: BOOK2_COMMON.chat2,
+    },
+    {
+      title: '個人信件',
+      lockCode: 'UNLOCK-B2-LETTER',
+      content: letter,
+    },
+    {
+      title: '聊天記錄 · 叁',
+      lockCode: 'UNLOCK-B2-3',
+      content: BOOK2_COMMON.chat3_template(charName),
+    },
+    {
+      title: '聊天記錄 · 肆',
+      lockCode: 'UNLOCK-B2-4',
+      content: BOOK2_COMMON.chat4_template(charName),
+    },
+    {
+      title: '聊天記錄 · 伍',
+      lockCode: 'UNLOCK-B2-5',
+      content: BOOK2_COMMON.chat5,
+    },
+    {
+      title: '最終抉擇',
+      lockCode: 'UNLOCK-B2-5',
+      content: BOOK2_COMMON.final,
+    },
+  ];
+}
+
 const CHAR_LETTER = {
   '01': { wish: '你曾在信中告訴我，你從未在外人面前開口說過心裡話。你的願望，是希望有一個人，真正聽懂你說的每一個字。', hint: '你從不和外人說話，只和小奧唱歌。' },
   '02': { wish: '你曾在信中告訴我，你想要解脫——不是報復，不是憤怒，只是太累了。你的願望，是希望一切能夠結束，或者找到繼續的理由。', hint: '他想要解脫，就是去死。' },
@@ -633,6 +944,7 @@ function applyGMState(newState) {
   gmState = newState;
   updatePhaseIndicator();
   if (window._script) renderAct(currentAct);
+  updateBook2Tab();
 
   const newBroadcasts = (gmState.broadcasts || []).length;
   if (newBroadcasts > prevBroadcasts && prevBroadcasts > 0) {
@@ -770,6 +1082,60 @@ function showApp() {
 }
 
 let currentAct = 0;
+let currentBook2Section = 0;
+
+function renderBook2(idx) {
+  currentBook2Section = idx;
+  const script = window._book2Script;
+  if (!script) return;
+  const section = script[idx];
+  const unlocked = (gmState.unlocked || {})[section.lockCode];
+
+  const nav = document.getElementById('book2Nav');
+  if (nav) {
+    nav.innerHTML = script.map((s, i) => {
+      const sUnlocked = (gmState.unlocked || {})[s.lockCode];
+      return `<button class="act-nav-btn ${i === idx ? 'active' : ''} ${!sUnlocked ? '' : ''}"
+        onclick="renderBook2(${i})" ${!sUnlocked ? 'style="opacity:0.5"' : ''}>${s.title}</button>`;
+    }).join('');
+  }
+
+  const div = document.getElementById('book2Content');
+  if (!div) return;
+
+  if (!unlocked) {
+    div.innerHTML = `
+      <div style="text-align:center;padding:32px 16px;color:var(--muted)">
+        <div style="font-size:2rem;margin-bottom:8px">🔒</div>
+        <p style="font-size:0.85rem">等待主持人開放此節</p>
+        <p style="font-size:0.75rem;margin-top:6px;color:#555">代碼：${section.lockCode}</p>
+      </div>
+    `;
+    return;
+  }
+
+  const isChat = section.title.startsWith('聊天記錄');
+  div.innerHTML = `
+    <div class="script-reader">
+      <div class="script-act-title">${section.title}</div>
+      <div class="script-body" style="${isChat ? 'font-family:monospace;font-size:0.82rem;line-height:2;background:var(--surface2);border-radius:8px;padding:14px' : ''}">${section.content.replace(/\n/g, '<br>')}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:16px">
+        ${idx > 0 ? `<button class="act-nav-inline" onclick="renderBook2(${idx-1})">← 上一節</button>` : '<span></span>'}
+        ${idx < script.length - 1 ? `<button class="act-nav-inline" onclick="renderBook2(${idx+1})">下一節 →</button>` : '<span style="color:var(--muted);font-size:0.8rem">（第二本完）</span>'}
+      </div>
+    </div>
+  `;
+}
+
+function updateBook2Tab() {
+  const tab = document.getElementById('book2Tab');
+  if (!tab) return;
+  const unlocked = (gmState.unlocked || {})['UNLOCK-BOOK2'];
+  tab.style.display = unlocked ? 'block' : 'none';
+  if (unlocked && window._book2Script) {
+    renderBook2(currentBook2Section);
+  }
+}
 
 function renderMyChar() {
   const c = myChar;
@@ -785,6 +1151,7 @@ function renderMyChar() {
   `;
 
   window._script = script;
+  window._book2Script = getBook2Script(c.id, c.name);
   renderAct(0);
 
   document.getElementById('questGuide').style.display = 'none';
@@ -833,7 +1200,6 @@ function renderAct(idx) {
 }
 
 function updatePhaseIndicator() {
-  loadGMState();
   const PHASE_NAMES = ['入場+選角','開場微演繹','第一幕：信件','第二幕：別墅','第三幕：門市','第四幕：戲院','第五幕：沈先生家','結尾'];
   const idx = gmState.currentPhase || 0;
   document.getElementById('phaseIndicator').textContent = '當前：' + (PHASE_NAMES[idx] || '等待開始');
@@ -850,7 +1216,6 @@ async function unlockClue() {
   if (!code) return;
 
   // Check GM has unlocked it
-  loadGMState();
   const gmUnlocked = gmState.unlocked || {};
 
   if (CLUE_DATA[code]) {
