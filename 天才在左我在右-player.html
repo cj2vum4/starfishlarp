@@ -329,6 +329,52 @@
   }
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.error { border-color: var(--red); color: var(--red); }
+  /* SCRIPT READER */
+  .act-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .act-nav-btn {
+    padding: 5px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .act-nav-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+  .act-nav-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+  .script-act-title {
+    font-size: 1rem;
+    color: var(--accent2);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.08em;
+  }
+  .script-body {
+    font-size: 0.88rem;
+    line-height: 2;
+    color: var(--text);
+  }
+  .act-nav-inline {
+    padding: 7px 16px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .act-nav-inline:hover { background: var(--accent); color: #000; border-color: var(--accent); }
   /* TIMELINE */
   .mini-tl { font-size: 0.82rem; }
   .mtl-item {
@@ -348,6 +394,13 @@
   }
   .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
   .empty-state p { font-size: 0.85rem; line-height: 1.6; }
+  .act-nav-inline-dup {
+    display: none; /* duplicate removed */
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .act-nav-inline:hover { background: var(--accent); color: #000; border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -440,14 +493,64 @@
 // ============================================================
 // DATA
 // ============================================================
+const CHAR_LETTER = {
+  '01': { wish: '你曾在信中告訴我，你從未在外人面前開口說過心裡話。你的願望，是希望有一個人，真正聽懂你說的每一個字。', hint: '你從不和外人說話，只和小奧唱歌。' },
+  '02': { wish: '你曾在信中告訴我，你想要解脫——不是報復，不是憤怒，只是太累了。你的願望，是希望一切能夠結束，或者找到繼續的理由。', hint: '他想要解脫，就是去死。' },
+  '03': { wish: '你曾在信中告訴我，你相信懲罰是正義的實現，世上有些人不應該被寬恕。你的願望，是讓那個人受到應有的懲罰。', hint: '在他的眼裡只有他是強者。' },
+  '04': { wish: '你曾在信中告訴我，你已經太久沒有摘下過那副笑臉了。你的願望，是找到一個不需要偽裝的地方。', hint: '他的笑容總是控制不住。' },
+  '05': { wish: '你曾在信中告訴我，你善於看穿別人，卻無法理解自己。你的願望，是找到那個真正能夠讓你心動的人。', hint: '他每天都需要做愛。' },
+  '06': { wish: '你曾在信中告訴我，你在這個世界上活得像一道影子，沒有人真正看見你。你的願望，是被人記住，哪怕只有一次。', hint: '他不必與人交流，覺得所有人都看他笑話。' },
+  '07': { wish: '你曾在信中告訴我，你的夢境比現實更真實。你的願望，是找到那條從夢境通往真相的路。', hint: '他創造了奇妙的夢境。' },
+};
+
+// The 5-act script (same for all characters, character name is substituted in)
+function getScript(charName, letter) {
+  return [
+    {
+      title: '來自沈先生的郵件',
+      locked: false,
+      content: `收件人：@${charName}\n發件人：@沈先生\n日期：2014年7月18日\n主題：《昨日救贖》2\n附件：這封郵件請單獨閱讀，勿被他人看到\n\n────────────────\n\n近來可好，我最忠實的好友——${charName}。\n\n收到你的信件我很開心，我和你一樣是個沒有朋友的人，所以你的事情對我而言非常重要。我已收到了你的願望，別怕，我的朋友，我會幫你解決眼前的問題，自一年前將卡牌交給你時這便是我的責任。\n\n${letter.wish}\n\n這一次信件回覆的稍晚了些，實在是我的生活中出現了一些意外，無法脫身。我最信任的人背叛了我，這對我來說是極大的痛苦……\n\n只是這一次不再通過手寫的方式，而是Email，我想這樣會更方便一些，你覺得呢？\n\n在你閱讀附件內容前，我還有一件事要與你說——在我拿到U盤後，除了每晚做惡夢外，我的生活中開始頻繁出現一些怪事……我前一夜寫的日記會突然消失……我電腦內的文件不知名地被刪除……無論走在哪裡，總會有被人死死盯著的感覺……\n\n死神的鐮刀在慢慢割開我的喉嚨……\n\n若有一天我不在了，不知是否有人會發現我的屍體……\n\n為了你的安全，切記！`
+    },
+    {
+      title: '第一幕 · 蒼語山墓園',
+      locked: false,
+      content: `我收到沈先生的信件是三天前，也就是2014年7月18日，信件的內容很簡單，他希望邀請我來參加他的葬禮。\n\n這令我感到意外，又讓我好奇，難道是一場惡作劇？\n\n一個人邀請其他人來參加自己的葬禮，本就是件無法理喻的事，除非他選擇自殺。\n\n但，我還是準時來了。\n\n────────────────\n\n日期：2014年7月21日晚。\n\n他選的日子很符合死亡，這天自清晨起小雨便淅淅瀝瀝地落下，整整下了一天，讓人感到煩悶，又有些沮喪。直至21:00我才離開家門，撑著一把傘，沿著路燈來到車站，坐上了前往晉州市郊區的大巴車。\n\n苦語山自前些年發生了一場大火後，便很少有人踏足了。傳聞上面埋葬著數百具無名屍骨，雨勢稍大，就會看到沖刷下來的人骨，恐怖駭人。\n\n而他，選擇在這裡埋葬自己的軀體，長眠於此。\n\n我于深夜22:00抵達了淒冷的墓園內……\n\n────────────────\n\n黑暗中的男人開口了：「各位，我是沈先生生前的好友，也是主持他葬禮的殯儀，歡迎你們在7月21日的深夜，來與我一同悼念我們的摯友：沈先生。」\n\n「讓我數一下……一個……兩個……七個……正好的人數……請給我看一眼沈先生曾經交給你們的信物——那張卡牌。」\n\n卡片的背面寫著三個字：${charName}。\n\n────────────────\n\n📌 任務1：分享自己的故事，並了解其他人的願望。\n\n⛔ 未經殯儀允許，請勿翻開下一幕。`
+    },
+    {
+      title: '第二幕 · 別墅',
+      locked: true,
+      lockCode: 'UNLOCK-ACT2',
+      content: `殯儀站在墓坑前，沉默著，只見他緩緩地蹲下身，將手伸進了墓坑內！\n\n只見他緩緩從黑布上拿起了一樣東西，那似乎是一張卡牌，他吹了吹上面的泥塵，三個字若隱若現——審判者。\n\n「今夜的葬禮不僅僅於此，我還要帶你們去幾個地點，在那裡，你們或許能夠查到沈先生死亡的真相。同樣，作為回報，你們的願望將得到實現……各位，前路坎坷，第一步踏出去，就不再有回頭的路……」\n\n────────────────\n\n約半個小時後，車輛在一片漆黑的地方停了下來。透過車燈看到是一座二層的別墅，孤零零伫立在道路旁邊，別墅的大門是黑色的，高大寬厚，將我們阻隔在別墅之外。\n\n「各位，這棟別墅曾住過一個女人，她最近失蹤了。這便是我要帶你們來的第一個地點，也是沈先生死前留下的一道謎題，你們需要在此處得到答案。」\n\n📌 任務：選擇一個地點搜集證據。\n地點：房頂、草坪、地下室、臥室、狗窩、保姆問答、花匠問答\n\n────────────────\n\n在我們選擇地點前，殯儀發給我們每人一張卡牌：[${charName}的搜證卡]\n\n📌 弹窗任務：\n1. 她是誰？（名字是？）\n2. 她的職業是什麼？\n3. 她有什麼特點（病症）？\n4. 她的願望是什麼？\n5. 她是如何實現自己願望的？\n6. 她在哪？\n\n⛔ 未經殯儀允許，請勿翻開下一幕。`
+    },
+    {
+      title: '第三幕 · 琴房門市',
+      locked: true,
+      lockCode: 'UNLOCK-ACT3',
+      content: `在我們離開別墅前，我們看到殯儀獨自走進了別墅，拿走那張寫著「迷途者」的卡牌。\n\n我靠在座椅上，閉上眼睛，不敢去回憶剛剛別墅內得到的結果。但我卻又無法控制自己，腦海中一直出現那染著血的場景……\n\n────────────────\n\n時間：2014年7月22日，00:40\n\n這是一個還亮著點點燈火的小區，略顯破舊。殯儀將車隨意停在小區的一棟門市下，示意我們跟著他，來到門市的面前，上面掛著牌匾，寫著：她的琴房。\n\n殯儀冷聲道：「這是我們今晚的第二個地點，在這裡曾經住著一個女人，已經失蹤，沒有人知道她在哪裡。」\n\n📌 任務：選擇一個地點搜集證據。\n地點：一樓琴房、道具間、洗手間、廚房、二樓臥室、哥哥問答、鄰居問答\n\n────────────────\n\n📌 弹窗任務：\n1. 她是誰？（名字是？）\n2. 她的職業是什麼？\n3. 她有什麼特點（病症）？\n4. 她的願望是什麼？\n5. 她是如何實現自己願望的？\n6. 她在哪？\n\n⛔ 未經殯儀允許，請勿翻開下一幕。`
+    },
+    {
+      title: '第四幕 · 戲院劇場',
+      locked: true,
+      lockCode: 'UNLOCK-ACT4',
+      content: `「各位，我們即將前往第三個地點。」\n\n殯儀開口，再次登上了商務車。黑漆漆的車內，似乎有無數只觸手緊緊勒著我的身體，讓我有些喘不過氣。\n\n────────────────\n\n時間：2014年8月22日，02:40\n\n我們抵達了第三個地點。一座隱藏在黑暗中的巨大劇場，在劇場門口的邊上，擺放著一塊閃爍的LED燈牌，上面寫著：《傀儡戲》\n\n演出時間：週一至週五，每日15:00\n\n📌 任務：選擇一個地點搜集證據。\n地點：更衣室、舞台、後台、道具間、觀眾席、打更老頭問答、對戲演員問答\n\n────────────────\n\n📌 弹窗任務：\n1. 他是誰？（名字是？）\n2. 他的職業是什麼？\n3. 他有什麼特點（病症）？\n4. 他的願望是什麼？\n5. 他是如何實現自己願望的？\n6. 他在哪？\n\n⛔ 未經殯儀允許，請勿翻開下一幕。`
+    },
+    {
+      title: '第五幕 · 沈先生的家',
+      locked: true,
+      lockCode: 'UNLOCK-ACT5',
+      content: `時間：04:20\n\n殯儀告訴了我們，他要帶我們去的下一個地方是——沈先生的家裡。\n\n回想起前面經歷的幾個地點，難道沈先生的死亡也……\n\n不會的，不會的！我告訴自己，在蒼語山墓園已看到他的屍體。\n\n沈先生的死亡真相，就在眼前。\n\n────────────────\n\n在沈先生家中，殯儀發給每個人一張個人線索卡。\n\n📌 收到個人線索卡（${charName}專屬）後，輸入GM給你的代碼解鎖。\n\n📌 弹窗任務：\n1. 殯儀的真實身份？\n2. 殯儀與沈先生的關係是？\n3. 沈先生的死亡真相是什麼？\n4. 你是否選擇要實現自己的願望？`
+    },
+  ];
+}
+
 const CHARACTERS = [
-  { id:'01', name:'低語者', desc:'從來不和外人說話，只和小奧唱歌', qs:'1–2', story:`你叫做阿靜。\n\n你從小就不善言辭，唯一願意開口說話的對象是一隻叫「小奧」的貓。你的生活軌跡平靜到幾乎透明，卻藏著旁人無法理解的孤獨。\n\n直到你收到了那封邀請函……\n\n【遊戲提示】\n你的角色傾向沉默、觀察，發言前先聆聽是你的強項。不要強迫自己外向，低語者的力量在於那些說出口的話，每一句都有分量。` },
-  { id:'02', name:'牺牲者', desc:'他想要解脫，就是去死', qs:'3–4', story:`你叫做陳默。\n\n你思考過死亡，不是因為懦弱，而是因為太累了。那本書《昨日救贖》給了你另一個方向——也許，還有別的出口。\n\n你接受了邀請，帶著最後一絲好奇心走到這裡。\n\n【遊戲提示】\n你的角色情感豐富、有犧牲精神。在推理環節中，試著從「誰最有理由這樣做？」的角度思考。你比其他角色更能感受到別人的痛苦。` },
-  { id:'03', name:'執刑者', desc:'在他的眼裡只有他是強者', qs:'11–12', story:`你叫做林強。\n\n在你的世界裡，強者才有資格說話，弱者只能接受懲罰。你相信懲罰是正義的實現，直到你發現自己的父親也在那份名單上……\n\n你帶著憤怒與困惑走到這裡。\n\n【遊戲提示】\n你的角色果斷、邏輯清晰，善於提出犀利的問題。在討論環節中你會是主導者，但要注意——有些事情你不一定想讓別人知道。` },
-  { id:'04', name:'偽面者', desc:'他的笑容總是控制不住', qs:'5–6', story:`你叫做曉旭。\n\n你總是在微笑，那個笑容是你的盔甲，也是你的牢籠。每個人都說你很快樂，只有你自己知道那不是真的。\n\n你戴著微笑的面具走到這裡。\n\n【遊戲提示】\n你的角色善於社交、觀察力敏銳。你可能會是第一個察覺到不對勁的人——但你選擇說出來，還是藏在心裡，是你的選擇。` },
-  { id:'05', name:'獵心師', desc:'他每天都需要做愛', qs:'13–14', story:`你叫做蘇瑤。\n\n你善於看穿人心，知道每個人最深的渴望。你用這個能力傷害過人，也被傷害過。那本書說你可以用這個天賦去「修復」世界。\n\n你帶著好奇與戒備走到這裡。\n\n【遊戲提示】\n你的角色直接、大膽，不怕問尖銳的問題。在每個場景中，試著觀察別人的情緒反應——那些細節往往是最重要的線索。` },
-  { id:'06', name:'區行者', desc:'他不必與人交流，覺得所有人都看他笑話', qs:'9–10', story:`你叫做王遊。\n\n你存在於世界的邊緣，像一道影子。沒有人注意你，這讓你痛苦，卻也讓你學會了觀察一切。你看到了別人都沒看到的事情。\n\n你在角落等待，直到邀請函來臨。\n\n【遊戲提示】\n你的角色是「邊緣觀察者」。你不需要主動，而是等對的時機說出關鍵發現。你注意到的細節往往是其他人忽略的真相。` },
-  { id:'07', name:'筑夢師', desc:'他創造了奇妙的夢境', qs:'3–4', story:`你叫做莫奇。\n\n你活在夢與現實的邊界。你的夢境如此真實，有時你搞不清楚哪個才是醒著的世界。那本書說：「夢境是通往真相的道路。」\n\n你懷抱著夢幻走到這裡，也帶來了自己的秘密。\n\n【遊戲提示】\n你的角色想像力豐富、思維跳躍。你可能會在別人卡關時提出意想不到的推理方向。記住——那些看似荒誕的想法，也許正是真相。` },
+  { id:'01', name:'低語者' },
+  { id:'02', name:'牺牲者' },
+  { id:'03', name:'執刑者' },
+  { id:'04', name:'偽面者' },
+  { id:'05', name:'獵心師' },
+  { id:'06', name:'區行者' },
+  { id:'07', name:'筑夢師' },
 ];
 
 const CLUE_DATA = {
@@ -554,26 +657,67 @@ function showApp() {
   updatePhaseIndicator();
 }
 
+let currentAct = 0;
+
 function renderMyChar() {
   const c = myChar;
+  const letter = CHAR_LETTER[c.id] || { wish: '', hint: c.desc };
+  const script = getScript(c.name, letter);
+
   document.getElementById('myCharInfo').innerHTML = `
     <div class="char-info-name">${c.id} · ${c.name}</div>
-    <span class="char-info-tag">對應問題 ${c.qs}</span>
     <span class="char-info-tag">${myName}</span>
-    <div class="char-info-desc">${c.story.replace(/\n/g, '<br>')}</div>
+    <div style="font-size:0.78rem;color:var(--muted);margin-top:6px;margin-bottom:14px;font-style:italic">${letter.hint}</div>
+    <div class="act-nav" id="actNav"></div>
+    <div id="actContent"></div>
   `;
-  const questContent = {
-    '01': '1–2 題答「是」較多的玩家最適合你的角色。代表你對言語有敏感的感受。',
-    '02': '3–4 題答「是」較多代表你經歷過承諾的傷害，這是牺牲者的核心痛苦。',
-    '03': '11–12 題答「是」較多代表你對正義/懲罰有強烈感受，這正是執刑者的驅動力。',
-    '04': '5–6 題答「是」較多代表你有過「戴面具」的經歷，偽面者就是從這裡誕生的。',
-    '05': '13–14 題答「是」較多代表你在愛情中有深刻傷痛，獵心師的力量來自這裡。',
-    '06': '9–10 題答「是」較多代表你了解邊緣感，區行者的觀察力正源自這種孤獨。',
-    '07': '3–4 題答「是」較多代表你有理想與現實的落差，筑夢師活在這個縫隙之間。',
-  };
-  document.getElementById('questGuideContent').innerHTML = `
-    <p style="font-size:0.85rem;line-height:1.8;color:var(--text)">${questContent[c.id] || ''}</p>
-    <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">💡 問卷問題 ${c.qs} 對應你的角色。若你的答案和建議不完全符合也沒關係——最重要的是你選擇了這個角色！</p>
+
+  window._script = script;
+  renderAct(0);
+
+  document.getElementById('questGuide').style.display = 'none';
+}
+
+function renderAct(idx) {
+  currentAct = idx;
+  const script = window._script;
+  const act = script[idx];
+
+  // Nav buttons
+  const nav = document.getElementById('actNav');
+  if (nav) {
+    nav.innerHTML = script.map((a, i) =>
+      `<button class="act-nav-btn ${i === idx ? 'active' : ''}" onclick="renderAct(${i})">${a.title.split('·')[0].trim()}</button>`
+    ).join('');
+  }
+
+  const contentDiv = document.getElementById('actContent');
+  if (!contentDiv) return;
+
+  if (act.locked) {
+    const gmState = JSON.parse(localStorage.getItem('gm_state') || '{}');
+    const unlocked = (gmState.unlocked || {})[act.lockCode] || myUnlocked.includes(act.lockCode);
+    if (!unlocked) {
+      contentDiv.innerHTML = `
+        <div style="text-align:center;padding:32px 16px;color:var(--muted)">
+          <div style="font-size:2rem;margin-bottom:8px">🔒</div>
+          <p style="font-size:0.85rem">等待主持人開放此幕</p>
+          <p style="font-size:0.75rem;margin-top:6px;color:#555">代碼：${act.lockCode}</p>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  contentDiv.innerHTML = `
+    <div class="script-reader">
+      <div class="script-act-title">${act.title}</div>
+      <div class="script-body">${act.content.replace(/\n/g, '<br>')}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:16px">
+        ${idx > 0 ? `<button class="act-nav-inline" onclick="renderAct(${idx-1})">← 上一幕</button>` : '<span></span>'}
+        ${idx < script.length - 1 ? `<button class="act-nav-inline" onclick="renderAct(${idx+1})">下一幕 →</button>` : '<span style="color:var(--muted);font-size:0.8rem">（劇本完）</span>'}
+      </div>
+    </div>
   `;
 }
 
