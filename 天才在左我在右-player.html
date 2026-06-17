@@ -626,12 +626,35 @@ let gmState = {};
 function playerKey() { return sessionId + '_' + (myChar ? myChar.id : ''); }
 
 // ---- GM State ----
+let lastBroadcastCount = 0;
+
 function applyGMState(newState) {
+  const prevBroadcasts = (gmState.broadcasts || []).length;
   gmState = newState;
   updatePhaseIndicator();
-  if (document.getElementById('ptab-broadcast') && document.getElementById('ptab-broadcast').classList.contains('active')) renderBroadcast();
-  // Re-render current act in case act lock changed
   if (window._script) renderAct(currentAct);
+
+  const newBroadcasts = (gmState.broadcasts || []).length;
+  if (newBroadcasts > prevBroadcasts && prevBroadcasts > 0) {
+    const latest = gmState.broadcasts[0];
+    showToast('📢 ' + (latest ? latest.msg.substring(0, 40) : '主持人有新通知'));
+    // Add red dot to broadcast tab
+    const broadcastBtn = document.querySelector('.ptab-btn[onclick*="broadcast"]');
+    if (broadcastBtn && !broadcastBtn.classList.contains('active')) {
+      broadcastBtn.setAttribute('data-badge', '●');
+      broadcastBtn.style.position = 'relative';
+      if (!document.getElementById('broadcastDot')) {
+        const dot = document.createElement('span');
+        dot.id = 'broadcastDot';
+        dot.style.cssText = 'position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#e05555';
+        broadcastBtn.appendChild(dot);
+      }
+    }
+  }
+
+  if (document.getElementById('ptab-broadcast') && document.getElementById('ptab-broadcast').classList.contains('active')) {
+    renderBroadcast();
+  }
 }
 
 function subscribeToGMState() {
@@ -881,7 +904,9 @@ function renderUnlockedClues() {
 // BROADCAST
 // ============================================================
 function renderBroadcast() {
-  loadGMState();
+  // Clear red dot when opening broadcast tab
+  const dot = document.getElementById('broadcastDot');
+  if (dot) dot.remove();
   const list = document.getElementById('broadcastList');
   const broadcasts = gmState.broadcasts || [];
   if (!broadcasts.length) {

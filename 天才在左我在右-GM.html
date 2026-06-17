@@ -903,13 +903,27 @@ function renderPhases() {
   });
 }
 
+// Phase index → auto-unlock code
+const PHASE_UNLOCK_MAP = {
+  3: 'UNLOCK-ACT2',
+  4: 'UNLOCK-ACT3',
+  5: 'UNLOCK-ACT4',
+  6: 'UNLOCK-ACT5',
+};
+
 function setPhase(i) {
   state.currentPhase = i;
+  // Auto-unlock corresponding act
+  const unlockCode = PHASE_UNLOCK_MAP[i];
+  if (unlockCode) {
+    if (!state.unlocked) state.unlocked = {};
+    state.unlocked[unlockCode] = true;
+  }
   saveState();
   renderPhases();
-  showToast('已切換至：' + PHASES[i].name);
-  // broadcast to players
-  const msg = `⚡ 主持人通知：現在進入【${PHASES[i].name}】`;
+  renderClues();
+  showToast('已切換至：' + PHASES[i].name + (unlockCode ? '（已自動解鎖' + unlockCode + '）' : ''));
+  const msg = `⚡ 主持人通知：現在進入【${PHASES[i].name}】` + (unlockCode ? '，劇本已開放，請翻到對應幕。' : '');
   addBroadcastHistory(msg, 'system');
 }
 
