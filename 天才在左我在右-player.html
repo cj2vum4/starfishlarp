@@ -427,7 +427,7 @@
 </div>
 
 <!-- MAIN APP -->
-<div id="appScreen">
+<div id="appScreen" style="display:none">
   <div class="app-header">
     <div class="app-header-left">
       <span class="my-char-badge" id="myCharBadge"></span>
@@ -742,6 +742,7 @@ async function enterGame() {
 // APP
 // ============================================================
 function showApp() {
+  document.getElementById('sessionScreen').style.display = 'none';
   document.getElementById('introScreen').style.display = 'none';
   document.getElementById('appScreen').style.display = 'block';
   document.getElementById('myCharBadge').textContent = myChar.name + ' · ' + myName;
