@@ -1920,33 +1920,6 @@
                 <button class="detail-btn" onclick="goToScript('lxe8')">查看詳細介紹</button>
             </div>
 
-            <!-- 新增：天才在左我在右（線上遊玩）-->
-            <div class="script-card" data-theme="horror" data-players="7" data-types="現代,推理,懸疑,心理,沉浸" data-difficulty="3">
-                <div style="position:relative">
-                    <div style="width:100%;height:200px;border-radius:15px;margin-bottom:20px;background:linear-gradient(135deg,#0a0a18,#1a1030,#0a0a18);display:flex;align-items:center;justify-content:center;border:2px solid rgba(200,169,126,0.4);overflow:hidden;">
-                        <div style="text-align:center;padding:16px">
-                            <div style="font-size:2rem;margin-bottom:6px">⚖️</div>
-                            <div style="color:#c8a97e;font-size:1.1rem;letter-spacing:0.15em;font-family:serif">天才在左</div>
-                            <div style="color:#e8e0d0;font-size:0.85rem;letter-spacing:0.1em;margin-top:4px">我在右</div>
-                        </div>
-                        <span style="position:absolute;top:10px;right:10px;background:#c8a97e;color:#000;font-size:0.65rem;padding:3px 8px;border-radius:10px;font-weight:bold;letter-spacing:0.08em">🎮 線上遊玩</span>
-                    </div>
-                </div>
-                <h3 class="script-title">天才在左，我在右</h3>
-                <div class="script-info">
-                    <span class="info-badge">👥 7人</span>
-                    <span class="info-badge">⏰ 4.5小時</span>
-                    <span class="info-badge">⭐ 3星</span>
-                </div>
-                <div class="script-types">
-                    <span class="type-tag">現代</span>
-                    <span class="type-tag">推理</span>
-                    <span class="type-tag">懸疑</span>
-                    <span class="type-tag">心理</span>
-                    <span class="type-tag">沉浸</span>
-                </div>
-                <button class="detail-btn" style="background:linear-gradient(135deg,#c8a97e,#a07040);color:#000" onclick="openOnlineScriptModal()">🎮 進入線上劇本</button>
-            </div>
 
         </div>
 
@@ -2452,16 +2425,6 @@
             time: 5,
             file: '龍宴.html'
         },
-        {
-            id: 'tiancai',
-            name: '天才在左，我在右',
-            players: 7,
-            types: ['現代', '推理', '懸疑', '心理', '沉浸'],
-            difficulty: 3,
-            theme: 'horror',
-            time: 4.5,
-            file: null
-        }
     );
 
     // DOM載入後執行的初始化函式
@@ -2786,17 +2749,6 @@
         applyStaggerAnimationWithinTwoSeconds();
     }
 
-    // 線上劇本選擇彈窗
-    function openOnlineScriptModal() {
-        document.getElementById('onlineScriptModal').style.display = 'flex';
-    }
-    function closeOnlineScriptModal() {
-        document.getElementById('onlineScriptModal').style.display = 'none';
-    }
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeOnlineScriptModal();
-    });
-
     // 前往劇本詳細頁面的函式
     function goToScript(scriptId) {
         const script = scripts.find(s => s.id === scriptId);
@@ -2809,24 +2761,5 @@
     }
     </script>
 
-<!-- 線上劇本選擇彈窗 -->
-<div id="onlineScriptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeOnlineScriptModal()">
-  <div style="background:linear-gradient(135deg,#0d0d1a,#1a1030);border:1px solid rgba(200,169,126,0.4);border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.8)">
-    <div style="font-size:2rem;margin-bottom:8px">⚖️</div>
-    <h2 style="color:#c8a97e;font-size:1.2rem;letter-spacing:0.12em;margin-bottom:6px;font-family:serif">天才在左，我在右</h2>
-    <p style="color:#7a7a9a;font-size:0.82rem;margin-bottom:28px;line-height:1.6">選擇你的身份進入線上劇本</p>
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <a href="天才在左我在右-GM.html" style="display:block;padding:14px 20px;background:linear-gradient(135deg,#8b1010,#6b0808);color:#fff;border-radius:10px;text-decoration:none;font-size:0.95rem;letter-spacing:0.08em;transition:opacity 0.2s" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
-        ⚖️ 審判者（GM 主持人端）
-        <div style="font-size:0.72rem;color:rgba(255,255,255,0.6);margin-top:4px">控制流程、發放線索、廣播指令</div>
-      </a>
-      <a href="天才在左我在右-player.html" style="display:block;padding:14px 20px;background:linear-gradient(135deg,#1a1030,#2a1848);border:1px solid rgba(200,169,126,0.4);color:#c8a97e;border-radius:10px;text-decoration:none;font-size:0.95rem;letter-spacing:0.08em;transition:opacity 0.2s" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
-        🃏 卡牌持有者（玩家端）
-        <div style="font-size:0.72rem;color:rgba(200,169,126,0.6);margin-top:4px">選擇角色、閱讀劇本、解鎖線索</div>
-      </a>
-    </div>
-    <button onclick="closeOnlineScriptModal()" style="margin-top:20px;padding:8px 20px;background:none;border:1px solid rgba(255,255,255,0.15);color:#6a6a8a;border-radius:8px;cursor:pointer;font-size:0.82rem">取消</button>
-  </div>
-</div>
 </body>
 </html>
