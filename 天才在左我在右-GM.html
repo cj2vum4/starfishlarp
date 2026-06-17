@@ -531,34 +531,10 @@
         </table>
       </div>
 
-      <!-- 第二本·壹 B系列 -->
+      <!-- 第二本（按手冊流程順序） -->
       <div class="clue-section">
         <div class="scene-header">
-          <h3>📕 第二本·幕壹：B系列線索（U盤文件）</h3>
-          <button class="unlock-all-btn" onclick="unlockAll('book2_b')">全部開放</button>
-        </div>
-        <table class="clue-table">
-          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
-          <tbody id="clues-book2_b"></tbody>
-        </table>
-      </div>
-
-      <!-- 第二本·貳 C系列 -->
-      <div class="clue-section">
-        <div class="scene-header">
-          <h3>📕 第二本·幕貳：C系列線索（沈先生U盤文件）</h3>
-          <button class="unlock-all-btn" onclick="unlockAll('book2_c')">全部開放</button>
-        </div>
-        <table class="clue-table">
-          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
-          <tbody id="clues-book2_c"></tbody>
-        </table>
-      </div>
-
-      <!-- 第二本·聊天進程 -->
-      <div class="clue-section">
-        <div class="scene-header">
-          <h3>📕 第二本劇本（聊天記錄進程解鎖）</h3>
+          <h3>📕 第二本劇本（按幕序：壹解鎖+B系列 → 貳解鎖+C系列 → 叁個人信件 → 肆 → 伍結局）</h3>
           <button class="unlock-all-btn" onclick="unlockAll('book2')">全部開放</button>
         </div>
         <table class="clue-table">
@@ -757,29 +733,30 @@ const CLUES = {
     { name:'道具間魔術道具', code:'V4-MAGIC', type:'public', desc:'切割道具，確認他將自己一分為二' },
     { name:'狗窩碎肉', code:'V4-DOG', type:'public', desc:'別墅第一幕的狗窩，兩條狗（「花」和「ニ」），旁邊有「守護我們的家」木牌' },
   ],
-  book2_b: [
-    { name:'B01 — 警方報告（爆炸）', code:'B01-POL', type:'public', desc:'2014.7.22爆炸案，一具遺骸，死亡時間7/17-7/18' },
-    { name:'B02 — 精神病院簡歷', code:'B02-FILE', type:'public', desc:'鄧治，40歲，反社會人格，入院2011.5，主治醫生：小花' },
-    { name:'B03 — 警方信息（逃院）', code:'B03-INFO', type:'public', desc:'2013.4精神病院逃人，鄧治強姦主治醫生後逃院' },
-    { name:'B04 — 記者口述（火災）', code:'B04-JOUR', type:'public', desc:'2013.5苦語山精神病院大火，數百病人罹難，目擊陌生男子' },
-    { name:'B05 — 警方檔案（繼父）', code:'B05-ARR', type:'public', desc:'2011年逮捕繼父鄧治，受害少年（繼子）後下落不明' },
-    { name:'B06 — 《昨日救贖2》殘頁一', code:'B06-PAGE1', type:'public', desc:'罪惡洗禮章節：世界由罪孽組成，《昨日救贖》的誕生目的' },
-    { name:'B07 — 《昨日救贖2》殘頁二', code:'B07-PAGE2', type:'public', desc:'審判者章節：審判者是最高卡牌，使命是讓十二人以罪孽完成審判' },
-  ],
-  book2_c: [
-    { name:'C01 — 警方報告（三案）', code:'C01-REP', type:'public', desc:'三起命案：琴房7/10、劇場7/11、別墅花盆7/12；陽台手機' },
-    { name:'C02 — 目擊者口供', code:'C02-WIT', type:'public', desc:'7/12別墅目擊鄧治入侵；7/9街道持刀行凶' },
-    { name:'C03 — 電話錄音', code:'C03-REC', type:'public', desc:'7/9威脅倡偶師：曝病史、老婆是「鸡」、要1000萬' },
-    { name:'C04 — 《昨日救贖》簡介', code:'C04-BOOK', type:'public', desc:'2010年初版，找到符合12卡牌罪孽之人啟動儀式' },
-    { name:'C05 — 《昨日救贖》殘頁', code:'C05-FRAG', type:'public', desc:'完美犯罪章節：以罪殺罪，策劃者不需動手' },
-  ],
   book2: [
-    { name:'開放第二本', code:'UNLOCK-BOOK2', type:'gm', desc:'解鎖玩家端「第二本劇本」分頁（顯示聊天記錄壹）' },
-    { name:'開放聊天貳', code:'UNLOCK-B2-2', type:'gm', desc:'解鎖聊天記錄一貳（沈先生提出四個問題）' },
-    { name:'開放個人信件', code:'UNLOCK-B2-LETTER', type:'gm', desc:'解鎖各角色的個人信件（獨立內容）' },
-    { name:'開放聊天叁', code:'UNLOCK-B2-3', type:'gm', desc:'解鎖私訊叁（找到的人就在聊天室）' },
-    { name:'開放聊天肆', code:'UNLOCK-B2-4', type:'gm', desc:'解鎖私訊肆（恭喜找到他/她）' },
-    { name:'開放聊天伍+結局', code:'UNLOCK-B2-5', type:'gm', desc:'解鎖聊天記錄伍（沈先生依次踢人）及最終抉擇頁' },
+    // ── 幕壹（30 分鐘）：沈先生拉群 → 玩家選擇U盤文件 → GM逐一發放B系列 ──
+    { name:'【壹】開放第二本', code:'UNLOCK-BOOK2', type:'gm', desc:'解鎖玩家端「第二本劇本」分頁（顯示聊天記錄壹），玩家各自選擇一份U盤文件後由GM私發' },
+    { name:'B01 — 警方報告（爆炸）', code:'B01-POL', type:'private', desc:'2014.7.22爆炸案，一具遺骸，死亡時間7/17-7/18（玩家選擇後私發）' },
+    { name:'B02 — 精神病院簡歷', code:'B02-FILE', type:'private', desc:'鄧治，40歲，反社會人格，入院2011.5，主治醫生：小花（玩家選擇後私發）' },
+    { name:'B03 — 警方信息（逃院）', code:'B03-INFO', type:'private', desc:'2013.4精神病院逃人，鄧治強姦主治醫生後逃院（玩家選擇後私發）' },
+    { name:'B04 — 記者口述（火災）', code:'B04-JOUR', type:'private', desc:'2013.5苦語山精神病院大火，數百病人罹難，目擊陌生男子（玩家選擇後私發）' },
+    { name:'B05 — 警方檔案（繼父）', code:'B05-ARR', type:'private', desc:'2011年逮捕繼父鄧治，受害少年（繼子）後下落不明（玩家選擇後私發）' },
+    { name:'B06 — 《昨日救贖2》殘頁一', code:'B06-PAGE1', type:'private', desc:'罪惡洗禮章節：世界由罪孽組成，《昨日救贖》的誕生目的（玩家選擇後私發）' },
+    { name:'B07 — 《昨日救贖2》殘頁二', code:'B07-PAGE2', type:'private', desc:'審判者章節：審判者是最高卡牌，使命是讓十二人以罪孽完成審判（玩家選擇後私發）' },
+    // ── 幕貳（40 分鐘）：沈先生提出四個問題 → 討論後GM發C系列 ──
+    { name:'【貳】開放聊天貳', code:'UNLOCK-B2-2', type:'gm', desc:'解鎖聊天記錄貳（沈先生提出四個問題），討論後GM逐一發放C系列線索' },
+    { name:'C01 — 警方報告（三案）', code:'C01-REP', type:'private', desc:'三起命案：琴房7/10、劇場7/11、別墅花盆7/12；陽台手機（討論後私發）' },
+    { name:'C02 — 目擊者口供', code:'C02-WIT', type:'private', desc:'7/12別墅目擊鄧治入侵；7/9街道持刀行凶（討論後私發）' },
+    { name:'C03 — 電話錄音', code:'C03-REC', type:'private', desc:'7/9威脅倡偶師：曝病史、老婆是「鸡」、要1000萬（討論後私發）' },
+    { name:'C04 — 《昨日救贖》簡介', code:'C04-BOOK', type:'private', desc:'2010年初版，找到符合12卡牌罪孽之人啟動儀式（討論後私發）' },
+    { name:'C05 — 《昨日救贖》殘頁', code:'C05-FRAG', type:'private', desc:'完美犯罪章節：以罪殺罪，策劃者不需動手（討論後私發）' },
+    // ── 幕叁（30 分鐘）：個人信件 + 找人環 ──
+    { name:'【叁】開放個人信件', code:'UNLOCK-B2-LETTER', type:'gm', desc:'解鎖各角色的個人信件（寄給沈先生的信，每人讀完後進行找人環：牺牲者→低語者→筑夢師→匿行者→獵心師→偽面者→執刑者→牺牲者）' },
+    { name:'【叁】開放聊天叁', code:'UNLOCK-B2-3', type:'gm', desc:'解鎖私訊叁（沈先生告訴每個人：你要找的人就在聊天室）' },
+    // ── 幕肆（10 分鐘）：確認目標 ──
+    { name:'【肆】開放聊天肆', code:'UNLOCK-B2-4', type:'gm', desc:'解鎖私訊肆（恭喜找到他/她，你要實現願望嗎？）' },
+    // ── 幕伍+六（15 分鐘）：結局 + 沈先生踢人 ──
+    { name:'【伍】開放聊天伍+結局', code:'UNLOCK-B2-5', type:'gm', desc:'解鎖聊天記錄伍（沈先生依次踢人）及最終抉擇頁，並朗讀E01-E04時間軸卡' },
   ],
   act5: [
     { name:'開放第五幕', code:'UNLOCK-ACT5', type:'gm', desc:'解鎖所有玩家的第五幕劇本頁' },
@@ -1026,7 +1003,7 @@ function renderChars() {
 // CLUES
 // ============================================================
 function renderClues() {
-  ['act1','act2','act3','act4','act5','book2_b','book2_c','book2'].forEach(act => {
+  ['act1','act2','act3','act4','book2','act5'].forEach(act => {
     const tbody = document.getElementById('clues-' + act);
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -1036,7 +1013,7 @@ function renderClues() {
       const typeTag = c.type === 'public' ? '<span class="tag tag-public">公開</span>' :
                        c.type === 'private' ? '<span class="tag tag-private">私有</span>' :
                        '<span class="tag tag-gm">GM限定</span>';
-      const targetCol = c.target ? c.target : (act === 'act5' || act === 'act1' ? '' : '所有玩家');
+      const targetCol = c.target ? c.target : (act === 'act5' || act === 'act1' ? '' : (c.type === 'private' ? '指定玩家' : '所有玩家'));
       tr.innerHTML = `
         <td>${c.name}</td>
         <td><span class="clue-code" onclick="copyCode('${c.code}')">${c.code}</span></td>
