@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天才在左 我在右｜玩家端</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #080810;
+    --surface: #10101e;
+    --surface2: #18182a;
+    --accent: #c8a97e;
+    --accent2: #e8c49e;
+    --red: #e05555;
+    --green: #55c48a;
+    --blue: #5599e0;
+    --purple: #9055e0;
+    --text: #e8e0d0;
+    --muted: #6a6a8a;
+    --border: #202038;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif TC', '思源宋體', Georgia, serif;
+    min-height: 100vh;
+  }
+
+  /* ---- INTRO SCREEN ---- */
+  #introScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at center, #1a1030 0%, #080810 70%);
+  }
+  .intro-title {
+    font-size: 1.6rem;
+    color: var(--accent);
+    text-align: center;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+  }
+  .intro-sub {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+    margin-bottom: 32px;
+    letter-spacing: 0.08em;
+  }
+  .char-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 24px;
+  }
+  .char-select-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .char-select-card:hover, .char-select-card.selected {
+    border-color: var(--accent);
+    background: var(--surface2);
+  }
+  .char-select-card.selected { box-shadow: 0 0 16px rgba(200,169,126,0.3); }
+  .csc-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #000;
+    font-weight: bold;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 8px;
+  }
+  .csc-name { font-size: 1rem; color: var(--text); }
+  .csc-desc { font-size: 0.72rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .name-input {
+    width: 100%;
+    max-width: 320px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .name-input:focus { outline: none; border-color: var(--accent); }
+  .enter-btn {
+    padding: 12px 36px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .enter-btn:hover { background: var(--accent2); }
+  .enter-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ---- MAIN APP ---- */
+  #appScreen { display: none; }
+  .app-header {
+    background: linear-gradient(135deg, #08080f 0%, #141028 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .app-header-left { display: flex; align-items: center; gap: 12px; }
+  .my-char-badge {
+    background: var(--accent);
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  .app-title { font-size: 1rem; color: var(--accent); letter-spacing: 0.08em; }
+  .phase-indicator {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.4;
+  }
+  /* TABS */
+  .ptabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .ptabs::-webkit-scrollbar { display: none; }
+  .ptab-btn {
+    padding: 12px 18px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .ptab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface2); }
+
+  /* CONTENT */
+  .pcontent { padding: 20px; max-width: 700px; margin: 0 auto; }
+  .ptab-panel { display: none; }
+  .ptab-panel.active { display: block; }
+
+  /* CARD */
+  .pcard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .pcard-title {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.08em;
+  }
+  /* CLUE INPUT */
+  .clue-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .clue-code-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .clue-code-input:focus { outline: none; border-color: var(--accent); }
+  .clue-submit-btn {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .clue-submit-btn:hover { background: var(--accent2); }
+
+  /* UNLOCKED CLUE */
+  .clue-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .clue-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .clue-item-name { font-size: 0.9rem; color: var(--accent2); }
+  .clue-item-code {
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .clue-item-body {
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  /* ERROR */
+  .error-msg {
+    color: var(--red);
+    font-size: 0.82rem;
+    margin-top: 6px;
+    min-height: 18px;
+  }
+  /* CHARACTER INFO */
+  .char-info-name {
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: 0.1em;
+  }
+  .char-info-tag {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.78rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin: 3px 3px 3px 0;
+  }
+  .char-info-desc {
+    margin-top: 14px;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--text);
+    background: var(--surface2);
+    border-left: 2px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+  }
+  /* NOTICE */
+  .notice {
+    background: #1a1a08;
+    border: 1px solid #4a4a18;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #d0c870;
+    margin-bottom: 14px;
+  }
+  /* BROADCAST */
+  .broadcast-item {
+    background: var(--surface2);
+    border-left: 2px solid var(--accent);
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    animation: fadeIn 0.3s ease;
+  }
+  .broadcast-time { font-size: 0.72rem; color: var(--muted); margin-bottom: 4px; }
+  .no-broadcast { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 20px; }
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    z-index: 999;
+    max-width: 280px;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+  /* TIMELINE */
+  .mini-tl { font-size: 0.82rem; }
+  .mtl-item {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+  }
+  .mtl-date { min-width: 80px; color: var(--accent); font-size: 0.78rem; padding-top: 2px; }
+  .mtl-desc { flex: 1; color: var(--text); }
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
+  .empty-state p { font-size: 0.85rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- INTRO SCREEN -->
+<div id="introScreen">
+  <div class="intro-title">⚖️ 天才在左，我在右</div>
+  <div class="intro-sub">劇本殺玩家端 — 選擇你的角色</div>
+  <div class="char-select-grid" id="charSelectGrid"></div>
+  <input class="name-input" id="playerNameInput" placeholder="輸入你的名字（暱稱）" />
+  <button class="enter-btn" id="enterBtn" onclick="enterGame()" disabled>進入遊戲</button>
+</div>
+
+<!-- MAIN APP -->
+<div id="appScreen">
+  <div class="app-header">
+    <div class="app-header-left">
+      <span class="my-char-badge" id="myCharBadge"></span>
+      <span class="app-title">天才在左，我在右</span>
+    </div>
+    <div class="phase-indicator" id="phaseIndicator">等待主持人開場</div>
+  </div>
+  <div class="ptabs">
+    <button class="ptab-btn active" onclick="switchPTab('story')">📖 我的劇本</button>
+    <button class="ptab-btn" onclick="switchPTab('clues')">🔍 線索解鎖</button>
+    <button class="ptab-btn" onclick="switchPTab('broadcast')">📢 主持人通知</button>
+    <button class="ptab-btn" onclick="switchPTab('timeline')">📅 案件時間軸</button>
+  </div>
+  <div class="pcontent">
+
+    <!-- MY STORY -->
+    <div class="ptab-panel active" id="ptab-story">
+      <div class="pcard">
+        <div class="pcard-title">🎭 我的角色</div>
+        <div id="myCharInfo"></div>
+      </div>
+      <div class="pcard" id="questGuide">
+        <div class="pcard-title">📋 你的問卷提示</div>
+        <div id="questGuideContent"></div>
+      </div>
+    </div>
+
+    <!-- CLUES -->
+    <div class="ptab-panel" id="ptab-clues">
+      <div class="pcard">
+        <div class="pcard-title">🔍 輸入線索代碼</div>
+        <div class="notice">
+          📌 主持人會在每個場景發放線索代碼。輸入代碼後即可查看對應線索內容。<br>
+          代碼不分大小寫，例如：<code style="color:var(--green)">V2-BM01</code>
+        </div>
+        <div class="clue-input-row">
+          <input class="clue-code-input" id="codeInput" placeholder="輸入代碼..." maxlength="20"
+            onkeydown="if(event.key==='Enter')unlockClue()" />
+          <button class="clue-submit-btn" onclick="unlockClue()">解鎖</button>
+        </div>
+        <div class="error-msg" id="codeError"></div>
+      </div>
+      <div id="unlockedClues"></div>
+    </div>
+
+    <!-- BROADCAST -->
+    <div class="ptab-panel" id="ptab-broadcast">
+      <div class="pcard">
+        <div class="pcard-title">📢 主持人通知</div>
+        <div id="broadcastList"></div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="ptab-panel" id="ptab-timeline">
+      <div class="pcard">
+        <div class="pcard-title">📅 公開時間軸</div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px">以下為主持人公開的案件背景，更多細節需透過線索解鎖。</p>
+        <div class="mini-tl">
+          <div class="mtl-item"><div class="mtl-date">2014.07.10</div><div class="mtl-desc">第一起命案發生</div></div>
+          <div class="mtl-item"><div class="mtl-date">2014.07.11</div><div class="mtl-desc">第二起命案發生</div></div>
+          <div class="mtl-item"><div class="mtl-date">2014.07.12</div><div class="mtl-desc">第三起命案發生</div></div>
+          <div class="mtl-item"><div class="mtl-date">2014.07.21</div><div class="mtl-desc">葬禮儀式（今天）</div></div>
+          <div class="mtl-item"><div class="mtl-date">現在</div><div class="mtl-desc">你收到邀請，來到了這裡……</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const CHARACTERS = [
+  { id:'01', name:'低語者', desc:'從來不和外人說話，只和小奧唱歌', qs:'1–2', story:`你叫做阿靜。\n\n你從小就不善言辭，唯一願意開口說話的對象是一隻叫「小奧」的貓。你的生活軌跡平靜到幾乎透明，卻藏著旁人無法理解的孤獨。\n\n直到你收到了那封邀請函……\n\n【遊戲提示】\n你的角色傾向沉默、觀察，發言前先聆聽是你的強項。不要強迫自己外向，低語者的力量在於那些說出口的話，每一句都有分量。` },
+  { id:'02', name:'牺牲者', desc:'他想要解脫，就是去死', qs:'3–4', story:`你叫做陳默。\n\n你思考過死亡，不是因為懦弱，而是因為太累了。那本書《昨日救贖》給了你另一個方向——也許，還有別的出口。\n\n你接受了邀請，帶著最後一絲好奇心走到這裡。\n\n【遊戲提示】\n你的角色情感豐富、有犧牲精神。在推理環節中，試著從「誰最有理由這樣做？」的角度思考。你比其他角色更能感受到別人的痛苦。` },
+  { id:'03', name:'執刑者', desc:'在他的眼裡只有他是強者', qs:'11–12', story:`你叫做林強。\n\n在你的世界裡，強者才有資格說話，弱者只能接受懲罰。你相信懲罰是正義的實現，直到你發現自己的父親也在那份名單上……\n\n你帶著憤怒與困惑走到這裡。\n\n【遊戲提示】\n你的角色果斷、邏輯清晰，善於提出犀利的問題。在討論環節中你會是主導者，但要注意——有些事情你不一定想讓別人知道。` },
+  { id:'04', name:'偽面者', desc:'他的笑容總是控制不住', qs:'5–6', story:`你叫做曉旭。\n\n你總是在微笑，那個笑容是你的盔甲，也是你的牢籠。每個人都說你很快樂，只有你自己知道那不是真的。\n\n你戴著微笑的面具走到這裡。\n\n【遊戲提示】\n你的角色善於社交、觀察力敏銳。你可能會是第一個察覺到不對勁的人——但你選擇說出來，還是藏在心裡，是你的選擇。` },
+  { id:'05', name:'獵心師', desc:'他每天都需要做愛', qs:'13–14', story:`你叫做蘇瑤。\n\n你善於看穿人心，知道每個人最深的渴望。你用這個能力傷害過人，也被傷害過。那本書說你可以用這個天賦去「修復」世界。\n\n你帶著好奇與戒備走到這裡。\n\n【遊戲提示】\n你的角色直接、大膽，不怕問尖銳的問題。在每個場景中，試著觀察別人的情緒反應——那些細節往往是最重要的線索。` },
+  { id:'06', name:'區行者', desc:'他不必與人交流，覺得所有人都看他笑話', qs:'9–10', story:`你叫做王遊。\n\n你存在於世界的邊緣，像一道影子。沒有人注意你，這讓你痛苦，卻也讓你學會了觀察一切。你看到了別人都沒看到的事情。\n\n你在角落等待，直到邀請函來臨。\n\n【遊戲提示】\n你的角色是「邊緣觀察者」。你不需要主動，而是等對的時機說出關鍵發現。你注意到的細節往往是其他人忽略的真相。` },
+  { id:'07', name:'筑夢師', desc:'他創造了奇妙的夢境', qs:'3–4', story:`你叫做莫奇。\n\n你活在夢與現實的邊界。你的夢境如此真實，有時你搞不清楚哪個才是醒著的世界。那本書說：「夢境是通往真相的道路。」\n\n你懷抱著夢幻走到這裡，也帶來了自己的秘密。\n\n【遊戲提示】\n你的角色想像力豐富、思維跳躍。你可能會在別人卡關時提出意想不到的推理方向。記住——那些看似荒誕的想法，也許正是真相。` },
+];
+
+const CLUE_DATA = {
+  'V2-BM01': { name:'保姆證詞', act:'第二幕·別墅', content:`【保姆證詞】\n\n"我在這裡工作了三年，大主人人很好，就是不愛說話。她叫做阿花，是位攝影師，不對……好像也說過自己是醫生，我也搞不清楚。\n\n她常常拿著相機到處拍照，地下室有好多照片，都是她拍的。她說她要記住所有美好的事情，因為她容易忘記……\n\n地下室的照片是按照日期排列的，她說那樣她才不會忘記。\n\n大樹旁的泥土最近好像鬆動了，我問她，她說是在種什麼，我也沒多問。"` },
+  'V2-HJ01': { name:'花匠證詞', act:'第二幕·別墅', content:`【花匠證詞】\n\n"我每週來這裡修剪一次，花園都是我在管理的。\n\n那棵大樹？對，那棵樹的旁邊土壤最近確實很鬆，我以為主人要種什麼新植物。屋頂的花盆也是主人自己管理的，不讓我去動。\n\n她說那個花盆很特別，裡面種的東西需要一直澆水……但我從沒見過她去澆水，卻一直長得很好。"` },
+  'V2-MAP': { name:'別墅地圖', act:'第二幕·別墅', content:`【別墅地圖】\n\n七個可搜索地點：\n① 地下室（照片牆）\n② 臥室（報紙、日記）\n③ 廚房\n④ 花園（大樹、泥土）\n⑤ 屋頂（花盆）\n⑥ 保姆室（保姆證詞）\n⑦ 車庫\n\n提示：大主人的名字由兩條線索組合得出。她的職業有一個意外的特徵——她同時是兩種身份？` },
+  'V2-PH01': { name:'地下室照片牆', act:'第二幕·別墅', content:`【地下室照片牆】\n\n照片按日期排列，但有個奇怪的地方——有幾張是同一天的，卻記錄了完全不同的「記憶」，彷彿是兩個不同的人拍的。\n\n部分照片上有人，卻被模糊處理，彷彿刻意隱去身份。\n\n最早的幾張照片旁邊有一張報紙，標題出現了一個名字。` },
+  'V2-POT': { name:'房頂花盆', act:'第二幕·別墅', content:`【屋頂花盆】\n\n花盆裡種著一株不知名植物，根系非常深。\n\n仔細挖掘花盆後，發現底部藏有——\n\n（此為高度敏感線索，建議公開前先詢問主持人）\n\n📌 主持人提示：阿花的頭部藏於此，結合大樹下的身體，她以自己的方式「守護這個家」。` },
+  'V2-SOIL': { name:'大樹旁泥土', act:'第二幕·別墅', content:`【大樹旁泥土】\n\n泥土明顯被挖過又填回，質地鬆軟，和周圍不同。\n\n樹旁有一個小木牌，上面寫著：「守護我們的家。」\n\n氣味有些異常……\n\n📌 主持人提示：阿花的身體埋於大樹下方，面部朝上，她的願望是永遠守護這個家。` },
+  'V2-NEWS': { name:'臥室報紙', act:'第二幕·別墅', content:`【臥室報紙】\n\n一張舊報紙，頭版有個失蹤案的報導，照片中的醫生看起來很面熟……\n\n她的名字和照片出現在報紙上：她是一位醫生，同時也是一名攝影師。\n\n附近還有一本日記，幾頁被撕去了，留下的頁面裡有一句話：「我要記住每一件事，因為我不記得昨天了。」` },
+  'V3-BRO': { name:'哥哥證詞', act:'第三幕·門市', content:`【哥哥證詞】\n\n"我妹妹叫……她讓我叫她老師，我一直叫她化老師。她說她是調音師，但我記得她小時候想當老師的。\n\n朋友都叫她阿燕，所以我也有時候這樣叫她。\n\n她的眼睛……出了一些問題，但她說她不在意。她說她能感受到別人的目光就夠了，她只想讓別人能夠感受到她的注視。\n\n最近她說她找到了一種方式……我不知道她在說什麼。"` },
+  'V3-CALL': { name:'電話錄音', act:'第三幕·門市', content:`【電話錄音文字稿】\n\n「喂？阿燕老師嗎？你今天的排程我重新安排了，下午三點的鋼琴……」\n\n「……對，沒錯，就是那裡。你說的那個感覺，我懂，那種被人凝視的感覺。」\n\n「你說你能聽到他們的呼吸聲？那……那一定很特別。」\n\n（錄音到此結束，後半段似乎被刪除）\n\n📌 組合「化老師」+「阿燕」= 徐燕，確認全名。職業：調音師。` },
+  'V3-TOOL': { name:'道具間', act:'第三幕·門市', content:`【道具間】\n\n各種調音工具整齊排列，很專業。\n\n牆上掛著一幅畫，畫中人物的眼神格外真實，讓人覺得那雙眼睛隨時要從畫框裡出來……\n\n📌 主持人提示：那雙眼睛是真的，是徐燕的眼睛嵌在畫中。若伸手取下墨鏡，就能與她「對視」。` },
+  'V3-MIR': { name:'鏡子缺失', act:'第三幕·門市', content:`【洗手間觀察】\n\n洗手間每個角落都有東西，但總覺得少了什麼……\n\n牆上有掛鉤，但沒有鏡子。完全沒有鏡子。\n\n📌 提示：她無法看見自己的樣子，只在乎別人的目光是否停留在她身上。` },
+  'V3-KNIFE': { name:'廚房的刀', act:'第三幕·門市', content:`【廚房刀具】\n\n刀具上黏有一些奇怪的物質，顏色偏深，不像是食物殘留……\n\n廚房整體非常整潔，但刀具的使用痕跡卻異常深重。` },
+  'V3-PIANO': { name:'鋼琴缺鍵', act:'第三幕·門市', content:`【鋼琴觀察】\n\n鋼琴上有幾個琴鍵是空缺的，鍵位明顯被取走了。\n\n若嘗試彈奏，缺失的音符恰好組成一段不完整的旋律——\n\n那是一首關於「被看見」的歌。` },
+  'V3-AUDIO': { name:'窺探者音頻（GM播放）', act:'第三幕·門市', content:`【GM播放線索】\n\n此線索需由主持人在遊戲中播放音頻05。\n\n錄音內容：一個盲人的聲音，說她聽到了有人的呼吸聲……但周圍的人都說她身邊沒有人。\n\n她的眼睛雖然看不見，但她的心卻感覺到了——那個人從未離開。` },
+  'V3-EYE': { name:'眼睛在畫中', act:'第三幕·門市', content:`【道具間的畫】\n\n畫中人物的眼神異常真實，靠近看——\n\n那不是畫上去的。那是一副真實的墨鏡，被嵌在畫框裡。\n\n如果摘下墨鏡，你會和那雙眼睛直視……\n\n徐燕的願望：讓別人感受到她的注視。` },
+  'V3-SOFA': { name:'沙發下的秘密', act:'第三幕·門市', content:`【沙發區域】\n\n仔細觀察沙發底部的縫隙……\n\n有輕微的氣流？還是錯覺？\n\n她哥哥說他躺在沙發上等妹妹時，鼻子突然流血了……\n\n📌 主持人提示：她就在沙發縫隙，她在錄音時，那個人就緊貼在縫隙裡，死死地看著你。` },
+  'V4-ROOM': { name:'更衣室貼紙', act:'第四幕·戲院', content:`【更衣室】\n\n更衣室的置物櫃上貼著各種名牌，其中一個特別顯眼：\n\n「秦冬 · 人偶戲主演」\n\n旁邊還有一張便條：「謝謝你每天陪我，你是最好的搭檔。」\n\n簽名也是「秦冬」。` },
+  'V4-ACT': { name:'演員證詞', act:'第四幕·戲院', content:`【劇院工作人員證詞】\n\n"秦冬先生？他很奇怪。他說他排練時不需要對戲的演員，說他有個助理會陪他。\n\n但我在這裡工作三年了，從來沒見過他的助理長什麼樣。打更的人說夜裡也只有他一個人……\n\n他有時候說話語氣會突然變，像是另一個人在說話。"` },
+  'V4-DIARY': { name:'連日期日記', act:'第四幕·戲院', content:`【日記（多份，日期連續）】\n\n日記一（字跡工整）：「今天的表演很完美，我的身體跟上了我的靈魂。我愛這個舞台，我要永遠在這裡。」\n\n日記二（同日期，字跡潦草）：「他今天又要我排練到天亮，但我想回家。我想陪著她，她一個人在家……」\n\n兩種語氣，兩種筆跡，卻是同一個日期。同一個人。\n\n📌 人格分裂確認：一個想留在舞台，一個想回家守護妻子。` },
+  'V4-PUPPET': { name:'傾斜人偶', act:'第四幕·戲院', content:`【舞台觀察】\n\n舞台上有數個人偶，其中一個傾斜了，似乎中間是空的……\n\n📌 主持人提示：秦冬的一半身體留在了舞台上，成為了人偶的一部分。他的願望：永遠留在舞台上。` },
+  'V4-MAGIC': { name:'魔術道具', act:'第四幕·戲院', content:`【道具間魔術道具】\n\n一個奇怪的箱型道具，原本是魔術表演用的切割道具。\n\n上面有乾掉的痕跡……\n\n📌 秦冬用這個道具把自己分成了兩半：一半留在舞台，一半帶回家陪伴妻子（被狗吃掉，永遠留在家裡）。` },
+  'V4-DOG': { name:'狗窩碎肉', act:'第四幕·戲院', content:`【回想別墅第一幕：狗窩】\n\n別墅狗窩裡有很多碎肉，兩條狗的牌子上印著「花」和「二」，旁邊有木牌寫著「守護我們的家」。\n\n現在你知道了——那些碎肉是他的一部分。\n\n秦冬的兩個願望都實現了：\n一半永遠留在舞台，一半永遠留在家裡守護妻子阿花。` },
+  'A01-LOW': { name:'個人線索 A01', act:'第五幕·私人', content:`【低語者線索 A01】\n\n你叫做阿靜。你從小就不善言辭，唯一願意開口說話的對象是一隻叫「小奧」的貓。\n\n你的生活軌跡平靜到幾乎透明，直到你收到了那封邀請函……\n\n你來到這裡，是因為你相信那本書說的——沉默不代表你不重要。\n\n📌 核心問題：你為什麼選擇接受邀請？你害怕什麼？` },
+  'A02-SAC': { name:'個人線索 A02', act:'第五幕·私人', content:`【牺牲者線索 A02】\n\n你叫做陳默。你想要解脫，你思考過無數次死亡。不是因為懦弱，而是因為太累了。\n\n那本書《昨日救贖》給了你另一個方向——也許死亡不是唯一的出口。\n\n你來到這裡，帶著最後一絲希望。\n\n📌 核心問題：那本書的哪一句話打動了你？你想保護誰？` },
+  'A03-EXE': { name:'個人線索 A03', act:'第五幕·私人', content:`【執刑者線索 A03】\n\n你叫做林強。在你的世界裡，強者才有資格說話。你相信懲罰是正義的實現。\n\n直到你發現「執刑者」卡牌的持有人，竟是虐待你的繼父……\n\n你換掉了卡牌，換掉了命運，也換掉了代價。\n\n📌 核心問題：你現在知道那一夜發生了什麼。你選擇說出來嗎？` },
+  'A04-FAC': { name:'個人線索 A04', act:'第五幕·私人', content:`【偽面者線索 A04】\n\n你叫做曉旭。你總是在微笑，那個笑容是你的盔甲，也是你的牢籠。\n\n你戴著微笑的面具走到這裡，因為你不知道摘下它之後，裡面是什麼。\n\n📌 核心問題：你有沒有一刻真正不戴面具？那個時刻是什麼？在這場遊戲裡，你願意摘下它嗎？` },
+  'A05-HUN': { name:'個人線索 A05', act:'第五幕·私人', content:`【獵心師線索 A05】\n\n你叫做蘇瑤。你善於看穿人心，知道每個人最深的渴望。\n\n你用這個能力傷害過人，也被傷害過。來到這裡，你發現你對每個人都有了新的判斷……\n\n📌 核心問題：你最後一次真心愛上一個人是什麼時候？現在這個房間裡，你最擔心的人是誰？` },
+  'A06-WAL': { name:'個人線索 A06', act:'第五幕·私人', content:`【區行者線索 A06】\n\n你叫做王遊。你存在於世界的邊緣，像一道影子。\n\n沒有人注意你，這讓你痛苦，卻也讓你學會了觀察一切。你看到了別人都沒有看到的事情。\n\n📌 核心問題：你在這場遊戲開始前，觀察到了什麼？你決定說出來嗎？為什麼之前沒說？` },
+  'A07-DRE': { name:'個人線索 A07', act:'第五幕·私人', content:`【筑夢師線索 A07】\n\n你叫做莫奇。你活在夢與現實的邊界。你的夢境如此真實，有時你搞不清楚哪個才是醒著的世界。\n\n那本書說：「夢境是通往真相的道路。」你來這裡，是為了找到那條路的終點。\n\n📌 核心問題：你上一個夢裡出現了誰？那個人今天在這個房間裡嗎？` },
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let myChar = null;
+let myName = '';
+let myUnlocked = JSON.parse(localStorage.getItem('player_unlocked') || '[]');
+let gmState = {};
+
+function loadGMState() {
+  try { gmState = JSON.parse(localStorage.getItem('gm_state') || '{}'); } catch(e) {}
+}
+
+function savePlayerState() {
+  localStorage.setItem('player_unlocked', JSON.stringify(myUnlocked));
+  localStorage.setItem('player_char', myChar ? myChar.id : '');
+  localStorage.setItem('player_name', myName);
+}
+
+// ============================================================
+// INTRO
+// ============================================================
+function renderIntro() {
+  const grid = document.getElementById('charSelectGrid');
+  grid.innerHTML = CHARACTERS.map(c => `
+    <div class="char-select-card" id="csc-${c.id}" onclick="selectChar('${c.id}')">
+      <div class="csc-num">${c.id}</div>
+      <div class="csc-name">${c.name}</div>
+      <div class="csc-desc">${c.desc}</div>
+    </div>
+  `).join('');
+  // restore
+  const savedChar = localStorage.getItem('player_char');
+  const savedName = localStorage.getItem('player_name') || '';
+  if (savedChar) selectChar(savedChar);
+  if (savedName) document.getElementById('playerNameInput').value = savedName;
+}
+
+function selectChar(id) {
+  document.querySelectorAll('.char-select-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('csc-' + id);
+  if (card) card.classList.add('selected');
+  myChar = CHARACTERS.find(c => c.id === id);
+  checkEnterBtn();
+}
+
+function checkEnterBtn() {
+  const name = document.getElementById('playerNameInput').value.trim();
+  document.getElementById('enterBtn').disabled = !myChar || !name;
+}
+
+document.getElementById('playerNameInput').addEventListener('input', checkEnterBtn);
+
+function enterGame() {
+  myName = document.getElementById('playerNameInput').value.trim();
+  if (!myChar || !myName) return;
+  savePlayerState();
+  showApp();
+}
+
+// ============================================================
+// APP
+// ============================================================
+function showApp() {
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  document.getElementById('myCharBadge').textContent = myChar.name + ' · ' + myName;
+  renderMyChar();
+  renderUnlockedClues();
+  renderBroadcast();
+  updatePhaseIndicator();
+}
+
+function renderMyChar() {
+  const c = myChar;
+  document.getElementById('myCharInfo').innerHTML = `
+    <div class="char-info-name">${c.id} · ${c.name}</div>
+    <span class="char-info-tag">對應問題 ${c.qs}</span>
+    <span class="char-info-tag">${myName}</span>
+    <div class="char-info-desc">${c.story.replace(/\n/g, '<br>')}</div>
+  `;
+  const questContent = {
+    '01': '1–2 題答「是」較多的玩家最適合你的角色。代表你對言語有敏感的感受。',
+    '02': '3–4 題答「是」較多代表你經歷過承諾的傷害，這是牺牲者的核心痛苦。',
+    '03': '11–12 題答「是」較多代表你對正義/懲罰有強烈感受，這正是執刑者的驅動力。',
+    '04': '5–6 題答「是」較多代表你有過「戴面具」的經歷，偽面者就是從這裡誕生的。',
+    '05': '13–14 題答「是」較多代表你在愛情中有深刻傷痛，獵心師的力量來自這裡。',
+    '06': '9–10 題答「是」較多代表你了解邊緣感，區行者的觀察力正源自這種孤獨。',
+    '07': '3–4 題答「是」較多代表你有理想與現實的落差，筑夢師活在這個縫隙之間。',
+  };
+  document.getElementById('questGuideContent').innerHTML = `
+    <p style="font-size:0.85rem;line-height:1.8;color:var(--text)">${questContent[c.id] || ''}</p>
+    <p style="margin-top:10px;font-size:0.78rem;color:var(--muted)">💡 問卷問題 ${c.qs} 對應你的角色。若你的答案和建議不完全符合也沒關係——最重要的是你選擇了這個角色！</p>
+  `;
+}
+
+function updatePhaseIndicator() {
+  loadGMState();
+  const PHASE_NAMES = ['入場+選角','開場微演繹','第一幕：信件','第二幕：別墅','第三幕：門市','第四幕：戲院','第五幕：沈先生家','結尾'];
+  const idx = gmState.currentPhase || 0;
+  document.getElementById('phaseIndicator').textContent = '當前：' + (PHASE_NAMES[idx] || '等待開始');
+}
+
+// ============================================================
+// CLUES
+// ============================================================
+function unlockClue() {
+  const input = document.getElementById('codeInput');
+  const code = input.value.trim().toUpperCase();
+  const errDiv = document.getElementById('codeError');
+  errDiv.textContent = '';
+  if (!code) return;
+
+  // Check GM has unlocked it
+  loadGMState();
+  const gmUnlocked = gmState.unlocked || {};
+
+  if (CLUE_DATA[code]) {
+    if (!gmUnlocked[code] && !gmUnlocked[code.toLowerCase()]) {
+      // Still allow player to unlock if they have the code (GM may have given verbally)
+      // But show a warning
+    }
+    if (myUnlocked.includes(code)) {
+      errDiv.textContent = '這個線索已經解鎖了！';
+      return;
+    }
+    myUnlocked.push(code);
+    savePlayerState();
+    input.value = '';
+    renderUnlockedClues();
+    showToast('✅ 線索解鎖：' + CLUE_DATA[code].name);
+  } else {
+    errDiv.textContent = '❌ 代碼不正確，請確認後重新輸入';
+    showToast('代碼無效', true);
+  }
+}
+
+function renderUnlockedClues() {
+  const div = document.getElementById('unlockedClues');
+  if (!myUnlocked.length) {
+    div.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🔒</div>
+        <p>尚未解鎖任何線索<br>向主持人索取代碼，輸入後即可查看</p>
+      </div>
+    `;
+    return;
+  }
+  div.innerHTML = [...myUnlocked].reverse().map(code => {
+    const c = CLUE_DATA[code];
+    if (!c) return '';
+    return `
+      <div class="clue-item">
+        <div class="clue-item-header">
+          <span class="clue-item-name">📄 ${c.name}</span>
+          <span class="clue-item-code">${code}</span>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">${c.act}</div>
+        <div class="clue-item-body">${c.content}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// BROADCAST
+// ============================================================
+function renderBroadcast() {
+  loadGMState();
+  const list = document.getElementById('broadcastList');
+  const broadcasts = gmState.broadcasts || [];
+  if (!broadcasts.length) {
+    list.innerHTML = '<div class="no-broadcast">🔇 尚無主持人通知</div>';
+    return;
+  }
+  list.innerHTML = broadcasts.map(b => `
+    <div class="broadcast-item">
+      <div class="broadcast-time">${b.time}</div>
+      ${b.msg}
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchPTab(id) {
+  document.querySelectorAll('.ptab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ptab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('ptab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'broadcast') renderBroadcast();
+  if (id === 'clues') renderUnlockedClues();
+  updatePhaseIndicator();
+}
+
+// ============================================================
+// URL PARAMS
+// ============================================================
+function checkURLParams() {
+  const params = new URLSearchParams(window.location.search);
+  const charId = params.get('char');
+  if (charId) selectChar(charId);
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderIntro();
+  checkURLParams();
+  // Auto-refresh GM state every 5s
+  setInterval(() => {
+    updatePhaseIndicator();
+    if (document.getElementById('ptab-broadcast').classList.contains('active')) {
+      renderBroadcast();
+    }
+  }, 5000);
+}
+init();
+</script>
+</body>
+</html>
