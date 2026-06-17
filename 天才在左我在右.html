@@ -843,16 +843,13 @@
     </script>
 
     <!-- 線上遊玩入口 -->
-    <div style="position:relative;z-index:100;text-align:center;padding:48px 20px 56px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.6))">
-        <p style="color:rgba(200,169,126,0.7);font-size:0.78rem;letter-spacing:0.2em;margin-bottom:18px;text-transform:uppercase">線上劇本殺</p>
-        <div style="display:inline-flex;gap:16px;flex-wrap:wrap;justify-content:center">
-            <a href="天才在左我在右-GM.html" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#8b1010,#6b0808);color:#fff;border-radius:10px;text-decoration:none;font-size:0.95rem;letter-spacing:0.1em;box-shadow:0 4px 20px rgba(139,16,16,0.5);transition:opacity 0.2s" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
-                ⚖️ 審判者 — 主持人端
-            </a>
-            <a href="天才在左我在右-player.html" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#1a1030,#2a1848);border:1px solid rgba(200,169,126,0.5);color:#c8a97e;border-radius:10px;text-decoration:none;font-size:0.95rem;letter-spacing:0.1em;box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:opacity 0.2s" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
-                🃏 卡牌持有者 — 玩家端
-            </a>
-        </div>
+    <div style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+        <a href="天才在左我在右-GM.html" style="display:block;padding:12px 22px;background:linear-gradient(135deg,#8b1010,#6b0808);color:#fff;border-radius:10px;text-decoration:none;font-size:0.88rem;letter-spacing:0.08em;box-shadow:0 4px 20px rgba(139,16,16,0.6);white-space:nowrap">
+            ⚖️ 審判者 — 主持人端
+        </a>
+        <a href="天才在左我在右-player.html" style="display:block;padding:12px 22px;background:linear-gradient(135deg,#1a1030,#2a1848);border:1px solid rgba(200,169,126,0.5);color:#c8a97e;border-radius:10px;text-decoration:none;font-size:0.88rem;letter-spacing:0.08em;box-shadow:0 4px 20px rgba(0,0,0,0.6);white-space:nowrap">
+            🃏 卡牌持有者 — 玩家端
+        </a>
     </div>
 
     <audio id="bgm" src="天才在左我在右.mp3" autoplay loop muted></audio>
