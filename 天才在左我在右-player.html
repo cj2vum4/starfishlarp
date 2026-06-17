@@ -402,6 +402,7 @@
   }
   .act-nav-inline:hover { background: var(--accent); color: #000; border-color: var(--accent); }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -598,6 +599,15 @@ const CLUE_DATA = {
 // ============================================================
 // STATE
 // ============================================================
+// SUPABASE CONFIG — 填入你自己的值（與 GM 端相同）
+// ============================================================
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const GAME_ID = 'tiancai_game';
+
+const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
 let myChar = null;
 let myName = '';
 let myUnlocked = JSON.parse(localStorage.getItem('player_unlocked') || '[]');
@@ -605,6 +615,25 @@ let gmState = {};
 
 function loadGMState() {
   try { gmState = JSON.parse(localStorage.getItem('gm_state') || '{}'); } catch(e) {}
+}
+
+function applyGMState(newState) {
+  gmState = newState;
+  localStorage.setItem('gm_state', JSON.stringify(gmState));
+  updatePhaseIndicator();
+  if (document.getElementById('ptab-broadcast') && document.getElementById('ptab-broadcast').classList.contains('active')) {
+    renderBroadcast();
+  }
+}
+
+function subscribeToGMState() {
+  _supa.from('game_state').select('state').eq('id', GAME_ID).single()
+    .then(({ data }) => { if (data && data.state) applyGMState(data.state); });
+
+  _supa.channel('game_state_changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'game_state', filter: `id=eq.${GAME_ID}` },
+      payload => { if (payload.new && payload.new.state) applyGMState(payload.new.state); })
+    .subscribe();
 }
 
 function savePlayerState() {
@@ -856,13 +885,7 @@ function showToast(msg, isError = false) {
 function init() {
   renderIntro();
   checkURLParams();
-  // Auto-refresh GM state every 5s
-  setInterval(() => {
-    updatePhaseIndicator();
-    if (document.getElementById('ptab-broadcast').classList.contains('active')) {
-      renderBroadcast();
-    }
-  }, 5000);
+  subscribeToGMState();
 }
 init();
 </script>

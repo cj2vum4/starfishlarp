@@ -417,6 +417,7 @@
   }
   .unlock-all-btn:hover { background: var(--accent); color: #000; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -750,10 +751,35 @@ const CLUE_CONTENT = {
 };
 
 // ============================================================
+// SUPABASE CONFIG — 填入你自己的值
+// ============================================================
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const GAME_ID = 'tiancai_game';
+
+const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
 // STATE
 // ============================================================
 let state = JSON.parse(localStorage.getItem('gm_state') || '{}');
-function saveState() { localStorage.setItem('gm_state', JSON.stringify(state)); }
+
+async function saveState() {
+  localStorage.setItem('gm_state', JSON.stringify(state));
+  try {
+    await _supa.from('game_state').upsert({ id: GAME_ID, state: state, updated_at: new Date().toISOString() });
+  } catch(e) { console.warn('Supabase sync error', e); }
+}
+
+async function loadStateFromSupabase() {
+  try {
+    const { data } = await _supa.from('game_state').select('state').eq('id', GAME_ID).single();
+    if (data && data.state) {
+      state = data.state;
+      localStorage.setItem('gm_state', JSON.stringify(state));
+    }
+  } catch(e) {}
+}
 
 // ============================================================
 // TABS
@@ -968,7 +994,8 @@ function showToast(msg) {
 // ============================================================
 // INIT
 // ============================================================
-function init() {
+async function init() {
+  await loadStateFromSupabase();
   renderPhases();
   renderChars();
   renderClues();
