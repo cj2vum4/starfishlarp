@@ -425,6 +425,7 @@
   <h1>⚖️ 天才在左 我在右 — 審判者手冊</h1>
   <span class="gm-badge">GM 專用</span>
 </div>
+<div id="sessionBanner" style="background:var(--card);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:42px"></div>
 
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('phase')">📋 流程控制</button>
@@ -751,34 +752,118 @@ const CLUE_CONTENT = {
 };
 
 // ============================================================
-// SUPABASE CONFIG — 填入你自己的值
+// SUPABASE CONFIG
 // ============================================================
 const SUPABASE_URL = 'https://mcphigetltedeadvuvqf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Qdg36jjN7W1DUkBGtrzTtQ_bphP6Zg2';
-const GAME_ID = 'tiancai_game';
-
 const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
+// SESSION
+// ============================================================
+let sessionId = localStorage.getItem('gm_session_id') || '';
+
+function generateCode() {
+  return 'TC-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+}
+
+function renderSessionBanner() {
+  const banner = document.getElementById('sessionBanner');
+  if (sessionId) {
+    banner.innerHTML = `
+      <span style="color:var(--muted);font-size:0.8rem">場次代碼：</span>
+      <strong style="color:var(--gold);font-size:1.1rem;letter-spacing:0.15em">${sessionId}</strong>
+      <span style="color:var(--muted);font-size:0.75rem;margin-left:8px">（玩家輸入此代碼進入同一場次）</span>
+      <button onclick="navigator.clipboard.writeText('${sessionId}').then(()=>showToast('已複製場次代碼'))"
+        style="margin-left:10px;padding:3px 10px;background:var(--accent-dim);border:none;border-radius:4px;color:var(--gold);cursor:pointer;font-size:0.78rem">複製</button>
+      <button onclick="clearSession()"
+        style="margin-left:6px;padding:3px 10px;background:none;border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;font-size:0.78rem">結束場次</button>
+    `;
+  } else {
+    banner.innerHTML = `
+      <span style="color:var(--muted);font-size:0.85rem">尚未建立場次 —</span>
+      <input id="sessionInput" placeholder="輸入場次代碼" maxlength="12"
+        style="margin:0 8px;padding:4px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;color:#fff;font-size:0.85rem;width:120px" />
+      <button onclick="startSession(document.getElementById('sessionInput').value||generateCode())"
+        style="padding:4px 14px;background:var(--accent);border:none;border-radius:6px;color:#000;font-weight:bold;cursor:pointer;font-size:0.85rem">建立 / 加入</button>
+    `;
+  }
+}
+
+async function startSession(code) {
+  if (!code) return;
+  sessionId = code.trim().toUpperCase().replace(/\s+/g, '-');
+  localStorage.setItem('gm_session_id', sessionId);
+  await loadStateFromSupabase();
+  renderSessionBanner();
+  renderPhases();
+  renderChars();
+  renderClues();
+  subscribeToPlayers();
+  showToast('場次已建立：' + sessionId);
+}
+
+function clearSession() {
+  if (!confirm('確定要結束場次？此操作不會刪除資料，但你需要重新輸入場次代碼才能恢復。')) return;
+  sessionId = '';
+  localStorage.removeItem('gm_session_id');
+  state = {};
+  renderSessionBanner();
+  renderPhases();
+  renderChars();
+}
 
 // ============================================================
 // STATE
 // ============================================================
-let state = JSON.parse(localStorage.getItem('gm_state') || '{}');
+let state = {};
 
 async function saveState() {
-  localStorage.setItem('gm_state', JSON.stringify(state));
+  if (!sessionId) return;
+  localStorage.setItem('gm_state_' + sessionId, JSON.stringify(state));
   try {
-    await _supa.from('game_state').upsert({ id: GAME_ID, state: state, updated_at: new Date().toISOString() });
+    await _supa.from('game_state').upsert({ id: sessionId, state: state, updated_at: new Date().toISOString() });
   } catch(e) { console.warn('Supabase sync error', e); }
 }
 
 async function loadStateFromSupabase() {
+  if (!sessionId) return;
   try {
-    const { data } = await _supa.from('game_state').select('state').eq('id', GAME_ID).single();
+    const { data } = await _supa.from('game_state').select('state').eq('id', sessionId).single();
     if (data && data.state) {
       state = data.state;
-      localStorage.setItem('gm_state', JSON.stringify(state));
+    } else {
+      state = JSON.parse(localStorage.getItem('gm_state_' + sessionId) || '{}');
+    }
+  } catch(e) {
+    state = JSON.parse(localStorage.getItem('gm_state_' + sessionId) || '{}');
+  }
+}
+
+// ============================================================
+// PLAYER PRESENCE (realtime)
+// ============================================================
+let playerPresence = {}; // char_id -> player_name
+
+async function loadPlayerPresence() {
+  if (!sessionId) return;
+  try {
+    const { data } = await _supa.from('player_state').select('char_id,player_name').eq('session_id', sessionId);
+    if (data) {
+      playerPresence = {};
+      data.forEach(r => { if (r.char_id) playerPresence[r.char_id] = r.player_name || ''; });
+      renderChars();
     }
   } catch(e) {}
+}
+
+function subscribeToPlayers() {
+  if (!sessionId) return;
+  loadPlayerPresence();
+  _supa.channel('player_state_' + sessionId)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'player_state', filter: `session_id=eq.${sessionId}` },
+      () => loadPlayerPresence())
+    .subscribe();
 }
 
 // ============================================================
@@ -832,7 +917,7 @@ function renderChars() {
   const grid = document.getElementById('charGrid');
   grid.innerHTML = '';
   CHARACTERS.forEach(c => {
-    const playerName = (state.players || {})[c.id] || '';
+    const playerName = playerPresence[c.id] || (state.players || {})[c.id] || '';
     const div = document.createElement('div');
     div.className = 'char-card';
     div.innerHTML = `
@@ -840,18 +925,10 @@ function renderChars() {
       <div class="char-name">${c.name}</div>
       <div class="char-desc">${c.desc}</div>
       <div style="font-size:0.72rem;color:var(--purple);margin-top:4px">${c.hint}</div>
-      <input class="assign-input" placeholder="輸入玩家姓名..." value="${playerName}"
-        onchange="assignPlayer('${c.id}', this.value)" />
+      <div style="margin-top:6px;font-size:0.8rem;color:${playerName ? 'var(--green)' : 'var(--muted)'}">${playerName ? '✅ ' + playerName + '（已上線）' : '⏳ 等待玩家加入...'}</div>
     `;
     grid.appendChild(div);
   });
-}
-
-function assignPlayer(charId, name) {
-  if (!state.players) state.players = {};
-  state.players[charId] = name;
-  saveState();
-  renderPerCharLinks();
 }
 
 // ============================================================
@@ -995,7 +1072,16 @@ function showToast(msg) {
 // INIT
 // ============================================================
 async function init() {
-  await loadStateFromSupabase();
+  renderSessionBanner();
+  if (sessionId) {
+    await loadStateFromSupabase();
+    subscribeToPlayers();
+    // Subscribe to own game_state changes (multi-GM safety)
+    _supa.channel('gm_game_state').on('postgres_changes',
+      { event: '*', schema: 'public', table: 'game_state', filter: `id=eq.${sessionId}` },
+      payload => { if (payload.new && payload.new.state) { state = payload.new.state; renderPhases(); renderClues(); renderBroadcastHistory(); } }
+    ).subscribe();
+  }
   renderPhases();
   renderChars();
   renderClues();

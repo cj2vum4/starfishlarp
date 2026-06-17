@@ -406,10 +406,21 @@
 </head>
 <body>
 
-<!-- INTRO SCREEN -->
-<div id="introScreen">
+<!-- SESSION JOIN SCREEN -->
+<div id="sessionScreen" style="display:none">
   <div class="intro-title">⚖️ 天才在左，我在右</div>
-  <div class="intro-sub">劇本殺玩家端 — 選擇你的角色</div>
+  <div class="intro-sub">輸入主持人提供的場次代碼</div>
+  <input class="name-input" id="sessionCodeInput" placeholder="場次代碼（例如：TC-AB12）" maxlength="20"
+    style="text-align:center;letter-spacing:0.15em;font-size:1.1rem;text-transform:uppercase"
+    oninput="this.value=this.value.toUpperCase()" />
+  <button class="enter-btn" onclick="joinSession()" style="margin-top:12px">加入場次</button>
+  <div id="sessionError" style="color:#e05555;font-size:0.82rem;margin-top:10px;text-align:center"></div>
+</div>
+
+<!-- INTRO SCREEN -->
+<div id="introScreen" style="display:none">
+  <div class="intro-title">⚖️ 天才在左，我在右</div>
+  <div class="intro-sub" id="introSessionBadge">劇本殺玩家端 — 選擇你的角色</div>
   <div class="char-select-grid" id="charSelectGrid"></div>
   <input class="name-input" id="playerNameInput" placeholder="輸入你的名字（暱稱）" />
   <button class="enter-btn" id="enterBtn" onclick="enterGame()" disabled>進入遊戲</button>
@@ -597,49 +608,94 @@ const CLUE_DATA = {
 };
 
 // ============================================================
-// STATE
-// ============================================================
-// SUPABASE CONFIG — 填入你自己的值（與 GM 端相同）
+// SUPABASE CONFIG
 // ============================================================
 const SUPABASE_URL = 'https://mcphigetltedeadvuvqf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Qdg36jjN7W1DUkBGtrzTtQ_bphP6Zg2';
-const GAME_ID = 'tiancai_game';
-
 const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
+// STATE
+// ============================================================
+let sessionId = '';
 let myChar = null;
 let myName = '';
-let myUnlocked = JSON.parse(localStorage.getItem('player_unlocked') || '[]');
+let myUnlocked = [];
 let gmState = {};
 
-function loadGMState() {
-  try { gmState = JSON.parse(localStorage.getItem('gm_state') || '{}'); } catch(e) {}
-}
+function playerKey() { return sessionId + '_' + (myChar ? myChar.id : ''); }
 
+// ---- GM State ----
 function applyGMState(newState) {
   gmState = newState;
-  localStorage.setItem('gm_state', JSON.stringify(gmState));
   updatePhaseIndicator();
-  if (document.getElementById('ptab-broadcast') && document.getElementById('ptab-broadcast').classList.contains('active')) {
-    renderBroadcast();
-  }
+  if (document.getElementById('ptab-broadcast') && document.getElementById('ptab-broadcast').classList.contains('active')) renderBroadcast();
+  // Re-render current act in case act lock changed
+  if (window._script) renderAct(currentAct);
 }
 
 function subscribeToGMState() {
-  _supa.from('game_state').select('state').eq('id', GAME_ID).single()
+  if (!sessionId) return;
+  _supa.from('game_state').select('state').eq('id', sessionId).single()
     .then(({ data }) => { if (data && data.state) applyGMState(data.state); });
-
-  _supa.channel('game_state_changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'game_state', filter: `id=eq.${GAME_ID}` },
+  _supa.channel('gm_state_player_' + sessionId)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'game_state', filter: `id=eq.${sessionId}` },
       payload => { if (payload.new && payload.new.state) applyGMState(payload.new.state); })
     .subscribe();
 }
 
-function savePlayerState() {
-  localStorage.setItem('player_unlocked', JSON.stringify(myUnlocked));
-  localStorage.setItem('player_char', myChar ? myChar.id : '');
-  localStorage.setItem('player_name', myName);
+// ---- Player State ----
+async function savePlayerState() {
+  if (!sessionId || !myChar) return;
+  const row = { id: playerKey(), session_id: sessionId, char_id: myChar.id, player_name: myName, unlocked_codes: myUnlocked, updated_at: new Date().toISOString() };
+  try { await _supa.from('player_state').upsert(row); } catch(e) { console.warn('player state save error', e); }
+  // also localStorage backup
+  localStorage.setItem('ps_' + playerKey(), JSON.stringify(row));
+}
+
+async function loadPlayerState() {
+  if (!sessionId || !myChar) return false;
+  try {
+    const { data } = await _supa.from('player_state').select('*').eq('id', playerKey()).single();
+    if (data) {
+      myName = data.player_name || '';
+      myUnlocked = Array.isArray(data.unlocked_codes) ? data.unlocked_codes : [];
+      return true;
+    }
+  } catch(e) {}
+  // fallback to localStorage
+  try {
+    const local = JSON.parse(localStorage.getItem('ps_' + playerKey()) || 'null');
+    if (local) { myName = local.player_name || ''; myUnlocked = local.unlocked_codes || []; return true; }
+  } catch(e) {}
+  return false;
+}
+
+// ============================================================
+// SESSION JOIN
+// ============================================================
+async function joinSession() {
+  const code = document.getElementById('sessionCodeInput').value.trim().toUpperCase();
+  const errDiv = document.getElementById('sessionError');
+  errDiv.textContent = '';
+  if (!code) { errDiv.textContent = '請輸入場次代碼'; return; }
+
+  // Verify session exists in Supabase
+  try {
+    const { data } = await _supa.from('game_state').select('id').eq('id', code).single();
+    if (!data) { errDiv.textContent = '找不到此場次，請確認代碼是否正確'; return; }
+  } catch(e) { errDiv.textContent = '找不到此場次，請確認代碼是否正確'; return; }
+
+  sessionId = code;
+  localStorage.setItem('player_session_id', sessionId);
+  showIntroScreen();
+}
+
+function showIntroScreen() {
+  document.getElementById('sessionScreen').style.display = 'none';
+  document.getElementById('introScreen').style.display = 'block';
+  document.getElementById('introSessionBadge').textContent = '場次：' + sessionId + ' — 選擇你的角色';
+  renderIntro();
 }
 
 // ============================================================
@@ -654,11 +710,6 @@ function renderIntro() {
       <div class="csc-desc">${c.desc}</div>
     </div>
   `).join('');
-  // restore
-  const savedChar = localStorage.getItem('player_char');
-  const savedName = localStorage.getItem('player_name') || '';
-  if (savedChar) selectChar(savedChar);
-  if (savedName) document.getElementById('playerNameInput').value = savedName;
 }
 
 function selectChar(id) {
@@ -666,6 +717,7 @@ function selectChar(id) {
   const card = document.getElementById('csc-' + id);
   if (card) card.classList.add('selected');
   myChar = CHARACTERS.find(c => c.id === id);
+  localStorage.setItem('player_char_id', id);
   checkEnterBtn();
 }
 
@@ -676,10 +728,13 @@ function checkEnterBtn() {
 
 document.getElementById('playerNameInput').addEventListener('input', checkEnterBtn);
 
-function enterGame() {
+async function enterGame() {
   myName = document.getElementById('playerNameInput').value.trim();
   if (!myChar || !myName) return;
-  savePlayerState();
+  document.getElementById('enterBtn').disabled = true;
+  document.getElementById('enterBtn').textContent = '連線中...';
+  await savePlayerState();
+  subscribeToGMState();
   showApp();
 }
 
@@ -791,7 +846,7 @@ function unlockClue() {
       return;
     }
     myUnlocked.push(code);
-    savePlayerState();
+    await savePlayerState();
     input.value = '';
     renderUnlockedClues();
     showToast('✅ 線索解鎖：' + CLUE_DATA[code].name);
@@ -882,11 +937,34 @@ function showToast(msg, isError = false) {
 // ============================================================
 // INIT
 // ============================================================
-function init() {
-  renderIntro();
+async function init() {
+  // Try to restore session
+  const savedSession = localStorage.getItem('player_session_id');
+  const savedCharId = localStorage.getItem('player_char_id');
+
+  if (savedSession && savedCharId) {
+    sessionId = savedSession;
+    myChar = CHARACTERS.find(c => c.id === savedCharId);
+    if (myChar) {
+      const restored = await loadPlayerState();
+      if (restored && myName) {
+        subscribeToGMState();
+        showApp();
+        return;
+      }
+    }
+  }
+
+  // No saved session — show session join screen
+  if (savedSession) {
+    sessionId = savedSession;
+    showIntroScreen();
+  } else {
+    document.getElementById('sessionScreen').style.display = 'block';
+  }
   checkURLParams();
-  subscribeToGMState();
 }
+
 init();
 </script>
 </body>
