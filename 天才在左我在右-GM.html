@@ -795,6 +795,9 @@ async function startSession(code) {
   sessionId = code.trim().toUpperCase().replace(/\s+/g, '-');
   localStorage.setItem('gm_session_id', sessionId);
   await loadStateFromSupabase();
+  // Ensure a row exists so players can see the session
+  if (!state.currentPhase) state.currentPhase = 0;
+  await saveState();
   renderSessionBanner();
   renderPhases();
   renderChars();

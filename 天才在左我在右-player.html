@@ -680,12 +680,6 @@ async function joinSession() {
   errDiv.textContent = '';
   if (!code) { errDiv.textContent = '請輸入場次代碼'; return; }
 
-  // Verify session exists in Supabase
-  try {
-    const { data } = await _supa.from('game_state').select('id').eq('id', code).single();
-    if (!data) { errDiv.textContent = '找不到此場次，請確認代碼是否正確'; return; }
-  } catch(e) { errDiv.textContent = '找不到此場次，請確認代碼是否正確'; return; }
-
   sessionId = code;
   localStorage.setItem('player_session_id', sessionId);
   showIntroScreen();
