@@ -425,7 +425,7 @@
   <h1>⚖️ 天才在左 我在右 — 審判者手冊</h1>
   <span class="gm-badge">GM 專用</span>
 </div>
-<div id="sessionBanner" style="background:var(--card);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:42px"></div>
+<div id="sessionBanner" style="background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:42px"></div>
 
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('phase')">📋 流程控制</button>
@@ -938,7 +938,7 @@ function renderChars() {
 // CLUES
 // ============================================================
 function renderClues() {
-  ['act2','act3','act4','act5'].forEach(act => {
+  ['act1','act2','act3','act4','act5'].forEach(act => {
     const tbody = document.getElementById('clues-' + act);
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -952,7 +952,7 @@ function renderClues() {
       tr.innerHTML = `
         <td>${c.name}</td>
         <td><span class="clue-code" onclick="copyCode('${c.code}')">${c.code}</span></td>
-        <td>${typeTag}${act === 'act5' ? ' ' + targetCol : ''}</td>
+        <td>${typeTag}${(act === 'act5' || act === 'act1') ? ' ' + targetCol : ''}</td>
         <td style="color:var(--muted)">${c.desc}</td>
         <td><button class="lock-btn ${unlocked ? 'unlocked' : ''}" onclick="toggleUnlock('${c.code}', this)">${unlocked ? '✅ 已解鎖' : '🔒 鎖定'}</button></td>
       `;

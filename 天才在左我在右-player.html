@@ -27,8 +27,8 @@
     min-height: 100vh;
   }
 
-  /* ---- INTRO SCREEN ---- */
-  #introScreen {
+  /* ---- SESSION + INTRO SCREEN ---- */
+  #sessionScreen, #introScreen {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -556,13 +556,13 @@ function getScript(charName, letter) {
 }
 
 const CHARACTERS = [
-  { id:'01', name:'低語者' },
-  { id:'02', name:'牺牲者' },
-  { id:'03', name:'執刑者' },
-  { id:'04', name:'偽面者' },
-  { id:'05', name:'獵心師' },
-  { id:'06', name:'匿行者' },
-  { id:'07', name:'筑夢師' },
+  { id:'01', name:'低語者', desc:'從來不和外人說話，只和小奧唱歌' },
+  { id:'02', name:'牺牲者', desc:'他想要解脫，就是去死' },
+  { id:'03', name:'執刑者', desc:'在他的眼裡只有他是強者' },
+  { id:'04', name:'偽面者', desc:'他的笑容總是控制不住' },
+  { id:'05', name:'獵心師', desc:'他每天都需要做愛' },
+  { id:'06', name:'匿行者', desc:'他不必與人交流，覺得所有人都看他笑話' },
+  { id:'07', name:'筑夢師', desc:'他創造了奇妙的夢境' },
 ];
 
 const CLUE_DATA = {
@@ -784,7 +784,6 @@ function renderAct(idx) {
   if (!contentDiv) return;
 
   if (act.locked) {
-    const gmState = JSON.parse(localStorage.getItem('gm_state') || '{}');
     const unlocked = (gmState.unlocked || {})[act.lockCode] || myUnlocked.includes(act.lockCode);
     if (!unlocked) {
       contentDiv.innerHTML = `
