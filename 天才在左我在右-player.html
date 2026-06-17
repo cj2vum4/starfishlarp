@@ -826,7 +826,7 @@ function updatePhaseIndicator() {
 // ============================================================
 // CLUES
 // ============================================================
-function unlockClue() {
+async function unlockClue() {
   const input = document.getElementById('codeInput');
   const code = input.value.trim().toUpperCase();
   const errDiv = document.getElementById('codeError');
