@@ -896,9 +896,14 @@ const CHARACTERS = [
 ];
 
 const CLUE_DATA = {
+  'INV-01': { name:'邀請函', act:'第一幕', content:`邀請函\n\n我的朋友，近来可好？\n\n很抱歉，我没有办法再与你继续来往通信，我即将死去。\n\n你不必害怕，也不必恐慌，死亡是美妙的夜晚，足以令人长眠。\n\n这封信是我最后的遗愿。\n\n我诚挚的邀请你，前来参加我的葬礼。\n\n我已找到实现你愿望的方法，会将它作为礼物，送给你。\n\n与你相识，很幸运。如今却要说再见。\n\n只希望，你能为我悼念……\n\n——你的朋友，沈先生` },
+  'JUDGE-CARD': { name:'線索卡·審判者', act:'第一幕', content:'__IMG__审判者' },
+  'STRAY-CARD': { name:'線索卡·迷途者', act:'第二幕', content:'__IMG__迷途者' },
+  'PEEP-CARD': { name:'線索卡·窺探者', act:'第三幕', content:'__IMG__窥探者' },
+  'PUPPET-CARD': { name:'線索卡·魁儡師', act:'第四幕', content:'__IMG__傀儡师' },
   'V2-BM01': { name:'保姆證詞', act:'第二幕·別墅', content:`【保姆證詞】\n\n"我在這裡工作了三年，大主人人很好，就是不愛說話。她叫做阿花，是位攝影師，不對……好像也說過自己是醫生，我也搞不清楚。\n\n她常常拿著相機到處拍照，地下室有好多照片，都是她拍的。她說她要記住所有美好的事情，因為她容易忘記……\n\n地下室的照片是按照日期排列的，她說那樣她才不會忘記。\n\n大樹旁的泥土最近好像鬆動了，我問她，她說是在種什麼，我也沒多問。"` },
   'V2-HJ01': { name:'花匠證詞', act:'第二幕·別墅', content:`【花匠證詞】\n\n"我每週來這裡修剪一次，花園都是我在管理的。\n\n那棵大樹？對，那棵樹的旁邊土壤最近確實很鬆，我以為主人要種什麼新植物。屋頂的花盆也是主人自己管理的，不讓我去動。\n\n她說那個花盆很特別，裡面種的東西需要一直澆水……但我從沒見過她去澆水，卻一直長得很好。"` },
-  'V2-MAP': { name:'別墅地圖', act:'第二幕·別墅', content:`【別墅地圖】\n\n七個可搜索地點：\n① 地下室（照片牆）\n② 臥室（報紙、日記）\n③ 廚房\n④ 花園（大樹、泥土）\n⑤ 屋頂（花盆）\n⑥ 保姆室（保姆證詞）\n⑦ 車庫\n\n提示：大主人的名字由兩條線索組合得出。她的職業有一個意外的特徵——她同時是兩種身份？` },
+  'V2-MAP': { name:'別墅地圖', act:'第二幕·別墅', content:'__MAP__别墅地图' },
   'V2-PH01': { name:'地下室照片牆', act:'第二幕·別墅', content:`【地下室照片牆】\n\n照片按日期排列，但有個奇怪的地方——有幾張是同一天的，卻記錄了完全不同的「記憶」，彷彿是兩個不同的人拍的。\n\n部分照片上有人，卻被模糊處理，彷彿刻意隱去身份。\n\n最早的幾張照片旁邊有一張報紙，標題出現了一個名字。` },
   'V2-POT': { name:'房頂花盆', act:'第二幕·別墅', content:`【屋頂花盆】\n\n花盆裡種著一株不知名植物，根系非常深。\n\n仔細挖掘花盆後，發現底部藏有——\n\n（此為高度敏感線索，建議公開前先詢問主持人）\n\n📌 主持人提示：阿花的頭部藏於此，結合大樹下的身體，她以自己的方式「守護這個家」。` },
   'V2-ROOF': { name:'V2 · 房頂', act:'第二幕·別墅', content:`【房頂】
@@ -1098,6 +1103,7 @@ const CLUE_DATA = {
 
 　　"时间到了。"
 　　殡仪的身影出现在工具间外，我没有多想，赶忙脱离这个狭窄的空间，将蜡烛递还给他。随后他示意我重新戴上眼罩，随他离开了房子，回到外面的车上，期间没有让我与其他六个人有任何交流……` },
+  'V3-MAP': { name:'公寓地圖', act:'第三幕·門市', content:'__MAP__公寓地图' },
   'V4-PROP': { name:'V4 · 道具间', act:'第四幕·戲院', content:`道具间
 
 殡仪为我带上了眼罩，有了前两个地点的经历，我的心脏跳动的更加迅速，我不知道即将看到什么，却能够想象到在这剧院内，隐藏着惊人的事情。
@@ -1266,6 +1272,7 @@ const CLUE_DATA = {
 　　「戴上眼罩吧」殯儀對我說道。
 　　我無奈的隨著他出了劇場回到了車上，和前兩個地點一樣，他不讓我與任何人交談，但我也在期待著其他人得到的將會是什麼樣的信息。
 　　外面的雨好像停了，這一夜什麼時候才會過去？` },
+  'V4-MAP': { name:'劇院地圖', act:'第四幕·戲院', content:'__MAP__剧院地图' },
   'A01-LOW': { name:'雍九的日记残页', act:'第五幕·私人', content:`雍九的日记残页\n\n2014年7月21日。\n\n我站在坟墓前，安静地看着棺材内的他，我的心也随之静默下来，他曾经是我最好的徒弟，也是审判者最好的人选……\n\n他的死是值得的……当我在三天前杀死他时，才第一次见到他的模样，虽然比我想象中老一些，但还是让我倍感亲切，也许我真的太孤独了……我将他最喜欢的那本《昨日救赎》放在他的棺材内，他的尸体上，我已经不需要那本书了。\n\n我伪装成他，给那七个人发了邮件，相信他们就快要到了，今夜过后，我也不再需要任何人。` },
   'A02-SAC': { name:'《昨日救赎2》的内容', act:'第五幕·私人', content:`《昨日救赎2》的内容\n\n当他写下这本书的时候，便重新为十二张卡牌制定了规则，获得卡牌的人除非死去或者与其他持有卡牌的人交换，否则卡牌将永远不会离开持有者！\n没有人能够逃脱卡牌的光芒。\n当卡牌的杀戮开始后，十二天内必须收回十二张卡牌，否则仪式失败，已死去的持有者的卡牌，将再也无法发出。\n\n——第三卷第二节《卡牌的规则》` },
   'A03-EXE': { name:'雍九的日记残页', act:'第五幕·私人', content:`雍九的日记残页\n\n2013年6.2日。\n\n十张卡牌，十种病态，我真是天才，还有什么人比他们更符合卡牌的内容呢？\n\nPBA症状（笑脸综合征）、自闭症、性瘾、抑郁症、臆想症、社交恐惧症、反社会人格……我终于找到了符合卡牌的人……\n\n我静静地注视着他们，如天神在选择他的幸运儿，我会帮他们每一个人实现愿望，让我的光芒笼罩于他们每一个人的身体。\n\n现在，就差一张卡牌了。\n\n我要招募一个可靠的审判者，来替我杀死他们，完成这一切！\n\n上次给我写信的那个孩子，他是不是好的人选呢？` },
@@ -1322,6 +1329,11 @@ function playerKey() { return sessionId + '_' + (myChar ? myChar.id : ''); }
 
 // ---- Clue Distribution Map ----
 const CLUE_DIST = {
+  'INV-01': { type:'public' },
+  'JUDGE-CARD': { type:'public' },
+  'STRAY-CARD': { type:'public' },
+  'PEEP-CARD': { type:'public' },
+  'PUPPET-CARD': { type:'public' },
   'E01-2018': { type:'public' }, 'E02-2019': { type:'public' },
   'E03-2020': { type:'public' }, 'E04-2021': { type:'public' },
   'V2-BM01': { type:'public' }, 'V2-HJ01': { type:'public' },
@@ -1331,11 +1343,11 @@ const CLUE_DIST = {
   'V3-NEIGH': { type:'public' }, 'V3-CALL': { type:'public' },
   'V3-BRO': { type:'public' }, 'V3-2FLIV': { type:'public' },
   'V3-2FKIT': { type:'public' }, 'V3-PIANO': { type:'public' },
-  'V3-TOOL': { type:'public' },
+  'V3-TOOL': { type:'public' }, 'V3-MAP': { type:'public' },
   'V4-PROP': { type:'public' }, 'V4-AUD': { type:'public' },
   'V4-ROOM': { type:'public' }, 'V4-WATCH': { type:'public' },
   'V4-ACT': { type:'public' }, 'V4-MKP': { type:'public' },
-  'V4-STAGE': { type:'public' },
+  'V4-STAGE': { type:'public' }, 'V4-MAP': { type:'public' },
   'D01-HUN': { type:'private', target:'獵心師' },
   'D02-FAC': { type:'private', target:'偽面者' },
   'D03-SAC': { type:'private', target:'牺牲者' },
@@ -1350,26 +1362,51 @@ const CLUE_DIST = {
   'A05-HUN': { type:'private', target:'獵心師' },
   'A06-WAL': { type:'private', target:'匿行者' },
   'A07-DRE': { type:'private', target:'筑夢師' },
+  'B01-POL': { type:'private' }, 'B02-FILE': { type:'private' },
+  'B03-INFO': { type:'private' }, 'B04-JOUR': { type:'private' },
+  'B05-ARR': { type:'private' }, 'B06-PAGE1': { type:'private' },
+  'B07-PAGE2': { type:'private' },
+  'C01-REP': { type:'private' }, 'C02-WIT': { type:'private' },
+  'C03-REC': { type:'private' }, 'C04-BOOK': { type:'private' },
+  'C05-FRAG': { type:'private' },
 };
+
+function getClueHtml(code) {
+  const data = CLUE_DATA[code];
+  if (!data) return '';
+  const raw = data.content || data.text || '';
+  if (raw.startsWith('__IMG__')) {
+    const name = raw.replace('__IMG__', '');
+    return `<div style="text-align:center;padding:8px">
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <img src="img/cards/${name}-back.jpg" style="max-height:200px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5)" onerror="this.style.display='none'">
+        <img src="img/cards/${name}-front.jpg" style="max-height:200px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5)" onerror="this.style.display='none'">
+      </div></div>`;
+  }
+  if (raw.startsWith('__MAP__')) {
+    const name = raw.replace('__MAP__', '');
+    return `<div style="text-align:center;padding:8px"><img src="img/cards/${name}.jpg" style="max-width:100%;border-radius:8px" onerror="this.style.display='none'"></div>`;
+  }
+  return `<pre style="white-space:pre-wrap;font-family:inherit">${raw}</pre>`;
+}
 
 function autoDistribute(gmUnlocked) {
   if (!myChar) return;
-  let added = false;
+  let changed = false;
   Object.keys(gmUnlocked || {}).forEach(code => {
-    if (!gmUnlocked[code]) return;
-    if (myUnlocked.includes(code)) return;
-    if (!CLUE_DATA[code]) return;
     const dist = CLUE_DIST[code];
     if (!dist) return;
-    if (dist.type === 'public') {
+    const eligible = dist.type === 'public' || (dist.type === 'private' && dist.target === myChar.name);
+    if (!eligible) return;
+    if (gmUnlocked[code] === true && !myUnlocked.includes(code)) {
       myUnlocked.push(code);
-      added = true;
-    } else if (dist.type === 'private' && dist.target && dist.target === myChar.name) {
-      myUnlocked.push(code);
-      added = true;
+      changed = true;
+    } else if (gmUnlocked[code] === false && myUnlocked.includes(code)) {
+      myUnlocked = myUnlocked.filter(c => c !== code);
+      changed = true;
     }
   });
-  if (added) {
+  if (changed) {
     savePlayerState();
     renderUnlockedClues();
     showToast('📨 收到新線索！');
@@ -1704,7 +1741,7 @@ function renderUnlockedClues() {
           <span class="clue-item-code">${code}</span>
         </div>
         <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">${c.act}</div>
-        <div class="clue-item-body">${c.content}</div>
+        <div class="clue-item-body">${getClueHtml(code)}</div>
       </div>
     `;
   }).join('');

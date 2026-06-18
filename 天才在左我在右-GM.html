@@ -395,6 +395,8 @@
     cursor: pointer;
   }
   .lock-btn.unlocked { color: var(--green); border-color: var(--green); }
+  .reclaim-btn { margin-left:6px; padding:3px 10px; background:#7c2020; border:none; border-radius:6px; color:#fff; cursor:pointer; font-size:0.78rem; }
+  .reclaim-btn:hover { background:#a02828; }
   .scene-header {
     display: flex;
     align-items: center;
@@ -483,10 +485,31 @@
         點擊代碼可複製並分享給對應玩家。點「解鎖」可讓玩家在玩家端輸入代碼查看線索內容。
       </p>
 
+      <!-- 開場·人物卡牌 -->
+      <div class="clue-section" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:24px">
+        <h3 style="color:var(--gold);margin:0 0 8px">🃏 開場·人物卡牌（12張發7張）</h3>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:12px">挑選7張發給玩家作為角色卡。其餘5張（審判者/迷途者/窺探者/魁儡師/造物者）為遊戲線索卡，於對應幕次發放。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/低语者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>低語者</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/牺牲者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>牺牲者</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/执刑者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>執刑者</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/偽面者-front.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px" onerror="this.src='img/cards/偽面者-front.jpg'"><span>偽面者</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/猎心师-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>獵心師</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/匿行者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>匿行者</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/筑梦师-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>筑夢師</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/审判者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>審判者★</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/迷途者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>迷途者★</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/窥探者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>窺探者★</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/傀儡师-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>魁儡師★</span></div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/造物者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>造物者★</span></div>
+        </div>
+        <p style="color:var(--muted);font-size:0.75rem;margin-top:8px">★ 為線索卡，不發給玩家作角色卡</p>
+      </div>
+
       <!-- 第一幕 -->
       <div class="clue-section">
         <div class="scene-header">
-          <h3>📍 第一幕：開場 — 時間軸卡（E系列）＋身份卡（D系列）</h3>
+          <h3>📍 第一幕：邀請函 ＋ 審判者線索</h3>
           <button class="unlock-all-btn" onclick="unlockAll('act1')">全部開放</button>
         </div>
         <table class="clue-table">
@@ -522,7 +545,7 @@
       <!-- 第四幕 -->
       <div class="clue-section">
         <div class="scene-header">
-          <h3>📍 第四幕：戲院（倡偶師案件）</h3>
+          <h3>📍 第四幕：戲院（魁儡師案件）</h3>
           <button class="unlock-all-btn" onclick="unlockAll('act4')">全部開放</button>
         </div>
         <table class="clue-table">
@@ -531,27 +554,75 @@
         </table>
       </div>
 
-      <!-- 第二本（按手冊流程順序） -->
-      <div class="clue-section">
-        <div class="scene-header">
-          <h3>📕 第二本劇本（按幕序：壹解鎖+B系列 → 貳解鎖+C系列 → 叁個人信件 → 肆 → 伍結局）</h3>
-          <button class="unlock-all-btn" onclick="unlockAll('book2')">全部開放</button>
-        </div>
-        <table class="clue-table">
-          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
-          <tbody id="clues-book2"></tbody>
-        </table>
-      </div>
-
       <!-- 第五幕 -->
       <div class="clue-section">
         <div class="scene-header">
-          <h3>📍 第五幕：沈先生家（個人線索 A01–A07）</h3>
+          <h3>📍 第五幕：沈先生家（A01–A07 ＋ 開放第二本）</h3>
           <button class="unlock-all-btn" onclick="unlockAll('act5')">全部開放</button>
         </div>
         <table class="clue-table">
-          <thead><tr><th>線索名稱</th><th>代碼</th><th>對應角色</th><th>說明</th><th>狀態</th></tr></thead>
+          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型／角色</th><th>說明</th><th>狀態</th></tr></thead>
           <tbody id="clues-act5"></tbody>
+        </table>
+      </div>
+
+      <!-- 第二本·第一幕 -->
+      <div class="clue-section">
+        <div class="scene-header">
+          <h3>📕 第二本·第一幕（B系列）</h3>
+          <button class="unlock-all-btn" onclick="unlockAll('book2_1')">全部開放</button>
+        </div>
+        <table class="clue-table">
+          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
+          <tbody id="clues-book2_1"></tbody>
+        </table>
+      </div>
+
+      <!-- 第二本·第二幕 -->
+      <div class="clue-section">
+        <div class="scene-header">
+          <h3>📕 第二本·第二幕（C系列）</h3>
+          <button class="unlock-all-btn" onclick="unlockAll('book2_2')">全部開放</button>
+        </div>
+        <table class="clue-table">
+          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
+          <tbody id="clues-book2_2"></tbody>
+        </table>
+      </div>
+
+      <!-- 第二本·第三幕 -->
+      <div class="clue-section">
+        <div class="scene-header">
+          <h3>📕 第二本·第三幕（D系列·身份卡）</h3>
+          <button class="unlock-all-btn" onclick="unlockAll('book2_3')">全部開放</button>
+        </div>
+        <table class="clue-table">
+          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型／角色</th><th>說明</th><th>狀態</th></tr></thead>
+          <tbody id="clues-book2_3"></tbody>
+        </table>
+      </div>
+
+      <!-- 第二本·第四幕 -->
+      <div class="clue-section">
+        <div class="scene-header">
+          <h3>📕 第二本·第四幕</h3>
+          <button class="unlock-all-btn" onclick="unlockAll('book2_4')">全部開放</button>
+        </div>
+        <table class="clue-table">
+          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
+          <tbody id="clues-book2_4"></tbody>
+        </table>
+      </div>
+
+      <!-- 第二本·第五幕+結局 -->
+      <div class="clue-section">
+        <div class="scene-header">
+          <h3>📕 第二本·第五幕＋結局（E系列時間軸）</h3>
+          <button class="unlock-all-btn" onclick="unlockAll('book2_5')">全部開放</button>
+        </div>
+        <table class="clue-table">
+          <thead><tr><th>線索名稱</th><th>代碼</th><th>類型</th><th>說明</th><th>狀態</th></tr></thead>
+          <tbody id="clues-book2_5"></tbody>
         </table>
       </div>
     </div>
@@ -691,82 +762,45 @@ const PHASES = [
 
 const CLUES = {
   act1: [
-    { name:'【開放第一幕劇本】', code:'UNLOCK-ACT1', type:'gm', desc:'解鎖玩家端「來自沈先生的郵件」及「第一幕·蒼語山墓園」劇本（玩家讀完信件、認領角色牌後使用）' },
-    { name:'E01 — 2018年帖子', code:'E01-2018', type:'public', desc:'2018年《昨日救贖：天才在左我在右》招募帖，引起關注後被刪除' },
-    { name:'E02 — 2019年小說', code:'E02-2019', type:'public', desc:'2019年網路小說《天才在左，我在右》爆火，後書籍資訊被刪除' },
-    { name:'E03 — 2020年視頻', code:'E03-2020', type:'public', desc:'2020年沈先生視頻博主發表卡牌講解及懸疑短劇，後下架' },
-    { name:'E04 — 2021年劇本殺', code:'E04-2021', type:'public', desc:'2021年《天才在左，我在右》劇本殺開始在市場上流行' },
-    { name:'D01 — 獵心師身份卡', code:'D01-HUN', type:'private', target:'獵心師', desc:'一份直播平台的簽約合同（曾是網紅主播，被鄰居失火燒傷大半臉）' },
-    { name:'D03 — 牺牲者身份卡', code:'D03-SAC', type:'private', target:'牺牲者', desc:'一張學生證（曾在讀大學生，陪室友報案被惡意中傷）' },
-    { name:'D07 — 匿行者身份卡', code:'D07-WAL', type:'private', target:'匿行者', desc:'一份犯罪證據（曾是流浪漢，靠勒索得錢後被主播騙走）' },
-    { name:'D02 — 偽面者身份卡', code:'D02-FAC', type:'private', target:'偽面者', desc:'一張律師證' },
-    { name:'D04 — 低語者身份卡', code:'D04-LOW', type:'private', target:'低語者', desc:'一個粉絲數十萬的網絡帳號' },
-    { name:'D05 — 執刑者身份卡', code:'D05-EXE', type:'private', target:'執刑者', desc:'一張快遞員證件' },
-    { name:'D06 — 筑夢師身份卡', code:'D06-DRE', type:'private', target:'筑夢師', desc:'一份保健品的營銷計劃' },
+    { name:'【開放第一幕劇本】', code:'UNLOCK-ACT1', type:'gm', desc:'解鎖玩家端劇本第一幕（讓玩家讀完沈先生的信、認領角色牌後使用）' },
+    { name:'邀請函', code:'INV-01', type:'public', desc:'沈先生寄給每位玩家的邀請函（發給所有玩家）' },
+    { name:'線索·審判者', code:'JUDGE-CARD', type:'public', reclaimable:true, desc:'審判者卡牌（可收回）' },
   ],
   act2: [
     { name:'開放第二幕', code:'UNLOCK-ACT2', type:'gm', desc:'解鎖所有玩家的第二幕劇本頁' },
+    { name:'線索·迷途者', code:'STRAY-CARD', type:'public', reclaimable:true, desc:'迷途者卡牌（可收回）' },
     { name:'保姆證詞', code:'V2-BM01', type:'public', desc:'阿花的日常、大主人描述' },
     { name:'花匠證詞', code:'V2-HJ01', type:'public', desc:'關於別墅花園的異狀' },
     { name:'別墅地圖', code:'V2-MAP', type:'public', desc:'七個地點空間關係（搜證後發放）' },
     { name:'地下室照片牆', code:'V2-PH01', type:'public', desc:'照片排列方式暗示失憶症' },
     { name:'房頂花盆', code:'V2-POT', type:'public', desc:'阿花的頭部藏於花盆內（主持人提示）' },
-    { name:'房頂', code:'V2-ROOF', type:'public', desc:'大花盆根系很深底部有異物、日記2014/7/9（要問他怎麼回事）' },
+    { name:'房頂', code:'V2-ROOF', type:'public', desc:'大花盆根系很深底部有異物、日記2014/7/9' },
     { name:'大樹旁泥土', code:'V2-SOIL', type:'public', desc:'泥土鬆動，身體埋於大樹下方' },
     { name:'臥室報紙', code:'V2-NEWS', type:'public', desc:'報紙上有阿花本人的照片（醫生身份線索）' },
   ],
   act3: [
     { name:'開放第三幕', code:'UNLOCK-ACT3', type:'gm', desc:'解鎖所有玩家的第三幕劇本頁' },
-    { name:'鄰居的証詞', code:'V3-NEIGH', type:'public', desc:'24小時超市夜班售貨員：鋼琴聲、討債男子、約10天前出現巨大聲響後安靜' },
-    { name:'電話錄音', code:'V3-CALL', type:'public', desc:'三段通話：學生家長預約調音/快遞員送琴弦工具/男子威脅討債' },
-    { name:'哥哥的証詞', code:'V3-BRO', type:'public', desc:'哥哥：燕子被婆娘趕出、一週前去探望但她不在、在沙發睡著流鼻血' },
-    { name:'二樓客廳', code:'V3-2FLIV', type:'public', desc:'黑膠唱片牆、茶几上一副墨鏡、沙發扶手上白色盲杖、牆上無照片' },
-    { name:'二樓廚房', code:'V3-2FKIT', type:'public', desc:'極度整潔、刀把纏膠帶（星/月/花形裝飾）、燈壞掉只有蠟燭' },
-    { name:'一樓琴房', code:'V3-PIANO', type:'public', desc:'白色鋼琴/空譜架、沙發上名片（徐老師/晉州市通達街道）、水晶吊燈、空相框' },
-    { name:'一樓工具間', code:'V3-TOOL', type:'public', desc:'整齊排列工具、牆後巨大畫像（披散頭髮戴墨鏡女性黑白畫）、強烈存在感' },
+    { name:'線索·窺探者', code:'PEEP-CARD', type:'public', reclaimable:true, desc:'窺探者卡牌（可收回）' },
+    { name:'鄰居的証詞', code:'V3-NEIGH', type:'public', desc:'24小時超市夜班售貨員：鋼琴聲、約10天前巨大聲響後安靜' },
+    { name:'電話錄音', code:'V3-CALL', type:'public', desc:'三段通話：學生家長/快遞員/男子威脅討債' },
+    { name:'哥哥的証詞', code:'V3-BRO', type:'public', desc:'哥哥：燕子被趕出、一週前去探望、在沙發睡著流鼻血' },
+    { name:'二樓客廳', code:'V3-2FLIV', type:'public', desc:'黑膠唱片牆、墨鏡、白色盲杖、牆上無照片' },
+    { name:'二樓廚房', code:'V3-2FKIT', type:'public', desc:'極度整潔、刀把纏膠帶（星/月/花形裝飾）、燈壞只有蠟燭' },
+    { name:'一樓琴房', code:'V3-PIANO', type:'public', desc:'白色鋼琴/空譜架、沙發上名片、水晶吊燈、空相框' },
+    { name:'一樓工具間', code:'V3-TOOL', type:'public', desc:'整齊排列工具、牆後巨大畫像（披散頭髮戴墨鏡女性黑白畫）' },
+    { name:'公寓地圖', code:'V3-MAP', type:'public', desc:'公寓五個地點空間關係（搜證後發放）' },
   ],
   act4: [
     { name:'開放第四幕', code:'UNLOCK-ACT4', type:'gm', desc:'解鎖所有玩家的第四幕劇本頁' },
-    { name:'道具間', code:'V4-PROP', type:'public', desc:'人偶頭/身軀散落、半截人偶、電動切割裝置（大箱子+大刀）、日記2014/7/9（要和他分開）' },
-    { name:'觀眾席', code:'V4-AUD', type:'public', desc:'全場紅椅子、第1排消失、白色專屬座位、日記2014/7/8（答應陪他玩一天）' },
-    { name:'更衣室', code:'V4-ROOM', type:'public', desc:'秦冬人偶戲主角標牌、泥土血跡日常衣服、被燒毀照片殘渣、日記2014/7/1（劇組不安寧）' },
-    { name:'打更老頭', code:'V4-WATCH', type:'public', desc:'打更老頭口述：特殊的打更演員、每天固定出現、似乎像兩個人' },
-    { name:'對戲演員', code:'V4-ACT', type:'public', desc:'對戲演員口述：秦冬表現奇異、日記2014/7/10（瘋子殺人了？）' },
-    { name:'化妝間', code:'V4-MKP', type:'public', desc:'梳妝台、秦冬專屬位置、地上人偶、日記2014/7/3（一秒不想和他在一起）' },
-    { name:'劇場舞台', code:'V4-STAGE', type:'public', desc:'密密麻麻人偶掛天棚/紅燈照射、一具傾斜人偶、日記2014/7/9、紅色幕布' },
-  ],
-  book2: [
-    // ── 幕壹（30 分鐘）：沈先生拉群 → 玩家選擇U盤文件 → GM逐一發放B系列 ──
-    { name:'【壹】開放第二本', code:'UNLOCK-BOOK2', type:'gm', desc:'解鎖玩家端「第二本劇本」分頁（顯示聊天記錄壹），玩家各自選擇一份U盤文件後由GM私發' },
-    { name:'B01 — 警方報告（爆炸）', code:'B01-POL', type:'private', desc:'2014.7.22爆炸案，一具遺骸，死亡時間7/17-7/18（玩家選擇後私發）' },
-    { name:'B02 — 精神病院簡歷', code:'B02-FILE', type:'private', desc:'鄧治，40歲，反社會人格，入院2011.5，主治醫生：小花（玩家選擇後私發）' },
-    { name:'B03 — 警方信息（逃院）', code:'B03-INFO', type:'private', desc:'2013.4精神病院逃人，鄧治強姦主治醫生後逃院（玩家選擇後私發）' },
-    { name:'B04 — 記者口述（火災）', code:'B04-JOUR', type:'private', desc:'2013.5苦語山精神病院大火，數百病人罹難，目擊陌生男子（玩家選擇後私發）' },
-    { name:'B05 — 警方檔案（繼父）', code:'B05-ARR', type:'private', desc:'2011年逮捕繼父鄧治，受害少年（繼子）後下落不明（玩家選擇後私發）' },
-    { name:'B06 — 《昨日救贖2》殘頁一', code:'B06-PAGE1', type:'private', desc:'罪惡洗禮章節：世界由罪孽組成，《昨日救贖》的誕生目的（玩家選擇後私發）' },
-    { name:'B07 — 《昨日救贖2》殘頁二', code:'B07-PAGE2', type:'private', desc:'審判者章節：審判者是最高卡牌，使命是讓十二人以罪孽完成審判（玩家選擇後私發）' },
-    // ── 幕貳（40 分鐘）：沈先生提出四個問題 → 討論後GM發C系列 ──
-    { name:'【貳】開放聊天貳', code:'UNLOCK-B2-2', type:'gm', desc:'解鎖聊天記錄貳（沈先生提出四個問題），討論後GM逐一發放C系列線索' },
-    { name:'C01 — 警方報告（三案）', code:'C01-REP', type:'private', desc:'三起命案：琴房7/10、劇場7/11、別墅花盆7/12；陽台手機（討論後私發）' },
-    { name:'C02 — 目擊者口供', code:'C02-WIT', type:'private', desc:'7/12別墅目擊鄧治入侵；7/9街道持刀行凶（討論後私發）' },
-    { name:'C03 — 電話錄音', code:'C03-REC', type:'private', desc:'7/9威脅倡偶師：曝病史、老婆是「鸡」、要1000萬（討論後私發）' },
-    { name:'C04 — 《昨日救贖》簡介', code:'C04-BOOK', type:'private', desc:'2010年初版，找到符合12卡牌罪孽之人啟動儀式（討論後私發）' },
-    { name:'C05 — 《昨日救贖》殘頁', code:'C05-FRAG', type:'private', desc:'完美犯罪章節：以罪殺罪，策劃者不需動手（討論後私發）' },
-    // ── 幕叁（30 分鐘）：個人信件 + 找人環 ──
-    // ── 幕叁：同時發放D01-D07身份卡，讓玩家在找人環時展示自己的真實身份 ──
-    { name:'D01 — 獵心師身份卡', code:'D01-HUN', type:'private', target:'獵心師', desc:'直播平台的簽約合同（幕叁發放）' },
-    { name:'D02 — 偽面者身份卡', code:'D02-FAC', type:'private', target:'偽面者', desc:'一張律師證（幕叁發放）' },
-    { name:'D03 — 牺牲者身份卡', code:'D03-SAC', type:'private', target:'牺牲者', desc:'一張學生證（幕叁發放）' },
-    { name:'D04 — 低語者身份卡', code:'D04-LOW', type:'private', target:'低語者', desc:'一個粉絲數十萬的網絡帳號（幕叁發放）' },
-    { name:'D05 — 執刑者身份卡', code:'D05-EXE', type:'private', target:'執刑者', desc:'一張快遞員證件（幕叁發放）' },
-    { name:'D06 — 筑夢師身份卡', code:'D06-DRE', type:'private', target:'筑夢師', desc:'一份保健品的營銷計劃（幕叁發放）' },
-    { name:'D07 — 匿行者身份卡', code:'D07-WAL', type:'private', target:'匿行者', desc:'一份犯罪證據（幕叁發放）' },
-    { name:'【叁】開放個人信件', code:'UNLOCK-B2-LETTER', type:'gm', desc:'解鎖各角色的個人信件（寄給沈先生的信，每人讀完後進行找人環：牺牲者→低語者→筑夢師→匿行者→獵心師→偽面者→執刑者→牺牲者）' },
-    { name:'【叁】開放聊天叁', code:'UNLOCK-B2-3', type:'gm', desc:'解鎖私訊叁（沈先生告訴每個人：你要找的人就在聊天室）' },
-    // ── 幕肆（10 分鐘）：確認目標 ──
-    { name:'【肆】開放聊天肆', code:'UNLOCK-B2-4', type:'gm', desc:'解鎖私訊肆（恭喜找到他/她，你要實現願望嗎？）' },
-    // ── 幕伍+六（15 分鐘）：結局 + 沈先生踢人 ──
-    { name:'【伍】開放聊天伍+結局', code:'UNLOCK-B2-5', type:'gm', desc:'解鎖聊天記錄伍（沈先生依次踢人）及最終抉擇頁，並朗讀E01-E04時間軸卡' },
+    { name:'線索·魁儡師', code:'PUPPET-CARD', type:'public', reclaimable:true, desc:'魁儡師卡牌（可收回）' },
+    { name:'道具間', code:'V4-PROP', type:'public', desc:'人偶頭/身軀散落、半截人偶、電動切割裝置、日記2014/7/9' },
+    { name:'觀眾席', code:'V4-AUD', type:'public', desc:'全場紅椅子、第1排消失、白色專屬座位、日記2014/7/8' },
+    { name:'更衣室', code:'V4-ROOM', type:'public', desc:'秦冬人偶戲主角標牌、泥土血跡衣服、被燒毀照片殘渣、日記2014/7/1' },
+    { name:'打更老頭', code:'V4-WATCH', type:'public', desc:'特殊的打更演員、每天固定出現、似乎像兩個人' },
+    { name:'對戲演員', code:'V4-ACT', type:'public', desc:'秦冬表現奇異、日記2014/7/10（瘋子殺人了？）' },
+    { name:'化妝間', code:'V4-MKP', type:'public', desc:'梳妝台、秦冬專屬位置、地上人偶、日記2014/7/3' },
+    { name:'劇場舞台', code:'V4-STAGE', type:'public', desc:'密密麻麻人偶掛天棚/紅燈照射、一具傾斜人偶、日記2014/7/9' },
+    { name:'劇院地圖', code:'V4-MAP', type:'public', desc:'劇院各地點空間關係（搜證後發放）' },
   ],
   act5: [
     { name:'開放第五幕', code:'UNLOCK-ACT5', type:'gm', desc:'解鎖所有玩家的第五幕劇本頁' },
@@ -777,6 +811,44 @@ const CLUES = {
     { name:'A05 — 《昨日救贖2》書籍介紹', code:'A05-HUN', type:'private', target:'獵心師', desc:'12張卡牌12種劣根性；審判者使命是消滅其他11位持卡者' },
     { name:'A06 — 沈先生電腦聊天記錄', code:'A06-WAL', type:'private', target:'匿行者', desc:'雍九與沈先生最後對話：沈先生選擇背叛，雍九宣告其死亡' },
     { name:'A07 — 沈先生寫給雍九的信', code:'A07-DRE', type:'private', target:'筑夢師', desc:'沈先生述說繼父虐待的童年，以《昨日救贖》相信雍九，最終選擇背離' },
+    { name:'【開放第二本劇本】', code:'UNLOCK-BOOK2', type:'gm', desc:'解鎖玩家端第二本劇本（注意：不可提前讓玩家知道有第二本劇本）' },
+  ],
+  book2_1: [
+    { name:'B01 — 警方報告（爆炸）', code:'B01-POL', type:'private', desc:'2014.7.22爆炸案，一具遺骸，死亡時間7/17-7/18（玩家選擇後私發）' },
+    { name:'B02 — 精神病院簡歷', code:'B02-FILE', type:'private', desc:'邓治，40歲，反社會人格，入院2011.5，主治醫生：小花（玩家選擇後私發）' },
+    { name:'B03 — 警方信息（逃院）', code:'B03-INFO', type:'private', desc:'2013.4精神病院逃人，邓治性侵主治醫生後逃院（玩家選擇後私發）' },
+    { name:'B04 — 記者口述（火災）', code:'B04-JOUR', type:'private', desc:'2013.5苦語山精神病院大火，數百病人罹難，目擊陌生男子（玩家選擇後私發）' },
+    { name:'B05 — 警方檔案（繼父）', code:'B05-ARR', type:'private', desc:'2011年逮捕繼父邓治，受害少年後下落不明（玩家選擇後私發）' },
+    { name:'B06 — 《昨日救贖2》殘頁一', code:'B06-PAGE1', type:'private', desc:'罪惡洗禮章節（玩家選擇後私發）' },
+    { name:'B07 — 《昨日救贖2》殘頁二', code:'B07-PAGE2', type:'private', desc:'審判者章節（玩家選擇後私發）' },
+  ],
+  book2_2: [
+    { name:'【開放第二本第二幕】', code:'UNLOCK-B2-2', type:'gm', desc:'解鎖聊天記錄貳（沈先生提出四個問題），討論後GM逐一發放C系列線索' },
+    { name:'C01 — 警方報告（三案）', code:'C01-REP', type:'private', desc:'三起命案：琴房7/10、劇場7/11、別墅花盆7/12；陽台手機（討論後私發）' },
+    { name:'C02 — 目擊者口供', code:'C02-WIT', type:'private', desc:'7/12別墅目擊入侵；7/9街道持刀行凶（討論後私發）' },
+    { name:'C03 — 電話錄音', code:'C03-REC', type:'private', desc:'7/9威脅：曝病史、要1000萬（討論後私發）' },
+    { name:'C04 — 《昨日救贖》簡介', code:'C04-BOOK', type:'private', desc:'2010年初版，找到符合12卡牌罪孽之人啟動儀式（討論後私發）' },
+    { name:'C05 — 《昨日救贖》殘頁', code:'C05-FRAG', type:'private', desc:'完美犯罪章節：以罪殺罪，策劃者不需動手（討論後私發）' },
+  ],
+  book2_3: [
+    { name:'【開放第二本第三幕】', code:'UNLOCK-B2-3', type:'gm', desc:'解鎖私訊叁（沈先生告訴每個人：你要找的人就在聊天室）' },
+    { name:'D01 — 獵心師身份卡', code:'D01-HUN', type:'private', target:'獵心師', desc:'直播平台的簽約合同（幕叁發放）' },
+    { name:'D02 — 偽面者身份卡', code:'D02-FAC', type:'private', target:'偽面者', desc:'一張律師證（幕叁發放）' },
+    { name:'D03 — 牺牲者身份卡', code:'D03-SAC', type:'private', target:'牺牲者', desc:'一張學生證（幕叁發放）' },
+    { name:'D04 — 低語者身份卡', code:'D04-LOW', type:'private', target:'低語者', desc:'一個粉絲數十萬的網絡帳號（幕叁發放）' },
+    { name:'D05 — 執刑者身份卡', code:'D05-EXE', type:'private', target:'執刑者', desc:'一張快遞員證件（幕叁發放）' },
+    { name:'D06 — 筑夢師身份卡', code:'D06-DRE', type:'private', target:'筑夢師', desc:'一份保健品的營銷計劃（幕叁發放）' },
+    { name:'D07 — 匿行者身份卡', code:'D07-WAL', type:'private', target:'匿行者', desc:'一份犯罪證據（幕叁發放）' },
+  ],
+  book2_4: [
+    { name:'【開放第二本第四幕】', code:'UNLOCK-B2-4', type:'gm', desc:'解鎖私訊肆（恭喜找到他/她，你要實現願望嗎？）' },
+  ],
+  book2_5: [
+    { name:'【開放第二本第五幕+結局】', code:'UNLOCK-B2-5', type:'gm', desc:'解鎖聊天記錄伍（沈先生依次踢人）及最終抉擇頁' },
+    { name:'E01 — 2018年帖子', code:'E01-2018', type:'public', desc:'2018年《昨日救贖：天才在左我在右》招募帖（結局時朗讀）' },
+    { name:'E02 — 2019年小說', code:'E02-2019', type:'public', desc:'2019年網路小說《天才在左，我在右》爆火（結局時朗讀）' },
+    { name:'E03 — 2020年視頻', code:'E03-2020', type:'public', desc:'2020年沈先生發表卡牌講解視頻（結局時朗讀）' },
+    { name:'E04 — 2021年劇本殺', code:'E04-2021', type:'public', desc:'2021年《天才在左，我在右》劇本殺開始流行（結局時朗讀）' },
   ],
 };
 
@@ -813,6 +885,14 @@ const CLUE_CONTENT = {
   'C05-FRAG': '【《昨日救贖》殘頁】\n第七章：完美犯罪\n\n真正的完美犯罪，不是沒有兇手。而是兇手不需要動手。\n\n以罪殺罪——讓那個人，用自己的罪孽，親手結束自己的生命。\n\n策劃者只需要搭建舞台。演員們會自己走上去，自己演完，自己落幕。\n\n這才是真正的審判。這才是真正的救贖。',
   'D03-SAC': '牺牲者\n\n一张学生证',
   'D07-WAL': '匿行者\n\n一份犯罪证据',
+  'INV-01': '邀請函\n\n我的朋友，近来可好？\n\n很抱歉，我没有办法再与你继续来往通信，我即将死去。\n\n你不必害怕，也不必恐慌，死亡是美妙的夜晚，足以令人长眠。\n\n这封信是我最后的遗愿。\n\n我诚挚的邀请你，前来参加我的葬礼。\n\n我已找到实现你愿望的方法，会将它作为礼物，送给你。\n\n与你相识，很幸运。\n\n如今却要说再见。\n\n只希望，你能为我悼念……\n\n——你的朋友，沈先生',
+  'JUDGE-CARD': '__IMG__审判者',
+  'STRAY-CARD': '__IMG__迷途者',
+  'PEEP-CARD': '__IMG__窥探者',
+  'PUPPET-CARD': '__IMG__傀儡师',
+  'V2-MAP': '__MAP__别墅地图',
+  'V3-MAP': '__MAP__公寓地图',
+  'V4-MAP': '__MAP__剧院地图',
   'V2-ROOF': '【GM筆記 · V2-ROOF 房頂】\n大花盆根系非常深，底部隱約有異物探出一角。花盆旁有撕下的日記（2014/7/9）。\n\n📌 提示：花盆底部藏有關鍵物證，與阿花案件相關。',
   'V3-NEIGH': '【GM筆記 · V3-NEIGH 鄰居的証詞】\n24小時超市夜班售貨員：鄰居門市深夜有鋼琴聲、約10天前巨大聲響後鋼琴聲停止、偶爾有男人來爭吵討錢。\n\n📌 時間線：10天前的巨大聲響是重要線索。',
   'V3-2FLIV': '【GM筆記 · V3-2FLIV 二樓客廳】\n沙發、茶几、書架、舊電視機。書架上大量黑膠唱片整齊標注。茶几上茶杯和墨鏡（反復擦拭過）。沙發扶手掛着白色盲杖。牆上無照片無裝飾。\n\n📌 關鍵：盲杖和墨鏡確認屋主視力有問題。',
@@ -1026,7 +1106,7 @@ function renderChars() {
 // CLUES
 // ============================================================
 function renderClues() {
-  ['act1','act2','act3','act4','book2','act5'].forEach(act => {
+  Object.keys(CLUES).forEach(act => {
     const tbody = document.getElementById('clues-' + act);
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -1036,17 +1116,32 @@ function renderClues() {
       const typeTag = c.type === 'public' ? '<span class="tag tag-public">公開</span>' :
                        c.type === 'private' ? '<span class="tag tag-private">私有</span>' :
                        '<span class="tag tag-gm">GM限定</span>';
-      const targetCol = c.target ? c.target : (act === 'act5' || act === 'act1' ? '' : (c.type === 'private' ? '指定玩家' : '所有玩家'));
+      const targetCol = c.target ? c.target : '';
+      const reclaimBtn = (c.reclaimable && unlocked === true)
+        ? `<button class="reclaim-btn" onclick="reclaimClue('${c.code}')">收回</button>` : '';
       tr.innerHTML = `
         <td>${c.name}</td>
         <td><span class="clue-code" onclick="copyCode('${c.code}')">${c.code}</span></td>
-        <td>${typeTag}${(act === 'act5' || act === 'act1') ? ' ' + targetCol : ''}</td>
+        <td>${typeTag} ${targetCol}</td>
         <td style="color:var(--muted)">${c.desc}</td>
-        <td><button class="lock-btn ${unlocked ? 'unlocked' : ''}" onclick="toggleUnlock('${c.code}', this)">${unlocked ? '✅ 已解鎖' : '🔒 鎖定'}</button></td>
+        <td>
+          <button class="lock-btn ${unlocked === true ? 'unlocked' : ''}" onclick="toggleUnlock('${c.code}', this)">
+            ${unlocked === true ? '✅ 已發放' : unlocked === false ? '🔙 已收回' : '🔒 未發放'}
+          </button>
+          ${reclaimBtn}
+        </td>
       `;
       tbody.appendChild(tr);
     });
   });
+}
+
+function reclaimClue(code) {
+  if (!state.unlocked) state.unlocked = {};
+  state.unlocked[code] = false;
+  saveState();
+  renderClues();
+  showToast('已收回線索：' + code);
 }
 
 function toggleUnlock(code, btn) {
