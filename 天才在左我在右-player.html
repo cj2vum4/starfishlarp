@@ -1580,7 +1580,6 @@ function renderBook2(idx) {
       <div style="text-align:center;padding:32px 16px;color:var(--muted)">
         <div style="font-size:2rem;margin-bottom:8px">🔒</div>
         <p style="font-size:0.85rem">等待主持人開放此節</p>
-        <p style="font-size:0.75rem;margin-top:6px;color:#555">程式碼：${section.lockCode}</p>
       </div>
     `;
     return;
@@ -1614,6 +1613,20 @@ function renderMyChar() {
   const letter = CHAR_LETTER[c.id] || { wish: '', hint: c.desc };
   const script = getScript(c.name, letter);
   const introLetter = INTRO_LETTERS[c.id] || '';
+  const act1Unlocked = (gmState.unlocked || {})['UNLOCK-ACT1'];
+
+  if (!act1Unlocked) {
+    document.getElementById('myCharInfo').innerHTML = `
+      <div class="char-info-name">${c.id} · ${c.name}</div>
+      <span class="char-info-tag">${myName}</span>
+      <div style="text-align:center;padding:48px 16px;color:var(--muted)">
+        <div style="font-size:2.5rem;margin-bottom:12px">⏳</div>
+        <p style="font-size:0.9rem">等待主持人開始遊戲</p>
+      </div>
+    `;
+    document.getElementById('questGuide').style.display = 'none';
+    return;
+  }
 
   document.getElementById('myCharInfo').innerHTML = `
     <div class="char-info-name">${c.id} · ${c.name}</div>
@@ -1655,8 +1668,7 @@ function renderAct(idx) {
         <div style="text-align:center;padding:32px 16px;color:var(--muted)">
           <div style="font-size:2rem;margin-bottom:8px">🔒</div>
           <p style="font-size:0.85rem">等待主持人開放此幕</p>
-          <p style="font-size:0.75rem;margin-top:6px;color:#555">程式碼：${act.lockCode}</p>
-        </div>
+          </div>
       `;
       return;
     }
