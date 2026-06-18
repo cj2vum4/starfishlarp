@@ -1050,10 +1050,21 @@ function renderPhases() {
       ${i === current ? '<span class="phase-status status-current">進行中</span>' : ''}
       ${i < current ? '<span class="phase-status status-done">已完成</span>' : ''}
       ${i > current ? `<button class="phase-btn" onclick="setPhase(${i})">切換到此階段</button>` : ''}
+      ${i === current && i > 0 ? `<button class="phase-btn" style="background:var(--muted);margin-right:6px" onclick="goBackPhase()">← 回到上一階段</button>` : ''}
       ${i === current && i < PHASES.length - 1 ? `<button class="phase-btn" onclick="setPhase(${i+1})">➜ 進入下一階段</button>` : ''}
     `;
     grid.appendChild(div);
   });
+}
+
+function goBackPhase() {
+  const current = state.currentPhase || 0;
+  if (current <= 0) return;
+  const unlockCode = PHASE_UNLOCK_MAP[current];
+  if (unlockCode && state.unlocked) state.unlocked[unlockCode] = false;
+  state.currentPhase = current - 1;
+  saveState(); renderPhases(); renderClues();
+  showToast('已返回上一階段：' + PHASES[current - 1].name);
 }
 
 // Phase index → auto-unlock code
