@@ -843,7 +843,7 @@ function getScript(charName, letter) {
     {
       title: '來自沈先生的郵件',
       locked: true,
-      lockCode: 'UNLOCK-ACT1',
+      lockCode: 'UNLOCK-MAIL',
       content: `收件人：@${charName}\n發件人：@沈先生\n日期：2014年7月18日\n主題：《昨日救贖》2\n附件：這封郵件請單獨閱讀，勿被他人看到\n\n────────────────\n\n近來可好，我最忠實的好友——${charName}。\n\n收到你的信件我很開心，我和你一樣是個沒有朋友的人，所以你的事情對我而言非常重要。我已收到了你的願望，別怕，我的朋友，我會幫你解決眼前的問題，自一年前將卡牌交給你時這便是我的責任。\n\n${letter.wish}\n\n這一次信件回覆的稍晚了些，實在是我的生活中出現了一些意外，無法脫身。我最信任的人背叛了我，這對我來說是極大的痛苦……\n\n只是這一次不再透過手寫的方式，而是Email，我想這樣會更方便一些，你覺得呢？\n\n在你閱讀附件內容前，我還有一件事要與你說——在我拿到隨身碟後，除了每晚做惡夢外，我的生活中開始頻繁出現一些怪事……我前一夜寫的日記會突然消失……我電腦內的檔案不知名地被刪除……無論走在哪裡，總會有被人死死盯著的感覺……\n\n死神的鐮刀在慢慢割開我的喉嚨……\n\n若有一天我不在了，不知是否有人會發現我的屍體……\n\n為了你的安全，切記！`
     },
     {
@@ -1621,7 +1621,8 @@ function renderMyChar() {
   const letter = CHAR_LETTER[c.id] || { wish: '', hint: c.desc };
   const script = getScript(c.name, letter);
   const introLetter = INTRO_LETTERS[c.id] || '';
-  const act1Unlocked = (gmState.unlocked || {})['UNLOCK-ACT1'];
+  const unlockedMap = gmState.unlocked || {};
+  const act1Unlocked = unlockedMap['UNLOCK-ACT1'] || unlockedMap['UNLOCK-MAIL'];
 
   if (!act1Unlocked) {
     document.getElementById('myCharInfo').innerHTML = `
