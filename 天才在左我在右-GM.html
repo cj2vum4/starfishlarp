@@ -691,6 +691,7 @@ const PHASES = [
 
 const CLUES = {
   act1: [
+    { name:'【開放第一幕劇本】', code:'UNLOCK-ACT1', type:'gm', desc:'解鎖玩家端「來自沈先生的郵件」及「第一幕·蒼語山墓園」劇本（玩家讀完信件、認領角色牌後使用）' },
     { name:'E01 — 2018年帖子', code:'E01-2018', type:'public', desc:'2018年《昨日救贖：天才在左我在右》招募帖，引起關注後被刪除' },
     { name:'E02 — 2019年小說', code:'E02-2019', type:'public', desc:'2019年網路小說《天才在左，我在右》爆火，後書籍資訊被刪除' },
     { name:'E03 — 2020年視頻', code:'E03-2020', type:'public', desc:'2020年沈先生視頻博主發表卡牌講解及懸疑短劇，後下架' },
@@ -977,6 +978,7 @@ function renderPhases() {
 
 // Phase index → auto-unlock code
 const PHASE_UNLOCK_MAP = {
+  2: 'UNLOCK-ACT1',
   3: 'UNLOCK-ACT2',
   4: 'UNLOCK-ACT3',
   5: 'UNLOCK-ACT4',
