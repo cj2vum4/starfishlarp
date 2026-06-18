@@ -1412,9 +1412,15 @@ let lastBroadcastCount = 0;
 
 function applyGMState(newState) {
   const prevBroadcasts = (gmState.broadcasts || []).length;
+  const wasLocked = !((gmState.unlocked || {})['UNLOCK-ACT1'] || (gmState.unlocked || {})['UNLOCK-MAIL']);
   gmState = newState;
   updatePhaseIndicator();
-  if (window._script) renderAct(currentAct);
+  const nowUnlocked = (gmState.unlocked || {})['UNLOCK-ACT1'] || (gmState.unlocked || {})['UNLOCK-MAIL'];
+  if (wasLocked && nowUnlocked && myChar) {
+    renderMyChar();
+  } else if (window._script) {
+    renderAct(currentAct);
+  }
   updateBook2Tab();
 
   const newBroadcasts = (gmState.broadcasts || []).length;
