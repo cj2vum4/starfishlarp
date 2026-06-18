@@ -1383,13 +1383,13 @@ const CLUE_DIST = {
   'A05-HUN': { type:'private', target:'獵心師' },
   'A06-WAL': { type:'private', target:'匿行者' },
   'A07-DRE': { type:'private', target:'築夢師' },
-  'B01-POL': { type:'private' }, 'B02-FILE': { type:'private' },
-  'B03-INFO': { type:'private' }, 'B04-JOUR': { type:'private' },
-  'B05-ARR': { type:'private' }, 'B06-PAGE1': { type:'private' },
-  'B07-PAGE2': { type:'private' },
-  'C01-REP': { type:'private' }, 'C02-WIT': { type:'private' },
-  'C03-REC': { type:'private' }, 'C04-BOOK': { type:'private' },
-  'C05-FRAG': { type:'private' },
+  'B01-POL': { type:'public' }, 'B02-FILE': { type:'public' },
+  'B03-INFO': { type:'public' }, 'B04-JOUR': { type:'public' },
+  'B05-ARR': { type:'public' }, 'B06-PAGE1': { type:'public' },
+  'B07-PAGE2': { type:'public' },
+  'C01-REP': { type:'public' }, 'C02-WIT': { type:'public' },
+  'C03-REC': { type:'public' }, 'C04-BOOK': { type:'public' },
+  'C05-FRAG': { type:'public' },
 };
 
 function getClueHtml(code) {
@@ -1439,11 +1439,15 @@ let lastBroadcastCount = 0;
 
 function applyGMState(newState) {
   const prevBroadcasts = (gmState.broadcasts || []).length;
-  const wasLocked = !((gmState.unlocked || {})['UNLOCK-ACT1'] || (gmState.unlocked || {})['UNLOCK-MAIL']);
+  const prev = gmState.unlocked || {};
+  const wasLocked = !(prev['UNLOCK-ACT1'] || prev['UNLOCK-MAIL'] || prev['UNLOCK-LETTER']);
+  const prevLetter = !!prev['UNLOCK-LETTER'];
   gmState = newState;
   updatePhaseIndicator();
-  const nowUnlocked = (gmState.unlocked || {})['UNLOCK-ACT1'] || (gmState.unlocked || {})['UNLOCK-MAIL'];
-  if (wasLocked && nowUnlocked && myChar) {
+  const cur = gmState.unlocked || {};
+  const nowUnlocked = !!(cur['UNLOCK-ACT1'] || cur['UNLOCK-MAIL'] || cur['UNLOCK-LETTER']);
+  const letterChanged = prevLetter !== !!cur['UNLOCK-LETTER'];
+  if ((wasLocked && nowUnlocked || letterChanged) && myChar) {
     renderMyChar();
   } else if (window._script) {
     renderAct(currentAct);
@@ -1655,7 +1659,8 @@ function renderMyChar() {
   const script = getScript(c.name, letter);
   const introLetter = INTRO_LETTERS[c.id] || '';
   const unlockedMap = gmState.unlocked || {};
-  const act1Unlocked = unlockedMap['UNLOCK-ACT1'] || unlockedMap['UNLOCK-MAIL'];
+  const letterUnlocked = unlockedMap['UNLOCK-LETTER'] || unlockedMap['UNLOCK-ACT1'];
+  const act1Unlocked = unlockedMap['UNLOCK-ACT1'] || unlockedMap['UNLOCK-MAIL'] || unlockedMap['UNLOCK-LETTER'];
 
   if (!act1Unlocked) {
     document.getElementById('myCharInfo').innerHTML = `
@@ -1674,8 +1679,8 @@ function renderMyChar() {
     <div class="char-info-name">${c.id} · ${c.name}</div>
     <span class="char-info-tag">${myName}</span>
     <div style="font-size:0.78rem;color:var(--muted);margin-top:6px;margin-bottom:20px;font-style:italic">${letter.hint}</div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:20px 18px;margin-bottom:20px;font-size:0.83rem;line-height:1.9;white-space:pre-wrap;font-family:inherit">${introLetter}</div>
-    <div style="margin-top:4px;padding:10px 14px;background:#1a1a1a;border-radius:8px;font-size:0.8rem;color:var(--accent);text-align:center;margin-bottom:20px">📌 彈窗：沈先生贈予你的卡牌（你的身份）是什麼？</div>
+    ${letterUnlocked && introLetter ? `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:20px 18px;margin-bottom:20px;font-size:0.83rem;line-height:1.9;white-space:pre-wrap;font-family:inherit">${introLetter}</div>` : ''}
+    ${letterUnlocked ? `<div style="margin-top:4px;padding:10px 14px;background:#1a1a1a;border-radius:8px;font-size:0.8rem;color:var(--accent);text-align:center;margin-bottom:20px">📌 彈窗：沈先生贈予你的卡牌（你的身份）是什麼？</div>` : ''}
     <div class="act-nav" id="actNav"></div>
     <div id="actContent"></div>
   `;
