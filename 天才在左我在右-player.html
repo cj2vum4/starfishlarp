@@ -1301,6 +1301,62 @@ let gmState = {};
 
 function playerKey() { return sessionId + '_' + (myChar ? myChar.id : ''); }
 
+// ---- Clue Distribution Map ----
+const CLUE_DIST = {
+  'E01-2018': { type:'public' }, 'E02-2019': { type:'public' },
+  'E03-2020': { type:'public' }, 'E04-2021': { type:'public' },
+  'V2-BM01': { type:'public' }, 'V2-HJ01': { type:'public' },
+  'V2-MAP': { type:'public' }, 'V2-PH01': { type:'public' },
+  'V2-POT': { type:'public' }, 'V2-ROOF': { type:'public' },
+  'V2-SOIL': { type:'public' }, 'V2-NEWS': { type:'public' },
+  'V3-NEIGH': { type:'public' }, 'V3-CALL': { type:'public' },
+  'V3-BRO': { type:'public' }, 'V3-2FLIV': { type:'public' },
+  'V3-2FKIT': { type:'public' }, 'V3-PIANO': { type:'public' },
+  'V3-TOOL': { type:'public' },
+  'V4-PROP': { type:'public' }, 'V4-AUD': { type:'public' },
+  'V4-ROOM': { type:'public' }, 'V4-WATCH': { type:'public' },
+  'V4-ACT': { type:'public' }, 'V4-MKP': { type:'public' },
+  'V4-STAGE': { type:'public' },
+  'D01-HUN': { type:'private', target:'獵心師' },
+  'D02-FAC': { type:'private', target:'偽面者' },
+  'D03-SAC': { type:'private', target:'牺牲者' },
+  'D04-LOW': { type:'private', target:'低語者' },
+  'D05-EXE': { type:'private', target:'執刑者' },
+  'D06-DRE': { type:'private', target:'筑夢師' },
+  'D07-WAL': { type:'private', target:'匿行者' },
+  'A01-LOW': { type:'private', target:'低語者' },
+  'A02-SAC': { type:'private', target:'牺牲者' },
+  'A03-EXE': { type:'private', target:'執刑者' },
+  'A04-FAC': { type:'private', target:'偽面者' },
+  'A05-HUN': { type:'private', target:'獵心師' },
+  'A06-WAL': { type:'private', target:'匿行者' },
+  'A07-DRE': { type:'private', target:'筑夢師' },
+};
+
+function autoDistribute(gmUnlocked) {
+  if (!myChar) return;
+  let added = false;
+  Object.keys(gmUnlocked || {}).forEach(code => {
+    if (!gmUnlocked[code]) return;
+    if (myUnlocked.includes(code)) return;
+    if (!CLUE_DATA[code]) return;
+    const dist = CLUE_DIST[code];
+    if (!dist) return;
+    if (dist.type === 'public') {
+      myUnlocked.push(code);
+      added = true;
+    } else if (dist.type === 'private' && dist.target && dist.target === myChar.name) {
+      myUnlocked.push(code);
+      added = true;
+    }
+  });
+  if (added) {
+    savePlayerState();
+    renderUnlockedClues();
+    showToast('📨 收到新線索！');
+  }
+}
+
 // ---- GM State ----
 let lastBroadcastCount = 0;
 
@@ -1332,6 +1388,8 @@ function applyGMState(newState) {
   if (document.getElementById('ptab-broadcast') && document.getElementById('ptab-broadcast').classList.contains('active')) {
     renderBroadcast();
   }
+
+  autoDistribute(newState.unlocked);
 }
 
 function subscribeToGMState() {
