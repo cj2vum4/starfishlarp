@@ -488,22 +488,8 @@
       <!-- 開場·人物卡牌 -->
       <div class="clue-section" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:24px">
         <h3 style="color:var(--gold);margin:0 0 8px">🃏 開場·人物卡牌（12張發7張）</h3>
-        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:12px">挑選7張發給玩家作為角色卡。其餘5張（審判者/迷途者/窺探者/魁儡師/造物者）為遊戲線索卡，於對應幕次發放。</p>
-        <div style="display:flex;flex-wrap:wrap;gap:8px">
-          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/低語者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>低語者</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/犧牲者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>犧牲者</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/執刑者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>執刑者</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/偽面者-front.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px" onerror="this.src='img/cards/偽面者-front.jpg'"><span>偽面者</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/獵心師-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>獵心師</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/匿行者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>匿行者</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--muted)"><img src="img/cards/築夢師-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>築夢師</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/審判者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>審判者★</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/迷途者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>迷途者★</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/窺探者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>窺探者★</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/傀儡師-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>魁儡師★</span></div>
-          <div style="text-align:center;font-size:0.72rem;color:var(--accent)"><img src="img/cards/造物者-back.jpg" style="height:80px;border-radius:6px;display:block;margin-bottom:3px"><span>造物者★</span></div>
-        </div>
-        <p style="color:var(--muted);font-size:0.75rem;margin-top:8px">★ 為線索卡，不發給玩家作角色卡</p>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:12px">點擊卡片即可發送給對應玩家，再點一次可收回。★ 為線索卡，非角色卡。</p>
+        <div id="charCardsGrid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
       </div>
 
       <!-- 第一幕 -->
@@ -739,6 +725,21 @@
 // ============================================================
 // DATA
 // ============================================================
+const CHAR_CARDS = [
+  { name:'低語者',  code:'CHAR-低語者',  star:false },
+  { name:'犧牲者',  code:'CHAR-犧牲者',  star:false },
+  { name:'執刑者',  code:'CHAR-執刑者',  star:false },
+  { name:'偽面者',  code:'CHAR-偽面者',  star:false },
+  { name:'獵心師',  code:'CHAR-獵心師',  star:false },
+  { name:'匿行者',  code:'CHAR-匿行者',  star:false },
+  { name:'築夢師',  code:'CHAR-築夢師',  star:false },
+  { name:'審判者',  code:'JUDGE-CARD',   star:true  },
+  { name:'迷途者',  code:'STRAY-CARD',   star:true  },
+  { name:'窺探者',  code:'PEEP-CARD',    star:true  },
+  { name:'傀儡師',  code:'PUPPET-CARD',  star:true  },
+  { name:'造物者',  code:'CREATOR-CARD', star:true  },
+];
+
 const CHARACTERS = [
   { id:'01', name:'低語者', desc:'從來不和外人說話，只和小奧唱歌', hint:'建議分配給話少、內斂的玩家' },
   { id:'02', name:'犧牲者', desc:'他想要解脫，就是去死', hint:'建議有感情起伏、情感豐富的玩家' },
@@ -1096,6 +1097,38 @@ function setPhase(i) {
 // ============================================================
 // CHARACTERS
 // ============================================================
+function renderCharCards() {
+  const grid = document.getElementById('charCardsGrid');
+  if (!grid) return;
+  const unlocked = state.unlocked || {};
+  grid.innerHTML = CHAR_CARDS.map(c => {
+    const sent = !!unlocked[c.code];
+    return `<div onclick="toggleCharCard('${c.code}')" style="
+      text-align:center;font-size:0.72rem;cursor:pointer;
+      border:2px solid ${sent ? 'var(--green)' : 'transparent'};
+      border-radius:8px;padding:4px;
+      background:${sent ? 'rgba(0,200,100,0.08)' : 'transparent'};
+      position:relative;user-select:none">
+      <img src="img/cards/${c.name}-back.jpg"
+        style="height:80px;border-radius:6px;display:block;margin-bottom:3px;opacity:${sent ? '1' : '0.55'}"
+        onerror="this.style.display='none'">
+      <span style="color:${c.star ? 'var(--accent)' : sent ? 'var(--green)' : 'var(--muted)'}">${c.name}${c.star ? '★' : ''}</span>
+      <div style="font-size:0.65rem;margin-top:2px;color:${sent ? 'var(--green)' : 'var(--muted)'}">${sent ? '已發送' : '點擊發送'}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCharCard(code) {
+  if (!state.unlocked) state.unlocked = {};
+  state.unlocked[code] = !state.unlocked[code];
+  saveState();
+  renderCharCards();
+  renderClues();
+  const card = CHAR_CARDS.find(c => c.code === code);
+  const sent = state.unlocked[code];
+  showToast((sent ? '✅ 已發送：' : '↩️ 已收回：') + (card ? card.name : code));
+}
+
 function renderChars() {
   const grid = document.getElementById('charGrid');
   grid.innerHTML = '';
@@ -1118,6 +1151,7 @@ function renderChars() {
 // CLUES
 // ============================================================
 function renderClues() {
+  renderCharCards();
   Object.keys(CLUES).forEach(act => {
     const tbody = document.getElementById('clues-' + act);
     if (!tbody) return;
