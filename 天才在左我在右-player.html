@@ -226,31 +226,42 @@
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 14px;
     margin-bottom: 10px;
     animation: fadeIn 0.4s ease;
+    overflow: hidden;
   }
   @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   .clue-item-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
   }
+  .clue-item-header:hover { background: rgba(255,255,255,0.03); }
   .clue-item-name { font-size: 0.9rem; color: var(--accent2); }
-  .clue-item-code {
-    font-family: monospace;
-    font-size: 0.72rem;
+  .clue-item-chevron {
+    font-size: 0.75rem;
     color: var(--muted);
-    background: var(--surface);
-    padding: 2px 6px;
-    border-radius: 4px;
+    transition: transform 0.2s;
+    margin-left: 8px;
+    flex-shrink: 0;
   }
+  .clue-item.open .clue-item-chevron { transform: rotate(180deg); }
   .clue-item-body {
     font-size: 0.88rem;
     line-height: 1.8;
     color: var(--text);
     white-space: pre-wrap;
+    padding: 0 14px 14px;
+    display: none;
+  }
+  .clue-item.open .clue-item-body { display: block; }
+  .clue-item-meta {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 8px;
   }
   /* ERROR */
   .error-msg {
@@ -1771,16 +1782,23 @@ function renderUnlockedClues() {
     const c = CLUE_DATA[code];
     if (!c) return '';
     return `
-      <div class="clue-item">
-        <div class="clue-item-header">
+      <div class="clue-item" id="clue-${code}">
+        <div class="clue-item-header" onclick="toggleClue('${code}')">
           <span class="clue-item-name">📄 ${c.name}</span>
-          <span class="clue-item-code">${code}</span>
+          <span class="clue-item-chevron">▼</span>
         </div>
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px">${c.act}</div>
-        <div class="clue-item-body">${getClueHtml(code)}</div>
+        <div class="clue-item-body">
+          <div class="clue-item-meta">${c.act}</div>
+          ${getClueHtml(code)}
+        </div>
       </div>
     `;
   }).join('');
+}
+
+function toggleClue(code) {
+  const el = document.getElementById('clue-' + code);
+  if (el) el.classList.toggle('open');
 }
 
 // ============================================================
