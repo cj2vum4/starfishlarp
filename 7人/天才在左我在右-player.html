@@ -1254,13 +1254,13 @@ function getClueHtml(code) {
     const name = raw.replace('__IMG__', '');
     return `<div style="text-align:center;padding:8px">
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <img src="img/cards/${name}-back.jpg" style="max-height:200px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5)" onerror="this.style.display='none'">
-        <img src="img/cards/${name}-front.jpg" style="max-height:200px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5)" onerror="this.style.display='none'">
+        <img src="../img/cards/${name}-back.jpg" style="max-height:200px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5)" onerror="this.style.display='none'">
+        <img src="../img/cards/${name}-front.jpg" style="max-height:200px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5)" onerror="this.style.display='none'">
       </div></div>`;
   }
   if (raw.startsWith('__MAP__')) {
     const name = raw.replace('__MAP__', '');
-    return `<div style="text-align:center;padding:8px"><img src="img/cards/${name}.jpg" style="max-width:100%;border-radius:8px" onerror="this.style.display='none'"></div>`;
+    return `<div style="text-align:center;padding:8px"><img src="../img/cards/${name}.jpg" style="max-width:100%;border-radius:8px" onerror="this.style.display='none'"></div>`;
   }
   return `<pre style="white-space:pre-wrap;font-family:inherit">${raw}</pre>`;
 }

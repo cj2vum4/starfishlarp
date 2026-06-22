@@ -1111,7 +1111,7 @@ function renderCharCards() {
       border-radius:8px;padding:4px;
       background:${sent ? 'rgba(0,200,100,0.08)' : 'transparent'};
       position:relative;user-select:none">
-      <img src="img/cards/${c.name}-back.jpg"
+      <img src="../img/cards/${c.name}-back.jpg"
         style="height:80px;border-radius:6px;display:block;margin-bottom:3px;opacity:${sent ? '1' : '0.55'}"
         onerror="this.style.display='none'">
       <span style="color:${c.star ? 'var(--accent)' : sent ? 'var(--green)' : 'var(--muted)'}">${c.name}${c.star ? '★' : ''}</span>
