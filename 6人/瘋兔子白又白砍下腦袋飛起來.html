@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瘋兔子，白又白，砍下腦袋飛起來 - 劇本殺</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d0005 0%, #1a0010 30%, #0d0a1a 60%, #1a0505 100%);
+            min-height: 100vh;
+            color: #e0c0c0;
+            overflow-x: hidden;
+        }
+
+        .back-to-overview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            background: rgba(180, 30, 30, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(200, 60, 60, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(180, 30, 30, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(200, 50, 50, 1);
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            padding: 80px 20px 40px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .script-cover {
+            width: 220px;
+            height: 310px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 3px solid rgba(180, 30, 30, 0.6);
+            box-shadow: 0 10px 40px rgba(180, 0, 0, 0.5);
+            margin-bottom: 30px;
+            background: #1a0505;
+        }
+
+        .cover-placeholder {
+            width: 220px;
+            height: 310px;
+            background: linear-gradient(145deg, #1a0505, #2a0a0a);
+            border-radius: 12px;
+            border: 3px solid rgba(180, 30, 30, 0.6);
+            box-shadow: 0 10px 40px rgba(180, 0, 0, 0.5);
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: rgba(200, 100, 100, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .cover-placeholder .crazy-meat {
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: rgba(200, 100, 100, 0.5);
+        }
+
+        .script-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(200, 50, 50, 0.8);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .script-subtitle {
+            font-size: 0.95rem;
+            color: rgba(200, 120, 120, 0.7);
+            letter-spacing: 4px;
+            margin-bottom: 25px;
+        }
+
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .info-badge {
+            background: rgba(180, 30, 30, 0.25);
+            border: 1px solid rgba(200, 60, 60, 0.4);
+            color: #ffcccc;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .tag {
+            background: rgba(100, 0, 0, 0.4);
+            border: 1px solid rgba(180, 50, 50, 0.5);
+            color: #ffaaaa;
+            padding: 5px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            font-size: 0.85rem;
+            color: rgba(200, 150, 150, 0.7);
+        }
+
+        .section {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ff8888;
+            border-left: 4px solid #cc2222;
+            padding-left: 12px;
+            margin-bottom: 16px;
+        }
+
+        .synopsis-box {
+            background: rgba(30, 5, 5, 0.7);
+            border: 1px solid rgba(180, 30, 30, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            line-height: 1.9;
+            color: #ddc0c0;
+            font-size: 1rem;
+            white-space: pre-wrap;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .character-card {
+            background: rgba(30, 5, 5, 0.7);
+            border: 1px solid rgba(180, 30, 30, 0.3);
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .character-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffcccc;
+            margin-bottom: 4px;
+        }
+
+        .character-gender {
+            font-size: 0.8rem;
+            color: rgba(200, 130, 130, 0.7);
+        }
+
+        .rating-box {
+            background: rgba(30, 5, 5, 0.7);
+            border: 1px solid rgba(180, 30, 30, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .rating-score {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #ffaa00;
+            line-height: 1;
+        }
+
+        .rating-label {
+            font-size: 0.85rem;
+            color: rgba(200, 150, 100, 0.8);
+        }
+
+        .rating-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rating-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #ddc0a0;
+        }
+
+        .rating-bar {
+            width: 120px;
+            height: 6px;
+            background: rgba(100, 60, 0, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .rating-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #cc8800, #ffcc00);
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(180, 100, 100, 0.4);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="back-to-overview">
+        <a href="../index.html" class="back-btn">← 返回總覽</a>
+    </div>
+
+    <div class="hero">
+        <div class="cover-placeholder">
+            <span style="font-size:2.5rem;">🐰</span>
+            <span class="crazy-meat">THE CRAZY MEAT</span>
+            <span>海報待上傳</span>
+        </div>
+
+        <h1 class="script-title">瘋兔子，白又白<br>砍下腦袋飛起來</h1>
+        <div class="script-subtitle">THE CRAZY MEAT</div>
+
+        <div class="info-row">
+            <span class="info-badge">👥 6人（3男3女，可反串）</span>
+            <span class="info-badge">⏰ 約4.5小時</span>
+            <span class="info-badge">🔞 18+</span>
+            <span class="info-badge">📅 2026.05 發行</span>
+        </div>
+
+        <div class="tag-row">
+            <span class="tag">架空</span>
+            <span class="tag">還原</span>
+            <span class="tag">驚悚</span>
+            <span class="tag">怪談</span>
+            <span class="tag">新手</span>
+            <span class="tag">入門微恐</span>
+        </div>
+
+        <div class="meta-row">
+            <span>發行：鑫夢人生</span>
+            <span>|</span>
+            <span>作者：斐然</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">劇情簡介</div>
+        <div class="synopsis-box">"有沒有聽過一個故事，男人每天給妻子一顆糖，問她甜不甜。但有天她說不甜，男人就把她殺了。"
+"為什麼呢？"
+"因為他是瘋兔子呀！"
+"就是神經病嗎？"
+"不不不，他們的腦袋最後都飛走了！"
+
+遊戲圍繞著這個詭異童話展開，玩家需透過互動與線索推理，抽絲剝繭揭開故事後「腦袋飛走」的真相。</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">劇本角色</div>
+        <div class="characters-grid">
+            <div class="character-card">
+                <div class="character-name">夏瞳</div>
+                <div class="character-gender">男性角色</div>
+            </div>
+            <div class="character-card">
+                <div class="character-name">簡菲菲</div>
+                <div class="character-gender">女性角色</div>
+            </div>
+            <div class="character-card">
+                <div class="character-name">姜沁</div>
+                <div class="character-gender">女性角色</div>
+            </div>
+            <div class="character-card">
+                <div class="character-name">簡辟</div>
+                <div class="character-gender">男性角色</div>
+            </div>
+            <div class="character-card">
+                <div class="character-name">林雲書</div>
+                <div class="character-gender">男性角色</div>
+            </div>
+            <div class="character-card">
+                <div class="character-name">王之喻</div>
+                <div class="character-gender">女性角色</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">迷圈評分</div>
+        <div class="rating-box">
+            <div>
+                <div class="rating-score">7.2</div>
+                <div class="rating-label">值得一玩<br>3515人玩過</div>
+            </div>
+            <div class="rating-items">
+                <div class="rating-item">
+                    <span style="width:40px">劇情</span>
+                    <div class="rating-bar"><div class="rating-fill" style="width:72%"></div></div>
+                    <span>7.2</span>
+                </div>
+                <div class="rating-item">
+                    <span style="width:40px">還原</span>
+                    <div class="rating-bar"><div class="rating-fill" style="width:72%"></div></div>
+                    <span>7.2</span>
+                </div>
+                <div class="rating-item">
+                    <span style="width:40px">驚悚</span>
+                    <div class="rating-bar"><div class="rating-fill" style="width:72%"></div></div>
+                    <span>7.2</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>海星の劇本殺 · 瘋兔子，白又白，砍下腦袋飛起來</footer>
+
+</body>
+</html>
