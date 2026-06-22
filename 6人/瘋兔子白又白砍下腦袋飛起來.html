@@ -8,18 +8,46 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0d0005 0%, #1a0010 30%, #0d0a1a 60%, #1a0505 100%);
             min-height: 100vh;
-            color: #e0c0c0;
+            color: #ddd;
             overflow-x: hidden;
+            position: relative;
         }
 
+        /* 背景特效：血霧粒子 */
+        .blood-mist-effects {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .mist-particle {
+            position: absolute;
+            background: rgba(180, 20, 20, 0.3);
+            border-radius: 50%;
+            animation: floatMist 20s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes floatMist {
+            0%   { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            10%, 90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* 返回按鈕 */
         .back-to-overview {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 20px; left: 20px;
             z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
         }
 
         .back-btn {
@@ -30,7 +58,7 @@
             text-decoration: none;
             font-weight: 600;
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(200, 60, 60, 0.5);
+            border: 1px solid rgba(220, 60, 60, 0.5);
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -40,329 +68,642 @@
         }
 
         .back-btn:hover {
-            background: rgba(200, 50, 50, 1);
+            background: rgba(210, 50, 50, 1);
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(200, 30, 30, 0.5);
         }
 
-        .hero {
-            padding: 80px 20px 40px;
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
+        @keyframes slideInLeft {
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .script-cover {
-            width: 220px;
-            height: 310px;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 3px solid rgba(180, 30, 30, 0.6);
-            box-shadow: 0 10px 40px rgba(180, 0, 0, 0.5);
-            margin-bottom: 30px;
-            background: #1a0505;
+        /* 浮動元素 */
+        .floating-elements {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .cover-placeholder {
-            width: 220px;
-            height: 310px;
-            background: linear-gradient(145deg, #1a0505, #2a0a0a);
-            border-radius: 12px;
-            border: 3px solid rgba(180, 30, 30, 0.6);
-            box-shadow: 0 10px 40px rgba(180, 0, 0, 0.5);
-            margin: 0 auto 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: rgba(200, 100, 100, 0.6);
-            font-size: 0.85rem;
-        }
-
-        .cover-placeholder .crazy-meat {
-            font-size: 1.1rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: rgba(200, 100, 100, 0.5);
-        }
-
-        .script-title {
+        .floating-element {
+            position: absolute;
             font-size: 2rem;
-            font-weight: 800;
+            opacity: 0.08;
+            animation: floatElement 8s infinite ease-in-out;
+        }
+
+        .floating-element:nth-child(1) { top: 15%; left: 5%;  animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 55%; right: 8%; animation-delay: 3s; }
+        .floating-element:nth-child(3) { bottom: 25%; left: 12%; animation-delay: 6s; }
+
+        @keyframes floatElement {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33%  { transform: translateY(-15px) rotate(5deg); }
+            66%  { transform: translateY(-25px) rotate(-5deg); }
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 標題 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
             color: #fff;
-            text-shadow: 0 0 30px rgba(200, 50, 50, 0.8);
-            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(200, 30, 30, 0.8), 0 0 40px rgba(200, 30, 30, 0.6);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #ff6666, #cc2222);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
             line-height: 1.3;
         }
 
-        .script-subtitle {
-            font-size: 0.95rem;
-            color: rgba(200, 120, 120, 0.7);
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 180, 180, 0.8);
+            font-weight: 300;
             letter-spacing: 4px;
-            margin-bottom: 25px;
         }
 
-        .info-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 20px;
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .info-badge {
-            background: rgba(180, 30, 30, 0.25);
-            border: 1px solid rgba(200, 60, 60, 0.4);
-            color: #ffcccc;
-            padding: 8px 16px;
+        /* 海報區 */
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+
+        .poster-slider {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9;
+            margin: 0 auto;
             border-radius: 20px;
-            font-size: 0.9rem;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(180, 20, 20, 0.4), 0 0 80px rgba(180, 20, 20, 0.2);
+            border: 2px solid rgba(180, 30, 30, 0.4);
+            background: linear-gradient(145deg, #1a0505, #2a0a0a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .tag-row {
+        .poster-placeholder {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: rgba(200, 100, 100, 0.5);
+        }
+
+        .poster-placeholder span:first-child { font-size: 3rem; }
+        .poster-placeholder .en-title { font-size: 1.2rem; letter-spacing: 4px; font-weight: bold; }
+        .poster-placeholder .hint { font-size: 0.85rem; }
+
+        .poster-image {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .poster-image.active { opacity: 1; }
+
+        /* 主要內容 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(30, 5, 5, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(180, 30, 30, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(180, 30, 30, 0.3);
+            border-color: rgba(200, 50, 50, 0.5);
+        }
+
+        .card:nth-child(2) { animation-delay: 0.4s; }
+        .card:nth-child(3) { animation-delay: 0.5s; }
+        .card:nth-child(4) { animation-delay: 0.6s; }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ff6666;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(180, 30, 30, 0.4);
+            padding-bottom: 10px;
+            text-shadow: 0 0 15px rgba(200, 30, 30, 0.5);
+        }
+
+        /* 資訊欄 */
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(180, 30, 30, 0.15);
             flex-wrap: wrap;
             gap: 8px;
-            justify-content: center;
-            margin-bottom: 30px;
         }
+
+        .info-item:last-child { border-bottom: none; }
+
+        .info-label {
+            color: rgba(255, 180, 180, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .info-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* 星星評分 */
+        .stars-rating { display: flex; gap: 4px; }
+
+        .star-rating {
+            color: #ffd700;
+            font-size: 1.3rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .star-rating.empty { color: rgba(100, 60, 60, 0.5); text-shadow: none; }
+
+        /* 標籤 */
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 
         .tag {
-            background: rgba(100, 0, 0, 0.4);
-            border: 1px solid rgba(180, 50, 50, 0.5);
+            background: rgba(150, 20, 20, 0.4);
             color: #ffaaaa;
-            padding: 5px 14px;
+            padding: 4px 12px;
             border-radius: 12px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            border: 1px solid rgba(180, 40, 40, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .meta-row {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 40px;
-            font-size: 0.85rem;
-            color: rgba(200, 150, 150, 0.7);
-        }
+        .tag:hover { background: rgba(180, 30, 30, 0.6); }
 
-        .section {
-            max-width: 800px;
-            margin: 0 auto 40px;
-            padding: 0 20px;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
+        /* 角色區 */
+        .quote {
+            font-style: italic;
             color: #ff8888;
-            border-left: 4px solid #cc2222;
-            padding-left: 12px;
-            margin-bottom: 16px;
-        }
-
-        .synopsis-box {
-            background: rgba(30, 5, 5, 0.7);
-            border: 1px solid rgba(180, 30, 30, 0.3);
-            border-radius: 12px;
-            padding: 24px;
-            line-height: 1.9;
-            color: #ddc0c0;
-            font-size: 1rem;
-            white-space: pre-wrap;
+            font-size: 0.95rem;
+            margin: 0 0 16px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(200, 30, 30, 0.3);
+            line-height: 1.6;
         }
 
         .characters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
         .character-card {
-            background: rgba(30, 5, 5, 0.7);
+            background: rgba(150, 20, 20, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
             border: 1px solid rgba(180, 30, 30, 0.3);
-            border-radius: 10px;
-            padding: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(180, 30, 30, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .character-card:hover::before { left: 100%; }
+
+        .character-card:hover {
+            background: rgba(180, 30, 30, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(150, 20, 20, 0.3);
+        }
+
+        .character-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(180, 30, 30, 0.5);
+            background: linear-gradient(145deg, #2a0505, #1a0505);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover .character-avatar { transform: scale(1.1); border-color: rgba(220, 50, 50, 0.8); }
+
         .character-name {
-            font-size: 1.1rem;
             font-weight: 700;
-            color: #ffcccc;
-            margin-bottom: 4px;
+            color: #ff8888;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(200, 30, 30, 0.4);
+        }
+
+        .character-age {
+            font-size: 0.85rem;
+            color: rgba(255, 180, 180, 0.6);
+            margin-bottom: 6px;
         }
 
         .character-gender {
             font-size: 0.8rem;
-            color: rgba(200, 130, 130, 0.7);
+            color: #ff9999;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        .rating-box {
-            background: rgba(30, 5, 5, 0.7);
-            border: 1px solid rgba(180, 30, 30, 0.3);
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .rating-score {
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #ffaa00;
-            line-height: 1;
-        }
-
-        .rating-label {
+        .character-desc {
             font-size: 0.85rem;
-            color: rgba(200, 150, 100, 0.8);
+            color: #ddb0b0;
+            line-height: 1.4;
+            font-style: italic;
         }
 
-        .rating-items {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        /* 故事背景 / 劇本特色 */
+        .card.description { grid-column: span 2; }
+
+        .description-text {
+            color: #ddc0c0;
+            line-height: 1.9;
+            font-size: 1rem;
         }
 
-        .rating-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: #ddc0a0;
+        .highlight {
+            color: #ff6666;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(200, 30, 30, 0.4);
         }
 
-        .rating-bar {
-            width: 120px;
-            height: 6px;
-            background: rgba(100, 60, 0, 0.3);
-            border-radius: 3px;
+        /* CTA */
+        .cta-section {
+            text-align: center;
+            padding: 40px 0;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.8s forwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #cc2222, #ff4444);
+            color: white;
+            padding: 16px 48px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(180, 20, 20, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
 
-        .rating-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #cc8800, #ffcc00);
-            border-radius: 3px;
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(200, 30, 30, 0.6);
         }
 
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: rgba(180, 100, 100, 0.4);
-            font-size: 0.8rem;
+        /* RWD */
+        @media (max-width: 768px) {
+            .main-content { grid-template-columns: 1fr; gap: 20px; }
+            .card.description { grid-column: span 1; }
+            .title { font-size: 2rem; }
+            .characters-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
         }
     </style>
 </head>
 <body>
 
     <div class="back-to-overview">
-        <a href="../index.html" class="back-btn">← 返回總覽</a>
+        <a href="../index.html" class="back-btn">← 返回劇本總覽</a>
     </div>
 
-    <div class="hero">
-        <div class="cover-placeholder">
-            <span style="font-size:2.5rem;">🐰</span>
-            <span class="crazy-meat">THE CRAZY MEAT</span>
-            <span>海報待上傳</span>
-        </div>
+    <div class="blood-mist-effects" id="mistEffects"></div>
 
-        <h1 class="script-title">瘋兔子，白又白<br>砍下腦袋飛起來</h1>
-        <div class="script-subtitle">THE CRAZY MEAT</div>
-
-        <div class="info-row">
-            <span class="info-badge">👥 6人（3男3女，可反串）</span>
-            <span class="info-badge">⏰ 約4.5小時</span>
-            <span class="info-badge">🔞 18+</span>
-            <span class="info-badge">📅 2026.05 發行</span>
-        </div>
-
-        <div class="tag-row">
-            <span class="tag">架空</span>
-            <span class="tag">還原</span>
-            <span class="tag">驚悚</span>
-            <span class="tag">怪談</span>
-            <span class="tag">新手</span>
-            <span class="tag">入門微恐</span>
-        </div>
-
-        <div class="meta-row">
-            <span>發行：鑫夢人生</span>
-            <span>|</span>
-            <span>作者：斐然</span>
-        </div>
+    <div class="floating-elements">
+        <div class="floating-element">🐰</div>
+        <div class="floating-element">🔪</div>
+        <div class="floating-element">🃏</div>
     </div>
 
-    <div class="section">
-        <div class="section-title">劇情簡介</div>
-        <div class="synopsis-box">"有沒有聽過一個故事，男人每天給妻子一顆糖，問她甜不甜。但有天她說不甜，男人就把她殺了。"
-"為什麼呢？"
-"因為他是瘋兔子呀！"
-"就是神經病嗎？"
-"不不不，他們的腦袋最後都飛走了！"
-
-遊戲圍繞著這個詭異童話展開，玩家需透過互動與線索推理，抽絲剝繭揭開故事後「腦袋飛走」的真相。</div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">劇本角色</div>
-        <div class="characters-grid">
-            <div class="character-card">
-                <div class="character-name">夏瞳</div>
-                <div class="character-gender">男性角色</div>
-            </div>
-            <div class="character-card">
-                <div class="character-name">簡菲菲</div>
-                <div class="character-gender">女性角色</div>
-            </div>
-            <div class="character-card">
-                <div class="character-name">姜沁</div>
-                <div class="character-gender">女性角色</div>
-            </div>
-            <div class="character-card">
-                <div class="character-name">簡辟</div>
-                <div class="character-gender">男性角色</div>
-            </div>
-            <div class="character-card">
-                <div class="character-name">林雲書</div>
-                <div class="character-gender">男性角色</div>
-            </div>
-            <div class="character-card">
-                <div class="character-name">王之喻</div>
-                <div class="character-gender">女性角色</div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">瘋兔子，白又白<br>砍下腦袋飛起來</h1>
+            <p class="subtitle">THE CRAZY MEAT</p>
         </div>
-    </div>
 
-    <div class="section">
-        <div class="section-title">迷圈評分</div>
-        <div class="rating-box">
-            <div>
-                <div class="rating-score">7.2</div>
-                <div class="rating-label">值得一玩<br>3515人玩過</div>
-            </div>
-            <div class="rating-items">
-                <div class="rating-item">
-                    <span style="width:40px">劇情</span>
-                    <div class="rating-bar"><div class="rating-fill" style="width:72%"></div></div>
-                    <span>7.2</span>
-                </div>
-                <div class="rating-item">
-                    <span style="width:40px">還原</span>
-                    <div class="rating-bar"><div class="rating-fill" style="width:72%"></div></div>
-                    <span>7.2</span>
-                </div>
-                <div class="rating-item">
-                    <span style="width:40px">驚悚</span>
-                    <div class="rating-bar"><div class="rating-fill" style="width:72%"></div></div>
-                    <span>7.2</span>
+        <div class="poster-section">
+            <div class="poster-slider" id="posterSlider">
+                <!-- 海報上傳後在此新增 <img class="poster-image active" src="..." alt="..."> -->
+                <div class="poster-placeholder">
+                    <span>🐰</span>
+                    <span class="en-title">THE CRAZY MEAT</span>
+                    <span class="hint">海報待上傳</span>
                 </div>
             </div>
         </div>
+
+        <div class="main-content">
+            <!-- 遊戲資訊 -->
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+
+                <div class="info-item">
+                    <span class="info-label">📖 劇本名稱</span>
+                    <span class="info-value">瘋兔子，白又白，砍下腦袋飛起來</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">約 4.5 小時</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <span class="info-value">6人（3男3女，可反串）</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🧠 推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">架空</span>
+                        <span class="tag">還原</span>
+                        <span class="tag">驚悚</span>
+                        <span class="tag">怪談</span>
+                        <span class="tag">新手</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🔞 適齡</span>
+                    <span class="info-value">18+</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">📅 發行</span>
+                    <span class="info-value">2026.05 · 鑫夢人生</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">✍️ 作者</span>
+                    <span class="info-value">斐然</span>
+                </div>
+            </div>
+
+            <!-- 角色陣容 -->
+            <div class="card">
+                <h2 class="card-title">角色陣容</h2>
+                <div class="quote">"因為他是瘋兔子呀！他們的腦袋最後都飛走了！"</div>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-avatar">🐰</div>
+                        <div class="character-name">夏瞳</div>
+                        <div class="character-age">待補充</div>
+                        <div class="character-gender">男性角色</div>
+                        <div class="character-desc">待補充</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">🐰</div>
+                        <div class="character-name">簡菲菲</div>
+                        <div class="character-age">待補充</div>
+                        <div class="character-gender">女性角色</div>
+                        <div class="character-desc">待補充</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">🐰</div>
+                        <div class="character-name">姜沁</div>
+                        <div class="character-age">待補充</div>
+                        <div class="character-gender">女性角色</div>
+                        <div class="character-desc">待補充</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">🐰</div>
+                        <div class="character-name">簡辟</div>
+                        <div class="character-age">待補充</div>
+                        <div class="character-gender">男性角色</div>
+                        <div class="character-desc">待補充</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">🐰</div>
+                        <div class="character-name">林雲書</div>
+                        <div class="character-age">待補充</div>
+                        <div class="character-gender">男性角色</div>
+                        <div class="character-desc">待補充</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-avatar">🐰</div>
+                        <div class="character-name">王之喻</div>
+                        <div class="character-age">待補充</div>
+                        <div class="character-gender">女性角色</div>
+                        <div class="character-desc">待補充</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 故事背景 -->
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    "有沒有聽過一個故事，男人每天給妻子一顆糖，問她<span class="highlight">甜不甜</span>。<br>
+                    但有天她說不甜，男人就把她殺了。"<br><br>
+                    "為什麼呢？"<br>
+                    "因為他是<span class="highlight">瘋兔子</span>呀！"<br>
+                    "就是神經病嗎？"<br>
+                    "不不不，他們的<span class="highlight">腦袋最後都飛走了</span>！"<br><br>
+                    遊戲圍繞著這個詭異童話展開，玩家需透過互動與線索推理，抽絲剝繭揭開故事後「腦袋飛走」的真相。
+                </div>
+            </div>
+
+            <!-- 劇本特色 -->
+            <div class="card description">
+                <h2 class="card-title">劇本特色</h2>
+                <div class="description-text">
+                    這是一部以<span class="highlight">架空怪談</span>為世界觀的驚悚還原劇本。詭異的童話故事包裹著令人毛骨悚然的真相，輕度恐怖氣氛貫穿全程，帶給玩家沉浸式的驚悚體驗。
+                    <br><br>
+                    劇本採用<span class="highlight">六人制</span>，3男3女配置（可反串），適合新手體驗入門。玩家將深入怪談世界，體驗帶有搜查與追逐的輕度恐怖互動，在<span class="highlight">全員惡人</span>的設定中推理驚悚真相。
+                    <br><br>
+                    由<span class="highlight">斐然</span>創作、鑫夢人生發行，迷圈評分 <span class="highlight">7.2分（值得一玩）</span>，3515 人玩過。
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="#" class="cta-button">立即預約遊戲</a>
+        </div>
     </div>
 
-    <footer>海星の劇本殺 · 瘋兔子，白又白，砍下腦袋飛起來</footer>
+    <audio id="bgm" src="瘋兔子白又白砍下腦袋飛起來.mp3" autoplay loop muted></audio>
 
+    <script>
+        document.addEventListener('click', function() {
+            const bgm = document.getElementById('bgm');
+            if (bgm.paused) {
+                bgm.play().catch(e => console.log("Audio playback failed: " + e));
+            }
+            bgm.muted = false;
+        }, { once: true });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 海報輪播
+            let currentImageIndex = 0;
+            const images = document.querySelectorAll('.poster-slider .poster-image');
+            if (images.length > 1) {
+                setInterval(() => {
+                    images[currentImageIndex].classList.remove('active');
+                    currentImageIndex = (currentImageIndex + 1) % images.length;
+                    images[currentImageIndex].classList.add('active');
+                }, 5000);
+            }
+
+            // 星星懸停效果
+            const stars = document.querySelectorAll('.star-rating:not(.empty)');
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    stars.forEach((s, i) => {
+                        s.style.color = i <= index ? '#aa2222' : '#ffd700';
+                        s.style.textShadow = i <= index ? '0 0 15px rgba(180,20,20,0.8)' : '0 0 10px rgba(255,215,0,0.5)';
+                    });
+                });
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '#ffd700';
+                        s.style.textShadow = '0 0 10px rgba(255,215,0,0.5)';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => { tag.style.transform = 'scale(1.05)'; }, 100);
+                });
+            });
+
+            // 卡片滑鼠光效
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(180,30,30,0.25) 0%, rgba(30,5,5,0.6) 100%)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(30,5,5,0.6)';
+                });
+            });
+
+            // 血霧粒子
+            const container = document.getElementById('mistEffects');
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.className = 'mist-particle';
+                const size = Math.random() * 6 + 2;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(p);
+            }
+        });
+
+        // 視差效果
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const mist = document.querySelector('.blood-mist-effects');
+            const floating = document.querySelector('.floating-elements');
+            if (mist) mist.style.transform = `translateY(${scrolled * 0.05}px)`;
+            if (floating) floating.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // CTA 按鈕波紋效果
+        const ctaButton = document.querySelector('.cta-button');
+        if (ctaButton) {
+            ctaButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const ripple = document.createElement('div');
+                const rect = ctaButton.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);animation:ripple-effect 0.6s linear;pointer-events:none;`;
+                ctaButton.style.position = 'relative';
+                ctaButton.style.overflow = 'hidden';
+                ctaButton.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+                alert('即將跳轉至預約頁面...');
+            });
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `@keyframes ripple-effect { 0%{transform:scale(0);opacity:1} 100%{transform:scale(4);opacity:0} }`;
+        document.head.appendChild(style);
+    </script>
+
+    <script src="../bgm-control.js"></script>
 </body>
 </html>
