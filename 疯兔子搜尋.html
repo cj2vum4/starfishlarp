@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>瘋兔子白又白：線索搜尋</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --border: #333;
+    --accent: #c8a96e;
+    --accent-dim: #8a7048;
+    --text: #e8e0d0;
+    --text-dim: #888;
+    --hit: #3a2a0a;
+    --hit-border: #c8a96e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Serif TC", "Source Han Serif TC", serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    letter-spacing: .15em;
+    color: var(--accent);
+    margin-bottom: .4rem;
+    text-align: center;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: .9rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: .6rem;
+    width: 100%;
+    max-width: 780px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  #search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: .7rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .2s;
+  }
+  #search-input:focus { border-color: var(--accent); }
+  #search-input::placeholder { color: var(--text-dim); }
+
+  #folder-filter {
+    padding: .7rem .8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: .9rem;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+  }
+  #folder-filter:focus { border-color: var(--accent); }
+
+  .stats {
+    width: 100%;
+    max-width: 780px;
+    font-size: .82rem;
+    color: var(--text-dim);
+    margin-bottom: .8rem;
+    min-height: 1.2em;
+  }
+
+  #results {
+    width: 100%;
+    max-width: 780px;
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .card:hover, .card.expanded {
+    border-color: var(--accent-dim);
+    background: #1e1e1e;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .5rem;
+  }
+
+  .card-title {
+    font-size: .95rem;
+    color: var(--accent);
+    flex: 1;
+    word-break: break-all;
+  }
+
+  .card-meta {
+    font-size: .78rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .card-folder {
+    display: inline-block;
+    font-size: .75rem;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: .1rem .5rem;
+    margin-top: .3rem;
+    color: var(--text-dim);
+  }
+
+  .card-preview {
+    margin-top: .6rem;
+    font-size: .88rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+    max-height: 3.4em;
+    overflow: hidden;
+    transition: max-height .3s ease;
+  }
+
+  .card.expanded .card-preview {
+    max-height: 600px;
+    color: var(--text);
+  }
+
+  .card-preview mark {
+    background: var(--hit);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
+  .copy-btn {
+    position: absolute;
+    right: .8rem;
+    bottom: .7rem;
+    font-size: .75rem;
+    padding: .25rem .6rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .15s;
+    display: none;
+  }
+  .card.expanded .copy-btn { display: block; }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .empty {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 3rem;
+    font-size: .95rem;
+  }
+
+  .spinner {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    color: var(--text-dim);
+    font-size: .9rem;
+    padding: 2rem;
+  }
+  .spinner::before {
+    content: "";
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<h1>瘋兔子白又白</h1>
+<p class="subtitle">砍下腦袋飛起來・線索搜尋系統</p>
+
+<div class="toolbar">
+  <input id="search-input" type="search" placeholder="搜尋線索文字…" autocomplete="off" spellcheck="false">
+  <select id="folder-filter"><option value="">全部資料夾</option></select>
+</div>
+
+<div class="stats" id="stats">載入中…</div>
+<div id="results"><div class="spinner">從資料庫載入資料…</div></div>
+
+<script>
+// ── 設定 ─────────────────────────────────────────────────────────────────────
+const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";   // ← 替換
+const SUPABASE_KEY = "YOUR_ANON_KEY";                       // ← 替換
+const TABLE        = "cards";
+const PAGE_SIZE    = 200;   // 每批拉取筆數（Supabase REST 預設上限 1000）
+
+// ── 全域資料 ─────────────────────────────────────────────────────────────────
+let allRecords = [];
+
+// ── Supabase 簡易封裝 ────────────────────────────────────────────────────────
+async function supabaseFetch(from, params = {}) {
+  const url = new URL(`${SUPABASE_URL}/rest/v1/${from}`);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString(), {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "count=exact",
+    },
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const total = parseInt(res.headers.get("content-range")?.split("/")[1] || "0", 10);
+  return { data: await res.json(), total };
+}
+
+async function fetchAll() {
+  let offset = 0;
+  let total = Infinity;
+  const rows = [];
+  while (offset < total) {
+    const { data, total: t } = await supabaseFetch(TABLE, {
+      select: "id,filename,folder,page_num,text",
+      order: "folder.asc,filename.asc,page_num.asc",
+      offset,
+      limit: PAGE_SIZE,
+    });
+    total = t || data.length;
+    rows.push(...data);
+    offset += data.length;
+    if (data.length < PAGE_SIZE) break;
+  }
+  return rows;
+}
+
+// ── 搜尋邏輯 ─────────────────────────────────────────────────────────────────
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlight(text, pattern) {
+  if (!pattern) return escapeHtml(text);
+  const re = new RegExp(`(${escapeRegex(pattern)})`, "gi");
+  return escapeHtml(text).replace(re, "<mark>$1</mark>");
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function search(query, folder) {
+  const q = query.trim().toLowerCase();
+  return allRecords.filter(r => {
+    if (folder && r.folder !== folder) return false;
+    if (!q) return true;
+    return r.text.toLowerCase().includes(q) ||
+           r.filename.toLowerCase().includes(q);
+  });
+}
+
+// ── UI ──────────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const resultsEl = $("results");
+const statsEl   = $("stats");
+const inputEl   = $("search-input");
+const filterEl  = $("folder-filter");
+
+function buildFolderFilter(records) {
+  const folders = [...new Set(records.map(r => r.folder).filter(Boolean))].sort();
+  folders.forEach(f => {
+    const opt = document.createElement("option");
+    opt.value = f; opt.textContent = f;
+    filterEl.appendChild(opt);
+  });
+}
+
+function renderResults(records, query) {
+  if (!records.length) {
+    resultsEl.innerHTML = `<div class="empty">找不到符合的結果</div>`;
+    statsEl.textContent = "0 筆結果";
+    return;
+  }
+
+  statsEl.textContent = `共 ${records.length} 筆結果`;
+
+  resultsEl.innerHTML = "";
+  records.forEach(r => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const pageLabel = r.page_num ? ` · 第 ${r.page_num} 頁` : "";
+    const folderBadge = r.folder ? `<span class="card-folder">${escapeHtml(r.folder)}</span>` : "";
+    const preview = highlight(r.text.slice(0, 600), query);
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="card-title">${escapeHtml(r.filename)}</div>
+          ${folderBadge}
+        </div>
+        <div class="card-meta">#${r.id}${pageLabel}</div>
+      </div>
+      <div class="card-preview">${preview}</div>
+      <button class="copy-btn" title="複製全文">複製文字</button>
+    `;
+
+    card.addEventListener("click", e => {
+      if (e.target.classList.contains("copy-btn")) return;
+      card.classList.toggle("expanded");
+      if (card.classList.contains("expanded")) {
+        card.querySelector(".card-preview").innerHTML =
+          highlight(r.text, query);
+      }
+    });
+
+    card.querySelector(".copy-btn").addEventListener("click", () => {
+      navigator.clipboard.writeText(r.text).then(() => {
+        const btn = card.querySelector(".copy-btn");
+        btn.textContent = "已複製！";
+        setTimeout(() => btn.textContent = "複製文字", 1500);
+      });
+    });
+
+    resultsEl.appendChild(card);
+  });
+}
+
+// ── 防抖搜尋 ─────────────────────────────────────────────────────────────────
+let debounceTimer;
+function triggerSearch() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const q = inputEl.value;
+    const f = filterEl.value;
+    renderResults(search(q, f), q);
+  }, 200);
+}
+
+inputEl.addEventListener("input", triggerSearch);
+filterEl.addEventListener("change", triggerSearch);
+
+// ── 初始化 ──────────────────────────────────────────────────────────────────
+(async () => {
+  try {
+    allRecords = await fetchAll();
+    buildFolderFilter(allRecords);
+    renderResults(allRecords, "");
+  } catch (err) {
+    resultsEl.innerHTML = `<div class="empty">❌ 載入失敗：${escapeHtml(err.message)}<br><br>
+      請確認 SUPABASE_URL 和 SUPABASE_KEY 已正確填入，<br>
+      並且資料表 <code>cards</code> 已開放 Row Level Security Public Read。</div>`;
+    statsEl.textContent = "";
+    console.error(err);
+  }
+})();
+</script>
+</body>
+</html>
