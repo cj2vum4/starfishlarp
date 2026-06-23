@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瘋兔子白又白 · 主持人手冊</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0d0005;
+            --surface: #1a0a0a;
+            --card: #200d0d;
+            --border: rgba(180, 30, 30, 0.3);
+            --accent: #cc2222;
+            --accent-dim: #882222;
+            --gold: #c8a96e;
+            --text: #e8d8d8;
+            --text-dim: #998888;
+            --green: #22cc66;
+            --blue: #4488ff;
+            --orange: #ff8822;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 4rem;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: linear-gradient(180deg, #1a0505 0%, #0d0005 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn {
+            background: rgba(180, 30, 30, 0.2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: .5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: .85rem;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .back-btn:hover { background: rgba(180, 30, 30, 0.4); color: var(--text); }
+
+        .header-title { flex: 1; }
+        .header-title h1 { font-size: 1.3rem; color: #ff6666; letter-spacing: .1em; }
+        .header-title p { font-size: .78rem; color: var(--text-dim); margin-top: .2rem; }
+
+        .handbook-btn {
+            background: var(--accent);
+            color: white;
+            padding: .6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: .88rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .handbook-btn:hover { background: #ee3333; transform: translateY(-1px); }
+
+        /* ── MAIN LAYOUT ── */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ff6666;
+            letter-spacing: .1em;
+            padding-bottom: .6rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* ── GAME INFO BAR ── */
+        .info-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .info-pill {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .9rem;
+            color: var(--text-dim);
+        }
+        .info-pill strong { color: var(--text); }
+
+        /* ── CHARACTER GRID ── */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+        }
+        @media (max-width: 900px) {
+            .character-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 500px) {
+            .character-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .char-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: border-color .2s, transform .2s;
+        }
+        .char-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+
+        .char-card img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            display: block;
+        }
+
+        .char-info {
+            padding: .7rem .8rem;
+        }
+        .char-name {
+            font-weight: 700;
+            font-size: .95rem;
+            color: #ff8888;
+            margin-bottom: .2rem;
+        }
+        .char-gender {
+            font-size: .75rem;
+            color: var(--text-dim);
+            margin-bottom: .6rem;
+        }
+        .char-links { display: flex; flex-direction: column; gap: .4rem; }
+
+        .dl-btn {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .35rem .6rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: .75rem;
+            font-weight: 600;
+            transition: all .15s;
+        }
+        .dl-btn.book {
+            background: rgba(100, 30, 30, 0.5);
+            border: 1px solid rgba(180, 60, 60, 0.3);
+            color: #ffaaaa;
+        }
+        .dl-btn.book:hover { background: rgba(140, 40, 40, 0.7); }
+        .dl-btn.words {
+            background: rgba(30, 60, 120, 0.5);
+            border: 1px solid rgba(60, 100, 200, 0.3);
+            color: #aaccff;
+        }
+        .dl-btn.words:hover { background: rgba(40, 80, 160, 0.7); }
+
+        /* ── FLOW TIMELINE ── */
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .flow-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            position: relative;
+        }
+
+        .flow-num {
+            position: absolute;
+            top: -12px;
+            left: 14px;
+            background: var(--accent);
+            color: white;
+            font-size: .75rem;
+            font-weight: 700;
+            padding: .15rem .6rem;
+            border-radius: 20px;
+        }
+
+        .flow-title {
+            font-weight: 700;
+            color: #ff9999;
+            font-size: .95rem;
+            margin-bottom: .5rem;
+            margin-top: .3rem;
+        }
+
+        .flow-desc {
+            font-size: .83rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: .8rem;
+        }
+
+        .flow-files {
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+        }
+
+        .flow-file-btn {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .4rem .7rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: .8rem;
+            font-weight: 600;
+            transition: all .15s;
+        }
+        .flow-file-btn.red {
+            background: rgba(120, 20, 20, 0.5);
+            border: 1px solid rgba(180, 40, 40, 0.3);
+            color: #ffaaaa;
+        }
+        .flow-file-btn.red:hover { background: rgba(160, 30, 30, 0.7); }
+        .flow-file-btn.orange {
+            background: rgba(120, 70, 10, 0.5);
+            border: 1px solid rgba(200, 120, 30, 0.3);
+            color: #ffcc88;
+        }
+        .flow-file-btn.orange:hover { background: rgba(160, 90, 15, 0.7); }
+        .flow-file-btn.blue {
+            background: rgba(20, 50, 120, 0.5);
+            border: 1px solid rgba(50, 100, 200, 0.3);
+            color: #aaccff;
+        }
+        .flow-file-btn.blue:hover { background: rgba(30, 70, 160, 0.7); }
+        .flow-file-btn.green {
+            background: rgba(10, 80, 40, 0.5);
+            border: 1px solid rgba(30, 160, 80, 0.3);
+            color: #88ffaa;
+        }
+        .flow-file-btn.green:hover { background: rgba(15, 110, 55, 0.7); }
+        .flow-file-btn.purple {
+            background: rgba(70, 20, 100, 0.5);
+            border: 1px solid rgba(140, 50, 200, 0.3);
+            color: #ccaaff;
+        }
+        .flow-file-btn.purple:hover { background: rgba(90, 30, 130, 0.7); }
+
+        /* ── ALL FILES GRID ── */
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: .8rem;
+        }
+        .file-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: .9rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            transition: all .2s;
+        }
+        .file-card:hover { border-color: var(--accent); background: rgba(40, 10, 10, 0.8); }
+        .file-icon { font-size: 1.4rem; flex-shrink: 0; }
+        .file-meta { flex: 1; min-width: 0; }
+        .file-name { font-size: .85rem; font-weight: 600; color: var(--text); word-break: break-all; }
+        .file-type { font-size: .72rem; color: var(--text-dim); margin-top: .15rem; }
+
+        /* ── NOTE BOX ── */
+        .note-box {
+            background: rgba(30, 15, 5, 0.6);
+            border: 1px solid rgba(200, 120, 30, 0.3);
+            border-radius: 8px;
+            padding: .8rem 1.1rem;
+            font-size: .83rem;
+            color: #cc9944;
+            line-height: 1.6;
+        }
+        .note-box strong { color: #ffbb66; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="瘋兔子白又白砍下腦袋飛起來.html" class="back-btn">← 劇本介紹</a>
+    <div class="header-title">
+        <h1>瘋兔子，白又白，砍下腦袋飛起來</h1>
+        <p>主持人手冊 · 現場操作參考</p>
+    </div>
+    <a href="../劇本資料/《疯兔子》手册.pdf" target="_blank" class="handbook-btn">📖 主持人手冊 PDF</a>
+</header>
+
+<main>
+
+    <!-- 遊戲基本資訊 -->
+    <div class="info-bar">
+        <div class="info-pill">👥 <strong>6人</strong> &nbsp;3男3女（可反串）</div>
+        <div class="info-pill">⏰ <strong>約 4.5 小時</strong></div>
+        <div class="info-pill">⭐ <strong>難度 2星</strong>（新手友善）</div>
+        <div class="info-pill">📦 <strong>類型</strong>：架空・還原・驚悚・怪談</div>
+        <div class="info-pill">🔞 <strong>18+</strong></div>
+    </div>
+
+    <!-- 角色資料 -->
+    <section>
+        <div class="section-title">👤 角色資料下載</div>
+        <div class="character-grid">
+
+            <div class="char-card">
+                <img src="../劇本資料/角色海報/夏瞳.jpg" alt="夏瞳">
+                <div class="char-info">
+                    <div class="char-name">夏瞳</div>
+                    <div class="char-gender">男性角色</div>
+                    <div class="char-links">
+                        <a class="dl-btn book" href="../劇本資料/夏瞳_compressed.pdf" target="_blank">📄 角色劇本</a>
+                        <a class="dl-btn words" href="../劇本資料/台词卡/台词卡 夏瞳.pdf" target="_blank">💬 台詞卡</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="char-card">
+                <img src="../劇本資料/角色海報/简菲菲.jpg" alt="簡菲菲">
+                <div class="char-info">
+                    <div class="char-name">簡菲菲</div>
+                    <div class="char-gender">女性角色</div>
+                    <div class="char-links">
+                        <a class="dl-btn book" href="../劇本資料/简菲菲_compressed.pdf" target="_blank">📄 角色劇本</a>
+                        <a class="dl-btn words" href="../劇本資料/台词卡/台词卡 简菲菲.pdf" target="_blank">💬 台詞卡</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="char-card">
+                <img src="../劇本資料/角色海報/姜沁.jpg" alt="姜沁">
+                <div class="char-info">
+                    <div class="char-name">姜沁</div>
+                    <div class="char-gender">女性角色</div>
+                    <div class="char-links">
+                        <a class="dl-btn book" href="../劇本資料/姜沁_compressed.pdf" target="_blank">📄 角色劇本</a>
+                        <a class="dl-btn words" href="../劇本資料/台词卡/台词卡  姜沁.pdf" target="_blank">💬 台詞卡</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="char-card">
+                <img src="../劇本資料/角色海報/简辞.jpg" alt="簡辭">
+                <div class="char-info">
+                    <div class="char-name">簡辭</div>
+                    <div class="char-gender">男性角色</div>
+                    <div class="char-links">
+                        <a class="dl-btn book" href="../劇本資料/简辞_compressed.pdf" target="_blank">📄 角色劇本</a>
+                        <a class="dl-btn words" href="../劇本資料/台词卡/台词卡 简辞&王之喻.pdf" target="_blank">💬 台詞卡</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="char-card">
+                <img src="../劇本資料/角色海報/林云书.jpg" alt="林雲書">
+                <div class="char-info">
+                    <div class="char-name">林雲書</div>
+                    <div class="char-gender">男性角色</div>
+                    <div class="char-links">
+                        <a class="dl-btn book" href="../劇本資料/林云书_compressed.pdf" target="_blank">📄 角色劇本</a>
+                        <a class="dl-btn words" href="../劇本資料/台词卡/台词卡  林云书.pdf" target="_blank">💬 台詞卡</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="char-card">
+                <img src="../劇本資料/角色海報/王之喻.jpg" alt="王之喻">
+                <div class="char-info">
+                    <div class="char-name">王之喻</div>
+                    <div class="char-gender">女性角色</div>
+                    <div class="char-links">
+                        <a class="dl-btn book" href="../劇本資料/王之喻_compressed.pdf" target="_blank">📄 角色劇本</a>
+                        <a class="dl-btn words" href="../劇本資料/台词卡/台词卡 简辞&王之喻.pdf" target="_blank">💬 台詞卡</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 遊戲流程 -->
+    <section>
+        <div class="section-title">🎯 遊戲流程 & 線索發放時機</div>
+        <div class="note-box" style="margin-bottom:1rem;">
+            <strong>操作提醒：</strong>以下為建議流程，請依照主持人手冊調整細節。每個環節結束前確認玩家已充分討論後再進入下一幕。
+        </div>
+        <div class="flow-grid">
+
+            <div class="flow-card">
+                <div class="flow-num">開場</div>
+                <div class="flow-title">發放材料 & 角色登場</div>
+                <div class="flow-desc">分配角色、發放角色劇本與台詞卡。玩家自行閱讀後進行角色自我介紹。</div>
+                <div class="flow-files">
+                    <a class="flow-file-btn orange" href="../劇本資料/线索/游戏规则.pdf" target="_blank">📋 遊戲規則</a>
+                    <a class="flow-file-btn orange" href="../劇本資料/线索/故事背景.pdf" target="_blank">📖 故事背景</a>
+                </div>
+            </div>
+
+            <div class="flow-card">
+                <div class="flow-num">第一幕</div>
+                <div class="flow-title">卡牌線索搜證</div>
+                <div class="flow-desc">發放卡牌線索，玩家進行第一輪搜證。可使用線索搜尋工具輔助。</div>
+                <div class="flow-files">
+                    <a class="flow-file-btn red" href="../劇本資料/线索/卡牌线索.pdf" target="_blank">🃏 卡牌線索</a>
+                </div>
+            </div>
+
+            <div class="flow-card">
+                <div class="flow-num">第二幕</div>
+                <div class="flow-title">搜證卡環節</div>
+                <div class="flow-desc">進行搜證卡環節，玩家選擇搜查地點，獲取對應線索。</div>
+                <div class="flow-files">
+                    <a class="flow-file-btn red" href="../劇本資料/线索/搜证卡.pdf" target="_blank">🔍 搜證卡</a>
+                </div>
+            </div>
+
+            <div class="flow-card">
+                <div class="flow-num">第三幕</div>
+                <div class="flow-title">觸發線索</div>
+                <div class="flow-desc">根據玩家討論結果，發放對應的觸發線索，推進劇情。</div>
+                <div class="flow-files">
+                    <a class="flow-file-btn blue" href="../劇本資料/线索/触发线索.pdf" target="_blank">⚡ 觸發線索</a>
+                </div>
+            </div>
+
+            <div class="flow-card">
+                <div class="flow-num">第四幕</div>
+                <div class="flow-title">雙搜 & 還原線索</div>
+                <div class="flow-desc">第四幕雙搜環節，發放雙搜材料與還原線索，協助玩家拼湊事件真相。</div>
+                <div class="flow-files">
+                    <a class="flow-file-btn blue" href="../劇本資料/线索/第四幕·双搜.docx" target="_blank">📑 第四幕・雙搜</a>
+                    <a class="flow-file-btn green" href="../劇本資料/线索/还原线索.pdf" target="_blank">🔑 還原線索</a>
+                </div>
+            </div>
+
+            <div class="flow-card">
+                <div class="flow-num">終幕</div>
+                <div class="flow-title">飛升儀式 & 投票指兇</div>
+                <div class="flow-desc">發放飛升儀式材料，進行最終討論。玩家依序發表推理，完成投票指兇。</div>
+                <div class="flow-files">
+                    <a class="flow-file-btn purple" href="../劇本資料/线索/飞升仪式.pdf" target="_blank">✨ 飛升儀式</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 所有材料 -->
+    <section>
+        <div class="section-title">📁 所有材料快速存取</div>
+        <div class="files-grid">
+            <a class="file-card" href="../劇本資料/《疯兔子》手册.pdf" target="_blank">
+                <span class="file-icon">📖</span>
+                <div class="file-meta">
+                    <div class="file-name">《疯兔子》手册</div>
+                    <div class="file-type">主持人手冊 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/游戏规则.pdf" target="_blank">
+                <span class="file-icon">📋</span>
+                <div class="file-meta">
+                    <div class="file-name">遊戲規則</div>
+                    <div class="file-type">線索 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/故事背景.pdf" target="_blank">
+                <span class="file-icon">📖</span>
+                <div class="file-meta">
+                    <div class="file-name">故事背景</div>
+                    <div class="file-type">線索 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/卡牌线索.pdf" target="_blank">
+                <span class="file-icon">🃏</span>
+                <div class="file-meta">
+                    <div class="file-name">卡牌線索</div>
+                    <div class="file-type">線索 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/搜证卡.pdf" target="_blank">
+                <span class="file-icon">🔍</span>
+                <div class="file-meta">
+                    <div class="file-name">搜證卡</div>
+                    <div class="file-type">線索 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/触发线索.pdf" target="_blank">
+                <span class="file-icon">⚡</span>
+                <div class="file-meta">
+                    <div class="file-name">觸發線索</div>
+                    <div class="file-type">線索 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/还原线索.pdf" target="_blank">
+                <span class="file-icon">🔑</span>
+                <div class="file-meta">
+                    <div class="file-name">還原線索</div>
+                    <div class="file-type">線索 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/第四幕·双搜.docx" target="_blank">
+                <span class="file-icon">📑</span>
+                <div class="file-meta">
+                    <div class="file-name">第四幕・雙搜</div>
+                    <div class="file-type">線索 DOCX</div>
+                </div>
+            </a>
+            <a class="file-card" href="../劇本資料/线索/飞升仪式.pdf" target="_blank">
+                <span class="file-icon">✨</span>
+                <div class="file-meta">
+                    <div class="file-name">飛升儀式</div>
+                    <div class="file-type">線索 PDF</div>
+                </div>
+            </a>
+            <a class="file-card" href="../疯兔子搜尋.html" target="_blank">
+                <span class="file-icon">🔎</span>
+                <div class="file-meta">
+                    <div class="file-name">線索搜尋工具</div>
+                    <div class="file-type">Supabase 全文搜尋</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>
