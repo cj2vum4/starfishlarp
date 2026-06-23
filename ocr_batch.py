@@ -187,7 +187,7 @@ def collect_files(root: Path) -> list[Path]:
     return files
 
 
-def process_directory(root: Path, output_json: Path, skip_upload: bool = False):
+def process_directory(root: Path, output_json: Path, script: str, skip_upload: bool = False):
     load_env()
 
     global ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY
@@ -243,6 +243,7 @@ def process_directory(root: Path, output_json: Path, skip_upload: bool = False):
                 try:
                     text = ocr_image(client, b64, media_type)
                     records.append({
+                        "script": script,
                         "filename": file_path.name,
                         "folder": folder,
                         "page_num": page_num,
@@ -265,6 +266,7 @@ def process_directory(root: Path, output_json: Path, skip_upload: bool = False):
                 b64, media_type = image_to_base64(file_path)
                 text = ocr_image(client, b64, media_type)
                 records.append({
+                    "script": script,
                     "filename": file_path.name,
                     "folder": folder,
                     "page_num": 0,
@@ -301,6 +303,10 @@ def main():
         help="輸出 JSON 路徑（預設 ocr_output.json）"
     )
     parser.add_argument(
+        "--script", required=True,
+        help="劇本識別碼，例如 fengtuz / tiancai（寫入 Supabase 的 script 欄位）"
+    )
+    parser.add_argument(
         "--no-upload", action="store_true",
         help="只做 OCR 輸出 JSON，不上傳 Supabase"
     )
@@ -310,7 +316,7 @@ def main():
     if not root.exists():
         sys.exit(f"❌ 目錄不存在：{root}")
 
-    process_directory(root, Path(args.output), skip_upload=args.no_upload)
+    process_directory(root, Path(args.output), script=args.script, skip_upload=args.no_upload)
 
 
 if __name__ == "__main__":

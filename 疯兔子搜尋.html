@@ -227,9 +227,10 @@
 
 <script>
 // ── 設定 ─────────────────────────────────────────────────────────────────────
-const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";   // ← 替換
-const SUPABASE_KEY = "YOUR_ANON_KEY";                       // ← 替換
+const SUPABASE_URL = "https://mcphigetltedeadvuvqf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Qdg36jjN7W1DUkBGtrzTtQ_bphP6Zg2";
 const TABLE        = "cards";
+const SCRIPT       = "fengtuz";
 const PAGE_SIZE    = 200;   // 每批拉取筆數（Supabase REST 預設上限 1000）
 
 // ── 全域資料 ─────────────────────────────────────────────────────────────────
@@ -259,6 +260,7 @@ async function fetchAll() {
   while (offset < total) {
     const { data, total: t } = await supabaseFetch(TABLE, {
       select: "id,filename,folder,page_num,text",
+      "script": `eq.${SCRIPT}`,
       order: "folder.asc,filename.asc,page_num.asc",
       offset,
       limit: PAGE_SIZE,
