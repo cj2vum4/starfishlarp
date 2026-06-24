@@ -842,6 +842,66 @@
             background: rgba(255, 223, 0, 0.1);
             border-color: rgba(255, 223, 0, 0.3);
         }
+
+        /* ── Three.js Hero Section ─────────────────────────────── */
+        #three-hero {
+            position: relative;
+            width: 100%;
+            height: 75vh;
+            min-height: 500px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #three-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-overlay {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .hero-tagline {
+            font-size: clamp(2rem, 5vw, 3.8rem);
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: .2em;
+            text-shadow: 0 0 40px rgba(124,58,237,.9), 0 2px 8px rgba(0,0,0,.8);
+            margin-bottom: .6rem;
+        }
+
+        .hero-sub {
+            font-size: clamp(.95rem, 2vw, 1.25rem);
+            color: rgba(220,210,255,.75);
+            letter-spacing: .15em;
+            text-shadow: 0 1px 6px rgba(0,0,0,.7);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 1.6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            color: rgba(200,190,255,.5);
+            font-size: .85rem;
+            letter-spacing: .12em;
+            animation: heroScrollBounce 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes heroScrollBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: .5; }
+            50%       { transform: translateX(-50%) translateY(6px); opacity: .9; }
+        }
     </style>
 </head>
 <body>
@@ -851,6 +911,15 @@
         <div class="floating-orb"></div>
         <div class="floating-orb"></div>
     </div>
+
+    <section id="three-hero">
+        <canvas id="three-canvas"></canvas>
+        <div class="hero-overlay">
+            <div class="hero-tagline">沉浸其中・探索謎局</div>
+            <div class="hero-sub">每一個選擇，都將改變結局</div>
+        </div>
+        <div class="hero-scroll">向下探索 ↓</div>
+    </section>
 
     <div class="container">
         <div class="header">
@@ -2802,6 +2871,201 @@
             alert('抱歉，找不到該劇本的詳細介紹頁面。');
         }
     }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script>
+    (function () {
+        const canvas = document.getElementById('three-canvas');
+        if (!canvas || typeof THREE === 'undefined') return;
+
+        const W = canvas.parentElement.offsetWidth;
+        const H = canvas.parentElement.offsetHeight;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(W, H);
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x080814, 0.045);
+
+        const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 100);
+        camera.position.set(0, 0, 8);
+
+        // ── Lights ──────────────────────────────────────────────
+        const ambientLight = new THREE.AmbientLight(0x221133, 1.2);
+        scene.add(ambientLight);
+
+        const lights = [
+            { color: 0x7c3aed, pos: [4, 3, 3],   intensity: 60 },
+            { color: 0x3b82f6, pos: [-4, -2, 4],  intensity: 50 },
+            { color: 0xf59e0b, pos: [0, 4, -2],   intensity: 30 },
+        ];
+        const lightMeshes = lights.map(l => {
+            const pl = new THREE.PointLight(l.color, l.intensity, 20);
+            pl.position.set(...l.pos);
+            scene.add(pl);
+            return pl;
+        });
+
+        // ── Card factory ─────────────────────────────────────────
+        function makeCardTexture(emoji, title, bgColor1, bgColor2) {
+            const size = 256;
+            const cv   = document.createElement('canvas');
+            cv.width = size; cv.height = Math.round(size * 1.55);
+            const ctx  = cv.getContext('2d');
+
+            // Background gradient
+            const grad = ctx.createLinearGradient(0, 0, size, cv.height);
+            grad.addColorStop(0, bgColor1);
+            grad.addColorStop(1, bgColor2);
+            ctx.fillStyle = grad;
+            roundRect(ctx, 0, 0, size, cv.height, 18);
+            ctx.fill();
+
+            // Border glow
+            ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+            ctx.lineWidth = 3;
+            roundRect(ctx, 2, 2, size - 4, cv.height - 4, 16);
+            ctx.stroke();
+
+            // Emoji
+            ctx.font = `${size * 0.28}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, size / 2, cv.height * 0.38);
+
+            // Title
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.font = `bold ${size * 0.1}px "Noto Serif TC", serif`;
+            ctx.textBaseline = 'middle';
+            ctx.fillText(title, size / 2, cv.height * 0.72);
+
+            return new THREE.CanvasTexture(cv);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.arcTo(x + w, y, x + w, y + r, r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+            ctx.lineTo(x + r, y + h);
+            ctx.arcTo(x, y + h, x, y + h - r, r);
+            ctx.lineTo(x, y + r);
+            ctx.arcTo(x, y, x + r, y, r);
+            ctx.closePath();
+        }
+
+        const cardData = [
+            { emoji: '🎭', title: '角色扮演', c1: '#3b0764', c2: '#1e1b4b' },
+            { emoji: '🔍', title: '抽絲剝繭', c1: '#1e3a5f', c2: '#0f172a' },
+            { emoji: '🕯️', title: '黑夜故事', c1: '#4a0000', c2: '#1a0000' },
+            { emoji: '⚔️', title: '宮廷陰謀', c1: '#3d2000', c2: '#1a0e00' },
+            { emoji: '💀', title: '懸疑推理', c1: '#1a0030', c2: '#0a001a' },
+            { emoji: '💌', title: '情感糾葛', c1: '#3d0030', c2: '#1a0014' },
+            { emoji: '🌙', title: '午夜謎局', c1: '#001a3d', c2: '#000d1a' },
+            { emoji: '🗝️', title: '解開謎底', c1: '#1a2e00', c2: '#0a1400' },
+        ];
+
+        const cardGroup = new THREE.Group();
+        scene.add(cardGroup);
+
+        const cardMeshes = cardData.map((d, i) => {
+            const tex  = makeCardTexture(d.emoji, d.title, d.c1, d.c2);
+            const mat  = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.3, metalness: 0.15 });
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.48, 0.06), mat);
+
+            // Arrange in two arcing rows
+            const row  = Math.floor(i / 4);
+            const col  = i % 4;
+            const xOff = (col - 1.5) * 2.4;
+            const yOff = row === 0 ? 1.4 : -1.4;
+            mesh.position.set(xOff, yOff, (row === 0 ? -0.5 : 0.5));
+            mesh.rotation.y = (col - 1.5) * 0.12;
+            mesh.rotation.x = row === 0 ? 0.08 : -0.08;
+
+            mesh.userData = {
+                baseX: xOff, baseY: yOff,
+                bobSpeed: 0.4 + Math.random() * 0.4,
+                bobPhase: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.002,
+            };
+            cardGroup.add(mesh);
+            return mesh;
+        });
+
+        // ── Particles ────────────────────────────────────────────
+        const particleCount = 250;
+        const positions = new Float32Array(particleCount * 3);
+        const colors    = new Float32Array(particleCount * 3);
+        const palettes  = [
+            [0.49, 0.23, 0.93], // purple
+            [0.23, 0.51, 0.96], // blue
+            [0.96, 0.62, 0.04], // amber
+            [1.00, 1.00, 1.00], // white
+        ];
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3]     = (Math.random() - 0.5) * 22;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 14;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
+            const c = palettes[Math.floor(Math.random() * palettes.length)];
+            colors[i * 3] = c[0]; colors[i * 3 + 1] = c[1]; colors[i * 3 + 2] = c[2];
+        }
+        const pgeo = new THREE.BufferGeometry();
+        pgeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        pgeo.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+        const pmat = new THREE.PointsMaterial({ size: 0.06, vertexColors: true, transparent: true, opacity: 0.7 });
+        scene.add(new THREE.Points(pgeo, pmat));
+
+        // ── Mouse parallax ───────────────────────────────────────
+        let mouseX = 0, mouseY = 0, targetRX = 0, targetRY = 0;
+        document.addEventListener('mousemove', e => {
+            mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        // ── Resize ───────────────────────────────────────────────
+        window.addEventListener('resize', () => {
+            const w = canvas.parentElement.offsetWidth;
+            const h = canvas.parentElement.offsetHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        });
+
+        // ── Animate ──────────────────────────────────────────────
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = clock.getElapsedTime();
+
+            // Light orbiting
+            lightMeshes[0].position.set(Math.sin(t * 0.4) * 5,  Math.cos(t * 0.3) * 3, 3);
+            lightMeshes[1].position.set(Math.cos(t * 0.3) * -4, Math.sin(t * 0.5) * -2, 4);
+
+            // Card bobbing
+            cardMeshes.forEach(m => {
+                const u = m.userData;
+                m.position.y = u.baseY + Math.sin(t * u.bobSpeed + u.bobPhase) * 0.18;
+                m.rotation.z = Math.sin(t * u.bobSpeed * 0.7 + u.bobPhase) * 0.04;
+                m.rotation.y += u.rotSpeed;
+            });
+
+            // Mouse parallax (smooth)
+            targetRY += (mouseX * 0.3 - targetRY) * 0.04;
+            targetRX += (-mouseY * 0.15 - targetRX) * 0.04;
+            cardGroup.rotation.y = targetRY;
+            cardGroup.rotation.x = targetRX;
+
+            // Slow global drift
+            cardGroup.rotation.y += Math.sin(t * 0.08) * 0.001;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    })();
     </script>
 
 </body>
