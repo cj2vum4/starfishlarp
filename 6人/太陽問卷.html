@@ -333,24 +333,122 @@
         #success {
             display: none;
             position: relative; z-index: 1;
-            max-width: 500px;
+            max-width: 680px;
             margin: 0 auto;
-            padding: 4rem 2rem;
-            text-align: center;
+            padding: 2.5rem 1rem 5rem;
         }
-        #success .star-burst { font-size: 3rem; margin-bottom: 1rem; }
-        #success h2 {
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .result-header .icon { font-size: 2.5rem; margin-bottom: .6rem; }
+        .result-header h2 {
             font-size: 1.5rem;
             background: linear-gradient(45deg, #fff, var(--blue));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: .4rem;
+        }
+        .result-header p { color: var(--text-dim); font-size: .88rem; }
+
+        .result-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 1.4rem 1.6rem;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+        .result-card.rank1 {
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 25px rgba(255, 215, 0, .08);
+        }
+        .result-card.rank2 {
+            border: 1px solid rgba(173, 216, 230, 0.3);
+        }
+        .result-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            opacity: 0.04;
+            pointer-events: none;
+        }
+        .result-card.rank1::before {
+            background: radial-gradient(circle at top left, gold, transparent 60%);
+        }
+        .result-card.rank2::before {
+            background: radial-gradient(circle at top left, var(--blue), transparent 60%);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            padding: .25rem .7rem;
+            border-radius: 20px;
             margin-bottom: .8rem;
         }
-        #success p { color: var(--text-dim); font-size: .9rem; line-height: 1.7; }
-        #success .back-home {
-            display: inline-block;
-            margin-top: 1.5rem;
+        .rank1 .rank-badge {
+            background: rgba(255, 215, 0, .15);
+            border: 1px solid rgba(255, 215, 0, .4);
+            color: #ffd700;
+        }
+        .rank2 .rank-badge {
+            background: rgba(173, 216, 230, .1);
+            border: 1px solid rgba(173, 216, 230, .3);
+            color: var(--blue-dim);
+        }
+
+        .char-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .char-emoji-big {
+            font-size: 2.2rem;
+            flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,.05);
+            border-radius: 12px;
+        }
+        .char-info-block { flex: 1; }
+        .char-name-big {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: .3rem;
+            letter-spacing: .05em;
+        }
+        .rank1 .char-name-big { color: #ffe680; }
+        .char-desc-block {
+            font-size: .85rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+        }
+
+        .result-note {
+            text-align: center;
+            font-size: .78rem;
+            color: rgba(173, 216, 230, .4);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
             padding: .7rem 2rem;
             border: 1px solid var(--border);
             border-radius: 30px;
@@ -358,8 +456,10 @@
             text-decoration: none;
             font-size: .88rem;
             transition: all .2s;
+            max-width: 220px;
+            margin: 0 auto;
         }
-        #success .back-home:hover {
+        .back-home:hover {
             background: rgba(173,216,230,.1);
             border-color: var(--border-hover);
         }
@@ -543,11 +643,19 @@
 
 </form>
 
-<!-- 成功畫面 -->
+<!-- 成功 / 推薦結果畫面 -->
 <div id="success">
-    <div class="star-burst">🌤</div>
-    <h2>謝謝你的回答！</h2>
-    <p>你的答案已經送出了<br>期待和你一起探索太陽是什麼顏色 ☀️</p>
+    <div class="result-header">
+        <div class="icon">✨</div>
+        <h2>你最適合的角色是…</h2>
+        <p>根據你的回答計算，以下是最符合你的角色推薦</p>
+    </div>
+
+    <div class="result-cards" id="resultCards">
+        <!-- 由 JS 動態填入 -->
+    </div>
+
+    <p class="result-note">推薦僅供參考，最終角色分配由主持人決定 🎭<br>期待和你一起探索太陽是什麼顏色 ☀️</p>
     <a href="太陽可以是藍色嗎.html" class="back-home">← 返回劇本介紹</a>
 </div>
 
@@ -575,7 +683,109 @@ const SCRIPT_URL = "";
     }
 })();
 
-// 表單送出
+// ── 角色資料 ────────────────────────────────────────────────────────────
+const CHARACTERS = [
+    { name: '清遙',   gender: 'male',   emoji: '🌧️',
+      desc: '消極、悲觀、較為敏感，不願敞開心扉，將愛人看作自己的救贖。' },
+    { name: '步舍光', gender: 'female', emoji: '🌸',
+      desc: '溫柔、堅強，在感情上小心翼翼，暗戀線。' },
+    { name: '池森',   gender: 'male',   emoji: '🌊',
+      desc: '獨立、成熟、浪漫風趣，在感情上熱忱專一。' },
+    { name: '初見',   gender: 'female', emoji: '🌼',
+      desc: '天真爛漫、古靈精怪，對於感情更注重雙方的幸福，更無私。' },
+    { name: '余朝',   gender: 'male',   emoji: '⚡',
+      desc: '痞氣、果敢、大大咧咧，適合因現實因素阻礙愛而不得的男生。' },
+    { name: '胡蝶',   gender: 'female', emoji: '🦋',
+      desc: '富家千金、霸氣風行、內心叛逆，對待感情熱烈勇往。' },
+];
+
+// ── 計分邏輯 ─────────────────────────────────────────────────────────────
+function calcScores(answers) {
+    const s = { '清遙': 0, '步舍光': 0, '池森': 0, '初見': 0, '余朝': 0, '胡蝶': 0 };
+
+    // Q5 愛情觀
+    if (answers.loveType === '自私') {
+        s['清遙'] += 2; s['余朝'] += 1; s['胡蝶'] += 1;
+    } else {
+        s['初見'] += 2; s['步舍光'] += 1; s['池森'] += 1;
+    }
+
+    // Q6 走失行動
+    const lostMap = {
+        '就是願意先告白或是對別人好': { '清遙': 3 },
+        '站在原地等對方再找到你':     { '步舍光': 3 },
+        '主動去找對方':               { '余朝': 2, '胡蝶': 1 },
+        '安心閒逛，等待再次相遇':     { '初見': 2, '池森': 1 },
+    };
+    Object.entries(lostMap[answers.lostAction] || {}).forEach(([c,v]) => s[c] += v);
+
+    // Q7 愛情選擇
+    const styleMap = {
+        '付出比較多':   { '步舍光': 2, '初見': 1 },
+        '被付出比較多': { '胡蝶': 2, '余朝': 1 },
+        '愛我的人':     { '池森': 2, '清遙': 1 },
+        '我愛的人':     { '清遙': 2, '胡蝶': 1 },
+    };
+    Object.entries(styleMap[answers.loveStyle] || {}).forEach(([c,v]) => s[c] += v);
+
+    // Q8 個性特質
+    const traitMap = {
+        '果斷霸氣': { '胡蝶': 2, '余朝': 1 },
+        '勇敢':     { '余朝': 2, '胡蝶': 1 },
+        '天真單純': { '初見': 3 },
+        '古靈精怪': { '初見': 3 },
+        '冷靜':     { '池森': 2, '清遙': 1 },
+        '浪漫風趣': { '池森': 3 },
+        '成熟穩重': { '池森': 2 },
+        '悲觀':     { '清遙': 3 },
+        '敏感':     { '清遙': 2, '步舍光': 1 },
+        '溫柔':     { '步舍光': 2, '初見': 1 },
+        '堅強':     { '步舍光': 2, '胡蝶': 1 },
+        '小心翼翼': { '步舍光': 3 },
+    };
+    (answers.traits || []).forEach(trait => {
+        Object.entries(traitMap[trait] || {}).forEach(([c,v]) => s[c] += v);
+    });
+
+    return s;
+}
+
+// ── 顯示推薦結果 ─────────────────────────────────────────────────────────
+function showResults(answers) {
+    const scores = calcScores(answers);
+
+    // 過濾性別可選角色
+    const eligibleGender = {
+        '我是男生':         ['male'],
+        '我是女生':         ['female'],
+        '我是男生，想體驗女角': ['female'],
+        '我是女生，想體驗男角': ['male'],
+    }[answers.gender] || ['male', 'female'];
+
+    const eligible = CHARACTERS
+        .filter(c => eligibleGender.includes(c.gender))
+        .sort((a, b) => scores[b.name] - scores[a.name]);
+
+    const top2 = eligible.slice(0, 2);
+    const rankLabels = ['🥇 最推薦', '🥈 第二推薦'];
+    const rankClass  = ['rank1', 'rank2'];
+
+    const container = document.getElementById('resultCards');
+    container.innerHTML = top2.map((char, i) => `
+        <div class="result-card ${rankClass[i]}">
+            <div class="rank-badge">${rankLabels[i]}</div>
+            <div class="char-row">
+                <div class="char-emoji-big">${char.emoji}</div>
+                <div class="char-info-block">
+                    <div class="char-name-big">${char.name}</div>
+                    <div class="char-desc-block">${char.desc}</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ── 表單送出 ─────────────────────────────────────────────────────────────
 document.getElementById('survey').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -585,55 +795,59 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     errEl.style.display = 'none';
 
     // 驗證必填
-    const lineName = form.lineName.value.trim();
-    const date = form.date.value.trim();
-    const gender = form.querySelector('input[name="gender"]:checked');
-    const loveType = form.querySelector('input[name="loveType"]:checked');
-    const lostAction = form.querySelector('input[name="lostAction"]:checked');
+    const lineName  = form.lineName.value.trim();
+    const date      = form.date.value.trim();
+    const gender    = form.querySelector('input[name="gender"]:checked');
+    const loveType  = form.querySelector('input[name="loveType"]:checked');
+    const lostAction= form.querySelector('input[name="lostAction"]:checked');
     const loveStyle = form.querySelector('input[name="loveStyle"]:checked');
-    const traits = [...form.querySelectorAll('input[name="traits"]:checked')].map(c => c.value);
-    const selfPhrase = form.selfPhrase.value.trim();
-    const motto = form.motto.value.trim();
+    const traits    = [...form.querySelectorAll('input[name="traits"]:checked')].map(c => c.value);
+    const selfPhrase= form.selfPhrase.value.trim();
+    const motto     = form.motto.value.trim();
 
     if (!lineName || !date || !gender || !loveType || !lostAction || !loveStyle || !traits.length || !selfPhrase || !motto) {
+        errEl.textContent = '請確認所有必填欄位都已填寫完成。';
         errEl.style.display = 'block';
         errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-    }
-
-    if (!SCRIPT_URL) {
-        errEl.textContent = '⚠️ 尚未設定 Google Apps Script URL，請參照頁面原始碼內的說明。';
-        errEl.style.display = 'block';
         return;
     }
 
     btn.disabled = true;
     btn.textContent = '送出中…';
 
-    const data = new FormData();
-    data.append('lineName', lineName);
-    data.append('date', date);
-    data.append('gender', gender.value);
-    data.append('crush', form.crush.value.trim());
-    data.append('loveType', loveType.value);
-    data.append('lostAction', lostAction.value);
-    data.append('loveStyle', loveStyle.value);
-    data.append('traits', traits.join('、'));
-    data.append('selfPhrase', selfPhrase);
-    data.append('motto', motto);
-    data.append('wish', form.wish.value.trim());
+    // 計算推薦（先算，送出後馬上顯示）
+    const answers = {
+        gender: gender.value,
+        loveType: loveType.value,
+        lostAction: lostAction.value,
+        loveStyle: loveStyle.value,
+        traits,
+    };
 
-    try {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: data });
-        form.style.display = 'none';
-        document.getElementById('success').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (err) {
-        btn.disabled = false;
-        btn.textContent = '✨ 送出問卷';
-        errEl.textContent = '送出失敗，請稍後再試。';
-        errEl.style.display = 'block';
+    // 送出資料（如果有設定 SCRIPT_URL）
+    if (SCRIPT_URL) {
+        const data = new FormData();
+        data.append('lineName', lineName);
+        data.append('date', date);
+        data.append('gender', gender.value);
+        data.append('crush', form.crush.value.trim());
+        data.append('loveType', loveType.value);
+        data.append('lostAction', lostAction.value);
+        data.append('loveStyle', loveStyle.value);
+        data.append('traits', traits.join('、'));
+        data.append('selfPhrase', selfPhrase);
+        data.append('motto', motto);
+        data.append('wish', form.wish.value.trim());
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: data });
+        } catch (_) { /* no-cors 不需處理錯誤 */ }
     }
+
+    // 顯示推薦結果
+    showResults(answers);
+    form.style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 </script>
 </body>
