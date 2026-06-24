@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太陽可以是藍色嗎 · 遊戲前測</title>
+
+    <!--
+    ══════════════════════════════════════════════════════
+    Google Apps Script 設定（必做，只需做一次）
+    ══════════════════════════════════════════════════════
+    1. 打開你的 Google Sheet（資料存這裡）
+    2. 點上方選單 擴充功能 → Apps Script
+    3. 貼上下方程式碼，再按存檔（Ctrl+S）：
+
+    ──────────────────────────────────────────────────────
+    function doPost(e) {
+      try {
+        const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+        const d = e.parameter;
+        if (sheet.getLastRow() === 0) {
+          sheet.appendRow(['送出時間','Line名稱','預約日期','性別',
+            '同行喜歡的人','愛情觀（自私/無私）','走失後的行動',
+            '在愛情中往往選擇','感情中的個性特質',
+            '最適合形容自己的一句話','最想送給自己的座右銘','許願池']);
+        }
+        sheet.appendRow([
+          new Date(), d.lineName||'', d.date||'', d.gender||'',
+          d.crush||'', d.loveType||'', d.lostAction||'',
+          d.loveStyle||'', d.traits||'', d.selfPhrase||'',
+          d.motto||'', d.wish||''
+        ]);
+        return ContentService.createTextOutput('OK');
+      } catch(err) {
+        return ContentService.createTextOutput('ERR:'+err);
+      }
+    }
+    ──────────────────────────────────────────────────────
+    4. 點選單 部署 → 新增部署
+    5. 類型選「網路應用程式」
+       執行身分：我（你的帳戶）
+       具有存取權的使用者：所有人
+    6. 按「部署」，複製產生的「網路應用程式 URL」
+    7. 貼回下方 SCRIPT_URL = "" 的引號裡
+    ══════════════════════════════════════════════════════
+    -->
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-from: #24243e;
+            --bg-mid:  #302b63;
+            --bg-to:   #0f0c29;
+            --blue:    #add8e6;
+            --blue-dim:#87ceeb;
+            --card:    rgba(36, 36, 62, 0.75);
+            --border:  rgba(173, 216, 230, 0.2);
+            --border-hover: rgba(173, 216, 230, 0.5);
+            --text:    #f0f0f0;
+            --text-dim:#c0c0d8;
+            --accent:  #a78bfa;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, var(--bg-from), var(--bg-mid), var(--bg-to));
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* ── 星空 ── */
+        #stars {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: twinkle var(--dur, 3s) var(--delay, 0s) infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%,100% { opacity: 0.1; transform: scale(1); }
+            50%      { opacity: 0.9; transform: scale(1.3); }
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: relative; z-index: 1;
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+        }
+
+        .back-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 10;
+            background: rgba(48,43,99,0.85);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: .85rem;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            transition: all .25s;
+        }
+        .back-btn:hover { background: rgba(48,43,99,1); transform: translateY(-2px); }
+
+        .script-tag {
+            display: inline-block;
+            font-size: .75rem;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--blue-dim);
+            background: rgba(173,216,230,.1);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: .3rem .9rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, var(--blue), var(--blue-dim));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: .08em;
+            margin-bottom: .6rem;
+        }
+
+        .subtitle {
+            font-size: .9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        /* ── FORM CONTAINER ── */
+        form {
+            position: relative; z-index: 1;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 1rem 5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        /* ── QUESTION CARD ── */
+        .q-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.4rem 1.6rem;
+            backdrop-filter: blur(12px);
+            transition: border-color .25s, box-shadow .25s;
+        }
+        .q-card:focus-within {
+            border-color: var(--border-hover);
+            box-shadow: 0 0 20px rgba(173,216,230,.12);
+        }
+
+        .q-label {
+            display: block;
+            font-size: .93rem;
+            font-weight: 600;
+            color: var(--blue);
+            margin-bottom: .3rem;
+            line-height: 1.5;
+        }
+        .q-label .req { color: #f87171; margin-left: 2px; }
+
+        .q-hint {
+            font-size: .78rem;
+            color: var(--text-dim);
+            margin-bottom: .9rem;
+            line-height: 1.5;
+        }
+
+        /* ── TEXT INPUT ── */
+        .q-input {
+            width: 100%;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(173,216,230,.25);
+            border-radius: 8px;
+            color: var(--text);
+            padding: .65rem .9rem;
+            font-size: .92rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .q-input:focus {
+            border-color: rgba(173,216,230,.6);
+            box-shadow: 0 0 0 3px rgba(173,216,230,.12);
+        }
+        .q-input::placeholder { color: rgba(255,255,255,.3); }
+        input[type="date"].q-input::-webkit-calendar-picker-indicator {
+            filter: invert(.7);
+            cursor: pointer;
+        }
+
+        /* ── RADIO & CHECKBOX ── */
+        .options { display: flex; flex-direction: column; gap: .55rem; }
+
+        .opt-label {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .6rem .9rem;
+            border-radius: 8px;
+            border: 1px solid rgba(173,216,230,.15);
+            cursor: pointer;
+            font-size: .88rem;
+            color: var(--text-dim);
+            transition: all .18s;
+            user-select: none;
+        }
+        .opt-label:hover {
+            border-color: var(--border-hover);
+            background: rgba(173,216,230,.08);
+            color: var(--text);
+        }
+        .opt-label input { display: none; }
+
+        .opt-dot {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            border: 2px solid rgba(173,216,230,.4);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .18s;
+        }
+        .opt-dot::after {
+            content: '';
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--blue);
+            opacity: 0;
+            transform: scale(0);
+            transition: all .18s;
+        }
+
+        .opt-check {
+            width: 18px; height: 18px;
+            border-radius: 4px;
+            border: 2px solid rgba(173,216,230,.4);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .18s;
+        }
+        .opt-check::after {
+            content: '✓';
+            font-size: .7rem;
+            color: var(--blue);
+            opacity: 0;
+            transform: scale(0);
+            transition: all .18s;
+        }
+
+        /* Selected states */
+        .opt-label:has(input[type="radio"]:checked) {
+            border-color: rgba(173,216,230,.6);
+            background: rgba(173,216,230,.1);
+            color: var(--text);
+        }
+        .opt-label:has(input[type="radio"]:checked) .opt-dot {
+            border-color: var(--blue);
+        }
+        .opt-label:has(input[type="radio"]:checked) .opt-dot::after {
+            opacity: 1; transform: scale(1);
+        }
+
+        .opt-label:has(input[type="checkbox"]:checked) {
+            border-color: rgba(173,216,230,.5);
+            background: rgba(173,216,230,.08);
+            color: var(--text);
+        }
+        .opt-label:has(input[type="checkbox"]:checked) .opt-check {
+            border-color: var(--blue);
+            background: rgba(173,216,230,.2);
+        }
+        .opt-label:has(input[type="checkbox"]:checked) .opt-check::after {
+            opacity: 1; transform: scale(1);
+        }
+
+        /* Checkbox grid for traits */
+        .options.grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: .5rem;
+        }
+
+        /* ── SUBMIT BUTTON ── */
+        .submit-wrap {
+            text-align: center;
+            padding: 1rem 0 0;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #302b63, #4e4399);
+            color: white;
+            border: 1px solid rgba(173,216,230,.4);
+            border-radius: 50px;
+            padding: .9rem 3rem;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            cursor: pointer;
+            transition: all .25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .submit-btn::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at center, rgba(173,216,230,.3), transparent 70%);
+            opacity: 0;
+            transition: opacity .25s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(173,216,230,.2);
+            border-color: rgba(173,216,230,.7);
+        }
+        .submit-btn:hover::before { opacity: 1; }
+        .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        /* ── SUCCESS STATE ── */
+        #success {
+            display: none;
+            position: relative; z-index: 1;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        #success .star-burst { font-size: 3rem; margin-bottom: 1rem; }
+        #success h2 {
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, #fff, var(--blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: .8rem;
+        }
+        #success p { color: var(--text-dim); font-size: .9rem; line-height: 1.7; }
+        #success .back-home {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: .7rem 2rem;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--blue-dim);
+            text-decoration: none;
+            font-size: .88rem;
+            transition: all .2s;
+        }
+        #success .back-home:hover {
+            background: rgba(173,216,230,.1);
+            border-color: var(--border-hover);
+        }
+
+        /* ── ERROR BANNER ── */
+        #error-msg {
+            display: none;
+            background: rgba(220,38,38,.15);
+            border: 1px solid rgba(220,38,38,.4);
+            border-radius: 8px;
+            padding: .8rem 1rem;
+            font-size: .85rem;
+            color: #fca5a5;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<a href="太陽可以是藍色嗎.html" class="back-btn">← 返回劇本介紹</a>
+
+<header>
+    <div class="script-tag">🌤 太陽可以是藍色嗎 · 遊戲前測</div>
+    <h1>太陽可以是藍色嗎</h1>
+    <p class="subtitle">請依照個人真實經驗或第一直覺回答問題<br>
+    <span style="font-size:.8rem;color:rgba(173,216,230,.5);">cj2vum4@gmail.com · 你的回答只有我看得到</span></p>
+</header>
+
+<form id="survey" novalidate>
+
+    <!-- Q1 Line名稱 -->
+    <div class="q-card">
+        <label class="q-label" for="lineName">你在 LINE 的名稱 <span class="req">*</span></label>
+        <input id="lineName" name="lineName" type="text" class="q-input" placeholder="請輸入你的 LINE 顯示名稱" required>
+    </div>
+
+    <!-- Q2 日期 -->
+    <div class="q-card">
+        <label class="q-label" for="date">你預約玩本的日期 <span class="req">*</span></label>
+        <input id="date" name="date" type="date" class="q-input" required>
+    </div>
+
+    <!-- Q3 性別 -->
+    <div class="q-card">
+        <span class="q-label">性別 <span class="req">*</span></span>
+        <div class="options" id="gender-group">
+            <label class="opt-label">
+                <input type="radio" name="gender" value="我是男生" required>
+                <span class="opt-dot"></span>我是男生
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="gender" value="我是女生">
+                <span class="opt-dot"></span>我是女生
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="gender" value="我是男生，想體驗女角">
+                <span class="opt-dot"></span>我是男生，想體驗女角
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="gender" value="我是女生，想體驗男角">
+                <span class="opt-dot"></span>我是女生，想體驗男角
+            </label>
+        </div>
+    </div>
+
+    <!-- Q4 喜歡的人 -->
+    <div class="q-card">
+        <label class="q-label" for="crush">本次同行玩家中是否有你喜歡的人，她是誰</label>
+        <p class="q-hint">可以放心和我說～回應只會有我看的到！</p>
+        <input id="crush" name="crush" type="text" class="q-input" placeholder="（選填）">
+    </div>
+
+    <!-- Q5 愛情觀 -->
+    <div class="q-card">
+        <span class="q-label">你認為愛情是無私的還是自私的 <span class="req">*</span></span>
+        <p class="q-hint">優先優先優先，當下你的感情觀或直覺回答</p>
+        <div class="options" id="loveType-group">
+            <label class="opt-label">
+                <input type="radio" name="loveType" value="自私" required>
+                <span class="opt-dot"></span>自私
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="loveType" value="無私">
+                <span class="opt-dot"></span>無私
+            </label>
+        </div>
+    </div>
+
+    <!-- Q6 走失行動 -->
+    <div class="q-card">
+        <span class="q-label">如果你與愛人在路上走丟了，找不到彼此你會採取怎麼樣的行動？ <span class="req">*</span></span>
+        <div class="options" id="lostAction-group">
+            <label class="opt-label">
+                <input type="radio" name="lostAction" value="就是願意先告白或是對別人好" required>
+                <span class="opt-dot"></span>就是願意先告白或是對別人好
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="lostAction" value="站在原地等對方再找到你">
+                <span class="opt-dot"></span>站在原地等對方再找到你
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="lostAction" value="主動去找對方">
+                <span class="opt-dot"></span>主動去找對方
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="lostAction" value="安心閒逛，等待再次相遇">
+                <span class="opt-dot"></span>安心閒逛，等待再次相遇
+            </label>
+        </div>
+    </div>
+
+    <!-- Q7 愛情選擇 -->
+    <div class="q-card">
+        <span class="q-label">在愛情中，你往往選擇 <span class="req">*</span></span>
+        <div class="options" id="loveStyle-group">
+            <label class="opt-label">
+                <input type="radio" name="loveStyle" value="付出比較多" required>
+                <span class="opt-dot"></span>付出比較多
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="loveStyle" value="被付出比較多">
+                <span class="opt-dot"></span>被付出比較多
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="loveStyle" value="愛我的人">
+                <span class="opt-dot"></span>愛我的人
+            </label>
+            <label class="opt-label">
+                <input type="radio" name="loveStyle" value="我愛的人">
+                <span class="opt-dot"></span>我愛的人
+            </label>
+        </div>
+    </div>
+
+    <!-- Q8 個性特質（多選） -->
+    <div class="q-card">
+        <span class="q-label">我認為我在感情中時的個性特質 <span class="req">*</span>（可多選）</span>
+        <div class="options grid" id="traits-group">
+            <label class="opt-label"><input type="checkbox" name="traits" value="果斷霸氣"><span class="opt-check"></span>果斷霸氣</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="勇敢"><span class="opt-check"></span>勇敢</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="天真單純"><span class="opt-check"></span>天真單純</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="古靈精怪"><span class="opt-check"></span>古靈精怪</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="冷靜"><span class="opt-check"></span>冷靜</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="浪漫風趣"><span class="opt-check"></span>浪漫風趣</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="成熟穩重"><span class="opt-check"></span>成熟穩重</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="悲觀"><span class="opt-check"></span>悲觀</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="敏感"><span class="opt-check"></span>敏感</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="溫柔"><span class="opt-check"></span>溫柔</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="堅強"><span class="opt-check"></span>堅強</label>
+            <label class="opt-label"><input type="checkbox" name="traits" value="小心翼翼"><span class="opt-check"></span>小心翼翼</label>
+        </div>
+    </div>
+
+    <!-- Q9 形容自己 -->
+    <div class="q-card">
+        <label class="q-label" for="selfPhrase">你認為最適合形容自己的一句話 <span class="req">*</span></label>
+        <input id="selfPhrase" name="selfPhrase" type="text" class="q-input" placeholder="請輸入…" required>
+    </div>
+
+    <!-- Q10 座右銘 -->
+    <div class="q-card">
+        <label class="q-label" for="motto">最想送給自己的一句話 <span class="req">*</span></label>
+        <p class="q-hint">也可以是自己最喜歡的座右銘～</p>
+        <input id="motto" name="motto" type="text" class="q-input" placeholder="請輸入…" required>
+    </div>
+
+    <!-- Q11 許願池 -->
+    <div class="q-card">
+        <label class="q-label" for="wish">🌊 許願池</label>
+        <p class="q-hint">有任何需要都可以和我說唷～</p>
+        <input id="wish" name="wish" type="text" class="q-input" placeholder="（選填）">
+    </div>
+
+    <div id="error-msg">請確認所有必填欄位都已填寫完成。</div>
+
+    <div class="submit-wrap">
+        <button type="submit" class="submit-btn" id="submitBtn">✨ 送出問卷</button>
+    </div>
+
+</form>
+
+<!-- 成功畫面 -->
+<div id="success">
+    <div class="star-burst">🌤</div>
+    <h2>謝謝你的回答！</h2>
+    <p>你的答案已經送出了<br>期待和你一起探索太陽是什麼顏色 ☀️</p>
+    <a href="太陽可以是藍色嗎.html" class="back-home">← 返回劇本介紹</a>
+</div>
+
+<script>
+// ── 請把 Google Apps Script 部署後的 URL 填入這裡 ──────────────────────
+const SCRIPT_URL = "";
+// ────────────────────────────────────────────────────────────────────────
+
+// 星星背景
+(function() {
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2.5 + .5;
+        s.style.cssText = [
+            `left:${Math.random()*100}%`,
+            `top:${Math.random()*100}%`,
+            `width:${size}px`,
+            `height:${size}px`,
+            `--dur:${(Math.random()*4+2).toFixed(1)}s`,
+            `--delay:${(Math.random()*4).toFixed(1)}s`,
+        ].join(';');
+        container.appendChild(s);
+    }
+})();
+
+// 表單送出
+document.getElementById('survey').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const errEl = document.getElementById('error-msg');
+    const btn = document.getElementById('submitBtn');
+    errEl.style.display = 'none';
+
+    // 驗證必填
+    const lineName = form.lineName.value.trim();
+    const date = form.date.value.trim();
+    const gender = form.querySelector('input[name="gender"]:checked');
+    const loveType = form.querySelector('input[name="loveType"]:checked');
+    const lostAction = form.querySelector('input[name="lostAction"]:checked');
+    const loveStyle = form.querySelector('input[name="loveStyle"]:checked');
+    const traits = [...form.querySelectorAll('input[name="traits"]:checked')].map(c => c.value);
+    const selfPhrase = form.selfPhrase.value.trim();
+    const motto = form.motto.value.trim();
+
+    if (!lineName || !date || !gender || !loveType || !lostAction || !loveStyle || !traits.length || !selfPhrase || !motto) {
+        errEl.style.display = 'block';
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
+    if (!SCRIPT_URL) {
+        errEl.textContent = '⚠️ 尚未設定 Google Apps Script URL，請參照頁面原始碼內的說明。';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '送出中…';
+
+    const data = new FormData();
+    data.append('lineName', lineName);
+    data.append('date', date);
+    data.append('gender', gender.value);
+    data.append('crush', form.crush.value.trim());
+    data.append('loveType', loveType.value);
+    data.append('lostAction', lostAction.value);
+    data.append('loveStyle', loveStyle.value);
+    data.append('traits', traits.join('、'));
+    data.append('selfPhrase', selfPhrase);
+    data.append('motto', motto);
+    data.append('wish', form.wish.value.trim());
+
+    try {
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: data });
+        form.style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+        btn.disabled = false;
+        btn.textContent = '✨ 送出問卷';
+        errEl.textContent = '送出失敗，請稍後再試。';
+        errEl.style.display = 'block';
+    }
+});
+</script>
+</body>
+</html>
