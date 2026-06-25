@@ -23,13 +23,13 @@
             '同行喜歡的人','愛情觀（自私/無私）','走失後的行動',
             '在愛情中往往選擇','感情中的個性特質',
             '最適合形容自己的一句話','最想送給自己的座右銘','許願池',
-            '角色建議']);
+            '角色建議','第二角色建議']);
         }
         sheet.appendRow([
           new Date(), d.lineName||'', d.date||'', d.gender||'',
           d.crush||'', d.loveType||'', d.lostAction||'',
           d.loveStyle||'', d.traits||'', d.selfPhrase||'',
-          d.motto||'', d.wish||'', d.role||''
+          d.motto||'', d.wish||'', d.role||'', d.role2||''
         ]);
         return ContentService.createTextOutput('OK');
       } catch(err) {
@@ -816,31 +816,30 @@ const CHAR_INFO = {
     胡蝶:  { emoji: '🦋', poster: 'https://i.postimg.cc/QtZVmqrv/ying-mu-xie-qu-hua-mian-2026-06-25-155625.png', desc: '無關誰的離去與給予' },
 };
 
-// ── 角色分配演算法 ─────────────────────────────────────────────────────────
+// ── 角色分配演算法（回傳 [第一推薦, 第二推薦]）──────────────────────────────
 function matchCharacter(loveType, lostAction, gender) {
     const selfless = loveType === '無私';
     const isStay   = lostAction.includes('站在原地');
     const isSearch = lostAction.includes('主動去找');
-    const isWander = lostAction.includes('閒逛') || lostAction.includes('再次相遇');
 
     // 反串：全部 6 個角色
     if (gender === '我是男生，想體驗女角' || gender === '我是女生，想體驗男角') {
-        if (isSearch) return selfless ? '清遙' : '余朝';
-        if (isWander) return selfless ? '初見'  : '胡蝶';
-        return selfless ? '步含光' : '池森'; // 站在原地
+        if (isSearch) return selfless ? ['清遙','步含光'] : ['余朝','胡蝶'];
+        if (isStay)   return selfless ? ['步含光','清遙'] : ['池森','余朝'];
+        /* 閒逛 */    return selfless ? ['初見','步含光'] : ['胡蝶','余朝'];
     }
 
     // 男角：余朝、步含光、池森
     if (gender === '我是男生') {
-        if (isSearch) return '余朝';
-        if (isWander) return selfless ? '步含光' : '池森';
-        return selfless ? '步含光' : '池森'; // 站在原地
+        if (isSearch) return ['余朝','池森'];
+        if (isStay)   return selfless ? ['步含光','池森'] : ['池森','步含光'];
+        /* 閒逛 */    return selfless ? ['步含光','余朝'] : ['池森','余朝'];
     }
 
     // 女角：清遙、胡蝶、初見
-    if (isStay)   return '清遙';
-    if (isSearch) return selfless ? '初見' : '胡蝶';
-    return selfless ? '初見' : '胡蝶'; // 閒逛
+    if (isStay)   return ['清遙','初見'];
+    if (isSearch) return selfless ? ['初見','清遙'] : ['胡蝶','初見'];
+    /* 閒逛 */    return selfless ? ['初見','清遙'] : ['胡蝶','初見'];
 }
 
 // 星星背景
@@ -931,8 +930,9 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     data.append('motto',      motto);
     data.append('wish',       form.wish.value.trim());
 
-    const charName = matchCharacter(loveType.value, lostAction.value, gender.value);
-    data.append('role', charName);
+    const [charName, charName2] = matchCharacter(loveType.value, lostAction.value, gender.value);
+    data.append('role',  charName);
+    data.append('role2', charName2);
 
     try {
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: data });
