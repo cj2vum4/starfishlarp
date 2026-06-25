@@ -697,11 +697,7 @@
         <span class="q-label">如果你與愛人在路上走丟了，找不到彼此你會採取怎麼樣的行動？ <span class="req">*</span></span>
         <div class="options" id="lostAction-group">
             <label class="opt-label">
-                <input type="radio" name="lostAction" value="就是願意先告白或是對別人好" required>
-                <span class="opt-dot"></span>就是願意先告白或是對別人好
-            </label>
-            <label class="opt-label">
-                <input type="radio" name="lostAction" value="站在原地等對方再找到你">
+                <input type="radio" name="lostAction" value="站在原地等對方再找到你" required>
                 <span class="opt-dot"></span>站在原地等對方再找到你
             </label>
             <label class="opt-label">
@@ -831,21 +827,20 @@ function matchCharacter(loveType, lostAction, gender) {
     if (gender === '我是男生，想體驗女角' || gender === '我是女生，想體驗男角') {
         if (isSearch) return selfless ? '清遙' : '余朝';
         if (isWander) return selfless ? '初見'  : '胡蝶';
-        if (isStay)   return selfless ? '步含光' : '池森';
-        return selfless ? '初見' : '余朝'; // 就是願意先告白
+        return selfless ? '步含光' : '池森'; // 站在原地
     }
 
     // 男角：余朝、步含光、池森
     if (gender === '我是男生') {
         if (isSearch) return '余朝';
         if (isWander) return selfless ? '步含光' : '池森';
-        if (isStay)   return selfless ? '步含光' : '池森';
-        return '余朝'; // 就是願意先告白
+        return selfless ? '步含光' : '池森'; // 站在原地
     }
 
     // 女角：清遙、胡蝶、初見
-    if (isStay) return '清遙';
-    return selfless ? '初見' : '胡蝶';
+    if (isStay)   return '清遙';
+    if (isSearch) return selfless ? '初見' : '胡蝶';
+    return selfless ? '初見' : '胡蝶'; // 閒逛
 }
 
 // 星星背景
