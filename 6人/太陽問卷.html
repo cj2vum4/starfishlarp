@@ -802,6 +802,26 @@ function matchCharacter(loveType, lostAction) {
     }
 })();
 
+// ── CSS 流星雨 ─────────────────────────────────────────────────────────────
+(function () {
+    const container = document.getElementById('meteors');
+    const COUNT = 24;
+    for (let i = 0; i < COUNT; i++) {
+        const m = document.createElement('div');
+        m.className = 'meteor';
+        const ht = 48 + Math.random() * 88;
+        m.style.cssText = [
+            `left:${5 + Math.random() * 120}%`,
+            `top:${-8 + Math.random() * 45}%`,
+            `height:${ht}px`,
+            `--dur:${(2.8 + Math.random() * 4.8).toFixed(1)}s`,
+            `--delay:${(Math.random() * 10).toFixed(1)}s`,
+            `--op:${(0.32 + Math.random() * 0.52).toFixed(2)}`,
+        ].join(';');
+        container.appendChild(m);
+    }
+})();
+
 // ── 表單送出 ─────────────────────────────────────────────────────────────
 document.getElementById('survey').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -872,8 +892,9 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
 (function () {
     const canvas = document.getElementById('sun-canvas');
     if (!canvas || !window.THREE) return;
+    try {
 
-    function sz() { return { w: canvas.offsetWidth, h: canvas.offsetHeight }; }
+    function sz() { return { w: canvas.offsetWidth || canvas.parentElement.offsetWidth, h: canvas.offsetHeight || canvas.parentElement.offsetHeight }; }
     const { w, h } = sz();
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: true });
@@ -1077,26 +1098,8 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
     });
-})();
 
-// ── CSS 流星雨 ─────────────────────────────────────────────────────────────
-(function () {
-    const container = document.getElementById('meteors');
-    const COUNT = 24;
-    for (let i = 0; i < COUNT; i++) {
-        const m = document.createElement('div');
-        m.className = 'meteor';
-        const ht = 48 + Math.random() * 88;
-        m.style.cssText = [
-            `left:${5 + Math.random() * 120}%`,
-            `top:${-8 + Math.random() * 45}%`,
-            `height:${ht}px`,
-            `--dur:${(2.8 + Math.random() * 4.8).toFixed(1)}s`,
-            `--delay:${(Math.random() * 10).toFixed(1)}s`,
-            `--op:${(0.32 + Math.random() * 0.52).toFixed(2)}`,
-        ].join(';');
-        container.appendChild(m);
-    }
+    } catch (e) { console.warn('[sun]', e); }
 })();
 </script>
 </body>
