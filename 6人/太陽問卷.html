@@ -522,24 +522,6 @@
             100% { transform: rotate(-32deg) translate(-140vw, 130vh); opacity: 0; }
         }
 
-        /* ── BGM BUTTON ── */
-        .bgm-btn {
-            position: fixed;
-            bottom: 24px; right: 20px;
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            background: rgba(20,18,42,.88);
-            border: 1px solid rgba(173,216,230,.3);
-            color: var(--blue-dim);
-            font-size: 1.1rem;
-            cursor: pointer;
-            z-index: 10;
-            backdrop-filter: blur(8px);
-            transition: all .2s;
-        }
-        .bgm-btn:hover { border-color: var(--border-hover); transform: scale(1.1); }
-        .bgm-btn.muted { opacity: .35; }
-
         /* ── CHARACTER MATCH CARD ── */
         .char-match-card {
             background: linear-gradient(135deg, rgba(20,18,50,.92), rgba(28,22,60,.88));
@@ -593,9 +575,6 @@
 
 <div id="stars"></div>
 <div id="meteors"></div>
-<audio id="bgm" src="太陽可以是藍色嗎.mp3" loop preload="auto"></audio>
-<button class="bgm-btn muted" id="bgmBtn" title="音樂開關">♪</button>
-
 <a href="太陽可以是藍色嗎.html" class="back-btn">← 返回劇本介紹</a>
 
 <div class="sun-hero">
@@ -691,25 +670,6 @@
         </div>
     </div>
 
-    <!-- Q音樂 聽歌感覺 -->
-    <div class="q-card">
-        <span class="q-label">聽著現在的音樂，你的感覺是？ <span class="req">*</span></span>
-        <p class="q-hint">閉上眼睛感受一下～</p>
-        <div class="options" id="musicFeel-group">
-            <label class="opt-label">
-                <input type="radio" name="musicFeel" value="depress" required>
-                <span class="opt-dot"></span>壓抑，莫名地難過
-            </label>
-            <label class="opt-label">
-                <input type="radio" name="musicFeel" value="heal">
-                <span class="opt-dot"></span>治愈，感到溫暖跟希望
-            </label>
-            <label class="opt-label">
-                <input type="radio" name="musicFeel" value="calm">
-                <span class="opt-dot"></span>安靜，舒服，有放空感
-            </label>
-        </div>
-    </div>
 
     <!-- Q7 愛情選擇 -->
     <div class="q-card">
@@ -815,61 +775,13 @@ const CHAR_INFO = {
 };
 
 // ── 角色分配演算法 ─────────────────────────────────────────────────────────
-function matchCharacter(loveType, lostAction, musicFeel, loveStyle, traits) {
-    const s = { 清遙:0, 步含光:0, 池森:0, 初見:0, 余朝:0, 胡蝶:0 };
-
-    // 愛情觀（+2）
-    if (loveType === '自私') { s.胡蝶+=2; s.余朝+=2; s.池森+=1; }
-    else                     { s.清遙+=2; s.步含光+=2; s.池森+=1; }
-
-    // 走失行動（+2）
-    if      (lostAction.includes('站在原地'))              { s.步含光+=2; s.池森+=1; }
-    else if (lostAction.includes('主動去找'))              { s.余朝+=2; s.清遙+=2; }
-    else if (lostAction.includes('閒逛') || lostAction.includes('再次相遇')) { s.胡蝶+=2; s.初見+=2; }
-    else                                                   { s.初見+=1; s.余朝+=1; s.胡蝶+=1; } // 願意先告白
-
-    // 音樂感覺（+3 — 最強區分因子）
-    if      (musicFeel === 'depress') { s.清遙+=3; s.步含光+=3; }
-    else if (musicFeel === 'heal')    { s.初見+=3; s.池森+=3; }
-    else                              { s.胡蝶+=3; s.余朝+=3; }
-
-    // 在愛情中往往選擇（+1 tiebreaker）
-    const styleMap = {
-        '付出比較多':  ['步含光','初見'],
-        '被付出比較多':['清遙'],
-        '愛我的人':    ['清遙','余朝'],
-        '我愛的人':    ['池森','初見'],
-    };
-    (styleMap[loveStyle] || []).forEach(c => s[c]+=1);
-
-    // 個性特質（+0.5 each tiebreaker）
-    const traitMap = {
-        '果斷霸氣':['胡蝶','余朝'], '勇敢':['余朝','胡蝶','初見'],
-        '天真單純':['初見'], '古靈精怪':['初見'],
-        '冷靜':['池森','清遙'], '浪漫風趣':['池森','步含光'],
-        '成熟穩重':['池森'], '悲觀':['清遙'], '敏感':['清遙','步含光'],
-        '溫柔':['步含光','初見'], '堅強':['步含光','胡蝶'], '小心翼翼':['步含光','清遙'],
-    };
-    traits.forEach(t => (traitMap[t] || []).forEach(c => s[c]+=0.5));
-
-    return Object.entries(s).sort(([,a],[,b]) => b-a)[0][0];
+function matchCharacter(loveType, lostAction) {
+    const selfless = loveType === '無私';
+    if (lostAction.includes('主動去找'))                                    return selfless ? '清遙' : '余朝';
+    if (lostAction.includes('閒逛') || lostAction.includes('再次相遇'))     return selfless ? '初見' : '胡蝶';
+    if (lostAction.includes('站在原地'))                                    return selfless ? '步含光' : '池森';
+    return selfless ? '初見' : '余朝'; // 就是願意先告白
 }
-
-// ── BGM 控制 ──────────────────────────────────────────────────────────────
-(function () {
-    const bgm = document.getElementById('bgm');
-    const btn = document.getElementById('bgmBtn');
-    if (!bgm || !btn) return;
-    let playing = false;
-    const play = () => bgm.play().then(() => { playing=true; btn.classList.remove('muted'); }).catch(()=>{});
-    btn.addEventListener('click', () => {
-        if (playing) { bgm.pause(); playing=false; btn.classList.add('muted'); }
-        else { play(); }
-    });
-    document.addEventListener('click', function autostart() {
-        play(); document.removeEventListener('click', autostart);
-    }, { once: true });
-})();
 
 // 星星背景
 (function() {
@@ -905,13 +817,12 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     const gender     = form.querySelector('input[name="gender"]:checked');
     const loveType   = form.querySelector('input[name="loveType"]:checked');
     const lostAction = form.querySelector('input[name="lostAction"]:checked');
-    const musicFeel  = form.querySelector('input[name="musicFeel"]:checked');
     const loveStyle  = form.querySelector('input[name="loveStyle"]:checked');
     const traits     = [...form.querySelectorAll('input[name="traits"]:checked')].map(c => c.value);
     const selfPhrase = form.selfPhrase.value.trim();
     const motto      = form.motto.value.trim();
 
-    if (!lineName || !date || !gender || !loveType || !lostAction || !musicFeel || !loveStyle || !traits.length || !selfPhrase || !motto) {
+    if (!lineName || !date || !gender || !loveType || !lostAction || !loveStyle || !traits.length || !selfPhrase || !motto) {
         errEl.textContent = '請確認所有必填欄位都已填寫完成。';
         errEl.style.display = 'block';
         errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -934,14 +845,13 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     data.append('crush',      form.crush.value.trim());
     data.append('loveType',   loveType.value);
     data.append('lostAction', lostAction.value);
-    data.append('musicFeel',  musicFeel.value);
     data.append('loveStyle',  loveStyle.value);
     data.append('traits',     traits.join('、'));
     data.append('selfPhrase', selfPhrase);
     data.append('motto',      motto);
     data.append('wish',       form.wish.value.trim());
 
-    const charName = matchCharacter(loveType.value, lostAction.value, musicFeel.value, loveStyle.value, traits);
+    const charName = matchCharacter(loveType.value, lostAction.value);
     data.append('role', charName);
 
     try {
