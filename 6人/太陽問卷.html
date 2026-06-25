@@ -87,11 +87,34 @@
             50%      { opacity: 0.9; transform: scale(1.3); }
         }
 
+        /* ── SUN HERO ── */
+        .sun-hero {
+            position: relative;
+            width: 100%;
+            height: 56vh;
+            min-height: 300px;
+            max-height: 520px;
+            overflow: hidden;
+        }
+        #sun-canvas {
+            display: block;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         /* ── HEADER ── */
         header {
-            position: relative; z-index: 1;
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            z-index: 2;
             text-align: center;
-            padding: 3rem 1rem 2rem;
+            padding: 1.5rem 1rem 2.2rem;
+            background: linear-gradient(to top,
+                rgba(15,12,41,.94) 0%,
+                rgba(15,12,41,.55) 48%,
+                transparent 100%);
         }
 
         .back-btn {
@@ -464,6 +487,31 @@
             border-color: var(--border-hover);
         }
 
+        /* ── METEORS ── */
+        #meteors {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .meteor {
+            position: absolute;
+            width: 1.5px;
+            background: linear-gradient(to bottom,
+                transparent 0%,
+                rgba(160,215,255,.9) 55%,
+                rgba(220,240,255,.5) 100%);
+            border-radius: 2px;
+            animation: meteor-fall var(--dur, 3s) var(--delay, 0s) infinite linear;
+        }
+        @keyframes meteor-fall {
+            0%   { transform: rotate(-32deg) translate(0, -120px); opacity: 0; }
+            8%   { opacity: var(--op, .6); }
+            88%  { opacity: var(--op, .6); }
+            100% { transform: rotate(-32deg) translate(-140vw, 130vh); opacity: 0; }
+        }
+
         /* ── ERROR BANNER ── */
         #error-msg {
             display: none;
@@ -480,15 +528,19 @@
 <body>
 
 <div id="stars"></div>
+<div id="meteors"></div>
 
 <a href="太陽可以是藍色嗎.html" class="back-btn">← 返回劇本介紹</a>
 
-<header>
-    <div class="script-tag">🌤 太陽可以是藍色嗎 · 遊戲前測</div>
-    <h1>太陽可以是藍色嗎</h1>
-    <p class="subtitle">請依照個人真實經驗或第一直覺回答問題<br>
-    <span style="font-size:.8rem;color:rgba(173,216,230,.5);">cj2vum4@gmail.com · 你的回答只有我看得到</span></p>
-</header>
+<div class="sun-hero">
+    <canvas id="sun-canvas"></canvas>
+    <header>
+        <div class="script-tag">🌤 太陽可以是藍色嗎 · 遊戲前測</div>
+        <h1>太陽可以是藍色嗎</h1>
+        <p class="subtitle">請依照個人真實經驗或第一直覺回答問題<br>
+        <span style="font-size:.8rem;color:rgba(173,216,230,.5);">cj2vum4@gmail.com · 你的回答只有我看得到</span></p>
+    </header>
+</div>
 
 <form id="survey" novalidate>
 
@@ -653,6 +705,7 @@
     <a href="太陽可以是藍色嗎.html" class="back-home">← 返回劇本介紹</a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 // ── 請把 Google Apps Script 部署後的 URL 填入這裡 ──────────────────────
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4y7DQuaEbb2Qcw0Rbe_-i3MMBbtMOj68O_J9wps6xImzfnV-8dxqbAJgSVIaCsLpr/exec";
@@ -734,6 +787,155 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     document.getElementById('success').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+// ── Three.js 藍色太陽 ──────────────────────────────────────────────────────
+(function () {
+    const canvas = document.getElementById('sun-canvas');
+    if (!canvas || !window.THREE) return;
+
+    function sz() { return { w: canvas.offsetWidth, h: canvas.offsetHeight }; }
+    const { w, h } = sz();
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(w, h, false);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(52, w / h, 0.1, 200);
+    camera.position.z = 7;
+
+    // Sun sphere
+    const sunMat = new THREE.MeshStandardMaterial({
+        color: 0x2277ff,
+        emissive: 0x0d44cc,
+        emissiveIntensity: 1.0,
+        roughness: 0.4,
+        metalness: 0.0
+    });
+    const sun = new THREE.Mesh(new THREE.SphereGeometry(1.45, 64, 64), sunMat);
+    sun.position.y = 0.2;
+    scene.add(sun);
+
+    // Glow halos (layered transparent back-face spheres)
+    [[1.65, 0.11, 0x4499ff], [1.95, 0.065, 0x2266dd], [2.45, 0.035, 0x1144bb], [3.15, 0.014, 0x0033aa]].forEach(([r, op, col]) => {
+        const m = new THREE.Mesh(
+            new THREE.SphereGeometry(r, 32, 32),
+            new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, side: THREE.BackSide, depthWrite: false })
+        );
+        m.position.copy(sun.position);
+        scene.add(m);
+    });
+
+    // Corona spikes
+    const SPIKES = 22;
+    const spikeData = [];
+    for (let i = 0; i < SPIKES; i++) {
+        const baseAngle = (i / SPIKES) * Math.PI * 2;
+        const len = 0.28 + Math.random() * 0.72;
+        const cone = new THREE.Mesh(
+            new THREE.ConeGeometry(0.022, len, 5),
+            new THREE.MeshBasicMaterial({ color: 0x88ccff, transparent: true, opacity: 0.1 + Math.random() * 0.28, depthWrite: false })
+        );
+        scene.add(cone);
+        spikeData.push({ cone, baseAngle, phaseOffset: Math.random() * Math.PI * 2 });
+    }
+
+    // Corona particle ring
+    const N = 420;
+    const pPos = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const r = 1.55 + Math.random() * 2.1;
+        pPos[i * 3]     = Math.cos(a) * r;
+        pPos[i * 3 + 1] = sun.position.y + Math.sin(a) * r;
+        pPos[i * 3 + 2] = (Math.random() - 0.5) * 0.7;
+    }
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x55aaff, size: 0.046, transparent: true, opacity: 0.55, depthWrite: false })));
+
+    // Background star field
+    const BS = 320;
+    const bPos = new Float32Array(BS * 3);
+    for (let i = 0; i < BS; i++) {
+        bPos[i * 3]     = (Math.random() - 0.5) * 65;
+        bPos[i * 3 + 1] = (Math.random() - 0.5) * 38;
+        bPos[i * 3 + 2] = -10 - Math.random() * 22;
+    }
+    const bGeo = new THREE.BufferGeometry();
+    bGeo.setAttribute('position', new THREE.BufferAttribute(bPos, 3));
+    scene.add(new THREE.Points(bGeo, new THREE.PointsMaterial({ color: 0xbbddff, size: 0.08, transparent: true, opacity: 0.62 })));
+
+    // Lights
+    const sunLight = new THREE.PointLight(0x4488ff, 4.5, 30);
+    sunLight.position.copy(sun.position);
+    scene.add(sunLight);
+    scene.add(new THREE.AmbientLight(0x102040, 0.6));
+
+    // Mouse parallax
+    let mx = 0, my = 0;
+    document.addEventListener('mousemove', e => {
+        mx = (e.clientX / innerWidth  - 0.5) * 2;
+        my = -(e.clientY / innerHeight - 0.5) * 2;
+    });
+
+    // Animation loop
+    let t = 0;
+    (function animate() {
+        requestAnimationFrame(animate);
+        t += 0.007;
+
+        sun.rotation.y = t * 0.22;
+        sun.rotation.z = t * 0.08;
+        sunMat.emissiveIntensity = 0.82 + Math.sin(t * 1.7) * 0.24;
+        sunLight.intensity = 4.0 + Math.sin(t * 1.7) * 1.1;
+
+        camera.position.x += (mx * 0.35 - camera.position.x) * 0.04;
+        camera.position.y += (my * 0.20 - camera.position.y) * 0.04;
+        camera.lookAt(sun.position);
+
+        spikeData.forEach(s => {
+            const angle = s.baseAngle + t * 0.14 + Math.sin(t * 1.4 + s.phaseOffset) * 0.14;
+            const dist  = 1.62 + Math.sin(t * 2.1 + s.phaseOffset) * 0.19;
+            s.cone.position.set(
+                sun.position.x + Math.cos(angle) * dist,
+                sun.position.y + Math.sin(angle) * dist,
+                0
+            );
+            s.cone.rotation.z = angle - Math.PI / 2;
+            s.cone.material.opacity = 0.08 + Math.abs(Math.sin(t * 1.8 + s.phaseOffset)) * 0.32;
+        });
+
+        renderer.render(scene, camera);
+    })();
+
+    window.addEventListener('resize', () => {
+        const { w, h } = sz();
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+    });
+})();
+
+// ── CSS 流星雨 ─────────────────────────────────────────────────────────────
+(function () {
+    const container = document.getElementById('meteors');
+    const COUNT = 24;
+    for (let i = 0; i < COUNT; i++) {
+        const m = document.createElement('div');
+        m.className = 'meteor';
+        const ht = 48 + Math.random() * 88;
+        m.style.cssText = [
+            `left:${5 + Math.random() * 120}%`,
+            `top:${-8 + Math.random() * 45}%`,
+            `height:${ht}px`,
+            `--dur:${(2.8 + Math.random() * 4.8).toFixed(1)}s`,
+            `--delay:${(Math.random() * 10).toFixed(1)}s`,
+            `--op:${(0.32 + Math.random() * 0.52).toFixed(2)}`,
+        ].join(';');
+        container.appendChild(m);
+    }
+})();
 </script>
 </body>
 </html>
