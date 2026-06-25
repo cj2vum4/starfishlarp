@@ -49,12 +49,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg-from: #24243e;
-            --bg-mid:  #302b63;
-            --bg-to:   #0f0c29;
+            --bg-from: #14122a;
+            --bg-mid:  #100e22;
+            --bg-to:   #0c0a1e;
             --blue:    #add8e6;
             --blue-dim:#87ceeb;
-            --card:    rgba(36, 36, 62, 0.75);
+            --card:    rgba(20, 18, 42, 0.82);
             --border:  rgba(173, 216, 230, 0.2);
             --border-hover: rgba(173, 216, 230, 0.5);
             --text:    #f0f0f0;
@@ -64,7 +64,7 @@
 
         body {
             font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
-            background: linear-gradient(135deg, var(--bg-from), var(--bg-mid), var(--bg-to));
+            background: linear-gradient(180deg, var(--bg-from) 0%, var(--bg-mid) 55%, var(--bg-to) 100%);
             min-height: 100vh;
             color: var(--text);
             overflow-x: hidden;
@@ -91,10 +91,20 @@
         .sun-hero {
             position: relative;
             width: 100%;
-            height: 56vh;
-            min-height: 300px;
-            max-height: 520px;
+            height: 58vh;
+            min-height: 320px;
+            max-height: 540px;
             overflow: hidden;
+        }
+        /* smooth blend into form below */
+        .sun-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 100px;
+            background: linear-gradient(to top, var(--bg-from) 0%, transparent 100%);
+            z-index: 1;
+            pointer-events: none;
         }
         #sun-canvas {
             display: block;
@@ -788,7 +798,7 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// ── Three.js 藍色太陽 ──────────────────────────────────────────────────────
+// ── Three.js 藍色太陽（寫實版）─────────────────────────────────────────────
 (function () {
     const canvas = document.getElementById('sun-canvas');
     if (!canvas || !window.THREE) return;
@@ -796,28 +806,102 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     function sz() { return { w: canvas.offsetWidth, h: canvas.offsetHeight }; }
     const { w, h } = sz();
 
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: true });
     renderer.setSize(w, h, false);
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    renderer.setClearColor(0x14122a, 1);  // matches body --bg-from
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(52, w / h, 0.1, 200);
+    const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 200);
     camera.position.z = 7;
 
-    // Sun sphere
+    // ── 程序化太陽表面紋理（藍色恆星）────────────────────────────────────────
+    function makeSunTex(size) {
+        const c = document.createElement('canvas');
+        c.width = c.height = size;
+        const ctx = c.getContext('2d');
+
+        // 基底：白熱核心 → 藍色表面 → 臨邊昏暗
+        const bg = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+        bg.addColorStop(0,    '#ffffff');
+        bg.addColorStop(0.10, '#d8ecff');
+        bg.addColorStop(0.35, '#5599ff');
+        bg.addColorStop(0.70, '#2255cc');
+        bg.addColorStop(0.90, '#112288');
+        bg.addColorStop(1,    '#050a44');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, size, size);
+
+        // 對流顆粒（granulation）
+        ctx.globalCompositeOperation = 'soft-light';
+        for (let i = 0; i < 400; i++) {
+            const x = Math.random() * size, y = Math.random() * size;
+            const r = 5 + Math.random() * 26;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+            if (Math.random() > 0.42) {
+                g.addColorStop(0, 'rgba(200,228,255,0.55)');
+            } else {
+                g.addColorStop(0, 'rgba(0,15,90,0.45)');
+            }
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+        }
+
+        // 表面閃焰（screen blend）
+        ctx.globalCompositeOperation = 'screen';
+        for (let i = 0; i < 60; i++) {
+            const x = Math.random() * size, y = Math.random() * size;
+            const r = 4 + Math.random() * 18;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+            g.addColorStop(0, `rgba(185,218,255,${(0.45 + Math.random() * 0.55).toFixed(2)})`);
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+        }
+        return new THREE.CanvasTexture(c);
+    }
+
+    const sunTex = makeSunTex(512);
+
+    // ── 太陽主體球體 ──────────────────────────────────────────────────────────
     const sunMat = new THREE.MeshStandardMaterial({
-        color: 0x2277ff,
-        emissive: 0x0d44cc,
-        emissiveIntensity: 1.0,
-        roughness: 0.4,
-        metalness: 0.0
+        map: sunTex,
+        emissiveMap: sunTex,
+        emissive: new THREE.Color(0x2f60ff),
+        emissiveIntensity: 0.52,
+        roughness: 1.0,
+        metalness: 0.0,
     });
     const sun = new THREE.Mesh(new THREE.SphereGeometry(1.45, 64, 64), sunMat);
-    sun.position.y = 0.2;
+    sun.position.y = 0.15;
     scene.add(sun);
 
-    // Glow halos (layered transparent back-face spheres)
-    [[1.65, 0.11, 0x4499ff], [1.95, 0.065, 0x2266dd], [2.45, 0.035, 0x1144bb], [3.15, 0.014, 0x0033aa]].forEach(([r, op, col]) => {
+    // ── Fresnel 大氣層（邊緣散射發光）────────────────────────────────────────
+    scene.add(Object.assign(
+        new THREE.Mesh(
+            new THREE.SphereGeometry(1.52, 48, 48),
+            new THREE.ShaderMaterial({
+                vertexShader: `
+                    varying vec3 vN;
+                    void main(){ vN=normalize(normalMatrix*normal);
+                        gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+                fragmentShader: `
+                    varying vec3 vN;
+                    void main(){
+                        float f=pow(clamp(1.0-dot(vN,vec3(0,0,1)),0.,1.),1.9)*0.9;
+                        gl_FragColor=vec4(0.18,0.52,1.0,f); }`,
+                transparent: true, blending: THREE.AdditiveBlending,
+                side: THREE.FrontSide, depthWrite: false,
+            })
+        ),
+        { position: sun.position.clone() }
+    ));
+
+    // ── 多層暈圈 ──────────────────────────────────────────────────────────────
+    [[1.72, 0.09, 0x4499ff], [2.08, 0.054, 0x2266dd], [2.7, 0.028, 0x1144bb], [3.55, 0.011, 0x0033aa]].forEach(([r, op, col]) => {
         const m = new THREE.Mesh(
             new THREE.SphereGeometry(r, 32, 32),
             new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, side: THREE.BackSide, depthWrite: false })
@@ -826,85 +910,93 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
         scene.add(m);
     });
 
-    // Corona spikes
-    const SPIKES = 22;
-    const spikeData = [];
-    for (let i = 0; i < SPIKES; i++) {
-        const baseAngle = (i / SPIKES) * Math.PI * 2;
-        const len = 0.28 + Math.random() * 0.72;
-        const cone = new THREE.Mesh(
-            new THREE.ConeGeometry(0.022, len, 5),
-            new THREE.MeshBasicMaterial({ color: 0x88ccff, transparent: true, opacity: 0.1 + Math.random() * 0.28, depthWrite: false })
-        );
-        scene.add(cone);
-        spikeData.push({ cone, baseAngle, phaseOffset: Math.random() * Math.PI * 2 });
+    // ── 日珥群組（弧形 TubeGeometry）─────────────────────────────────────────
+    const promGroup = new THREE.Group();
+    promGroup.position.copy(sun.position);
+    scene.add(promGroup);
+    const PROM = 6;
+    for (let i = 0; i < PROM; i++) {
+        const a0 = (i / PROM) * Math.PI * 2;
+        const h2 = 0.4 + Math.random() * 0.75;
+        const span = Math.PI * (0.55 + Math.random() * 0.6);
+        const pts = [];
+        for (let j = 0; j <= 20; j++) {
+            const a = a0 + (j / 20) * span;
+            const r = 1.48 + Math.sin(j / 20 * Math.PI) * h2;
+            pts.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r * 0.66, (Math.random() - 0.5) * 0.12));
+        }
+        promGroup.add(new THREE.Mesh(
+            new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.014 + Math.random() * 0.014, 5, false),
+            new THREE.MeshBasicMaterial({ color: 0x88bbff, transparent: true, opacity: 0.25 + Math.random() * 0.35, depthWrite: false })
+        ));
     }
 
-    // Corona particle ring
-    const N = 420;
+    // ── 粒子日冕環 ────────────────────────────────────────────────────────────
+    const N = 540;
     const pPos = new Float32Array(N * 3);
     for (let i = 0; i < N; i++) {
         const a = Math.random() * Math.PI * 2;
-        const r = 1.55 + Math.random() * 2.1;
-        pPos[i * 3]     = Math.cos(a) * r;
-        pPos[i * 3 + 1] = sun.position.y + Math.sin(a) * r;
-        pPos[i * 3 + 2] = (Math.random() - 0.5) * 0.7;
+        const r = 1.6 + Math.random() * 2.7;
+        pPos[i*3]   = Math.cos(a) * r;
+        pPos[i*3+1] = sun.position.y + Math.sin(a) * r * 0.88;
+        pPos[i*3+2] = (Math.random() - 0.5) * 0.9;
     }
     const pGeo = new THREE.BufferGeometry();
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x55aaff, size: 0.046, transparent: true, opacity: 0.55, depthWrite: false })));
+    scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({
+        color: 0x55aaff, size: 0.046, transparent: true, opacity: 0.46, depthWrite: false
+    })));
 
-    // Background star field
-    const BS = 320;
+    // ── 背景星空 ──────────────────────────────────────────────────────────────
+    const BS = 450;
     const bPos = new Float32Array(BS * 3);
     for (let i = 0; i < BS; i++) {
-        bPos[i * 3]     = (Math.random() - 0.5) * 65;
-        bPos[i * 3 + 1] = (Math.random() - 0.5) * 38;
-        bPos[i * 3 + 2] = -10 - Math.random() * 22;
+        bPos[i*3]   = (Math.random() - 0.5) * 76;
+        bPos[i*3+1] = (Math.random() - 0.5) * 46;
+        bPos[i*3+2] = -12 - Math.random() * 30;
     }
     const bGeo = new THREE.BufferGeometry();
     bGeo.setAttribute('position', new THREE.BufferAttribute(bPos, 3));
-    scene.add(new THREE.Points(bGeo, new THREE.PointsMaterial({ color: 0xbbddff, size: 0.08, transparent: true, opacity: 0.62 })));
+    scene.add(new THREE.Points(bGeo, new THREE.PointsMaterial({
+        color: 0xccddff, size: 0.07, transparent: true, opacity: 0.55
+    })));
 
-    // Lights
-    const sunLight = new THREE.PointLight(0x4488ff, 4.5, 30);
+    // ── 光源 ──────────────────────────────────────────────────────────────────
+    const sunLight = new THREE.PointLight(0x4488ff, 5, 34);
     sunLight.position.copy(sun.position);
     scene.add(sunLight);
-    scene.add(new THREE.AmbientLight(0x102040, 0.6));
+    scene.add(new THREE.AmbientLight(0x0b1530, 0.55));
+    // rim back-light for depth
+    const rimLight = new THREE.PointLight(0x0033cc, 1.6, 22);
+    rimLight.position.set(-4, 2, -4);
+    scene.add(rimLight);
 
-    // Mouse parallax
+    // ── 滑鼠視差 ──────────────────────────────────────────────────────────────
     let mx = 0, my = 0;
     document.addEventListener('mousemove', e => {
         mx = (e.clientX / innerWidth  - 0.5) * 2;
         my = -(e.clientY / innerHeight - 0.5) * 2;
     });
 
-    // Animation loop
+    // ── 動畫迴圈 ──────────────────────────────────────────────────────────────
     let t = 0;
     (function animate() {
         requestAnimationFrame(animate);
         t += 0.007;
 
-        sun.rotation.y = t * 0.22;
-        sun.rotation.z = t * 0.08;
-        sunMat.emissiveIntensity = 0.82 + Math.sin(t * 1.7) * 0.24;
-        sunLight.intensity = 4.0 + Math.sin(t * 1.7) * 1.1;
+        sun.rotation.y = t * 0.18;
+        sun.rotation.z = t * 0.055;
+        sunMat.emissiveIntensity = 0.46 + Math.sin(t * 1.55) * 0.18;
+        sunLight.intensity = 4.6 + Math.sin(t * 1.55) * 1.2;
 
-        camera.position.x += (mx * 0.35 - camera.position.x) * 0.04;
-        camera.position.y += (my * 0.20 - camera.position.y) * 0.04;
-        camera.lookAt(sun.position);
-
-        spikeData.forEach(s => {
-            const angle = s.baseAngle + t * 0.14 + Math.sin(t * 1.4 + s.phaseOffset) * 0.14;
-            const dist  = 1.62 + Math.sin(t * 2.1 + s.phaseOffset) * 0.19;
-            s.cone.position.set(
-                sun.position.x + Math.cos(angle) * dist,
-                sun.position.y + Math.sin(angle) * dist,
-                0
-            );
-            s.cone.rotation.z = angle - Math.PI / 2;
-            s.cone.material.opacity = 0.08 + Math.abs(Math.sin(t * 1.8 + s.phaseOffset)) * 0.32;
+        promGroup.rotation.z = t * 0.032;
+        promGroup.children.forEach((tube, i) => {
+            tube.material.opacity = 0.18 + Math.abs(Math.sin(t * 0.55 + i * 1.05)) * 0.36;
         });
+
+        camera.position.x += (mx * 0.28 - camera.position.x) * 0.04;
+        camera.position.y += (my * 0.16 - camera.position.y) * 0.04;
+        camera.lookAt(sun.position);
 
         renderer.render(scene, camera);
     })();
