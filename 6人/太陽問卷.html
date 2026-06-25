@@ -22,13 +22,14 @@
           sheet.appendRow(['送出時間','Line名稱','預約日期','性別',
             '同行喜歡的人','愛情觀（自私/無私）','走失後的行動',
             '在愛情中往往選擇','感情中的個性特質',
-            '最適合形容自己的一句話','最想送給自己的座右銘','許願池']);
+            '最適合形容自己的一句話','最想送給自己的座右銘','許願池',
+            '角色建議']);
         }
         sheet.appendRow([
           new Date(), d.lineName||'', d.date||'', d.gender||'',
           d.crush||'', d.loveType||'', d.lostAction||'',
           d.loveStyle||'', d.traits||'', d.selfPhrase||'',
-          d.motto||'', d.wish||''
+          d.motto||'', d.wish||'', d.role||''
         ]);
         return ContentService.createTextOutput('OK');
       } catch(err) {
