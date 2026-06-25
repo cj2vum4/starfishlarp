@@ -268,7 +268,7 @@
         /* --- 角色介紹 --- */
         .characters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-top: 15px;
         }
@@ -276,35 +276,53 @@
         .character-card {
             background: rgba(173, 216, 230, 0.1);
             border-radius: 15px;
-            padding: 20px 15px;
+            padding: 0;
             text-align: center;
             border: 1px solid rgba(173, 216, 230, 0.2);
             transition: all 0.3s ease;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            min-height: 180px;
+            cursor: pointer;
         }
 
         .character-card:hover {
             background: rgba(173, 216, 230, 0.2);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-6px);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(173,216,230,0.25);
+            border-color: rgba(173, 216, 230, 0.5);
         }
-        
+
+        .character-poster {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .character-card:hover .character-poster {
+            transform: scale(1.04);
+        }
+
+        .character-card-body {
+            padding: 12px 10px 14px;
+        }
+
         .character-name {
-            font-weight: 600;
+            font-weight: 700;
             color: #f0f0f0;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
         }
 
         .character-info {
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: #add8e6;
-            opacity: 0.8;
-            line-height: 1.4;
+            opacity: 0.85;
+            line-height: 1.5;
         }
         
         .gender-icons {
@@ -475,28 +493,46 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <div class="character-name">清遙</div>
-                        <div class="character-info">某個清晨初雪蓋過的墳墓</div>
+                        <img class="character-poster" src="https://i.postimg.cc/V6P5gF8P/ying-mu-xie-qu-hua-mian-2026-06-25-155617.png" alt="清遙">
+                        <div class="character-card-body">
+                            <div class="character-name">清遙</div>
+                            <div class="character-info">某個清晨初雪蓋過的墳墓</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-name">步含光</div>
-                        <div class="character-info">像鳥與晴空,從未分開,從未接近</div>
+                        <img class="character-poster" src="https://i.postimg.cc/1t14BKQs/ying-mu-xie-qu-hua-mian-2026-06-25-155609.png" alt="步含光">
+                        <div class="character-card-body">
+                            <div class="character-name">步含光</div>
+                            <div class="character-info">像鳥與晴空，從未分開，從未接近</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-name">胡蝶</div>
-                        <div class="character-info">無關誰的離去與給予</div>
+                        <img class="character-poster" src="https://i.postimg.cc/QtZVmqrv/ying-mu-xie-qu-hua-mian-2026-06-25-155625.png" alt="胡蝶">
+                        <div class="character-card-body">
+                            <div class="character-name">胡蝶</div>
+                            <div class="character-info">無關誰的離去與給予</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-name">余朝</div>
-                        <div class="character-info">深情是悲劇,必得此生來句讀</div>
+                        <img class="character-poster" src="https://i.postimg.cc/vBwDhvdp/ying-mu-xie-qu-hua-mian-2026-06-25-155635.png" alt="余朝">
+                        <div class="character-card-body">
+                            <div class="character-name">余朝</div>
+                            <div class="character-info">深情是悲劇，必得此生來句讀</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-name">池森</div>
-                        <div class="character-info">一飲而盡後,醉生夢死</div>
+                        <img class="character-poster" src="https://i.postimg.cc/Kzh4f5y6/ying-mu-xie-qu-hua-mian-2026-06-25-155642.png" alt="池森">
+                        <div class="character-card-body">
+                            <div class="character-name">池森</div>
+                            <div class="character-info">一飲而盡後，醉生夢死</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-name">初見</div>
-                        <div class="character-info">是躲入霧中的山,像靜默的昭示</div>
+                        <img class="character-poster" src="https://i.postimg.cc/T3SKL6N0/ying-mu-xie-qu-hua-mian-2026-06-25-155651.png" alt="初見">
+                        <div class="character-card-body">
+                            <div class="character-name">初見</div>
+                            <div class="character-info">是躲入霧中的山，像靜默的昭示</div>
+                        </div>
                     </div>
                 </div>
             </div>

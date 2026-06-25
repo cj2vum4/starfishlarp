@@ -569,6 +569,22 @@
             text-transform: uppercase;
             margin-bottom: .9rem;
         }
+        .char-match-poster {
+            width: 160px;
+            height: 213px;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 12px;
+            border: 2px solid rgba(173,216,230,.4);
+            box-shadow: 0 8px 28px rgba(0,0,0,.5), 0 0 24px rgba(100,160,255,.25);
+            margin: 0 auto .9rem;
+            display: block;
+            animation: poster-in .5s ease both;
+        }
+        @keyframes poster-in {
+            from { opacity: 0; transform: scale(.88) translateY(12px); }
+            to   { opacity: 1; transform: none; }
+        }
         .char-match-icon { font-size: 3rem; margin-bottom: .45rem; }
         .char-match-name {
             font-size: 2.1rem;
@@ -779,6 +795,7 @@
     </div>
     <div class="char-match-card">
         <div class="char-match-label">根據你的回答，你最適合的角色是</div>
+        <img class="char-match-poster" id="char-result-poster" src="" alt="" style="display:none">
         <div class="char-match-icon" id="char-result-icon">✨</div>
         <div class="char-match-name" id="char-result-name">—</div>
         <div class="char-match-desc" id="char-result-desc"></div>
@@ -795,12 +812,12 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4y7DQuaEbb2Qcw0Rbe
 
 // ── 角色資料 ──────────────────────────────────────────────────────────────
 const CHAR_INFO = {
-    清遙: { emoji: '🌙', desc: '消極悲觀，敏感細膩，不輕易敞開心扉，將愛人視為自己的救贖。' },
-    步含光: { emoji: '🌿', desc: '溫柔堅強，在感情上小心翼翼，默默守護心中暗戀的人。' },
-    池森: { emoji: '🌊', desc: '獨立成熟，浪漫風趣，對感情熱忱專一。' },
-    初見: { emoji: '✨', desc: '天真爛漫，古靈精怪，更看重雙方的幸福，無私付出。' },
-    余朝: { emoji: '🔥', desc: '痞氣果敢，大大咧咧，因現實阻礙而愛而不得。' },
-    胡蝶: { emoji: '🦋', desc: '雷厲風行，內心叛逆，對待感情熱烈勇往。' },
+    清遙:  { emoji: '🌙', poster: 'https://i.postimg.cc/V6P5gF8P/ying-mu-xie-qu-hua-mian-2026-06-25-155617.png', desc: '消極悲觀，敏感細膩，不輕易敞開心扉，將愛人視為自己的救贖。' },
+    步含光:{ emoji: '🌿', poster: 'https://i.postimg.cc/1t14BKQs/ying-mu-xie-qu-hua-mian-2026-06-25-155609.png', desc: '溫柔堅強，在感情上小心翼翼，默默守護心中暗戀的人。' },
+    池森:  { emoji: '🌊', poster: 'https://i.postimg.cc/Kzh4f5y6/ying-mu-xie-qu-hua-mian-2026-06-25-155642.png', desc: '獨立成熟，浪漫風趣，對感情熱忱專一。' },
+    初見:  { emoji: '✨', poster: 'https://i.postimg.cc/T3SKL6N0/ying-mu-xie-qu-hua-mian-2026-06-25-155651.png', desc: '天真爛漫，古靈精怪，更看重雙方的幸福，無私付出。' },
+    余朝:  { emoji: '🔥', poster: 'https://i.postimg.cc/vBwDhvdp/ying-mu-xie-qu-hua-mian-2026-06-25-155635.png', desc: '痞氣果敢，大大咧咧，因現實阻礙而愛而不得。' },
+    胡蝶:  { emoji: '🦋', poster: 'https://i.postimg.cc/QtZVmqrv/ying-mu-xie-qu-hua-mian-2026-06-25-155625.png', desc: '雷厲風行，內心叛逆，對待感情熱烈勇往。' },
 };
 
 // ── 角色分配演算法 ─────────────────────────────────────────────────────────
@@ -908,7 +925,15 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     } catch (_) { /* no-cors 下忽略錯誤 */ }
 
     const ci = CHAR_INFO[charName] || {};
-    document.getElementById('char-result-icon').textContent = ci.emoji || '✨';
+    const posterEl = document.getElementById('char-result-poster');
+    if (ci.poster) {
+        posterEl.src = ci.poster;
+        posterEl.alt = charName;
+        posterEl.style.display = 'block';
+    } else {
+        posterEl.style.display = 'none';
+    }
+    document.getElementById('char-result-icon').textContent = ci.poster ? '' : (ci.emoji || '✨');
     document.getElementById('char-result-name').textContent = charName || '—';
     document.getElementById('char-result-desc').textContent = ci.desc || '';
 
