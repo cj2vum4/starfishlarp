@@ -700,25 +700,25 @@
     </div>
 
 
-    <!-- Q7 愛情選擇 -->
+    <!-- Q7 愛情選擇（多選） -->
     <div class="q-card">
-        <span class="q-label">在愛情中，你往往選擇 <span class="req">*</span></span>
+        <span class="q-label">在愛情中，你往往選擇 <span class="req">*</span>（可多選）</span>
         <div class="options" id="loveStyle-group">
             <label class="opt-label">
-                <input type="radio" name="loveStyle" value="付出比較多" required>
-                <span class="opt-dot"></span>付出比較多
+                <input type="checkbox" name="loveStyle" value="付出比較多">
+                <span class="opt-check"></span>付出比較多
             </label>
             <label class="opt-label">
-                <input type="radio" name="loveStyle" value="被付出比較多">
-                <span class="opt-dot"></span>被付出比較多
+                <input type="checkbox" name="loveStyle" value="被付出比較多">
+                <span class="opt-check"></span>被付出比較多
             </label>
             <label class="opt-label">
-                <input type="radio" name="loveStyle" value="愛我的人">
-                <span class="opt-dot"></span>愛我的人
+                <input type="checkbox" name="loveStyle" value="愛我的人">
+                <span class="opt-check"></span>愛我的人
             </label>
             <label class="opt-label">
-                <input type="radio" name="loveStyle" value="我愛的人">
-                <span class="opt-dot"></span>我愛的人
+                <input type="checkbox" name="loveStyle" value="我愛的人">
+                <span class="opt-check"></span>我愛的人
             </label>
         </div>
     </div>
@@ -866,12 +866,12 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     const gender     = form.querySelector('input[name="gender"]:checked');
     const loveType   = form.querySelector('input[name="loveType"]:checked');
     const lostAction = form.querySelector('input[name="lostAction"]:checked');
-    const loveStyle  = form.querySelector('input[name="loveStyle"]:checked');
+    const loveStyle  = [...form.querySelectorAll('input[name="loveStyle"]:checked')].map(c => c.value);
     const traits     = [...form.querySelectorAll('input[name="traits"]:checked')].map(c => c.value);
     const selfPhrase = form.selfPhrase.value.trim();
     const motto      = form.motto.value.trim();
 
-    if (!lineName || !date || !gender || !loveType || !lostAction || !loveStyle || !traits.length || !selfPhrase || !motto) {
+    if (!lineName || !date || !gender || !loveType || !lostAction || !loveStyle.length || !traits.length || !selfPhrase || !motto) {
         errEl.textContent = '請確認所有必填欄位都已填寫完成。';
         errEl.style.display = 'block';
         errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -894,7 +894,7 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     data.append('crush',      form.crush.value.trim());
     data.append('loveType',   loveType.value);
     data.append('lostAction', lostAction.value);
-    data.append('loveStyle',  loveStyle.value);
+    data.append('loveStyle',  loveStyle.join('、'));
     data.append('traits',     traits.join('、'));
     data.append('selfPhrase', selfPhrase);
     data.append('motto',      motto);
