@@ -821,12 +821,31 @@ const CHAR_INFO = {
 };
 
 // ── 角色分配演算法 ─────────────────────────────────────────────────────────
-function matchCharacter(loveType, lostAction) {
+function matchCharacter(loveType, lostAction, gender) {
     const selfless = loveType === '無私';
-    if (lostAction.includes('主動去找'))                                    return selfless ? '清遙' : '余朝';
-    if (lostAction.includes('閒逛') || lostAction.includes('再次相遇'))     return selfless ? '初見' : '胡蝶';
-    if (lostAction.includes('站在原地'))                                    return selfless ? '步含光' : '池森';
-    return selfless ? '初見' : '余朝'; // 就是願意先告白
+    const isStay   = lostAction.includes('站在原地');
+    const isSearch = lostAction.includes('主動去找');
+    const isWander = lostAction.includes('閒逛') || lostAction.includes('再次相遇');
+
+    // 反串：全部 6 個角色
+    if (gender === '我是男生，想體驗女角' || gender === '我是女生，想體驗男角') {
+        if (isSearch) return selfless ? '清遙' : '余朝';
+        if (isWander) return selfless ? '初見'  : '胡蝶';
+        if (isStay)   return selfless ? '步含光' : '池森';
+        return selfless ? '初見' : '余朝'; // 就是願意先告白
+    }
+
+    // 男角：余朝、步含光、池森
+    if (gender === '我是男生') {
+        if (isSearch) return '余朝';
+        if (isWander) return selfless ? '步含光' : '池森';
+        if (isStay)   return selfless ? '步含光' : '池森';
+        return '余朝'; // 就是願意先告白
+    }
+
+    // 女角：清遙、胡蝶、初見
+    if (isStay) return '清遙';
+    return selfless ? '初見' : '胡蝶';
 }
 
 // 星星背景
@@ -917,7 +936,7 @@ document.getElementById('survey').addEventListener('submit', async function(e) {
     data.append('motto',      motto);
     data.append('wish',       form.wish.value.trim());
 
-    const charName = matchCharacter(loveType.value, lostAction.value);
+    const charName = matchCharacter(loveType.value, lostAction.value, gender.value);
     data.append('role', charName);
 
     try {
