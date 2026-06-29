@@ -50,7 +50,7 @@ const scriptMeta = {
     'lxe8': { img: 'https://i.postimg.cc/4dxTwvXZ/SKM-C30820072713280-0001.jpg', badges: ['👥 5男3女', '⏰ 5小時', '⭐ 3星'] },
     'fengtuz': { img: '劇本資料/角色海報/《疯兔子》—主海报.jpg', badges: ['👥 3男3女（可反串）', '⏰ 4.5小時', '⭐ 2星'] },
     'chunzhou': { img: 'https://i.postimg.cc/gjX9pHjJ/image.jpg', badges: ['👥 3男3女', '⏰ 4小時', '⭐ 3星'] },
-    'jinmen': { img: '', badges: ['👥 8人（另有7人版）', '⏰ 4-5小時', '⭐ 2星'] },
+    'jinmen': { img: '', badges: ['👥 4男3女＋捕快', '⏰ 4-5小時', '⭐ 2星'] },
     'jimu2': { img: '', badges: ['👥 4男3女', '⏰ 4-5小時', '⭐ 3星'] },
 };
 
