@@ -73,21 +73,38 @@
     .rv-head p { margin: 6px 0 0; font-size: .85rem; color: rgba(255,255,255,.55); }
     .rv-grid {
         display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 16px;
+        gap: 26px 18px;
+        perspective: 1400px;
+        perspective-origin: 50% 30%;
     }
     .rv-note {
         position: relative; padding: 16px 16px 18px;
         border-radius: 4px; color: #3a3326;
-        box-shadow: 0 8px 18px rgba(0,0,0,.35);
-        transform: rotate(var(--rot, 0deg));
-        transition: transform .2s;
+        transform-style: preserve-3d;
+        will-change: transform;
+        box-shadow: 0 14px 26px rgba(0,0,0,.45), 0 4px 8px rgba(0,0,0,.3);
         min-height: 120px; display: flex; flex-direction: column;
+        animation: rv-float var(--fdur, 6s) ease-in-out var(--fdelay, 0s) infinite;
+        transition: transform .3s cubic-bezier(.2,.8,.3,1), box-shadow .3s;
     }
-    .rv-note:hover { transform: rotate(0deg) scale(1.03); z-index: 2; }
+    @keyframes rv-float {
+        0%, 100% { transform: translateZ(0) translateY(0)
+                    rotateX(0deg) rotateY(var(--rot, 0deg)); }
+        50%      { transform: translateZ(34px) translateY(-12px)
+                    rotateX(7deg) rotateY(calc(var(--rot, 0deg) + 5deg)); }
+    }
+    .rv-note:hover {
+        animation-play-state: paused;
+        transform: translateZ(70px) translateY(-16px) rotateX(0deg) rotateY(0deg) scale(1.06);
+        box-shadow: 0 40px 60px rgba(0,0,0,.55), 0 10px 18px rgba(0,0,0,.4);
+        z-index: 5;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .rv-note { animation: none; transform: rotate(var(--rot,0deg)); }
+    }
     .rv-note .rv-stars { font-size: .95rem; color: #c0392b; letter-spacing: 1px; margin-bottom: 6px; }
     .rv-note .rv-comment { font-size: .95rem; line-height: 1.55; flex: 1; word-break: break-word; white-space: pre-wrap; }
     .rv-note .rv-meta { margin-top: 10px; font-size: .75rem; color: rgba(0,0,0,.55); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-    .rv-note .rv-name { font-weight: 700; }
     .rv-note .rv-mood { background: rgba(0,0,0,.08); border-radius: 10px; padding: 1px 8px; }
     .rv-empty, .rv-loading { text-align: center; color: rgba(255,255,255,.7); padding: 40px 10px; font-size: 1rem; }
     @media (max-width: 600px) {
@@ -169,18 +186,20 @@
         }
         const colors = ['#fff7a8', '#bdeaff', '#ffd0e0', '#c8f7c5', '#ffe0b3', '#e2d4ff'];
         const html = reviews.map((r, i) => {
-            const rot = (Math.random() * 4 - 2).toFixed(2);
+            const rot = (Math.random() * 6 - 3).toFixed(2);          // 基礎傾斜
+            const fdur = (5 + Math.random() * 4).toFixed(2);          // 浮動週期
+            const fdelay = (-Math.random() * 6).toFixed(2);          // 負延遲：各自錯開相位
             const bg = colors[i % colors.length];
             const stars = renderStars(r.rating);
+            // 匿名：不顯示是誰留的評論，只保留心情標籤
             const meta = [];
-            meta.push('<span class="rv-name">' + escapeHtml(r.name) + '</span>');
-            if (r.character) meta.push('<span>飾 ' + escapeHtml(r.character) + '</span>');
             if (r.mood) r.mood.split(/[,，、\s]+/).filter(Boolean).forEach(m =>
                 meta.push('<span class="rv-mood">' + escapeHtml(m) + '</span>'));
-            return '<div class="rv-note" style="--rot:' + rot + 'deg;background:' + bg + '">' +
+            const style = '--rot:' + rot + 'deg;--fdur:' + fdur + 's;--fdelay:' + fdelay + 's;background:' + bg;
+            return '<div class="rv-note" style="' + style + '">' +
                 (stars ? '<div class="rv-stars">' + stars + '</div>' : '') +
                 '<div class="rv-comment">' + escapeHtml(r.comment) + '</div>' +
-                '<div class="rv-meta">' + meta.join('') + '</div>' +
+                (meta.length ? '<div class="rv-meta">' + meta.join('') + '</div>' : '') +
             '</div>';
         }).join('');
         bodyEl.innerHTML =
