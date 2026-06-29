@@ -51,6 +51,7 @@ const scriptMeta = {
     'fengtuz': { img: '劇本資料/角色海報/《疯兔子》—主海报.jpg', badges: ['👥 3男3女（可反串）', '⏰ 4.5小時', '⭐ 2星'] },
     'chunzhou': { img: 'https://i.postimg.cc/gjX9pHjJ/image.jpg', badges: ['👥 3男3女', '⏰ 4小時', '⭐ 3星'] },
     'jinmen': { img: '', badges: ['👥 8人（另有7人版）', '⏰ 4-5小時', '⭐ 2星'] },
+    'jimu2': { img: '', badges: ['👥 4男3女', '⏰ 4-5小時', '⭐ 3星'] },
 };
 
     // 劇本資料
@@ -577,6 +578,16 @@ const scriptMeta = {
             theme: 'history',
             time: 4.5,
             file: '8人以上/津門疑雲.html'
+        },
+        {
+            id: 'jimu2',
+            name: '極目2：九爺！我想給您養老',
+            players: 7,
+            types: ['民國', '歡樂', '陣營', '機制', '本格'],
+            difficulty: 3,
+            theme: 'history',
+            time: 4.5,
+            file: '7人/極目2九爺我想給您養老.html'
         },
     );
 
