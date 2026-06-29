@@ -571,13 +571,13 @@ const scriptMeta = {
         },
         {
             id: 'jinmen',
-            name: '津門疑雲',
+            name: '津門遺雲',
             players: 8,
             types: ['民國', '歡樂', '嘴砲', '陣營', '新手'],
             difficulty: 2,
             theme: 'history',
             time: 4.5,
-            file: '8人以上/津門疑雲.html'
+            file: '8人以上/津門遺雲.html'
         },
         {
             id: 'jimu2',
