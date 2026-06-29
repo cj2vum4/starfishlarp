@@ -49,6 +49,8 @@ const scriptMeta = {
     'naesxuwvx0': { img: 'https://i.postimg.cc/SRQ7nsLC/hai-bao1.jpg', badges: ['👥 3男3女', '⏰ 5小時', '⭐ 1星'] },
     'lxe8': { img: 'https://i.postimg.cc/4dxTwvXZ/SKM-C30820072713280-0001.jpg', badges: ['👥 5男3女', '⏰ 5小時', '⭐ 3星'] },
     'fengtuz': { img: '劇本資料/角色海報/《疯兔子》—主海报.jpg', badges: ['👥 3男3女（可反串）', '⏰ 4.5小時', '⭐ 2星'] },
+    'chunzhou': { img: 'https://i.postimg.cc/gjX9pHjJ/image.jpg', badges: ['👥 3男3女', '⏰ 4小時', '⭐ 3星'] },
+    'jinmen': { img: '', badges: ['👥 8人（另有7人版）', '⏰ 4-5小時', '⭐ 2星'] },
 };
 
     // 劇本資料
@@ -555,6 +557,26 @@ const scriptMeta = {
             theme: 'horror',
             time: 4.5,
             file: '6人/瘋兔子白又白砍下腦袋飛起來.html'
+        },
+        {
+            id: 'chunzhou',
+            name: '春昼短',
+            players: 6,
+            types: ['現代', '情感', '沉浸', '治癒', '進階'],
+            difficulty: 3,
+            theme: 'love',
+            time: 4,
+            file: '6人/春昼短.html'
+        },
+        {
+            id: 'jinmen',
+            name: '津門疑雲',
+            players: 8,
+            types: ['民國', '歡樂', '嘴砲', '陣營', '新手'],
+            difficulty: 2,
+            theme: 'history',
+            time: 4.5,
+            file: '8人以上/津門疑雲.html'
         },
     );
 

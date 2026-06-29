@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>春昼短 - 劇本殺</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: '微軟正黑體', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom right, #2a1a22, #3a1f2c, #241420);
+            min-height: 100vh;
+            color: #f5ecef;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- 飄落花瓣背景 --- */
+        #petals {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .petal {
+            position: absolute;
+            top: -5%;
+            border-radius: 60% 0 60% 0;
+            background: linear-gradient(135deg, rgba(255,182,193,.85), rgba(255,140,170,.55));
+            opacity: 0;
+            animation: petal-fall var(--dur, 9s) var(--delay, 0s) infinite linear;
+        }
+        @keyframes petal-fall {
+            0%   { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+            10%  { opacity: var(--op, .7); }
+            90%  { opacity: var(--op, .7); }
+            100% { transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(540deg); opacity: 0; }
+        }
+
+        /* --- 返回按鈕 --- */
+        .back-to-overview {
+            position: fixed;
+            top: 20px; left: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft 1s ease-out 0.5s forwards;
+        }
+        .back-btn {
+            background: rgba(120, 50, 75, 0.7);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 192, 203, 0.35);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .back-btn:hover {
+            background: rgba(150, 65, 95, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
+        }
+
+        /* --- 主容器與標題 --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 182, 193, 0.7), 0 0 40px rgba(200, 90, 130, 0.5);
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #ffc0cb, #ffe0b2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 6px;
+        }
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 235, 240, 0.85);
+            font-weight: 300;
+            text-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* --- 海報區塊 --- */
+        .poster-section {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.2s forwards;
+        }
+        .poster-image {
+            max-width: 450px;
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 80px rgba(200, 90, 130, 0.45);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255, 192, 203, 0.4);
+        }
+        .poster-image:hover {
+            transform: scale(1.03) rotate(1deg);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 100px rgba(255, 182, 193, 0.6);
+        }
+        .poster-placeholder {
+            max-width: 450px;
+            width: 100%;
+            aspect-ratio: 3/4;
+            margin: 0 auto;
+            border-radius: 20px;
+            border: 2px dashed rgba(255, 192, 203, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 235, 240, 0.5);
+            font-size: 1rem;
+            background: rgba(120, 50, 75, 0.2);
+        }
+
+        /* --- 內容網格與卡片 --- */
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: rgba(60, 31, 44, 0.65);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 192, 203, 0.22);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 192, 203, 0.5);
+        }
+        .card:nth-of-type(2) { animation-delay: 0.5s; }
+        .card.description:nth-of-type(3) { animation-delay: 0.7s; }
+        .card.description:nth-of-type(4) { animation-delay: 0.9s; }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffc0cb;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e58aa5;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+        }
+
+        /* --- 資訊項目樣式 --- */
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(255, 192, 203, 0.08);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 192, 203, 0.2);
+        }
+        .info-item:hover {
+            background: rgba(255, 192, 203, 0.18);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .info-label { font-weight: 600; color: #f5ecef; }
+        .info-value, .gender-icons { font-weight: 500; color: #ffc0cb; }
+
+        /* --- 星星評分 --- */
+        .stars-rating { display: flex; gap: 3px; }
+        .star-rating {
+            color: #e58aa5;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(229, 138, 165, 0.5);
+            cursor: default;
+        }
+        .star-rating.empty { color: rgba(255, 255, 255, 0.3); }
+
+        /* --- 標籤樣式 --- */
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+        .tag {
+            background: linear-gradient(45deg, #7a324b, #5a2436);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 192, 203, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .tag:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #99415e, #75303f);
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
+        }
+
+        /* --- 描述區塊 --- */
+        .description { grid-column: 1 / -1; }
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ecdfe3;
+            text-align: justify;
+        }
+        .highlight {
+            color: #ffb0c4;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(255, 176, 196, 0.6);
+        }
+
+        /* --- 角色介紹 --- */
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .character-card {
+            background: rgba(255, 192, 203, 0.08);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 180px;
+        }
+        .character-card:hover {
+            background: rgba(255, 192, 203, 0.18);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .character-emoji { font-size: 2.2rem; margin-bottom: 10px; }
+        .character-name {
+            font-weight: 600;
+            color: #f5ecef;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        .character-info {
+            font-size: 0.85rem;
+            color: #ffc0cb;
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+        .gender-icons { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+        .gender-icon { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; font-weight: 600; }
+
+        /* --- CTA 按鈕 --- */
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 1.1s forwards;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #e58aa5, #c8597f);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(200, 89, 127, 0.4), 0 0 40px rgba(255, 182, 193, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(200, 89, 127, 0.5), 0 0 60px rgba(255, 182, 193, 0.4);
+        }
+
+        /* --- 動畫效果 --- */
+        @keyframes slideInLeft { to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeInUp   { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 響應式 --- */
+        @media (max-width: 992px) {
+            .main-content { grid-template-columns: 1fr; gap: 30px; }
+        }
+        @media (max-width: 768px) {
+            .title { font-size: 2.8rem; }
+            .subtitle { font-size: 1.1rem; }
+            .card { padding: 20px; }
+            .info-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .tags, .gender-icons { justify-content: flex-start; margin-top: 5px; }
+            .poster-image { max-width: 100%; }
+            .back-to-overview { top: 10px; left: 10px; }
+            .back-btn { padding: 10px 15px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 飄落花瓣 -->
+    <div id="petals"></div>
+
+    <!-- 返回按鈕 -->
+    <div class="back-to-overview">
+        <a href="../index.html" class="back-btn">← 返回劇本總覽</a>
+    </div>
+
+    <div class="container">
+        <!-- 頁首標題 -->
+        <header class="header">
+            <h1 class="title">春昼短</h1>
+            <p class="subtitle">"立春開館，立夏歇業——在失戀博物館裡，重逢那段來不及說完的春天。"</p>
+        </header>
+
+        <!-- 海報 -->
+        <section class="poster-section">
+            <img src="https://i.postimg.cc/gjX9pHjJ/image.jpg" alt="春昼短 劇本殺封面" class="poster-image">
+        </section>
+
+        <main class="main-content">
+            <!-- 遊戲資訊卡片 -->
+            <div class="card">
+                <h2 class="card-title">遊戲資訊</h2>
+                <div class="info-item">
+                    <span class="info-label">🌸 劇本名稱</span>
+                    <span class="info-value">春昼短</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">⏰ 遊戲時間</span>
+                    <span class="info-value">約 4 小時</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">👥 遊戲人數</span>
+                    <div class="gender-icons">
+                        <div class="gender-icon"><span>👨 3男</span></div>
+                        <div class="gender-icon"><span>👩 3女</span></div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">  推理程度</span>
+                    <div class="stars-rating">
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating">★</span>
+                        <span class="star-rating empty">★</span>
+                        <span class="star-rating empty">★</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🏷️ 劇本標籤</span>
+                    <div class="tags">
+                        <span class="tag">現代</span>
+                        <span class="tag">情感</span>
+                        <span class="tag">沉浸</span>
+                        <span class="tag">治癒</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">📦 發行 / 作者</span>
+                    <span class="info-value">阿斯巴甜 · 桃小葵&amp;阿西</span>
+                </div>
+            </div>
+
+            <!-- 角色介紹卡片 -->
+            <div class="card">
+                <h2 class="card-title">角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-emoji">👓</div>
+                        <div class="character-name">何西西</div>
+                        <div class="character-info">女 · 26歲<br>圓框眼鏡、背帶褲的短髮女生</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">☀️</div>
+                        <div class="character-name">喬齊</div>
+                        <div class="character-info">男 · 26歲<br>簡約帥氣、陽光開朗的男生</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">🌙</div>
+                        <div class="character-name">楊夢詩</div>
+                        <div class="character-info">女 · 26歲<br>身形嬌小、長髮及腰的旗袍女生</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">🤍</div>
+                        <div class="character-name">林宇白</div>
+                        <div class="character-info">男 · 26歲<br>手指乾淨修長、性格內斂的男生</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">🦋</div>
+                        <div class="character-name">余想</div>
+                        <div class="character-info">女 · 26歲<br>手臂彩色紋身、酷酷的女生</div>
+                    </div>
+                    <div class="character-card">
+                        <div class="character-emoji">🎸</div>
+                        <div class="character-name">陳鏡</div>
+                        <div class="character-info">男 · 26歲<br>耳釘眉釘、玩世不恭的男生</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 故事背景卡片 -->
+            <div class="card description">
+                <h2 class="card-title">故事背景</h2>
+                <div class="description-text">
+                    在鶴山西江之中，有一座名為<span class="highlight">海壽島</span>的小島，島上佇立著一座神秘的
+                    <span class="highlight">「春昼失戀博物館」</span>。晶瑩剔透的玻璃館四周爬滿了藤蔓，
+                    它只在每年<span class="highlight">立春之日開放，立夏之日歇業</span>——花期一過，便連同那些故事一起，悄悄關上門。
+                    <br><br>
+                    六個二十六歲的年輕人，帶著各自尚未說出口的心事，在這短短一季的春天裡走進博物館。
+                    每一件展品，都是一段沒能走到最後的感情；每一次相遇，都像是命運在替誰補上一句遲到的告白。
+                    <br><br>
+                    <span class="highlight">「春晝苦短，而你正好。」</span>
+                </div>
+            </div>
+
+            <!-- 劇本介紹卡片 -->
+            <div class="card description">
+                <h2 class="card-title">劇本介紹</h2>
+                <div class="description-text">
+                    《春昼短》是一部由<span class="highlight">阿斯巴甜發行、桃小葵&amp;阿西創作</span>的現代情感沉浸本。
+                    全本 6 人（3男3女），以細膩的文筆與療癒的氛圍著稱，遊戲時長約 4 小時，難度屬<span class="highlight">進階</span>，
+                    重在體驗而非燒腦推理。
+                    <br><br>
+                    劇本以「失戀博物館」為舞台，三組角色各自對應一種<span class="highlight">愛情的形狀</span>——
+                    相愛卻不能在一起、即將告白的熱戀、朋友之上戀人未滿。玩家在沉浸式的場景與音樂中，
+                    一步步揭開彼此的過去，也面對自己心底那句沒說完的話。
+                    <br><br>
+                    適合喜歡<span class="highlight">純粹情感體驗、溫柔治癒系</span>故事的玩家。請帶著一顆柔軟的心走進來，
+                    在立夏到來、博物館閉館之前，好好告別這個春天。
+                </div>
+            </div>
+        </main>
+
+        <!-- CTA按鈕 -->
+        <div class="cta-section">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" class="cta-button" target="_blank">立即預約一場春天</a>
+        </div>
+    </div>
+
+    <script>
+        // --- 飄落花瓣 ---
+        (function () {
+            const container = document.getElementById('petals');
+            const COUNT = 28;
+            for (let i = 0; i < COUNT; i++) {
+                const p = document.createElement('div');
+                p.className = 'petal';
+                const size = 8 + Math.random() * 12;
+                p.style.cssText = [
+                    `left:${Math.random() * 100}%`,
+                    `width:${size}px`,
+                    `height:${size}px`,
+                    `--dur:${(7 + Math.random() * 8).toFixed(1)}s`,
+                    `--delay:${(Math.random() * 10).toFixed(1)}s`,
+                    `--op:${(0.4 + Math.random() * 0.5).toFixed(2)}`,
+                    `--drift:${(Math.random() * 160 - 40).toFixed(0)}px`,
+                ].join(';');
+                container.appendChild(p);
+            }
+        })();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- 星星評分懸停效果 ---
+            document.querySelectorAll('.stars-rating').forEach(rating => {
+                const stars = rating.querySelectorAll('.star-rating:not(.empty)');
+                stars.forEach((star, index) => {
+                    star.addEventListener('mouseenter', () => {
+                        stars.forEach((s, i) => {
+                            s.style.color = i <= index ? '#fff' : '#e58aa5';
+                            s.style.transform = i <= index ? 'scale(1.2)' : 'scale(1)';
+                        });
+                    });
+                });
+                rating.addEventListener('mouseleave', () => {
+                    stars.forEach(s => { s.style.color = '#e58aa5'; s.style.transform = 'scale(1)'; });
+                });
+            });
+
+            // --- 卡片懸停光暈效果 ---
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 192, 203, 0.15), rgba(60, 31, 44, 0.65))`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = 'rgba(60, 31, 44, 0.65)';
+                });
+            });
+        });
+    </script>
+
+    <audio id="bgm" src="春昼短.mp3" autoplay loop muted></audio>
+    <script>
+        document.addEventListener('click', function () {
+            document.getElementById('bgm').muted = false;
+        }, { once: true });
+    </script>
+    <script src="../bgm-control.js"></script>
+</body>
+</html>
