@@ -8,6 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- 引入 Tone.js 用於音效 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <!-- 劇本資料單一來源（與 index.html 共用） -->
+    <script src="scripts.js"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -832,56 +834,12 @@
         document.addEventListener('DOMContentLoaded', async () => {
             
             // --- 資料區 ---
-            const scriptsData = [
-                // 根據 index.html 劇本清單更新
-                { id: '45', title: '45', imgSrc: 'https://i.postimg.cc/yYJhpxpr/gto1-Zyy-LPx-DJj-X-KTw-YLkw-Rfk-HCgw2-Dmff-Uk6-Iuh-DMk92fa-X8g0k5ub-Yf-Wa-N-I9-A.jpg' },
-                { id: '上路', title: '上路', imgSrc: 'https://i.postimg.cc/L5CwvkVd/image.jpg' },
-                { id: '你好', title: '你好', imgSrc: 'https://i.postimg.cc/yYHRnqbT/1756965231384-2b83cb44-9f84-4eda-b1a5-1eeeedac38fb-2.jpg' },
-                { id: '北國之春', title: '北國之春', imgSrc: 'https://i.postimg.cc/yNWMsNFR/01.jpg' },
-                { id: '南京風沙', title: '南京風沙', imgSrc: 'https://i.postimg.cc/FHhLrJhf/page-0001.jpg' },
-                { id: '別來無恙', title: '別來無恙', imgSrc: 'https://i.postimg.cc/ZR8GbTTx/image.jpg' },
-                { id: '奉天1928', title: '奉天1928', imgSrc: 'https://i.postimg.cc/W3Z7nM68/image.jpg' },
-                { id: '孤城', title: '孤城', imgSrc: 'https://i.postimg.cc/cCsdmcGG/b644a7b3-c9a4-4d08-b36d-c69cc70a0b39-S.png' },
-                { id: '左左', title: '左左', imgSrc: 'https://i.postimg.cc/d1ysfhyh/212x300.jpg' },
-                { id: '年輪', title: '年輪', imgSrc: 'https://i.postimg.cc/L8XcWh1Q/109951165590072847.jpg' },
-                { id: '拆遷', title: '拆遷', imgSrc: 'https://i.postimg.cc/KcVXYpTR/image.jpg' },
-                { id: '拆遷2', title: '拆遷2買房', imgSrc: 'https://i.postimg.cc/85kxw6QF/v2-84e72c373c2077e6324e282bd93eba61-1440w.png' },
-                { id: '放棄生活去北極', title: '放棄生活去北極', imgSrc: 'https://i.postimg.cc/zvKbZd9Y/20211010172344555-0134.jpg' },
-                { id: '木夕僧之戲', title: '木夕僧之戲', imgSrc: 'https://i.postimg.cc/5twZZZz7/11dacc07-b497-4e5a-9862-9d7cfd0cc80e-S.png' },
-                { id: '死者在幻夜中醒來', title: '死者在幻夜中醒來', imgSrc: 'https://i.postimg.cc/LsZ4L32C/image-2-730x1024.png' },
-                { id: '沸騰跨世紀', title: '沸騰跨世紀', imgSrc: 'https://i.postimg.cc/fyw0htb3/IMG-7198.jpg' },
-                { id: '王座', title: '王座', imgSrc: 'https://i.postimg.cc/d0cKpGxL/2021-11-13-195627.jpg' },
-                { id: '病嬌3近乎正常的我們', title: '病嬌3：近乎正常的我們', imgSrc: 'https://i.postimg.cc/Gpvg6BBj/image.jpg' },
-                { id: '病嬌男孩的精分日記', title: '病嬌男孩的精分日記', imgSrc: 'https://i.postimg.cc/RZYbc6pZ/1.jpg' },
-                { id: '盒子先生的秘密商店', title: '盒子先生的秘密商店', imgSrc: 'https://i.postimg.cc/hvs5q3Hj/f7cd87b7-8042-4163-b01c-12a159617662-S-Mr-Boxs-Secret-Store.png' },
-                { id: '眠夢不老泉', title: '眠夢不老泉', imgSrc: 'https://i.postimg.cc/DwD8FHhJ/2025-09-03-102020.png' },
-                { id: '神樂湯', title: '神樂湯', imgSrc: 'https://i.postimg.cc/JzGNvW45/arch.jpg' },
-                { id: '純白少年的慢性死亡', title: '純白少年的慢性死亡', imgSrc: 'https://i.postimg.cc/gjX9pHjJ/image.jpg' },
-                { id: '晴天神社', title: '晴天神社', imgSrc: 'https://i.postimg.cc/QMd81msL/image.png' },
-                { id: '搞錢', title: '搞錢', imgSrc: 'https://i.postimg.cc/Bb2bW6Xn/4x5.png' },
-                { id: '群星', title: '群星', imgSrc: 'https://i.postimg.cc/G3DGXBM5/image.jpg' },
-                { id: '陰緣', title: '陰緣', imgSrc: 'https://i.postimg.cc/qqp3BtDL/image.jpg' },
-                { id: '雪鄉連環殺人事件', title: '雪鄉連環殺人事件', imgSrc: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_1000,w_500,f_auto,q_auto/10858423/158745_191005.jpeg' },
-                { id: '常春藤公寓', title: '常春藤公寓', imgSrc: 'https://i.postimg.cc/7hgnYWvJ/image.jpg' },
-                { id: '天才在左我在右', title: '天才在左我在右', imgSrc: 'https://i.postimg.cc/c4gk78LJ/image.png' },
-                { id: '太陽可以是藍色嗎', title: '太陽可以是藍色嗎', imgSrc: 'https://i.postimg.cc/sXBRPWRV/image.jpg' },
-                { id: '漓川怪談簿', title: '漓川怪談簿', imgSrc: 'https://i.postimg.cc/KvyQtdnC/海報.jpg' },
-                { id: '瘋子2', title: '瘋子2：我將在18歲後分裂成很多人', imgSrc: 'https://i.postimg.cc/W3dHNnnx/image.jpg' },
-                { id: '瘋囚於妄念之終', title: '瘋囚於妄念之終', imgSrc: 'https://i.postimg.cc/YqYXV9qH/1742108932-138599662-g-l.jpg' },
-                { id: '誰動了我的奶酪', title: '誰動了我的奶酪', imgSrc: 'https://i.postimg.cc/hjP711CF/image.jpg' },
-                { id: '請將我深埋', title: '請將我深埋', imgSrc: 'https://i.postimg.cc/wv0KPH3k/1-S-5.jpg' },
-                { id: '賣快樂的人', title: '賣快樂的人', imgSrc: 'https://i.postimg.cc/8zDnCPgc/image.jpg' },
-                { id: '酒大奇蹟', title: '酒大奇蹟', imgSrc: 'https://i.postimg.cc/1X7LT5c9/2025-08-28-123509.png' },
-                { id: '重慶迷霧', title: '重慶迷霧', imgSrc: 'https://i.postimg.cc/DyZDgnDN/2025-09-05-154322.png' },
-                { id: '霧鴉館', title: '霧鴉館', imgSrc: 'https://i.postimg.cc/wB5wB5ZX/1-S.jpg' },
-                { id: '風中有朵雨做的雲', title: '風中有朵雨做的雲', imgSrc: 'https://i.postimg.cc/L57VYGP5/IMG-7151.jpg' },
-                { id: '風起時想你', title: '風起時想你', imgSrc: 'https://i.postimg.cc/XqvNPrvx/image.jpg' },
-                { id: '鯨魚馬戲團', title: '鯨魚馬戲團', imgSrc: 'https://i.postimg.cc/ZKPLFj52/369-E2-FA6-448-B-4-C9-A-8-A6-E-8-B077276577-B.jpg' },
-                { id: '吾皇在上', title: '吾皇在上', imgSrc: 'https://i.postimg.cc/W1T17C8Z/feng-mian1-page-0001.jpg' },
-                { id: '臥底模擬訓練', title: '臥底模擬訓練', imgSrc: 'https://i.postimg.cc/k4N07QBP/202404241547-031-orig.jpg' },
-                { id: '漫畫裡的小黑人', title: '漫畫裡的小黑人', imgSrc: 'https://i.postimg.cc/yNpptNdn/202304130041-059.jpg' },
-                { id: '案件重演', title: '案件重演', imgSrc: 'https://i.postimg.cc/gJJH0V1F/image.jpg' }
-            ];
+            // 從單一資料來源 window.SCRIPTS 產生（reviewKey 為榮譽牆/CSV「劇本」鍵）
+            const scriptsData = (window.SCRIPTS || []).map(s => ({
+                id: s.reviewKey || s.name,
+                title: s.name,
+                imgSrc: s.poster || ''
+            }));
             
             const bubbleColors = [
                 { bg: 'rgba(70, 130, 180, 0.85)', border: 'rgba(70, 130, 180, 1)', text: '#ffffff' }, // 鋼藍色
