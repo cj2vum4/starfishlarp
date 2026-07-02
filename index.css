@@ -321,7 +321,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .reset-btn:hover{background:rgba(139,26,26,.3);border-color:var(--crim-l);color:#fff;transform:translateY(-2px)}
 
 /* ===== Scripts grid ===== */
-.scripts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,3vw,22px);margin-top:34px}
+.scripts-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,3vw,22px);margin-top:34px;
+    perspective:1300px;perspective-origin:50% 18%;   /* 3D 進場的觀景深度 */
+}
 .script-card{
     position:relative;display:flex;flex-direction:column;border-radius:var(--r-m);overflow:hidden;
     background:linear-gradient(165deg,var(--surf2),var(--dark));border:1px solid var(--bdr);
@@ -357,6 +360,38 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .detail-btn:hover{color:#1a140d;background:linear-gradient(120deg,var(--gold-l),var(--gold));border-color:transparent;
     box-shadow:0 8px 22px -10px rgba(200,160,86,.7)}
 @keyframes cardIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== 首次進場：凌亂 3D 飛舞 → 整齊歸位 =====
+   由 JS 對每張卡片隨機化 --fx/--fy/--fz/--frx/--fry/--frz/--fdur/--fdelay，
+   卡片從四面八方（含景深 Z 軸）翻滾飛入，最後集結成網格。 */
+.script-card.fly-in{
+    animation:cardAssemble var(--fdur,1.8s) cubic-bezier(.16,.84,.28,1) var(--fdelay,0s) both;
+    will-change:transform,opacity,filter;
+}
+@keyframes cardAssemble{
+    0%{
+        opacity:0;
+        filter:blur(var(--fblur,9px)) brightness(1.7);
+        transform:translate3d(var(--fx,0px),var(--fy,0px),var(--fz,-560px))
+                  rotateX(var(--frx,24deg)) rotateY(var(--fry,-32deg)) rotate(var(--frz,12deg)) scale(.68);
+    }
+    55%{
+        opacity:1;
+        filter:blur(calc(var(--fblur,9px)*.18)) brightness(1.18);
+    }
+    82%{
+        filter:blur(0) brightness(1.06);
+        transform:translate3d(0,0,28px) rotateX(0deg) rotateY(0deg) rotate(0deg) scale(1.02);
+    }
+    100%{
+        opacity:1;
+        filter:blur(0) brightness(1);
+        transform:translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotate(0deg) scale(1);
+    }
+}
+@media (prefers-reduced-motion:reduce){
+    .script-card.fly-in{animation-duration:.01s;animation-delay:0s}
+}
 
 /* ===== No results ===== */
 .no-results{text-align:center;padding:70px 20px;color:var(--text-d)}

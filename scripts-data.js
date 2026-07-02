@@ -181,12 +181,30 @@ const scripts = (window.SCRIPTS || []);
     }
 
     // 將可見的卡片動畫錯開時間壓縮在 2 秒內完成顯示
+    // 首次進場改用 3D 凌亂飛舞 → 集結；之後（篩選/排序）沿用 2 秒錯開淡入
+    // idle → scheduled（等卡片牆進入視野）→ done（之後走重播路徑）
+    let entranceState = 'idle';
+
     function applyStaggerAnimationWithinTwoSeconds() {
         const container = document.getElementById('scriptsGrid');
         if (!container) return;
         const cards = Array.from(container.querySelectorAll('.script-card'));
         const visibleCards = cards.filter(card => !card.classList.contains('hidden'));
         if (visibleCards.length === 0) return;
+
+        if (entranceState === 'idle') {
+            entranceState = 'scheduled';
+            startEntranceWhenGridVisible(container);
+            return;
+        }
+        if (entranceState === 'scheduled') return; // 進場尚未播放，忽略重複的初始化呼叫
+
+        // 重播 cardIn：先清掉首次進場留下的 inline animation:none 再重新觸發
+        visibleCards.forEach(card => {
+            card.style.animation = '';
+            card.style.opacity = '';
+        });
+        void container.offsetWidth; // 強制 reflow 讓動畫可重播
 
         const durationSec = parseCssTimeToSeconds(getComputedStyle(visibleCards[0]).animationDuration);
         const maxTotalSec = 2; // 最晚在 2 秒內完成（含動畫本身的時間）
@@ -196,6 +214,58 @@ const scripts = (window.SCRIPTS || []);
         visibleCards.forEach((card, index) => {
             card.style.animationDelay = (index * stepSec).toFixed(3) + 's';
             card.style.animationPlayState = 'running';
+        });
+    }
+
+    // 等卡片牆進入視野才開始集結（使用者多半先看到 hero，太早播就錯過了）
+    function startEntranceWhenGridVisible(container) {
+        const play = () => {
+            entranceState = 'done';
+            // 播放當下重新查詢可見卡片（進場前若先被篩選過，名單會變）
+            const fresh = Array.from(container.querySelectorAll('.script-card'))
+                .filter(c => !c.classList.contains('hidden'));
+            applyEntranceScatter3D(fresh);
+        };
+        if (!('IntersectionObserver' in window)) { play(); return; }
+        const io = new IntersectionObserver((entries) => {
+            if (entries.some(e => e.isIntersecting)) {
+                io.disconnect();
+                play();
+            }
+        }, { threshold: 0, rootMargin: '0px 0px -12% 0px' }); // 網格頂端進入視窗下緣 12% 即觸發
+        io.observe(container);
+    }
+
+    // 凌亂 3D 飛舞 → 整齊排列
+    function applyEntranceScatter3D(cards) {
+        const mobile = window.matchMedia('(max-width: 768px)').matches;
+        // 手機降載：距離短、不用 blur（filter 動畫在低階機很吃效能）
+        const X = mobile ? 34 : 46;   // ±vw
+        const Y = mobile ? 26 : 34;   // ±vh
+        const Zmin = mobile ? -380 : -680, Zspan = mobile ? 560 : 1040;
+        const R = mobile ? 26 : 42;   // ±deg（X/Y 軸翻轉）
+
+        cards.forEach(card => {
+            const set = (k, v) => card.style.setProperty(k, v);
+            set('--fx', (Math.random() * X * 2 - X).toFixed(1) + 'vw');
+            set('--fy', (Math.random() * Y * 2 - Y).toFixed(1) + 'vh');
+            set('--fz', (Zmin + Math.random() * Zspan).toFixed(0) + 'px');
+            set('--frx', (Math.random() * R * 2 - R).toFixed(1) + 'deg');
+            set('--fry', (Math.random() * R * 2 - R).toFixed(1) + 'deg');
+            set('--frz', (Math.random() * 36 - 18).toFixed(1) + 'deg');
+            set('--fdur', (1.35 + Math.random() * 1.0).toFixed(2) + 's');
+            set('--fdelay', (Math.random() * 0.75).toFixed(2) + 's');
+            set('--fblur', mobile ? '0px' : '9px');
+
+            card.classList.add('fly-in');
+            card.addEventListener('animationend', function onEnd(e) {
+                if (e.animationName !== 'cardAssemble') return;
+                card.removeEventListener('animationend', onEnd);
+                card.classList.remove('fly-in');
+                // 蓋掉底層 cardIn(paused)，避免卡片又隱形；之後篩選重播時會清回來
+                card.style.animation = 'none';
+                card.style.opacity = '1';
+            });
         });
     }
 
