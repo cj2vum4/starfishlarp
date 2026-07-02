@@ -9,13 +9,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="index.css?v=20260702a">
+    <!-- 保底：就算外部 CSS 被快取成舊版，開場層也絕不裸露 -->
+    <style>#intro{display:none}</style>
     <script>
-    /* 開場動畫開關：每個 session 播一次；尊重減少動態偏好 */
+    /* 開場動畫開關：
+       - 重新整理（reload）與本 session 首次進站 → 播放
+       - 從劇本頁等返回（navigate/back_forward）→ 不重播，避免煩人
+       - 尊重減少動態偏好 */
     (function () {
         try {
-            var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (!reduce && !sessionStorage.getItem('sfIntroPlayed')) {
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+            var isReload = navEntry ? navEntry.type === 'reload'
+                : (performance.navigation && performance.navigation.type === 1);
+            var firstVisit = !sessionStorage.getItem('sfIntroPlayed');
+            if (isReload || firstVisit) {
                 document.documentElement.classList.add('intro-on');
                 sessionStorage.setItem('sfIntroPlayed', '1');
             }
@@ -285,9 +294,9 @@
         <div class="footer-bottom">© 2026 海星劇本殺 STARFISH MYSTERY · 用心編織每一場故事</div>
     </footer>
 
-    <script src="scripts.js"></script>
-    <script src="scripts-data.js"></script>
+    <script src="scripts.js?v=20260702a"></script>
+    <script src="scripts-data.js?v=20260702a"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    <script src="hero.js"></script>
+    <script src="hero.js?v=20260702a"></script>
 </body>
 </html>
