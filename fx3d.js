@@ -336,8 +336,8 @@
                     scene.add(lines);
                     return { posArr: posArr, drops: drops, n: n, len: len, geo: geo, vs: vs };
                 }
-                var far  = rainLayer(Math.round(160 * DENS * countMul), -90, -40, 1.6, .28, 55 * speedMul);
-                var near = rainLayer(Math.round(70  * DENS * countMul), -35, 15,  3,   .4,  95 * speedMul);
+                var far  = rainLayer(Math.round(160 * DENS * countMul), -90, -40, 1.6, .34, 55 * speedMul);
+                var near = rainLayer(Math.round(70  * DENS * countMul), -35, 15,  3,   .5,  95 * speedMul);
                 function step(L, dt) {
                     var half = L.vs.h * .7;
                     for (var i = 0; i < L.n; i++) {
@@ -510,7 +510,7 @@
                 }
 
                 // 打閃時間軸：亮-滅-亮-衰減（雙擊感），雲閃跟隨
-                var nextBolt = 2 + Math.random() * 3;
+                var nextBolt = 1.2 + Math.random() * 1.6;
                 var phase = -1, pt = 0;
                 var PH = [[.09, 1], [.05, 0], [.13, .85], [.32, 0]]; // [時長, 目標亮度]
 
@@ -567,13 +567,58 @@
         /* ── 舊 2D 層：3D 第一幀成功後才隱藏 ───────────────────── */
         var legacyHidden = false;
         function hideLegacy() {
-            if (legacyHidden || !HIDE.length) { legacyHidden = true; return; }
+            if (legacyHidden) return;
             legacyHidden = true;
-            HIDE.forEach(function (sel) {
-                try {
-                    document.querySelectorAll(sel).forEach(function (el) { el.style.display = 'none'; });
-                } catch (e) {}
-            });
+            // 以 CSS 規則隱藏（連之後動態生成的同 class 元素一併蓋掉）
+            if (HIDE.length) {
+                var css = HIDE.map(function (s) { return s + '{display:none!important}'; }).join('');
+                var styleEl = document.createElement('style');
+                styleEl.textContent = css;
+                document.head.appendChild(styleEl);
+            }
+            startEmojiSweeper();
+        }
+
+        /* ── emoji 特效清掃器 ─────────────────────────────────────
+           背景層（.container 之外）的「純 emoji 葉節點」= 舊的 2D emoji
+           特效（⚡👑❄🕯💖…），一律隱藏；.container 內的 UI emoji
+           （角色卡頭像、資訊列圖示）不動。MutationObserver 連動態
+           產生器丟出來的也擋。 */
+        function isEmojiOnly(s) {
+            s = (s || '').trim();
+            if (!s || s.length > 8) return false;
+            for (var i = 0; i < s.length; i++) {
+                var c = s.charCodeAt(i);
+                if (c === 0x20 || c === 0xFE0F || c === 0x200D) continue; // 空白/變體/ZWJ
+                if (c < 0x2190) return false;   // 一般文字/標點 → 不是特效
+            }
+            return true;
+        }
+        function shouldSweep(el) {
+            if (!el || el.nodeType !== 1) return false;
+            var tag = el.tagName;
+            if (tag !== 'DIV' && tag !== 'SPAN' && tag !== 'I' && tag !== 'P') return false;
+            if (el.children.length) return false;
+            if (!isEmojiOnly(el.textContent)) return false;
+            if (el.closest('.container, nav, header, form, button, a, .back-to-overview, .rv-overlay, .rv-fab')) return false;
+            return true;
+        }
+        function sweep(el) { el.style.setProperty('display', 'none', 'important'); }
+        function startEmojiSweeper() {
+            try {
+                document.body.querySelectorAll('div,span,i,p').forEach(function (el) {
+                    if (shouldSweep(el)) sweep(el);
+                });
+                if ('MutationObserver' in window) {
+                    new MutationObserver(function (muts) {
+                        muts.forEach(function (m) {
+                            m.addedNodes && m.addedNodes.forEach(function (n) {
+                                if (shouldSweep(n)) sweep(n);
+                            });
+                        });
+                    }).observe(document.body, { childList: true, subtree: true });
+                }
+            } catch (e) {}
         }
 
         /* ── 主迴圈 ─────────────────────────────────────────── */
