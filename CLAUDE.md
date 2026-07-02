@@ -45,7 +45,11 @@
 
 ### 必備內容
 
-1. **專屬背景動畫** — 貼合主題（花瓣/燈塵/星空/漣漪/霓虹…），每頁不同
+1. **專屬背景動畫** — 貼合主題（花瓣/燈塵/星空/漣漪/霓虹…），每頁不同。
+   建議直接掛共用 3D 引擎：`<script src="../fx3d.js" data-fx="預設" data-tint="#主色">`
+   （預設：storm/snow/petals/embers/fog/fireflies/stars/dust/rain/sand/bubbles；
+   王座式雷暴加 `data-thunder="1"`；`data-hide` 可在 3D 啟動後隱藏舊 2D 層，
+   WebGL 不支援時自動 fallback 回原 2D 效果）
 2. **返回按鈕** — `<a href="../index.html" class="back-btn">← 返回劇本總覽</a>`
 3. **海報區** — `.poster-image`（或多張輪播），海報待上傳時用 `.poster-placeholder`
 4. **主要內容 2 欄 grid**：
