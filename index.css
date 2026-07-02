@@ -436,3 +436,76 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
     .floating-orb{display:none}
 }
+
+/* ===== 開場動畫（.intro-on 時播放，純 CSS 自動結束）=====
+   時間軸：0-1.1s 品牌集結 → 1.7s 面紗左右拉開 → 2.45s 整層隱藏
+   hero 文字延後至面紗開啟後進場 */
+#intro{display:none}
+.intro-on #intro{
+    display:flex;align-items:center;justify-content:center;
+    position:fixed;inset:0;z-index:9999;overflow:hidden;
+    animation:introGone .1s linear 2.45s forwards;
+}
+.intro-veil{
+    position:absolute;top:0;bottom:0;width:51%;
+    background:
+        radial-gradient(120% 90% at var(--vx,100%) 50%,rgba(200,160,86,.07),transparent 60%),
+        linear-gradient(160deg,#0b0805,#080603 55%,#0a0704);
+    animation:veilPart 1.1s var(--ease) 1.7s forwards;
+}
+.intro-veil-l{left:0;--vx:100%;transform-origin:left center}
+.intro-veil-r{right:0;--vx:0%;--dir:1;transform-origin:right center}
+@keyframes veilPart{
+    to{transform:translateX(calc((1 - 2*var(--dir,0)) * -102%));}
+}
+.intro-inner{
+    position:relative;z-index:2;text-align:center;padding:0 22px;
+    animation:introInnerOut .75s var(--ease) 1.62s forwards;
+}
+@keyframes introInnerOut{to{opacity:0;transform:scale(1.12);filter:blur(6px)}}
+.intro-mark{
+    font-size:1.6rem;color:var(--gold-l);margin-bottom:14px;
+    text-shadow:0 0 18px rgba(236,208,138,.9);
+    opacity:0;animation:markIn 1s var(--ease) .05s forwards;
+}
+@keyframes markIn{
+    0%{opacity:0;transform:rotate(-160deg) scale(.3)}
+    100%{opacity:1;transform:rotate(0) scale(1)}
+}
+.intro-eyebrow{
+    font-size:.66rem;letter-spacing:.5em;color:var(--text-d);text-indent:.5em;
+    opacity:0;animation:introFade .8s ease .35s forwards;
+}
+.intro-title{
+    font-family:var(--font);font-weight:900;
+    font-size:clamp(2rem,9vw,3.6rem);
+    margin:10px 0 4px;
+    background:linear-gradient(120deg,#fff 5%,var(--gold-l) 45%,var(--gold) 80%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:.9em;text-indent:.9em;filter:blur(10px);opacity:0;
+    animation:titleAssemble 1.15s var(--ease) .2s forwards;
+}
+@keyframes titleAssemble{
+    0%{opacity:0;letter-spacing:.9em;text-indent:.9em;filter:blur(10px)}
+    60%{opacity:1}
+    100%{opacity:1;letter-spacing:.18em;text-indent:.18em;filter:blur(0)}
+}
+.intro-line{
+    height:1px;width:0;margin:14px auto 12px;
+    background:linear-gradient(90deg,transparent,var(--gold-l),transparent);
+    box-shadow:0 0 12px rgba(236,208,138,.7);
+    animation:lineGrow .8s var(--ease) .6s forwards;
+}
+@keyframes lineGrow{to{width:min(240px,70vw)}}
+.intro-sub{
+    font-size:.82rem;letter-spacing:.3em;text-indent:.3em;color:var(--text-d);
+    opacity:0;animation:introFade .8s ease .8s forwards;
+}
+@keyframes introFade{to{opacity:1}}
+@keyframes introGone{to{opacity:0;visibility:hidden;pointer-events:none}}
+
+/* 面紗開啟後 hero 文字才進場 */
+.intro-on .hero-eyebrow{animation-delay:2.05s}
+.intro-on .hero-title{animation-delay:2.2s}
+.intro-on .hero-sub{animation-delay:2.4s}
+.intro-on .hero-cta{animation-delay:2.6s}

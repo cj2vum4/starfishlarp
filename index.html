@@ -10,8 +10,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
+    <script>
+    /* 開場動畫開關：每個 session 播一次；尊重減少動態偏好 */
+    (function () {
+        try {
+            var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!reduce && !sessionStorage.getItem('sfIntroPlayed')) {
+                document.documentElement.classList.add('intro-on');
+                sessionStorage.setItem('sfIntroPlayed', '1');
+            }
+        } catch (e) { /* ignore */ }
+    })();
+    </script>
 </head>
 <body>
+
+    <!-- 開場動畫（僅 .intro-on 時顯示，純 CSS 自動結束） -->
+    <div id="intro" aria-hidden="true">
+        <div class="intro-veil intro-veil-l"></div>
+        <div class="intro-veil intro-veil-r"></div>
+        <div class="intro-inner">
+            <div class="intro-mark">✦</div>
+            <div class="intro-eyebrow">STARFISH · MURDER MYSTERY</div>
+            <div class="intro-title">海星劇本殺</div>
+            <div class="intro-line"></div>
+            <div class="intro-sub">沉浸其中 · 探索謎局</div>
+        </div>
+    </div>
 
     <!-- ambient orbs -->
     <div class="background-animation">
