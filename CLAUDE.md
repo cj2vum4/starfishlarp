@@ -1,91 +1,73 @@
 # 海星劇本殺 - 新增劇本標準流程
 
-## 一、在 index.html 新增卡片
+> 架構重點：
+> 1. **劇本資料只有一份來源 `scripts.js`**（`window.SCRIPTS` 陣列）。
+>    `index.html`（卡片）與 `榮譽牆.html`（評價）都讀它，卡片由
+>    `scripts-data.js` 的 `renderCards()` 自動產生，**不要再手寫卡片 HTML**。
+> 2. **每個劇本介紹頁都是獨立設計、擁有自己的 CSS 與特色**，
+>    刻意「不共用樣式表」——每頁的配色、背景動畫、版面氛圍都要貼合該劇本主題，
+>    做出辨識度。**不要**把各頁 CSS 抽成共用檔。
 
-### 1. HTML 卡片（放在 `scripts-grid` 區塊內）
+## 一、在 `scripts.js` 新增一筆資料（唯一的資料來源）
 
-```html
-<div class="script-card" data-theme="THEME" data-players="N" data-types="標籤1,標籤2" data-difficulty="D">
-    <img src="https://i.postimg.cc/..." alt="劇本名稱" class="script-image">
-    <h3 class="script-title">劇本名稱</h3>
-    <div class="script-info">
-        <span class="info-badge">👥 X男Y女</span>
-        <span class="info-badge">⏰ N小時</span>
-        <span class="info-badge">⭐ D星</span>
-    </div>
-    <div class="script-types">
-        <span class="type-tag">標籤1</span>
-        <span class="type-tag">標籤2</span>
-    </div>
-    <button class="detail-btn" onclick="goToScript('id')">查看詳細介紹</button>
-</div>
-```
-
-**規則：**
-- `data-theme`：`horror` / `mystery` / `love` / `history` / `ancient` / `desert` / `mytho` / `modern`
-- `data-difficulty` 與 ⭐ 星數必須一致（0–5）
-- `<img>` 一律使用 `class="script-image"`，**不加 inline style**
-- 海報圖片上傳到 postimg.cc 後再填 src；若尚未取得，先留 `src=""`
-
-### 2. JS 資料（放在 `scripts` 陣列內）
+在 `window.SCRIPTS` 陣列尾端加入：
 
 ```js
 {
-    id: 'shortid',
-    name: '劇本名稱',
-    players: N,
-    types: ['標籤1', '標籤2'],
-    difficulty: D,
-    theme: 'THEME',
-    time: 4.5,
-    file: 'N人/劇本名稱.html'
-},
+    "id": "shortid",
+    "name": "劇本名稱",
+    "file": "N人/劇本名稱.html",
+    "players": N,
+    "playersLabel": "X男Y女",       // 卡片👥顯示，可寫「7人不限」「可反串」等
+    "time": 4.5,                     // 數字，排序用
+    "timeLabel": "4-5小時",          // ⏰顯示，可寫範圍
+    "difficulty": D,                 // 0–5，須與⭐一致
+    "types": ["標籤1", "標籤2"],
+    "theme": "THEME",
+    "poster": "https://i.postimg.cc/...",  // 海報直連，未取得先留 ""
+    "reviewKey": "劇本名稱"          // 榮譽牆/問卷 CSV「劇本」欄對應鍵；通常＝name
+}
 ```
 
-### 3. 新劇本上架 banner（若要放在 new-scripts-grid）
-
-```html
-<a class="new-script-card" onclick="goToScript('shortid')">
-    <img class="new-script-poster" src="https://i.postimg.cc/..." alt="劇本名稱">
-    <div class="new-script-info">
-        <div class="new-script-name">EMOJI 劇本名稱</div>
-        <div class="new-script-tags">
-            <span class="new-script-tag">標籤1</span>
-            <span class="new-script-tag">標籤2</span>
-            <span class="new-script-tag">X男Y女</span>
-            <span class="new-script-tag">N小時</span>
-        </div>
-    </div>
-</a>
-```
+**規則：**
+- `theme`：`horror` / `mystery` / `love` / `history` / `ancient` / `desert` / `mytho` / `modern` / `happy` / `shrine` / `space`
+- `difficulty` 與 ⭐ 星數必須一致（0–5）
+- `reviewKey`：若劇本在評價表單裡用的名字與 `name` 不同（例如別名、去掉前綴），填表單實際用的字串；否則＝`name`
+- 卡片、榮譽牆清單、badges 全部自動產生，**不需手動改 index.html 或 榮譽牆.html**
 
 ---
 
-## 二、建立劇本 HTML 頁面（N人/劇本名稱.html）
+## 二、建立劇本 HTML 頁面（N人/劇本名稱.html）— 每頁獨立設計
 
-### 必備內容（參考 `6人/眠夢不老泉.html`）
+**核心原則：這一頁就是這個劇本的專屬視覺，CSS 全部寫在該頁 `<style>` 內、自成一格。**
+可參考同類型的既有頁（如驚悚→`瘋兔子白又白…`、情感→`春昼短`、民國→`津門遺雲`），
+但每頁請依主題做出自己的配色與招牌背景動畫，不要複製成一模一樣。
 
-1. **背景動畫** — 粒子/漣漪/浮動元素（主題色配合劇本風格）
+### 必備內容
+
+1. **專屬背景動畫** — 貼合主題（花瓣/燈塵/星空/漣漪/霓虹…），每頁不同
 2. **返回按鈕** — `<a href="../index.html" class="back-btn">← 返回劇本總覽</a>`
-3. **海報區** — `poster-slider` + `poster-image`（auto-rotate 若多張），海報待上傳時用 placeholder div
+3. **海報區** — `.poster-image`（或多張輪播），海報待上傳時用 `.poster-placeholder`
 4. **主要內容 2 欄 grid**：
-   - **遊戲資訊卡**：劇本名稱、遊戲時間、遊戲人數、推理程度（★星數）、劇本標籤
-   - **角色陣容卡**：每個角色需含 avatar 圖（或 emoji 佔位）、姓名、年齡、性別、一句描述
-   - **故事背景卡**（`grid-column: span 2`）
-   - **劇本特色卡**（`grid-column: span 2`）
-5. **CTA 按鈕** — `立即預約遊戲`
+   - **遊戲資訊卡**：劇本名稱、遊戲時間、遊戲人數、推理程度（★星數）、劇本標籤、發行/作者
+   - **角色介紹卡**：每個角色含 emoji（或頭像）、姓名/身份、性別年齡、一句描述
+   - **故事背景卡**（`.card.description`，跨 2 欄）
+   - **劇本介紹卡**（`.card.description`，跨 2 欄）
+5. **CTA 按鈕** — `立即預約…`
 6. **BGM** — `<audio id="bgm" src="劇本名稱.mp3" autoplay loop muted>`
-7. **JS 互動** — 海報輪播、星星 hover、卡片光效、視差滾動、CTA 波紋
-8. **`<script src="../bgm-control.js"></script>`** — 放在 `</body>` 前
+7. **JS 互動** — 背景動畫產生、星星 hover、卡片光效等（可各頁自訂）
+8. 結尾依序放：`<script src="../bgm-control.js">`、
+   `<script src="../reviews.js">`（玩家評價按鈕，劇本名以檔名自動對應；
+   若檔名與評價表單名不同，加 `data-script="評價用名稱"`）
 
-### 主題色對應
+### 主題色參考
 
 | 類型 | 主色 | 範例劇本 |
 |------|------|----------|
 | 驚悚/怪談 | 深紅 `#cc2222` | 瘋兔子白又白 |
 | 現代推理 | 深藍/紫 | 眠夢不老泉（綠色）|
-| 情感/純愛 | 暖粉/橙 | — |
-| 古風/宮廷 | 金/暗紅 | 龍宴 |
+| 情感/純愛 | 暖粉/橙 | 春昼短 |
+| 民國/古風 | 金/暗紅 | 津門遺雲、極目2 |
 | 架空神話 | 深藍/金 | 王座 |
 
 ---
