@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>春昼短 - 劇本殺</title>
+    <title>春晝短 - 劇本殺</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -247,40 +247,65 @@
         /* --- 角色介紹 --- */
         .characters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-top: 15px;
         }
         .character-card {
             background: rgba(255, 192, 203, 0.08);
             border-radius: 15px;
-            padding: 20px 15px;
+            padding: 0;
             text-align: center;
             border: 1px solid rgba(255, 192, 203, 0.2);
             transition: all 0.3s ease;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            min-height: 180px;
+            cursor: pointer;
         }
         .character-card:hover {
             background: rgba(255, 192, 203, 0.18);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-6px);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 176, 200, 0.25);
+            border-color: rgba(255, 192, 203, 0.5);
         }
-        .character-emoji { font-size: 2.2rem; margin-bottom: 10px; }
+        .character-poster {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .character-card:hover .character-poster {
+            transform: scale(1.04);
+        }
+        .character-card-body {
+            padding: 12px 10px 14px;
+        }
         .character-name {
-            font-weight: 600;
+            font-weight: 700;
             color: #f5ecef;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
         }
         .character-info {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #ffc0cb;
             opacity: 0.85;
             line-height: 1.4;
+        }
+
+        /* --- 故事背景配圖 --- */
+        .description-media {
+            width: 100%;
+            max-height: 320px;
+            object-fit: cover;
+            border-radius: 14px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255, 192, 203, 0.25);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
         }
         .gender-icons { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
         .gender-icon { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; font-weight: 600; }
@@ -343,13 +368,13 @@
     <div class="container">
         <!-- 頁首標題 -->
         <header class="header">
-            <h1 class="title">春昼短</h1>
+            <h1 class="title">春晝短</h1>
             <p class="subtitle">"立春開館，立夏歇業——在失戀博物館裡，重逢那段來不及說完的春天。"</p>
         </header>
 
         <!-- 海報 -->
         <section class="poster-section">
-            <img src="https://i.postimg.cc/gjX9pHjJ/image.jpg" alt="春昼短 劇本殺封面" class="poster-image">
+            <img src="https://i.postimg.cc/XqQBwLYR/ju-ben-hai-bao1.jpg" alt="春晝短 劇本殺封面" class="poster-image">
         </section>
 
         <main class="main-content">
@@ -358,7 +383,7 @@
                 <h2 class="card-title">遊戲資訊</h2>
                 <div class="info-item">
                     <span class="info-label">🌸 劇本名稱</span>
-                    <span class="info-value">春昼短</span>
+                    <span class="info-value">春晝短</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">⏰ 遊戲時間</span>
@@ -401,34 +426,46 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <div class="character-emoji">👓</div>
-                        <div class="character-name">何西西</div>
-                        <div class="character-info">女 · 26歲<br>圓框眼鏡、背帶褲的短髮女生</div>
+                        <img class="character-poster" src="https://i.postimg.cc/PxnDhNcr/he-xi-xi.jpg" alt="何西西">
+                        <div class="character-card-body">
+                            <div class="character-name">何西西</div>
+                            <div class="character-info">女 · 26歲<br>圓框眼鏡、背帶褲的短髮女生</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-emoji">☀️</div>
-                        <div class="character-name">喬齊</div>
-                        <div class="character-info">男 · 26歲<br>簡約帥氣、陽光開朗的男生</div>
+                        <img class="character-poster" src="https://i.postimg.cc/0j8JMFPZ/qiao-qi.jpg" alt="喬齊">
+                        <div class="character-card-body">
+                            <div class="character-name">喬齊</div>
+                            <div class="character-info">男 · 26歲<br>簡約帥氣、陽光開朗的男生</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-emoji">🌙</div>
-                        <div class="character-name">楊夢詩</div>
-                        <div class="character-info">女 · 26歲<br>身形嬌小、長髮及腰的旗袍女生</div>
+                        <img class="character-poster" src="https://i.postimg.cc/KzhTF4VZ/yang-meng-shi.jpg" alt="楊夢詩">
+                        <div class="character-card-body">
+                            <div class="character-name">楊夢詩</div>
+                            <div class="character-info">女 · 26歲<br>身形嬌小、長髮及腰的旗袍女生</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-emoji">🤍</div>
-                        <div class="character-name">林宇白</div>
-                        <div class="character-info">男 · 26歲<br>手指乾淨修長、性格內斂的男生</div>
+                        <img class="character-poster" src="https://i.postimg.cc/B6fFstyZ/lin-yu-bai.jpg" alt="林宇白">
+                        <div class="character-card-body">
+                            <div class="character-name">林宇白</div>
+                            <div class="character-info">男 · 26歲<br>手指乾淨修長、性格內斂的男生</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-emoji">🦋</div>
-                        <div class="character-name">余想</div>
-                        <div class="character-info">女 · 26歲<br>手臂彩色紋身、酷酷的女生</div>
+                        <img class="character-poster" src="https://i.postimg.cc/hjRmghwt/yu-xiang.jpg" alt="余想">
+                        <div class="character-card-body">
+                            <div class="character-name">余想</div>
+                            <div class="character-info">女 · 26歲<br>手臂彩色紋身、酷酷的女生</div>
+                        </div>
                     </div>
                     <div class="character-card">
-                        <div class="character-emoji">🎸</div>
-                        <div class="character-name">陳鏡</div>
-                        <div class="character-info">男 · 26歲<br>耳釘眉釘、玩世不恭的男生</div>
+                        <img class="character-poster" src="https://i.postimg.cc/tTG6y7fn/chen-jing.jpg" alt="陳鏡">
+                        <div class="character-card-body">
+                            <div class="character-name">陳鏡</div>
+                            <div class="character-info">男 · 26歲<br>耳釘眉釘、玩世不恭的男生</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -436,9 +473,10 @@
             <!-- 故事背景卡片 -->
             <div class="card description">
                 <h2 class="card-title">故事背景</h2>
+                <img class="description-media" src="https://i.postimg.cc/RhXJcd0z/gu-shi-bei-jing.jpg" alt="春晝短 故事背景">
                 <div class="description-text">
                     在鶴山西江之中，有一座名為<span class="highlight">海壽島</span>的小島，島上佇立著一座神秘的
-                    <span class="highlight">「春昼失戀博物館」</span>。晶瑩剔透的玻璃館四周爬滿了藤蔓，
+                    <span class="highlight">「春晝失戀博物館」</span>。晶瑩剔透的玻璃館四周爬滿了藤蔓，
                     它只在每年<span class="highlight">立春之日開放，立夏之日歇業</span>——花期一過，便連同那些故事一起，悄悄關上門。
                     <br><br>
                     六個二十六歲的年輕人，帶著各自尚未說出口的心事，在這短短一季的春天裡走進博物館。
@@ -452,7 +490,7 @@
             <div class="card description">
                 <h2 class="card-title">劇本介紹</h2>
                 <div class="description-text">
-                    《春昼短》是一部由<span class="highlight">阿斯巴甜發行、桃小葵&amp;阿西創作</span>的現代情感沉浸本。
+                    《春晝短》是一部由<span class="highlight">阿斯巴甜發行、桃小葵&amp;阿西創作</span>的現代情感沉浸本。
                     全本 6 人（3男3女），以細膩的文筆與療癒的氛圍著稱，遊戲時長約 4 小時，難度屬<span class="highlight">進階</span>，
                     重在體驗而非燒腦推理。
                     <br><br>
@@ -526,7 +564,7 @@
         });
     </script>
 
-    <audio id="bgm" src="春昼短.mp3" autoplay loop muted></audio>
+    <audio id="bgm" src="春晝短.mp3" autoplay loop muted></audio>
     <script>
         document.addEventListener('click', function () {
             document.getElementById('bgm').muted = false;
