@@ -30,7 +30,7 @@
     try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
 
     var MOBILE = /Mobi|Android/i.test(navigator.userAgent) || Math.min(screen.width, screen.height) < 480;
-    if (MOBILE) DENS *= 0.55;
+    if (MOBILE) DENS *= 0.75;
 
     /* ── Three.js 載入（頁面沒有才抓 CDN）────────────────────── */
     function loadThree(cb) {
@@ -188,7 +188,7 @@
             /* 雪：雙層景深、近大遠小、微風飄移 */
             snow: function () {
                 var far  = makePoints(Math.round(260 * DENS), { zMin: -110, zMax: -40, spMin: .5, spMax: 1, sway: .02, tex: glowTex(true), color: tint, size: 1.6, opacity: .7 });
-                var near = makePoints(Math.round(90  * DENS), { zMin: -35,  zMax: 20,  spMin: 1, spMax: 1.8, sway: .05, tex: glowTex(true), color: tint, size: 3.2, opacity: .9 });
+                var near = makePoints(Math.round(110 * DENS), { zMin: -35,  zMax: 20,  spMin: 1, spMax: 1.8, sway: .05, tex: glowTex(true), color: tint, size: 4.2, opacity: .95 });
                 return { update: function (dt, t) { wrapY(far, -3.2 * dt, t); wrapY(near, -7 * dt, t, Math.sin(t * .3) * .015); } };
             },
 
@@ -197,13 +197,13 @@
                 var tex = petalTex();
                 var group = new THREE.Group(); scene.add(group);
                 var list = [];
-                var n = Math.round(46 * DENS);
+                var n = Math.round(58 * DENS);
                 var vs = viewSize(-30);
                 for (var i = 0; i < n; i++) {
-                    var s = 0.9 + Math.random() * 1.6;
+                    var s = 1.1 + Math.random() * 1.8;
                     var m = new THREE.Mesh(
                         new THREE.PlaneGeometry(s, s),
-                        new THREE.MeshBasicMaterial({ map: tex, color: tint, transparent: true, opacity: .5 + Math.random() * .4, depthWrite: false, side: THREE.DoubleSide })
+                        new THREE.MeshBasicMaterial({ map: tex, color: tint, transparent: true, opacity: .62 + Math.random() * .33, depthWrite: false, side: THREE.DoubleSide })
                     );
                     m.position.set((Math.random() - .5) * vs.w * 1.2, (Math.random() - .5) * vs.h * 1.2, -70 + Math.random() * 90);
                     group.add(m);
@@ -223,10 +223,10 @@
             /* 燈燼/火星：加色發光、上升、忽明忽暗 */
             embers: function () {
                 var far  = makePoints(Math.round(150 * DENS), { zMin: -90, zMax: -30, spMin: .5, spMax: 1, sway: .04, tex: glowTex(false), color: tint, size: 1.4, opacity: .55, blending: THREE.AdditiveBlending });
-                var near = makePoints(Math.round(60  * DENS), { zMin: -25, zMax: 25,  spMin: .8, spMax: 1.6, sway: .08, tex: glowTex(false), color: tint, size: 3, opacity: .8, blending: THREE.AdditiveBlending });
+                var near = makePoints(Math.round(60  * DENS), { zMin: -25, zMax: 25,  spMin: .8, spMax: 1.6, sway: .08, tex: glowTex(false), color: tint, size: 3.8, opacity: .85, blending: THREE.AdditiveBlending });
                 return { update: function (dt, t) {
                     wrapY(far, 2.2 * dt, t); wrapY(near, 4.5 * dt, t);
-                    near.pts.material.opacity = .62 + Math.sin(t * 2.1) * .18;
+                    near.pts.material.opacity = .72 + Math.sin(t * 2.1) * .18;
                     far.pts.material.opacity  = .45 + Math.sin(t * 1.4 + 2) * .12;
                 } };
             },
@@ -241,7 +241,7 @@
                     var vs = viewSize(z);
                     var m = new THREE.Mesh(
                         new THREE.PlaneGeometry(vs.w * 1.7, vs.h * 1.1),
-                        new THREE.MeshBasicMaterial({ map: tex, color: tint, transparent: true, opacity: .22 + Math.random() * .16, depthWrite: false })
+                        new THREE.MeshBasicMaterial({ map: tex, color: tint, transparent: true, opacity: .12 + Math.random() * .10, depthWrite: false })
                     );
                     m.position.set((Math.random() - .5) * vs.w, (Math.random() - .5) * vs.h * .5, z);
                     scene.add(m);
@@ -250,7 +250,7 @@
                 return { update: function (dt, t) {
                     layers.forEach(function (L) {
                         L.m.position.x += L.sp * dt;
-                        L.m.material.opacity = Math.max(.1, .22 + Math.sin(t * .25 + L.ph) * .1);
+                        L.m.material.opacity = Math.max(.06, .13 + Math.sin(t * .25 + L.ph) * .07);
                         if (L.m.position.x >  L.w) L.m.position.x = -L.w;
                         if (L.m.position.x < -L.w) L.m.position.x =  L.w;
                     });
@@ -261,7 +261,7 @@
             fireflies: function () {
                 var groups = [];
                 for (var gI = 0; gI < 3; gI++) {
-                    var f = makePoints(Math.round(22 * DENS), { zMin: -70, zMax: 20, spMin: .3, spMax: .8, sway: .3, tex: glowTex(false), color: tint, size: 2.2 + gI, opacity: .7, blending: THREE.AdditiveBlending });
+                    var f = makePoints(Math.round(34 * DENS), { zMin: -70, zMax: 20, spMin: .3, spMax: .8, sway: .5, tex: glowTex(false), color: tint, size: 3 + gI * 1.4, opacity: .8, blending: THREE.AdditiveBlending });
                     f.phase = gI * 2.1; groups.push(f);
                 }
                 return { update: function (dt, t) {
@@ -272,15 +272,15 @@
                             f.pos[i * 3 + 1] += Math.cos(t * .4 + d.ph * 1.7) * d.sw * dt * 2;
                         }
                         f.pts.geometry.attributes.position.needsUpdate = true;
-                        f.pts.material.opacity = .35 + (Math.sin(t * 1.6 + f.phase) * .5 + .5) * .5;
+                        f.pts.material.opacity = .5 + (Math.sin(t * 1.6 + f.phase) * .5 + .5) * .45;
                     });
                 } };
             },
 
             /* 星空：深景深星場 + 偶發流星 */
             stars: function () {
-                var far = makePoints(Math.round(420 * DENS), { zMin: -140, zMax: -60, spMin: 0, spMax: 0, sway: 0, tex: glowTex(true), color: tint, size: 1.1, opacity: .85 });
-                var near = makePoints(Math.round(90 * DENS), { zMin: -55, zMax: -15, spMin: 0, spMax: 0, sway: 0, tex: glowTex(false), color: tint, size: 2, opacity: .9, blending: THREE.AdditiveBlending });
+                var far = makePoints(Math.round(420 * DENS), { zMin: -140, zMax: -60, spMin: 0, spMax: 0, sway: 0, tex: glowTex(true), color: tint, size: 1.5, opacity: .9 });
+                var near = makePoints(Math.round(90 * DENS), { zMin: -55, zMax: -15, spMin: 0, spMax: 0, sway: 0, tex: glowTex(false), color: tint, size: 2.8, opacity: .95, blending: THREE.AdditiveBlending });
                 // 流星
                 var meteor = new THREE.Mesh(
                     new THREE.PlaneGeometry(14, .18),
@@ -309,10 +309,10 @@
             /* 塵埃/光屑：慢速懸浮 + 大顆 bokeh */
             dust: function () {
                 var fine = makePoints(Math.round(180 * DENS), { zMin: -80, zMax: 10, spMin: .1, spMax: .3, sway: .12, tex: glowTex(true), color: tint, size: 1.2, opacity: .5 });
-                var bokeh = makePoints(Math.round(24 * DENS), { zMin: -40, zMax: 25, spMin: .1, spMax: .25, sway: .2, tex: glowTex(false), color: tint, size: 5, opacity: .16, blending: THREE.AdditiveBlending });
+                var bokeh = makePoints(Math.round(24 * DENS), { zMin: -40, zMax: 25, spMin: .1, spMax: .25, sway: .2, tex: glowTex(false), color: tint, size: 5.5, opacity: .22, blending: THREE.AdditiveBlending });
                 return { update: function (dt, t) {
                     wrapY(fine, .7 * dt, t); wrapY(bokeh, .5 * dt, t);
-                    bokeh.pts.material.opacity = .12 + Math.sin(t * .7) * .05;
+                    bokeh.pts.material.opacity = .17 + Math.sin(t * .7) * .06;
                 } };
             },
 
@@ -355,7 +355,7 @@
             /* 風沙：橫向沙流 + 揚塵，陣風起伏 */
             sand: function () {
                 var haze = presets.fog();
-                var grains = makePoints(Math.round(220 * DENS), { zMin: -70, zMax: 15, spMin: .6, spMax: 1.4, sway: .05, tex: glowTex(true), color: tint, size: 1.3, opacity: .5 });
+                var grains = makePoints(Math.round(260 * DENS), { zMin: -70, zMax: 15, spMin: .6, spMax: 1.4, sway: .05, tex: glowTex(true), color: tint, size: 1.7, opacity: .6 });
                 var gust = 0;
                 return { update: function (dt, t) {
                     haze.update(dt, t);
@@ -376,13 +376,13 @@
                 var tex = ringTex();
                 var group = new THREE.Group(); scene.add(group);
                 var list = [];
-                var n = Math.round(36 * DENS);
+                var n = Math.round(46 * DENS);
                 var vs = viewSize(-30);
                 for (var i = 0; i < n; i++) {
                     var s = .5 + Math.random() * 1.8;
                     var m = new THREE.Mesh(
                         new THREE.PlaneGeometry(s, s),
-                        new THREE.MeshBasicMaterial({ map: tex, color: tint, transparent: true, opacity: .25 + Math.random() * .3, depthWrite: false, blending: THREE.AdditiveBlending })
+                        new THREE.MeshBasicMaterial({ map: tex, color: tint, transparent: true, opacity: .42 + Math.random() * .33, depthWrite: false, blending: THREE.AdditiveBlending })
                     );
                     m.position.set((Math.random() - .5) * vs.w, (Math.random() - .5) * vs.h * 1.2, -70 + Math.random() * 85);
                     group.add(m);
@@ -645,11 +645,11 @@
             elapsed += dt;
 
             if (MOBILE) {
-                camera.position.x = Math.sin(elapsed * .1) * 1.2;
-                camera.position.y = Math.cos(elapsed * .13) * .8;
+                camera.position.x = Math.sin(elapsed * .1) * 2.4;
+                camera.position.y = Math.cos(elapsed * .13) * 1.5;
             } else {
-                camera.position.x += (mx * 2.2 - camera.position.x) * .03;
-                camera.position.y += (my * 1.4 - camera.position.y) * .03;
+                camera.position.x += (mx * 3.4 - camera.position.x) * .03;
+                camera.position.y += (my * 2.2 - camera.position.y) * .03;
             }
             camera.lookAt(0, 0, -30);
 
