@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#080603">
     <meta name="description" content="海星劇本殺 — 沉浸其中・探索謎局。瀏覽精選劇本，與好友共度精彩故事。">
+    <meta name="application-name" content="海星劇本殺">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="海星劇本殺">
     <title>海星劇本殺 · 劇本總覽</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="pwa/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="pwa/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
@@ -64,9 +71,15 @@
                 <span class="brand-sub">STARFISH MYSTERY</span>
             </span>
         </a>
-        <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">
-            <span></span><span></span><span></span>
-        </button>
+        <div class="nav-actions">
+            <button class="pwa-install-button" id="pwaInstallButton" type="button" hidden>
+                <span class="pwa-install-icon" aria-hidden="true">↓</span>
+                <span id="pwaInstallLabel">安裝 App</span>
+            </button>
+            <button class="nav-toggle" id="navToggle" aria-label="開啟選單" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </nav>
 
     <!-- drawer -->
@@ -298,5 +311,12 @@
     <script src="scripts-data.js?v=20260702a"></script>
     <script src="vendor/three.min.js"></script>
     <script src="hero.js?v=20260702a"></script>
+
+    <div class="pwa-toast" id="pwaToast" role="status" aria-live="polite" hidden>
+        <span id="pwaToastMessage"></span>
+        <button class="pwa-toast-action" id="pwaToastAction" type="button" hidden></button>
+        <button class="pwa-toast-close" id="pwaToastClose" type="button" aria-label="關閉通知">×</button>
+    </div>
+    <script src="pwa.js?v=20260714b"></script>
 </body>
 </html>

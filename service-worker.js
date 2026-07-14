@@ -1,0 +1,115 @@
+'use strict';
+
+const CACHE_PREFIX = 'starfishlarp';
+const CACHE_VERSION = '2026-07-14-b';
+const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
+const MAX_RUNTIME_ENTRIES = 80;
+
+const APP_SHELL = [
+    './',
+    './index.html',
+    './offline.html',
+    './manifest.webmanifest',
+    './index.css?v=20260702a',
+    './scripts.js?v=20260702a',
+    './scripts-data.js?v=20260702a',
+    './hero.js?v=20260702a',
+    './vendor/three.min.js',
+    './pwa.js?v=20260714b',
+    './pwa/favicon-32.png',
+    './pwa/apple-touch-icon.png',
+    './pwa/icon-192.png',
+    './pwa/icon-512.png',
+    './pwa/icon-maskable-512.png'
+];
+
+self.addEventListener('install', function (event) {
+    event.waitUntil(
+        caches.open(APP_SHELL_CACHE).then(function (cache) {
+            return cache.addAll(APP_SHELL);
+        })
+    );
+});
+
+self.addEventListener('activate', function (event) {
+    event.waitUntil(
+        caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (key) {
+                if (key.startsWith(CACHE_PREFIX + '-') && key !== APP_SHELL_CACHE && key !== RUNTIME_CACHE) {
+                    return caches.delete(key);
+                }
+                return Promise.resolve(false);
+            }));
+        }).then(function () {
+            return self.clients.claim();
+        })
+    );
+});
+
+self.addEventListener('message', function (event) {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
+async function trimRuntimeCache(cache) {
+    const requests = await cache.keys();
+    while (requests.length > MAX_RUNTIME_ENTRIES) {
+        await cache.delete(requests.shift());
+    }
+}
+
+async function cacheResponse(request, response) {
+    if (!response || !response.ok || response.type === 'opaque') return;
+    const cache = await caches.open(RUNTIME_CACHE);
+    await cache.put(request, response.clone());
+    await trimRuntimeCache(cache);
+}
+
+async function networkFirstNavigation(request) {
+    try {
+        const response = await fetch(request);
+        await cacheResponse(request, response);
+        return response;
+    } catch (error) {
+        const cachedPage = await caches.match(request);
+        return cachedPage || caches.match('./offline.html');
+    }
+}
+
+function staleWhileRevalidate(event) {
+    const request = event.request;
+    const network = fetch(request).then(async function (response) {
+        await cacheResponse(request, response);
+        return response;
+    }).catch(function () {
+        return null;
+    });
+
+    event.waitUntil(network.then(function () { return undefined; }));
+
+    return caches.match(request, { ignoreSearch: true }).then(function (cached) {
+        if (cached) return cached;
+        return network.then(function (response) {
+            return response || Response.error();
+        });
+    });
+}
+
+self.addEventListener('fetch', function (event) {
+    const request = event.request;
+    if (request.method !== 'GET' || request.headers.has('range')) return;
+
+    const url = new URL(request.url);
+    if (url.origin !== self.location.origin) return;
+
+    if (request.mode === 'navigate') {
+        event.respondWith(networkFirstNavigation(request));
+        return;
+    }
+
+    if (['style', 'script', 'worker', 'font', 'image'].includes(request.destination)) {
+        event.respondWith(staleWhileRevalidate(event));
+    }
+});

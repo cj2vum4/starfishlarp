@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#080603">
+    <meta name="robots" content="noindex">
+    <title>目前離線｜海星劇本殺</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="pwa/favicon-32.png">
+    <style>
+        :root{color-scheme:dark;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+        *{box-sizing:border-box}
+        body{margin:0;min-height:100svh;display:grid;place-items:center;padding:24px;color:#f3ead8;background:radial-gradient(circle at 50% 28%,#32100d 0,#160d08 32%,#080603 72%)}
+        main{width:min(100%,480px);padding:36px 28px;text-align:center;border:1px solid rgba(213,170,88,.35);border-radius:24px;background:rgba(24,17,10,.82);box-shadow:0 28px 80px rgba(0,0,0,.5)}
+        img{width:112px;height:112px;border-radius:24px;box-shadow:0 12px 34px rgba(0,0,0,.45)}
+        h1{margin:22px 0 10px;font-family:"Noto Serif TC",serif;font-size:clamp(1.7rem,7vw,2.35rem);color:#ecd08a}
+        p{margin:0 auto 26px;max-width:34ch;color:#c9bda9;line-height:1.8}
+        .actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+        button,a{min-height:44px;padding:11px 18px;border:0;border-radius:12px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+        button{background:linear-gradient(135deg,#e7c576,#b88331);color:#171006}
+        a{display:inline-flex;align-items:center;color:#e6d6b2;border:1px solid rgba(213,170,88,.38);background:rgba(255,255,255,.04)}
+    </style>
+</head>
+<body>
+    <main>
+        <img src="pwa/icon-192.png" alt="海星劇本殺">
+        <h1>線索暫時中斷</h1>
+        <p>目前沒有網路連線。你仍可返回首頁，或瀏覽先前已開啟並儲存的頁面。</p>
+        <div class="actions">
+            <button type="button" onclick="location.reload()">重新連線</button>
+            <a href="./">返回首頁</a>
+        </div>
+    </main>
+</body>
+</html>
