@@ -32,11 +32,13 @@
     var MOBILE = /Mobi|Android/i.test(navigator.userAgent) || Math.min(screen.width, screen.height) < 480;
     if (MOBILE) DENS *= 0.75;
 
-    /* ── Three.js 載入（頁面沒有才抓 CDN）────────────────────── */
+    /* ── Three.js 載入（自架 vendor/，不依賴外部 CDN）──────────
+       路徑由 fx3d.js 自身的 src 推導，頁面在任何目錄深度都正確 */
     function loadThree(cb) {
         if (window.THREE) return cb();
         var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+        var base = (cfgEl.src || '').replace(/fx3d\.js[^\/]*$/, '');
+        s.src = (base || '../') + 'vendor/three.min.js';
         s.onload = cb;
         document.head.appendChild(s);
     }

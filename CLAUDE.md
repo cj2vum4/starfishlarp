@@ -60,9 +60,12 @@
 5. **CTA 按鈕** — `立即預約…`
 6. **BGM** — `<audio id="bgm" src="劇本名稱.mp3" autoplay loop muted>`
 7. **JS 互動** — 背景動畫產生、星星 hover、卡片光效等（可各頁自訂）
-8. 結尾依序放：`<script src="../bgm-control.js">`、
-   `<script src="../reviews.js">`（玩家評價按鈕，劇本名以檔名自動對應；
-   若檔名與評價表單名不同，加 `data-script="評價用名稱"`）
+8. 結尾依序放：`<script src="../bgm-control.js?v=日期">`、
+   `<script src="../reviews.js?v=日期">`（玩家評價按鈕，劇本名以檔名自動對應；
+   若檔名與評價表單名不同，加 `data-script="評價用名稱"`）。
+   **共用 JS 一律帶 `?v=` 版本號**（GitHub Pages 快取 10 分鐘）；
+   修改任何共用 JS 時，全站進版號。Three.js 自架於 `vendor/three.min.js`，
+   fx3d 會自動載入，不依賴外部 CDN
 
 ### 主題色參考
 
