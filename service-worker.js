@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-14-b';
+const CACHE_VERSION = '2026-07-15-a';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -10,13 +10,16 @@ const APP_SHELL = [
     './',
     './index.html',
     './offline.html',
+    './新增玩本記錄.html',
     './manifest.webmanifest',
     './index.css?v=20260702a',
+    './honor-form.css?v=20260715a',
     './scripts.js?v=20260702a',
     './scripts-data.js?v=20260702a',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20260714b',
+    './play-record.js?v=20260715a',
     './pwa/favicon-32.png',
     './pwa/apple-touch-icon.png',
     './pwa/icon-192.png',
