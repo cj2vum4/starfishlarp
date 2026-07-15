@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增玩本記錄 · 海星劇本殺</title>
+
+    <!--
+    ══════════════════════════════════════════════════════
+    Google Apps Script 設定（必做一次）
+    ══════════════════════════════════════════════════════
+    1. 打開「榮譽牆評價」那份 Google 試算表（Google 表單的回覆表）
+    2. 擴充功能 → Apps Script，貼上下方程式碼並存檔：
+
+    ──────────────────────────────────────────────────────
+    function doPost(e) {
+      try {
+        const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+        const d = e.parameter;
+        // 依標題列動態對欄：不管欄位順序怎麼排都能寫對位置
+        const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+        const map = {
+          '怎麼稱呼你呢':       d.name    || '',
+          '日期':               d.date    || '',
+          '劇本':               d.script  || '',
+          '給予評價':           d.rating  || '',
+          '心情':               d.mood    || '',
+          '50字以內的心得推薦': d.comment || ''
+        };
+        let charFilled = false;
+        const row = headers.map(function (h) {
+          h = String(h).trim();
+          if (h.indexOf('時間') === 0) return new Date();      // 時間戳記
+          if (map[h] !== undefined) return map[h];
+          if (h.indexOf('角色') === 0 && !charFilled) {         // 第一個「角色」欄
+            charFilled = true;
+            return d.character || '';
+          }
+          return '';
+        });
+        sheet.appendRow(row);
+        return ContentService.createTextOutput('OK');
+      } catch (err) {
+        return ContentService.createTextOutput('ERR:' + err);
+      }
+    }
+    ──────────────────────────────────────────────────────
+    3. 部署 → 新增部署 → 網路應用程式
+       執行身分：我；存取權：所有人
+    4. 複製「網路應用程式 URL」，貼進下方 SCRIPT_URL
+    ══════════════════════════════════════════════════════
+    -->
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #080603; --dark: #100c07; --surface: #1a140d;
+            --surf2: #231b11; --surf3: #2e2417;
+            --gold: #c8a056; --gold-l: #ecd08a; --gold-d: #7a5e2c;
+            --crim: #8b1a1a; --crim-l: #c93030;
+            --text: #ece3cf; --text-d: #9a8a6c;
+            --bdr: rgba(200,160,86,.18); --bdr-h: rgba(200,160,86,.55);
+            --ease: cubic-bezier(.22,1,.36,1);
+            --font: "Noto Serif TC","Songti TC",ui-serif,Georgia,serif;
+            --font-ui: "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            color: var(--text);
+            background:
+                radial-gradient(60% 50% at 18% 10%, rgba(139,26,26,.18), transparent 60%),
+                radial-gradient(55% 45% at 85% 20%, rgba(200,160,86,.13), transparent 60%),
+                linear-gradient(160deg,#0c0905,#080603 55%,#0a0703);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .back-btn {
+            position: fixed; top: 18px; left: 18px; z-index: 10;
+            background: rgba(26,20,13,.8);
+            color: var(--gold-l);
+            padding: 10px 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: .85rem;
+            font-weight: 600;
+            border: 1px solid var(--bdr);
+            backdrop-filter: blur(10px);
+            transition: all .25s var(--ease);
+        }
+        .back-btn:hover { border-color: var(--bdr-h); transform: translateY(-2px); }
+
+        .container {
+            position: relative; z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 90px 16px 60px;
+        }
+
+        header { text-align: center; margin-bottom: 30px; }
+        .eyebrow {
+            font-size: .68rem; letter-spacing: .4em; text-indent: .4em;
+            color: var(--text-d); text-transform: uppercase; margin-bottom: 10px;
+        }
+        h1 {
+            font-family: var(--font);
+            font-size: clamp(1.7rem, 6vw, 2.4rem);
+            font-weight: 900;
+            letter-spacing: .12em;
+            background: linear-gradient(100deg,#fff 5%,var(--gold-l) 45%,var(--gold) 85%);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .sub { font-size: .88rem; color: var(--text-d); }
+
+        form { display: flex; flex-direction: column; gap: 16px; }
+
+        .q-card {
+            background: linear-gradient(160deg, rgba(35,27,17,.85), rgba(16,12,7,.9));
+            border: 1px solid var(--bdr);
+            border-radius: 16px;
+            padding: 18px 20px;
+            backdrop-filter: blur(10px);
+            transition: border-color .25s;
+        }
+        .q-card:focus-within { border-color: var(--bdr-h); }
+
+        .q-label {
+            display: block;
+            font-size: .92rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--gold-l);
+        }
+        .req { color: var(--crim-l); }
+
+        .q-input, select.q-input, textarea.q-input {
+            width: 100%;
+            background: rgba(8,6,3,.55);
+            border: 1px solid var(--bdr);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: .95rem;
+            font-family: inherit;
+            padding: 11px 13px;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .q-input:focus { border-color: var(--bdr-h); }
+        select.q-input { appearance: none; cursor: pointer; }
+        textarea.q-input { resize: vertical; min-height: 84px; line-height: 1.7; }
+
+        .char-count { text-align: right; font-size: .74rem; color: var(--text-d); margin-top: 6px; }
+        .char-count.over { color: var(--crim-l); font-weight: 700; }
+
+        /* 星星評分 */
+        .rate-row { display: flex; gap: 8px; font-size: 2rem; cursor: pointer; user-select: none; }
+        .rate-star { color: rgba(255,255,255,.22); transition: transform .15s, color .15s; }
+        .rate-star.on { color: var(--gold-l); text-shadow: 0 0 14px rgba(236,208,138,.6); }
+        .rate-star:hover { transform: scale(1.18); }
+
+        /* 心情 chips */
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            padding: 7px 15px;
+            border-radius: 50px;
+            font-size: .85rem;
+            border: 1px solid var(--bdr);
+            background: rgba(8,6,3,.4);
+            color: var(--text-d);
+            cursor: pointer;
+            transition: all .2s var(--ease);
+        }
+        .chip.on {
+            color: #1a140d;
+            background: linear-gradient(120deg, var(--gold-l), var(--gold));
+            border-color: transparent;
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            margin-top: 6px;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            color: #1a140d;
+            background: linear-gradient(120deg, var(--gold-l), var(--gold));
+            cursor: pointer;
+            transition: all .25s var(--ease);
+            box-shadow: 0 10px 30px -10px rgba(200,160,86,.55);
+        }
+        .submit-btn:hover { transform: translateY(-2px); filter: brightness(1.06); }
+        .submit-btn:disabled { opacity: .55; cursor: wait; transform: none; }
+
+        #error-msg {
+            display: none;
+            background: rgba(139,26,26,.25);
+            border: 1px solid rgba(201,48,48,.5);
+            color: #f0c8c8;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: .88rem;
+        }
+
+        /* 成功畫面 */
+        #success {
+            display: none;
+            text-align: center;
+            padding: 40px 10px;
+        }
+        #success .icon { font-size: 3.4rem; margin-bottom: 14px; }
+        #success h2 {
+            font-family: var(--font);
+            font-size: 1.6rem;
+            color: var(--gold-l);
+            margin-bottom: 8px;
+        }
+        #success p { color: var(--text-d); font-size: .9rem; line-height: 1.8; }
+        .success-actions { margin-top: 26px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .success-actions a, .success-actions button {
+            padding: 12px 26px;
+            border-radius: 50px;
+            font-size: .92rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid var(--bdr);
+            background: rgba(26,20,13,.7);
+            color: var(--gold-l);
+            transition: all .25s var(--ease);
+        }
+        .success-actions a:hover, .success-actions button:hover { border-color: var(--bdr-h); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<a href="榮譽牆.html" class="back-btn">← 返回榮譽牆</a>
+
+<div class="container">
+    <header>
+        <div class="eyebrow">STARFISH · PLAY RECORD</div>
+        <h1>新增玩本記錄</h1>
+        <p class="sub">留下這一場的足跡與心得，榮譽牆會替你記住 ✦</p>
+    </header>
+
+    <form id="recordForm" novalidate>
+        <div class="q-card">
+            <label class="q-label" for="name">怎麼稱呼你呢 <span class="req">*</span></label>
+            <input id="name" name="name" type="text" class="q-input" placeholder="榮譽牆上顯示的名字（前後保持一致才能累積場次）" required>
+        </div>
+
+        <div class="q-card">
+            <label class="q-label" for="date">玩本日期 <span class="req">*</span></label>
+            <input id="date" name="date" type="date" class="q-input" required>
+        </div>
+
+        <div class="q-card">
+            <label class="q-label" for="script">劇本 <span class="req">*</span></label>
+            <select id="script" class="q-input" required>
+                <option value="">— 選擇劇本 —</option>
+            </select>
+            <input id="scriptOther" type="text" class="q-input" placeholder="請輸入劇本名稱" style="display:none;margin-top:10px">
+        </div>
+
+        <div class="q-card">
+            <label class="q-label" for="character">你飾演的角色</label>
+            <input id="character" name="character" type="text" class="q-input" placeholder="選填，例如：清遙">
+        </div>
+
+        <div class="q-card">
+            <span class="q-label">給予評價 <span class="req">*</span></span>
+            <div class="rate-row" id="rateRow">
+                <span class="rate-star" data-v="1">★</span>
+                <span class="rate-star" data-v="2">★</span>
+                <span class="rate-star" data-v="3">★</span>
+                <span class="rate-star" data-v="4">★</span>
+                <span class="rate-star" data-v="5">★</span>
+            </div>
+        </div>
+
+        <div class="q-card">
+            <span class="q-label">這一場的心情（可複選）</span>
+            <div class="chips" id="moodChips">
+                <span class="chip">感動</span>
+                <span class="chip">燒腦</span>
+                <span class="chip">歡樂</span>
+                <span class="chip">驚悚</span>
+                <span class="chip">淚崩</span>
+                <span class="chip">過癮</span>
+                <span class="chip">治癒</span>
+                <span class="chip">意猶未盡</span>
+            </div>
+        </div>
+
+        <div class="q-card">
+            <label class="q-label" for="comment">50字以內的心得推薦</label>
+            <textarea id="comment" class="q-input" maxlength="50" placeholder="選填，會以便利貼形式出現在榮譽牆和劇本頁 ✍️"></textarea>
+            <div class="char-count" id="charCount">0 / 50</div>
+        </div>
+
+        <div id="error-msg"></div>
+        <button type="submit" class="submit-btn" id="submitBtn">✦ 送出記錄</button>
+    </form>
+
+    <div id="success">
+        <div class="icon">🏆</div>
+        <h2>記錄已送出！</h2>
+        <p>感謝你的心得分享 ✨<br>榮譽牆的資料更新需要幾分鐘，稍後重新整理就能看到。</p>
+        <div class="success-actions">
+            <a href="榮譽牆.html">前往榮譽牆</a>
+            <button id="againBtn">再填一筆</button>
+        </div>
+    </div>
+</div>
+
+<script src="scripts.js?v=20260714"></script>
+<script>
+// ── 請把 Google Apps Script 部署後的 URL 填入這裡 ──────────────────────
+const SCRIPT_URL = "";
+// ────────────────────────────────────────────────────────────────────────
+
+// ── 劇本下拉選單：直接吃 scripts.js 單一資料來源，新增劇本自動同步 ──────
+(function () {
+    const sel = document.getElementById('script');
+    const other = document.getElementById('scriptOther');
+    const list = (window.SCRIPTS || []).slice()
+        .sort((a, b) => (a.name).localeCompare(b.name, 'zh-Hant'));
+    list.forEach(s => {
+        const opt = document.createElement('option');
+        // 送出的值 = reviewKey（榮譽牆 CSV「劇本」欄的比對鍵）
+        opt.value = s.reviewKey || s.name;
+        opt.textContent = s.name;
+        sel.appendChild(opt);
+    });
+    const optOther = document.createElement('option');
+    optOther.value = '__other__';
+    optOther.textContent = '其他（手動輸入）…';
+    sel.appendChild(optOther);
+    sel.addEventListener('change', () => {
+        other.style.display = sel.value === '__other__' ? 'block' : 'none';
+    });
+})();
+
+// ── 星星評分 ──────────────────────────────────────────────────────────────
+let rating = 0;
+(function () {
+    const stars = [...document.querySelectorAll('.rate-star')];
+    const paint = v => stars.forEach(s => s.classList.toggle('on', +s.dataset.v <= v));
+    stars.forEach(s => {
+        s.addEventListener('click', () => { rating = +s.dataset.v; paint(rating); });
+        s.addEventListener('mouseenter', () => paint(+s.dataset.v));
+    });
+    document.getElementById('rateRow').addEventListener('mouseleave', () => paint(rating));
+})();
+
+// ── 心情 chips（可複選）──────────────────────────────────────────────────
+document.querySelectorAll('#moodChips .chip').forEach(c =>
+    c.addEventListener('click', () => c.classList.toggle('on')));
+
+// ── 心得字數 ──────────────────────────────────────────────────────────────
+(function () {
+    const ta = document.getElementById('comment');
+    const cnt = document.getElementById('charCount');
+    ta.addEventListener('input', () => {
+        cnt.textContent = ta.value.length + ' / 50';
+        cnt.classList.toggle('over', ta.value.length >= 50);
+    });
+})();
+
+// ── 送出 ──────────────────────────────────────────────────────────────────
+document.getElementById('recordForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const errEl = document.getElementById('error-msg');
+    const btn = document.getElementById('submitBtn');
+    errEl.style.display = 'none';
+
+    const name = document.getElementById('name').value.trim();
+    const dateRaw = document.getElementById('date').value;
+    const sel = document.getElementById('script');
+    const script = sel.value === '__other__'
+        ? document.getElementById('scriptOther').value.trim()
+        : sel.value;
+
+    if (!name || !dateRaw || !script || !rating) {
+        errEl.textContent = '請填寫稱呼、日期、劇本，並點選星星評價。';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (!SCRIPT_URL) {
+        errEl.textContent = '⚠️ 尚未設定 Google Apps Script URL，請主持人依頁面原始碼內的說明完成設定。';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '送出中…';
+
+    const mood = [...document.querySelectorAll('#moodChips .chip.on')]
+        .map(c => c.textContent).join('、');
+
+    const data = new FormData();
+    data.append('name', name);
+    data.append('date', dateRaw.replace(/-/g, '/'));   // 對齊 Google 表單的 YYYY/MM/DD 格式
+    data.append('script', script);
+    data.append('character', document.getElementById('character').value.trim());
+    data.append('rating', String(rating));
+    data.append('mood', mood);
+    data.append('comment', document.getElementById('comment').value.trim());
+
+    try {
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: data });
+    } catch (_) { /* no-cors 下忽略回應 */ }
+
+    document.getElementById('recordForm').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// 再填一筆
+document.getElementById('againBtn').addEventListener('click', () => {
+    document.getElementById('recordForm').reset();
+    document.getElementById('scriptOther').style.display = 'none';
+    rating = 0;
+    document.querySelectorAll('.rate-star').forEach(s => s.classList.remove('on'));
+    document.querySelectorAll('#moodChips .chip').forEach(c => c.classList.remove('on'));
+    document.getElementById('charCount').textContent = '0 / 50';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = '✦ 送出記錄';
+    document.getElementById('success').style.display = 'none';
+    document.getElementById('recordForm').style.display = 'flex';
+});
+</script>
+<script src="fx3d.js?v=20260714" data-fx="dust" data-tint="#ecd08a"></script>
+</body>
+</html>
