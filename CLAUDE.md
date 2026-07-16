@@ -25,7 +25,8 @@
     "types": ["標籤1", "標籤2"],
     "theme": "THEME",
     "poster": "https://i.postimg.cc/...",  // 海報直連，未取得先留 ""
-    "reviewKey": "劇本名稱"          // 榮譽牆/問卷 CSV「劇本」欄對應鍵；通常＝name
+    "reviewKey": "劇本名稱",         // 榮譽牆/問卷 CSV「劇本」欄對應鍵；通常＝name
+    "characters": ["角色A", "角色B"] // 角色名單（新增玩本記錄表單的角色下拉；與頁面角色卡一致）
 }
 ```
 
