@@ -66,7 +66,10 @@
    若檔名與評價表單名不同，加 `data-script="評價用名稱"`）。
    **共用 JS 一律帶 `?v=` 版本號**（GitHub Pages 快取 10 分鐘）；
    修改任何共用 JS 時，全站進版號。Three.js 自架於 `vendor/three.min.js`，
-   fx3d 會自動載入，不依賴外部 CDN
+   fx3d 會自動載入，不依賴外部 CDN。
+   **進 `?v=` 版號時必須同步改 `service-worker.js`**：
+   `CACHE_VERSION` 進版＋`APP_SHELL` 清單裡對應的 `?v=` URL 改成新版號，
+   否則已安裝 PWA 的使用者會一直拿到 SW 快取的舊檔
 
 ### 主題色參考
 

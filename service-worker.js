@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-15-a';
+const CACHE_VERSION = '2026-07-18-a';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -12,14 +12,14 @@ const APP_SHELL = [
     './offline.html',
     './新增玩本記錄.html',
     './manifest.webmanifest',
-    './index.css?v=20260702a',
+    './index.css?v=20260716',
     './honor-form.css?v=20260715a',
     './scripts.js?v=20260702a',
-    './scripts-data.js?v=20260702a',
+    './scripts-data.js?v=20260716',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20260714b',
-    './play-record.js?v=20260715a',
+    './play-record.js?v=20260716',
     './pwa/favicon-32.png',
     './pwa/apple-touch-icon.png',
     './pwa/icon-192.png',
@@ -92,7 +92,8 @@ function staleWhileRevalidate(event) {
 
     event.waitUntil(network.then(function () { return undefined; }));
 
-    return caches.match(request, { ignoreSearch: true }).then(function (cached) {
+    // 不忽略 query string：?v= 版號是全站的快取失效機制，忽略會讓使用者拿到舊檔
+    return caches.match(request).then(function (cached) {
         if (cached) return cached;
         return network.then(function (response) {
             return response || Response.error();
