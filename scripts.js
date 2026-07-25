@@ -63,3 +63,9 @@ window.SCRIPTS = [
   {"id":"jinmen","name":"津門遺雲","file":"8人以上/津門遺雲.html","players":8,"playersLabel":"4男3女＋捕快","time":4.5,"timeLabel":"4-5小時","difficulty":2,"types":["民國","歡樂","嘴砲","陣營","新手"],"theme":"history","poster":"","reviewKey":"津門遺雲","characters":["大少爺","大少奶奶","二少爺","二少奶奶","三小姐","四少爺","大掌櫃","捕快"]},
   {"id":"jimu2","name":"極目2：九爺！我想給您養老","file":"7人/極目2九爺我想給您養老.html","players":7,"playersLabel":"4男3女","time":4.5,"timeLabel":"4-5小時","difficulty":3,"types":["民國","歡樂","陣營","機制","本格"],"theme":"history","poster":"","reviewKey":"極目2：九爺！我想給您養老","characters":["周謙","陳嘉樹","季修遠","陸秉白","商羽","李婉序","沈識月"]}
 ];
+
+// scripts.js 會在首頁 DOM 完成後載入；立刻同步初始數量，避免畫面短暫顯示舊的 47。
+(function syncInitialScriptCount() {
+  const countElement = document.getElementById('filteredCount');
+  if (countElement) countElement.textContent = String(window.SCRIPTS.length);
+})();
