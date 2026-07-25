@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" type="image/png" sizes="32x32" href="pwa/favicon-32.png">
     <link rel="apple-touch-icon" href="pwa/apple-touch-icon.png">
-    <link rel="stylesheet" href="honor-form.css?v=20260715a">
+    <link rel="stylesheet" href="honor-form.css?v=20260726">
 </head>
 <body>
     <div class="ambient" aria-hidden="true"></div>
@@ -26,23 +26,20 @@
         <section class="intro" aria-labelledby="pageTitle">
             <p class="eyebrow">HONOR WALL · PLAY RECORD</p>
             <h1 id="pageTitle">留下你的玩本記錄</h1>
-            <p>選擇劇本後，系統會立即載入該劇本的角色。送出後，記錄會沿用原本的 Google 表單與榮譽牆資料。</p>
+            <p>選擇劇本後，系統會從首頁共用資料載入角色；送出後直接寫入榮譽牆使用的 Google 試算表，不再經過 Google 表單。</p>
         </section>
 
         <section class="form-card">
-            <form
-                id="playRecordForm"
-                action="https://docs.google.com/forms/d/e/1FAIpQLSd3U-nLaHB5xKx3jrB4SHYiuLqqoFWEVAkKYWCNRb_aA3UXDg/formResponse"
-                method="post"
-                target="googleFormTarget"
-                novalidate
-            >
-                <input type="hidden" name="fvv" value="1">
-                <input type="hidden" id="pageHistory" name="pageHistory" value="0">
-                <input type="hidden" id="scriptValue" name="entry.683190961" value="">
-                <input type="hidden" id="dateYear" name="entry.938408966_year" value="">
-                <input type="hidden" id="dateMonth" name="entry.938408966_month" value="">
-                <input type="hidden" id="dateDay" name="entry.938408966_day" value="">
+            <form id="playRecordForm" novalidate>
+                <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabindex="-1"
+                    autocomplete="off"
+                    aria-hidden="true"
+                    style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"
+                >
 
                 <div class="field-grid two-columns">
                     <div class="field">
@@ -50,7 +47,6 @@
                         <p class="field-hint" id="nameHint">請和之前登記的名字保持一致</p>
                         <input
                             id="playerName"
-                            name="entry.1956782259"
                             type="text"
                             maxlength="30"
                             autocomplete="nickname"
@@ -68,11 +64,11 @@
 
                 <div class="field">
                     <label for="scriptSelect">玩的是哪個劇本？ <span aria-hidden="true">*</span></label>
-                    <p class="field-hint" id="scriptHint">選擇後會自動載入角色選項</p>
+                    <p class="field-hint" id="scriptHint">選擇後會自動載入首頁中對應的角色</p>
                     <select id="scriptSelect" aria-describedby="scriptHint roleLoadStatus" required>
                         <option value="">請選擇劇本</option>
                     </select>
-                    <p class="load-status" id="roleLoadStatus" role="status" aria-live="polite">尚未選擇劇本</p>
+                    <p class="load-status" id="roleLoadStatus" role="status" aria-live="polite">正在載入劇本資料…</p>
                 </div>
 
                 <fieldset class="field role-field" id="roleField" disabled>
@@ -87,11 +83,11 @@
                     <legend>給予評價 <span aria-hidden="true">*</span></legend>
                     <p class="field-hint">1 分到 5 分，5 分最高</p>
                     <div class="rating-options">
-                        <label><input type="radio" name="entry.1917116981" value="1" required><span><b>1</b>★</span></label>
-                        <label><input type="radio" name="entry.1917116981" value="2"><span><b>2</b>★</span></label>
-                        <label><input type="radio" name="entry.1917116981" value="3"><span><b>3</b>★</span></label>
-                        <label><input type="radio" name="entry.1917116981" value="4"><span><b>4</b>★</span></label>
-                        <label><input type="radio" name="entry.1917116981" value="5"><span><b>5</b>★</span></label>
+                        <label><input type="radio" name="rating" value="1" required><span><b>1</b>★</span></label>
+                        <label><input type="radio" name="rating" value="2"><span><b>2</b>★</span></label>
+                        <label><input type="radio" name="rating" value="3"><span><b>3</b>★</span></label>
+                        <label><input type="radio" name="rating" value="4"><span><b>4</b>★</span></label>
+                        <label><input type="radio" name="rating" value="5"><span><b>5</b>★</span></label>
                     </div>
                 </fieldset>
 
@@ -100,7 +96,7 @@
                         <label for="comment">50 字以內的心得推薦</label>
                         <span id="commentCount" aria-live="polite">0 / 50</span>
                     </div>
-                    <textarea id="comment" name="entry.584411270" maxlength="50" rows="4" placeholder="哪個瞬間最讓你印象深刻？"></textarea>
+                    <textarea id="comment" maxlength="50" rows="4" placeholder="哪個瞬間最讓你印象深刻？"></textarea>
                 </div>
 
                 <p class="form-status" id="formStatus" role="alert" hidden></p>
@@ -113,7 +109,7 @@
             <div class="success-panel" id="successPanel" tabindex="-1" hidden>
                 <div class="success-icon" aria-hidden="true">✓</div>
                 <h2>記錄已送出</h2>
-                <p>謝謝你留下這次的角色與心得。Google 試算表同步後，就會出現在榮譽牆上。</p>
+                <p>謝謝你留下這次的角色與心得。試算表同步後，就會出現在榮譽牆上。</p>
                 <div class="success-actions">
                     <a class="primary-link" href="榮譽牆.html">查看榮譽牆</a>
                     <button type="button" id="addAnotherButton">再新增一筆</button>
@@ -121,10 +117,14 @@
             </div>
         </section>
 
-        <p class="fallback-note">若送出遇到問題，可改用<a href="https://docs.google.com/forms/d/e/1FAIpQLSd3U-nLaHB5xKx3jrB4SHYiuLqqoFWEVAkKYWCNRb_aA3UXDg/viewform?usp=dialog" target="_blank" rel="noopener noreferrer">原始 Google 表單</a>。</p>
+        <p class="fallback-note" id="setupNote" hidden>
+            尚未設定資料寫入網址。請先部署專案內的 Google Apps Script，並將 Web App 網址填入
+            <code>play-record-config.js</code>。
+        </p>
     </main>
 
-    <iframe name="googleFormTarget" id="googleFormTarget" title="Google 表單送出結果" hidden></iframe>
-    <script src="play-record.js?v=20260716"></script>
+    <script src="scripts.js?v=20260726"></script>
+    <script src="play-record-config.js?v=20260726"></script>
+    <script src="play-record.js?v=20260726"></script>
 </body>
 </html>
