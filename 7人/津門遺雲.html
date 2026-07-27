@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1c1410">
+    <meta name="description" content="津門遺雲｜7人・4男3女的民國歡樂陣營劇本。">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="津門遺雲｜海星劇本殺">
+    <meta property="og:description" content="民國九年，津門富商一夜暴斃，百萬遺產無主。">
+    <meta property="og:image" content="https://i.postimg.cc/QNpdd5nW/feng-mian.jpg">
+    <title>津門遺雲｜海星劇本殺</title>
+    <style>
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #f1e7d5;
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(141, 76, 38, .22), transparent 32%),
+                radial-gradient(circle at 85% 25%, rgba(180, 125, 54, .14), transparent 34%),
+                linear-gradient(145deg, #120d09, #271912 48%, #0b0806);
+        }
+        a { color: inherit; }
+        img { max-width: 100%; }
+        #embers { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .back-link {
+            position: fixed; top: 18px; left: 18px; z-index: 50;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 11px 17px; border: 1px solid rgba(226, 190, 119, .35);
+            border-radius: 999px; text-decoration: none; font-weight: 700;
+            color: #fff1d0; background: rgba(26, 15, 10, .76);
+            backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, .32);
+        }
+        .container {
+            position: relative; z-index: 1;
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto; padding: 72px 0 64px;
+        }
+        .hero { text-align: center; padding: 30px 12px 34px; }
+        .eyebrow {
+            margin: 0 0 12px; color: #d7ad61;
+            font-size: .78rem; letter-spacing: .28em; font-weight: 800;
+        }
+        h1 {
+            margin: 0; font-family: "Noto Serif TC", "Microsoft JhengHei", serif;
+            font-size: clamp(3rem, 8vw, 5.5rem); letter-spacing: .14em;
+            color: #fff0c8;
+            text-shadow: 0 10px 34px rgba(0, 0, 0, .55), 0 0 26px rgba(218, 169, 83, .24);
+        }
+        .subtitle {
+            max-width: 780px; margin: 18px auto 0;
+            color: rgba(245, 232, 208, .8);
+            font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.8;
+        }
+        .poster-gallery {
+            display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px; max-width: 920px; margin: 0 auto 42px;
+        }
+        .poster-gallery figure {
+            margin: 0; padding: 12px;
+            border: 1px solid rgba(222, 180, 105, .28);
+            border-radius: 20px; background: rgba(35, 21, 14, .68);
+            box-shadow: 0 24px 55px rgba(0, 0, 0, .42);
+        }
+        .poster-gallery img { display: block; width: 100%; height: auto; border-radius: 13px; }
+        .poster-gallery figcaption {
+            padding: 11px 4px 2px; text-align: center;
+            color: rgba(242, 219, 175, .72); font-size: .88rem; letter-spacing: .08em;
+        }
+        .content-grid {
+            display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+            gap: 24px; align-items: start;
+        }
+        .card {
+            border: 1px solid rgba(222, 180, 105, .23);
+            border-radius: 20px; padding: 26px;
+            background: rgba(37, 23, 16, .72); backdrop-filter: blur(10px);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, .32);
+        }
+        .card + .card { margin-top: 24px; }
+        .card h2 {
+            margin: 0 0 20px; padding-bottom: 12px;
+            border-bottom: 1px solid rgba(219, 173, 93, .32);
+            color: #efc97d; font-family: "Noto Serif TC", serif;
+            font-size: 1.55rem; letter-spacing: .08em;
+        }
+        .info-list { display: grid; gap: 12px; }
+        .info-row {
+            display: flex; justify-content: space-between; gap: 20px;
+            padding: 13px 15px; border-radius: 12px;
+            background: rgba(226, 183, 104, .075);
+        }
+        .info-row strong { color: #f4e5c7; }
+        .info-row > span { color: #e5bd70; text-align: right; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+        .tag {
+            padding: 5px 11px; border-radius: 999px;
+            border: 1px solid rgba(226, 181, 98, .28);
+            color: #f5dfb5; background: rgba(112, 52, 35, .42); font-size: .84rem;
+        }
+        .copy {
+            margin: 0; color: rgba(240, 226, 201, .86);
+            font-size: 1.02rem; line-height: 1.95; text-align: justify;
+        }
+        .copy strong { color: #efc97d; }
+        .characters-section { margin-top: 28px; }
+        .characters-section > h2 {
+            margin: 0 0 18px; text-align: center; color: #f1ce89;
+            font-family: "Noto Serif TC", serif; font-size: 2rem; letter-spacing: .1em;
+        }
+        .characters-grid {
+            display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;
+        }
+        .character-card {
+            overflow: hidden; border: 1px solid rgba(222, 180, 105, .24);
+            border-radius: 16px; background: rgba(37, 23, 16, .78);
+            box-shadow: 0 15px 34px rgba(0, 0, 0, .28);
+            transition: transform .25s ease, border-color .25s ease;
+        }
+        .character-card:hover { transform: translateY(-5px); border-color: rgba(237, 199, 126, .52); }
+        .character-card img {
+            display: block; width: 100%; aspect-ratio: 3 / 4;
+            object-fit: cover; background: #140d09;
+        }
+        .character-body { padding: 15px 13px 17px; text-align: center; }
+        .character-name {
+            margin: 0; color: #fff0ca; font-family: "Noto Serif TC", serif;
+            font-size: 1.15rem; font-weight: 800;
+        }
+        .character-info {
+            margin: 7px 0 0; color: rgba(233, 210, 170, .7);
+            font-size: .85rem; line-height: 1.55;
+        }
+        .cta { margin-top: 38px; text-align: center; }
+        .cta a {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 230px; padding: 15px 28px; border-radius: 999px;
+            text-decoration: none; font-weight: 800; color: #1b1009;
+            background: linear-gradient(135deg, #f0cd82, #bd7b37);
+            box-shadow: 0 16px 34px rgba(148, 82, 36, .36);
+        }
+        @media (max-width: 900px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .characters-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        @media (max-width: 680px) {
+            .container { width: min(100% - 22px, 1180px); padding-top: 66px; }
+            .poster-gallery { grid-template-columns: 1fr; gap: 16px; }
+            .characters-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+            .card { padding: 20px; }
+            .info-row { flex-direction: column; gap: 7px; }
+            .info-row > span { text-align: left; }
+            .tags { justify-content: flex-start; }
+            .back-link { top: 10px; left: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="embers" aria-hidden="true"></div>
+    <a class="back-link" href="../index.html">← 返回劇本總覽</a>
+
+    <main class="container">
+        <header class="hero">
+            <p class="eyebrow">STARFISH · REPUBLIC-ERA MYSTERY</p>
+            <h1>津門遺雲</h1>
+            <p class="subtitle">民國九年，津門富商一夜暴斃，百萬遺產無主。靈堂上的七個人各懷心事，哀悼是假，算計才是真。</p>
+        </header>
+
+        <section class="poster-gallery" aria-label="津門遺雲海報">
+            <figure>
+                <img src="https://i.postimg.cc/QNpdd5nW/feng-mian.jpg" alt="津門遺雲主海報" fetchpriority="high">
+                <figcaption>津門遺雲・主海報</figcaption>
+            </figure>
+            <figure>
+                <img src="https://i.postimg.cc/x8yfpDz9/feng-mian2.png" alt="津門遺雲補充海報" loading="lazy">
+                <figcaption>津門遺雲・補充視覺</figcaption>
+            </figure>
+        </section>
+
+        <section class="content-grid">
+            <div>
+                <article class="card">
+                    <h2>遊戲資訊</h2>
+                    <div class="info-list">
+                        <div class="info-row"><strong>劇本名稱</strong><span>津門遺雲</span></div>
+                        <div class="info-row"><strong>遊戲人數</strong><span>7 人・4 男 3 女</span></div>
+                        <div class="info-row"><strong>遊戲時間</strong><span>約 4–5 小時</span></div>
+                        <div class="info-row"><strong>推理程度</strong><span>★★☆☆☆</span></div>
+                        <div class="info-row"><strong>發行</strong><span>謀殺衛斯理工作室</span></div>
+                        <div class="info-row">
+                            <strong>劇本標籤</strong>
+                            <span class="tags">
+                                <span class="tag">民國</span>
+                                <span class="tag">歡樂</span>
+                                <span class="tag">嘴砲</span>
+                                <span class="tag">陣營</span>
+                                <span class="tag">新手</span>
+                            </span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div>
+                <article class="card">
+                    <h2>故事背景</h2>
+                    <p class="copy"><strong>民國九年（1920 年）三月，天津。</strong>金家是津門有名的大戶人家，老爺金浩之白手起家，從一間瑞豐米行一路擴張，成為城裡數一數二的富商。昨夜，重病纏身的金浩之突然暴斃，留下價值百萬銀元的產業，卻沒有公開遺囑。靈堂之上沒有人真正悲傷，每個人都盯著遺產，也都藏著不能說的秘密。</p>
+                </article>
+                <article class="card">
+                    <h2>劇本介紹</h2>
+                    <p class="copy">《津門遺雲》是適合新手入門的民國歡樂陣營本，謎題不以高難度燒腦為主，而是強調<strong>角色扮演、唇槍舌戰與遺產博弈</strong>。玩家透過購買線索、分享情報、隱藏秘密與拆穿他人，在一場熱鬧又充滿算計的家族爭產中找出真相。</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="characters-section" aria-labelledby="charactersTitle">
+            <h2 id="charactersTitle">角色介紹</h2>
+            <div class="characters-grid">
+                <article class="character-card">
+                    <img src="https://i.postimg.cc/L5B9QKZk/feng-mian-she-ji-zheng-gao-(da-shao-ye).jpg" alt="津門遺雲角色海報・大少爺" loading="lazy">
+                    <div class="character-body"><h3 class="character-name">大少爺</h3><p class="character-info">男・金家長子，家業第一繼承人</p></div>
+                </article>
+                <article class="character-card">
+                    <img src="https://i.postimg.cc/bYQwwbFn/feng-mian-she-ji-zheng-gao-(da-shao-nai-nai).jpg" alt="津門遺雲角色海報・大少奶奶" loading="lazy">
+                    <div class="character-body"><h3 class="character-name">大少奶奶</h3><p class="character-info">女・大少爺之妻，金家大兒媳</p></div>
+                </article>
+                <article class="character-card">
+                    <img src="https://i.postimg.cc/3NC8f5DB/feng-mian-she-ji-zheng-gao-(er-shao-ye).jpg" alt="津門遺雲角色海報・二少爺" loading="lazy">
+                    <div class="character-body"><h3 class="character-name">二少爺</h3><p class="character-info">男・金家次子，曾離家多年</p></div>
+                </article>
+                <article class="character-card">
+                    <img src="https://i.postimg.cc/NF7sCqrb/feng-mian-she-ji-zheng-gao-(er-shao-nai-nai).jpg" alt="津門遺雲角色海報・二少奶奶" loading="lazy">
+                    <div class="character-body"><h3 class="character-name">二少奶奶</h3><p class="character-info">女・二少爺之妻，金家二兒媳</p></div>
+                </article>
+                <article class="character-card">
+                    <img src="https://i.postimg.cc/SR7S1Fz5/feng-mian-she-ji-zheng-gao-(san-xiao-jie).jpg" alt="津門遺雲角色海報・三小姐" loading="lazy">
+                    <div class="character-body"><h3 class="character-name">三小姐</h3><p class="character-info">女・金家千金</p></div>
+                </article>
+                <article class="character-card">
+                    <img src="https://i.postimg.cc/h49ttx31/feng-mian-she-ji-zheng-gao-(si-shao-ye).jpg" alt="津門遺雲角色海報・四少爺" loading="lazy">
+                    <div class="character-body"><h3 class="character-name">四少爺</h3><p class="character-info">男・金家幼子</p></div>
+                </article>
+                <article class="character-card">
+                    <img src="https://i.postimg.cc/fyjzqn0C/feng-mian-she-ji-zheng-gao-(da-zhang-gui).jpg" alt="津門遺雲角色海報・大掌櫃" loading="lazy">
+                    <div class="character-body"><h3 class="character-name">大掌櫃</h3><p class="character-info">男・金家生意總管，老爺心腹</p></div>
+                </article>
+            </div>
+        </section>
+
+        <div class="cta">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" target="_blank" rel="noopener">立即預約這場津門疑案</a>
+        </div>
+    </main>
+
+    <audio id="bgm" src="津門遺雲.mp3" autoplay loop muted></audio>
+    <script>
+        document.addEventListener('click', function () {
+            var audio = document.getElementById('bgm');
+            if (audio) audio.muted = false;
+        }, { once: true });
+    </script>
+    <script src="../bgm-control.js?v=20260714"></script>
+    <script src="../reviews.js?v=20260714" data-script="津門遺雲"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="embers" data-tint="#e6be6e" data-hide="#embers"></script>
+</body>
+</html>
