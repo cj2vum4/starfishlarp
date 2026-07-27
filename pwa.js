@@ -1,6 +1,14 @@
 (function () {
     'use strict';
 
+    (function loadHomepageOverrides() {
+        if (document.querySelector('script[data-homepage-overrides]')) return;
+        var script = document.createElement('script');
+        script.src = 'homepage-overrides.js?v=20260727';
+        script.dataset.homepageOverrides = 'true';
+        document.head.appendChild(script);
+    })();
+
     var installButton = document.getElementById('pwaInstallButton');
     var installLabel = document.getElementById('pwaInstallLabel');
     var toast = document.getElementById('pwaToast');
