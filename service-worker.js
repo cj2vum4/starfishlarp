@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-18-a';
+const CACHE_VERSION = '2026-07-27-a';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -19,6 +19,9 @@ const APP_SHELL = [
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20260714b',
+    './homepage-overrides.js?v=20260727',
+    './jinmen-media.js?v=20260727',
+    './play-record-config.js?v=20260727',
     './play-record.js?v=20260716',
     './pwa/favicon-32.png',
     './pwa/apple-touch-icon.png',
