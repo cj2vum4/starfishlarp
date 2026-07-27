@@ -256,33 +256,44 @@
         .character-card {
             background: rgba(216, 178, 110, 0.08);
             border-radius: 12px;
-            padding: 20px 15px;
+            padding: 0 0 18px;
             text-align: center;
             border: 1px solid rgba(216, 178, 110, 0.2);
             transition: all 0.3s ease;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            min-height: 170px;
+            justify-content: flex-start;
+            min-height: 0;
         }
         .character-card:hover {
             background: rgba(216, 178, 110, 0.18);
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
         }
-        .character-emoji { font-size: 2.2rem; margin-bottom: 10px; }
+        .character-poster {
+            display: block;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(216, 178, 110, 0.3);
+            background: rgba(0, 0, 0, 0.25);
+        }
+        .character-card .character-emoji { display: none; }
         .character-name {
             font-weight: 600;
             color: #f3e8d2;
             margin-bottom: 8px;
             font-size: 1.1rem;
+            padding: 0 12px;
         }
         .character-info {
             font-size: 0.85rem;
             color: #ecc06e;
             opacity: 0.85;
             line-height: 1.4;
+            padding: 0 12px;
         }
         .gender-icons { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
         .gender-icon { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; font-weight: 600; }
@@ -404,36 +415,43 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
+                        <img class="character-poster" src="https://i0.wp.com/www.larpinghk.com/wp-content/uploads/2024/12/%E5%91%A8%E8%B0%A6-scaled.jpg?fit=1810%2C2560&ssl=1" alt="極目2：九爺！我想給您養老 角色・周謙" loading="lazy">
                         <div class="character-emoji">🎩</div>
                         <div class="character-name">周謙</div>
                         <div class="character-info">男<br>（人物簡介待補）</div>
                     </div>
                     <div class="character-card">
+                        <img class="character-poster" src="https://i0.wp.com/www.larpinghk.com/wp-content/uploads/2024/12/%E9%99%88%E5%98%89%E6%A0%91-scaled.jpg?fit=1810%2C2560&ssl=1" alt="極目2：九爺！我想給您養老 角色・陳嘉樹" loading="lazy">
                         <div class="character-emoji">🌳</div>
                         <div class="character-name">陳嘉樹</div>
                         <div class="character-info">男<br>（人物簡介待補）</div>
                     </div>
                     <div class="character-card">
+                        <img class="character-poster" src="https://i0.wp.com/www.larpinghk.com/wp-content/uploads/2024/12/%E5%AD%A3%E4%BF%AE%E8%BF%9C-scaled.jpg?resize=768%2C1086&ssl=1" alt="極目2：九爺！我想給您養老 角色・季修遠" loading="lazy">
                         <div class="character-emoji">📜</div>
                         <div class="character-name">季修遠</div>
                         <div class="character-info">男<br>（人物簡介待補）</div>
                     </div>
                     <div class="character-card">
+                        <img class="character-poster" src="https://i0.wp.com/www.larpinghk.com/wp-content/uploads/2024/12/%E9%99%86%E7%A7%89%E7%99%BD-scaled.jpg?resize=768%2C1086&ssl=1" alt="極目2：九爺！我想給您養老 角色・陸秉白" loading="lazy">
                         <div class="character-emoji">🥃</div>
                         <div class="character-name">陸秉白</div>
                         <div class="character-info">男<br>（人物簡介待補）</div>
                     </div>
                     <div class="character-card">
+                        <img class="character-poster" src="https://i0.wp.com/www.larpinghk.com/wp-content/uploads/2024/12/%E5%95%86%E7%BE%BD-scaled.jpg?resize=768%2C1086&ssl=1" alt="極目2：九爺！我想給您養老 角色・商羽" loading="lazy">
                         <div class="character-emoji">🪶</div>
                         <div class="character-name">商羽</div>
                         <div class="character-info">女<br>（人物簡介待補）</div>
                     </div>
                     <div class="character-card">
+                        <img class="character-poster" src="https://i0.wp.com/www.larpinghk.com/wp-content/uploads/2024/12/%E6%9D%8E%E5%A9%89%E5%BA%8F-scaled.jpg?resize=768%2C1086&ssl=1" alt="極目2：九爺！我想給您養老 角色・李婉序" loading="lazy">
                         <div class="character-emoji">🪷</div>
                         <div class="character-name">李婉序</div>
                         <div class="character-info">女<br>（人物簡介待補）</div>
                     </div>
                     <div class="character-card">
+                        <img class="character-poster" src="https://i0.wp.com/www.larpinghk.com/wp-content/uploads/2024/12/%E6%B2%88%E8%AF%86%E6%9C%88-scaled.jpg?resize=768%2C1086&ssl=1" alt="極目2：九爺！我想給您養老 角色・沈識月" loading="lazy">
                         <div class="character-emoji">🌙</div>
                         <div class="character-name">沈識月</div>
                         <div class="character-info">女<br>（人物簡介待補）</div>
