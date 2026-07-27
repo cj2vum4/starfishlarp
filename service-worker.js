@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-27-a';
+const CACHE_VERSION = '2026-07-27-jinmen-canonical';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -10,19 +10,19 @@ const APP_SHELL = [
     './',
     './index.html',
     './offline.html',
+    './榮譽牆.html',
     './新增玩本記錄.html',
+    './7人/津門遺雲.html',
     './manifest.webmanifest',
     './index.css?v=20260716',
-    './honor-form.css?v=20260715a',
-    './scripts.js?v=20260702a',
+    './honor-form.css?v=20260726',
+    './scripts.js?v=20260727-jinmen',
     './scripts-data.js?v=20260716',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20260714b',
-    './homepage-overrides.js?v=20260727',
-    './jinmen-media.js?v=20260727',
-    './play-record-config.js?v=20260727',
-    './play-record.js?v=20260716',
+    './play-record-config.js?v=20260727-2',
+    './play-record.js?v=20260727-2',
     './pwa/favicon-32.png',
     './pwa/apple-touch-icon.png',
     './pwa/icon-192.png',
