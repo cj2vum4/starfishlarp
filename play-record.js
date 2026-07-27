@@ -22,7 +22,19 @@
                     .map((role) => String(role || '').trim())
                     .filter(Boolean)
             ))
-        }));
+        }))
+        .sort((a, b) => {
+            const aLength = Array.from(a.label.replace(/\s+/g, '')).length;
+            const bLength = Array.from(b.label.replace(/\s+/g, '')).length;
+            const lengthDifference = aLength - bLength;
+
+            if (lengthDifference !== 0) return lengthDifference;
+
+            return a.label.localeCompare(b.label, 'zh-Hant', {
+                numeric: true,
+                sensitivity: 'base'
+            });
+        });
 
     const form = document.getElementById('playRecordForm');
     const scriptSelect = document.getElementById('scriptSelect');
