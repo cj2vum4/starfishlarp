@@ -1,21 +1,5 @@
 (function () {
-  function loadPageEnhancements() {
-    let path = '';
-    try { path = decodeURIComponent(window.location.pathname || ''); } catch (_) {}
-    if (!path.includes('津門遺雲')) return;
-    if (document.querySelector('script[data-jinmen-media]')) return;
-
-    const current = document.currentScript || document.querySelector('script[src*="bgm-control.js"]');
-    const base = current && current.src ? current.src.replace(/bgm-control\.js.*$/, '') : '../';
-    const script = document.createElement('script');
-    script.src = `${base}jinmen-media.js?v=20260727`;
-    script.dataset.jinmenMedia = 'true';
-    document.head.appendChild(script);
-  }
-
   function setup() {
-    loadPageEnhancements();
-
     const audio = document.getElementById('bgm');
     if (!audio) return;
 

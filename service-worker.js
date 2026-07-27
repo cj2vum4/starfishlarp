@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-27-jimu2';
+const CACHE_VERSION = '2026-07-27-jinmen-fix';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -17,11 +17,11 @@ const APP_SHELL = [
     './manifest.webmanifest',
     './index.css?v=20260716',
     './honor-form.css?v=20260726',
-    './scripts.js?v=20260727-jimu2',
+    './scripts.js?v=20260727-jinmen2',
     './scripts-data.js?v=20260716',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
-    './pwa.js?v=20260714b',
+    './pwa.js?v=20260727',
     './play-record-config.js?v=20260727-2',
     './play-record.js?v=20260727-2',
     './pwa/favicon-32.png',
@@ -35,6 +35,8 @@ self.addEventListener('install', function (event) {
     event.waitUntil(
         caches.open(APP_SHELL_CACHE).then(function (cache) {
             return cache.addAll(APP_SHELL);
+        }).then(function () {
+            return self.skipWaiting();
         })
     );
 });
@@ -52,12 +54,6 @@ self.addEventListener('activate', function (event) {
             return self.clients.claim();
         })
     );
-});
-
-self.addEventListener('message', function (event) {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
 });
 
 async function trimRuntimeCache(cache) {

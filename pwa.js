@@ -1,14 +1,6 @@
 (function () {
     'use strict';
 
-    (function loadHomepageOverrides() {
-        if (document.querySelector('script[data-homepage-overrides]')) return;
-        var script = document.createElement('script');
-        script.src = 'homepage-overrides.js?v=20260727';
-        script.dataset.homepageOverrides = 'true';
-        document.head.appendChild(script);
-    })();
-
     var installButton = document.getElementById('pwaInstallButton');
     var installLabel = document.getElementById('pwaInstallLabel');
     var toast = document.getElementById('pwaToast');
@@ -18,7 +10,6 @@
     var deferredInstallPrompt = null;
     var toastTimer = null;
     var refreshing = false;
-    var updateRequested = false;
     var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -109,37 +100,12 @@
         showToast('網路已恢復連線。');
     });
 
-    function offerUpdate(worker) {
-        showToast('網站有新版本可用。', {
-            duration: 0,
-            actionLabel: '立即更新',
-            onAction: function () {
-                updateRequested = true;
-                worker.postMessage({ type: 'SKIP_WAITING' });
-            }
-        });
-    }
-
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
             navigator.serviceWorker.register('./service-worker.js').then(function (registration) {
                 document.documentElement.dataset.pwaStatus = 'registered';
                 navigator.serviceWorker.ready.then(function () {
                     document.documentElement.dataset.pwaStatus = navigator.serviceWorker.controller ? 'controlled' : 'ready';
-                });
-
-                if (registration.waiting && navigator.serviceWorker.controller) {
-                    offerUpdate(registration.waiting);
-                }
-
-                registration.addEventListener('updatefound', function () {
-                    var worker = registration.installing;
-                    if (!worker) return;
-                    worker.addEventListener('statechange', function () {
-                        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-                            offerUpdate(worker);
-                        }
-                    });
                 });
 
                 registration.update().catch(function () { /* next visit will retry */ });
@@ -149,9 +115,10 @@
             });
         });
 
+        // 新版本裝好即自動接管並重整，不再詢問使用者。
         navigator.serviceWorker.addEventListener('controllerchange', function () {
             document.documentElement.dataset.pwaStatus = 'controlled';
-            if (!updateRequested || refreshing) return;
+            if (refreshing) return;
             refreshing = true;
             window.location.reload();
         });
