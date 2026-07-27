@@ -60,11 +60,11 @@ window.SCRIPTS = [
   {"id":"lxe8","name":"龍宴","file":"8人以上/龍宴.html","players":8,"playersLabel":"5男3女","time":5,"timeLabel":"5小時","difficulty":3,"types":["古裝","宮廷","推理","陣營","機制"],"theme":"horror","poster":"https://i.postimg.cc/4dxTwvXZ/SKM-C30820072713280-0001.jpg","reviewKey":"龍宴","characters":["宋婷","林婉兒","陳曦","韓淳","李清文","陳敬之","韓忠","趙衛"]},
   {"id":"fengtuz","name":"瘋兔子，白又白，砍下腦袋飛起來","file":"6人/瘋兔子白又白砍下腦袋飛起來.html","players":6,"playersLabel":"3男3女（可反串）","time":4.5,"timeLabel":"4.5小時","difficulty":2,"types":["架空","還原","驚悚","怪談","新手"],"theme":"horror","poster":"劇本資料/角色海報/《疯兔子》—主海报.jpg","reviewKey":"瘋兔子，白又白，砍下腦袋飛起來","characters":["夏瞳","簡菲菲","姜沁","簡辭","林雲書","王之喻"]},
   {"id":"chunzhou","name":"春晝短","file":"6人/春晝短.html","players":6,"playersLabel":"3男3女","time":4,"timeLabel":"4小時","difficulty":3,"types":["現代","情感","沉浸","治癒","進階"],"theme":"love","poster":"https://i.postimg.cc/XqQBwLYR/ju-ben-hai-bao1.jpg","reviewKey":"春晝短","characters":["何西西","喬齊","楊夢詩","林宇白","余想","陳鏡"]},
-  {"id":"jinmen","name":"津門遺雲","file":"8人以上/津門遺雲.html","players":8,"playersLabel":"4男3女＋捕快","time":4.5,"timeLabel":"4-5小時","difficulty":2,"types":["民國","歡樂","嘴砲","陣營","新手"],"theme":"history","poster":"","reviewKey":"津門遺雲","characters":["大少爺","大少奶奶","二少爺","二少奶奶","三小姐","四少爺","大掌櫃","捕快"]},
+  {"id":"jinmen","name":"津門遺雲","file":"7人/津門遺雲.html","players":7,"playersLabel":"4男3女","time":4.5,"timeLabel":"4-5小時","difficulty":2,"types":["民國","歡樂","嘴砲","陣營","新手"],"theme":"history","poster":"https://i.postimg.cc/QNpdd5nW/feng-mian.jpg","reviewKey":"津門遺雲","characters":["大少爺","大少奶奶","二少爺","二少奶奶","三小姐","四少爺","大掌櫃"]},
   {"id":"jimu2","name":"極目2：九爺！我想給您養老","file":"7人/極目2九爺我想給您養老.html","players":7,"playersLabel":"4男3女","time":4.5,"timeLabel":"4-5小時","difficulty":3,"types":["民國","歡樂","陣營","機制","本格"],"theme":"history","poster":"","reviewKey":"極目2：九爺！我想給您養老","characters":["周謙","陳嘉樹","季修遠","陸秉白","商羽","李婉序","沈識月"]}
 ];
 
-// scripts.js 會在首頁 DOM 完成後載入；立刻同步初始數量，避免畫面短暫顯示舊的 47。
+// scripts.js 會在首頁 DOM 完成後載入；立刻同步初始數量。
 (function syncInitialScriptCount() {
   const countElement = document.getElementById('filteredCount');
   if (countElement) countElement.textContent = String(window.SCRIPTS.length);
