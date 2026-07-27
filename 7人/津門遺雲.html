@@ -28,194 +28,118 @@
         img { max-width: 100%; }
         #embers { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
         .back-link {
-            position: fixed;
-            top: 18px;
-            left: 18px;
-            z-index: 50;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 17px;
-            border: 1px solid rgba(226, 190, 119, .35);
-            border-radius: 999px;
-            text-decoration: none;
-            font-weight: 700;
-            color: #fff1d0;
-            background: rgba(26, 15, 10, .76);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .32);
+            position: fixed; top: 18px; left: 18px; z-index: 50;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 11px 17px; border: 1px solid rgba(226, 190, 119, .35);
+            border-radius: 999px; text-decoration: none; font-weight: 700;
+            color: #fff1d0; background: rgba(26, 15, 10, .76);
+            backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0, 0, 0, .32);
         }
         .container {
-            position: relative;
-            z-index: 1;
+            position: relative; z-index: 1;
             width: min(1180px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 72px 0 64px;
+            margin: 0 auto; padding: 72px 0 64px;
         }
-        .hero {
-            text-align: center;
-            padding: 30px 12px 34px;
-        }
+        .hero { text-align: center; padding: 30px 12px 34px; }
         .eyebrow {
-            margin: 0 0 12px;
-            color: #d7ad61;
-            font-size: .78rem;
-            letter-spacing: .28em;
-            font-weight: 800;
+            margin: 0 0 12px; color: #d7ad61;
+            font-size: .78rem; letter-spacing: .28em; font-weight: 800;
         }
         h1 {
-            margin: 0;
-            font-family: "Noto Serif TC", "Microsoft JhengHei", serif;
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            letter-spacing: .14em;
+            margin: 0; font-family: "Noto Serif TC", "Microsoft JhengHei", serif;
+            font-size: clamp(3rem, 8vw, 5.5rem); letter-spacing: .14em;
             color: #fff0c8;
             text-shadow: 0 10px 34px rgba(0, 0, 0, .55), 0 0 26px rgba(218, 169, 83, .24);
         }
         .subtitle {
-            max-width: 780px;
-            margin: 18px auto 0;
+            max-width: 780px; margin: 18px auto 0;
             color: rgba(245, 232, 208, .8);
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            line-height: 1.8;
+            font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.8;
         }
         .poster-gallery {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 24px;
-            max-width: 920px;
-            margin: 0 auto 42px;
+            display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px; max-width: 920px; margin: 0 auto 42px;
         }
         .poster-gallery figure {
-            margin: 0;
-            padding: 12px;
+            margin: 0; padding: 12px;
             border: 1px solid rgba(222, 180, 105, .28);
-            border-radius: 20px;
-            background: rgba(35, 21, 14, .68);
+            border-radius: 20px; background: rgba(35, 21, 14, .68);
             box-shadow: 0 24px 55px rgba(0, 0, 0, .42);
         }
-        .poster-gallery img {
-            display: block;
-            width: 100%;
-            height: auto;
-            border-radius: 13px;
-        }
+        .poster-gallery img { display: block; width: 100%; height: auto; border-radius: 13px; }
         .poster-gallery figcaption {
-            padding: 11px 4px 2px;
-            text-align: center;
-            color: rgba(242, 219, 175, .72);
-            font-size: .88rem;
-            letter-spacing: .08em;
+            padding: 11px 4px 2px; text-align: center;
+            color: rgba(242, 219, 175, .72); font-size: .88rem; letter-spacing: .08em;
         }
         .content-grid {
-            display: grid;
-            grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
-            gap: 24px;
-            align-items: start;
+            display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+            gap: 24px; align-items: start;
         }
         .card {
             border: 1px solid rgba(222, 180, 105, .23);
-            border-radius: 20px;
-            padding: 26px;
-            background: rgba(37, 23, 16, .72);
-            backdrop-filter: blur(10px);
+            border-radius: 20px; padding: 26px;
+            background: rgba(37, 23, 16, .72); backdrop-filter: blur(10px);
             box-shadow: 0 20px 48px rgba(0, 0, 0, .32);
         }
         .card + .card { margin-top: 24px; }
         .card h2 {
-            margin: 0 0 20px;
-            padding-bottom: 12px;
+            margin: 0 0 20px; padding-bottom: 12px;
             border-bottom: 1px solid rgba(219, 173, 93, .32);
-            color: #efc97d;
-            font-family: "Noto Serif TC", serif;
-            font-size: 1.55rem;
-            letter-spacing: .08em;
+            color: #efc97d; font-family: "Noto Serif TC", serif;
+            font-size: 1.55rem; letter-spacing: .08em;
         }
         .info-list { display: grid; gap: 12px; }
         .info-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 13px 15px;
-            border-radius: 12px;
+            display: flex; justify-content: space-between; gap: 20px;
+            padding: 13px 15px; border-radius: 12px;
             background: rgba(226, 183, 104, .075);
         }
         .info-row strong { color: #f4e5c7; }
-        .info-row span { color: #e5bd70; text-align: right; }
+        .info-row > span { color: #e5bd70; text-align: right; }
         .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
         .tag {
-            padding: 5px 11px;
-            border-radius: 999px;
+            padding: 5px 11px; border-radius: 999px;
             border: 1px solid rgba(226, 181, 98, .28);
-            color: #f5dfb5;
-            background: rgba(112, 52, 35, .42);
-            font-size: .84rem;
+            color: #f5dfb5; background: rgba(112, 52, 35, .42); font-size: .84rem;
         }
         .copy {
-            margin: 0;
-            color: rgba(240, 226, 201, .86);
-            font-size: 1.02rem;
-            line-height: 1.95;
-            text-align: justify;
+            margin: 0; color: rgba(240, 226, 201, .86);
+            font-size: 1.02rem; line-height: 1.95; text-align: justify;
         }
         .copy strong { color: #efc97d; }
         .characters-section { margin-top: 28px; }
         .characters-section > h2 {
-            margin: 0 0 18px;
-            text-align: center;
-            color: #f1ce89;
-            font-family: "Noto Serif TC", serif;
-            font-size: 2rem;
-            letter-spacing: .1em;
+            margin: 0 0 18px; text-align: center; color: #f1ce89;
+            font-family: "Noto Serif TC", serif; font-size: 2rem; letter-spacing: .1em;
         }
         .characters-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
+            display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;
         }
         .character-card {
-            overflow: hidden;
-            border: 1px solid rgba(222, 180, 105, .24);
-            border-radius: 16px;
-            background: rgba(37, 23, 16, .78);
+            overflow: hidden; border: 1px solid rgba(222, 180, 105, .24);
+            border-radius: 16px; background: rgba(37, 23, 16, .78);
             box-shadow: 0 15px 34px rgba(0, 0, 0, .28);
             transition: transform .25s ease, border-color .25s ease;
         }
         .character-card:hover { transform: translateY(-5px); border-color: rgba(237, 199, 126, .52); }
         .character-card img {
-            display: block;
-            width: 100%;
-            aspect-ratio: 3 / 4;
-            object-fit: cover;
-            background: #140d09;
+            display: block; width: 100%; aspect-ratio: 3 / 4;
+            object-fit: cover; background: #140d09;
         }
         .character-body { padding: 15px 13px 17px; text-align: center; }
         .character-name {
-            margin: 0;
-            color: #fff0ca;
-            font-family: "Noto Serif TC", serif;
-            font-size: 1.15rem;
-            font-weight: 800;
+            margin: 0; color: #fff0ca; font-family: "Noto Serif TC", serif;
+            font-size: 1.15rem; font-weight: 800;
         }
         .character-info {
-            margin: 7px 0 0;
-            color: rgba(233, 210, 170, .7);
-            font-size: .85rem;
-            line-height: 1.55;
+            margin: 7px 0 0; color: rgba(233, 210, 170, .7);
+            font-size: .85rem; line-height: 1.55;
         }
-        .cta {
-            margin-top: 38px;
-            text-align: center;
-        }
+        .cta { margin-top: 38px; text-align: center; }
         .cta a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 230px;
-            padding: 15px 28px;
-            border-radius: 999px;
-            text-decoration: none;
-            font-weight: 800;
-            color: #1b1009;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 230px; padding: 15px 28px; border-radius: 999px;
+            text-decoration: none; font-weight: 800; color: #1b1009;
             background: linear-gradient(135deg, #f0cd82, #bd7b37);
             box-shadow: 0 16px 34px rgba(148, 82, 36, .36);
         }
@@ -229,7 +153,7 @@
             .characters-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
             .card { padding: 20px; }
             .info-row { flex-direction: column; gap: 7px; }
-            .info-row span { text-align: left; }
+            .info-row > span { text-align: left; }
             .tags { justify-content: flex-start; }
             .back-link { top: 10px; left: 10px; }
         }
@@ -332,7 +256,7 @@
         </div>
     </main>
 
-    <audio id="bgm" src="../8人以上/津門遺雲.mp3" autoplay loop muted></audio>
+    <audio id="bgm" src="津門遺雲.mp3" autoplay loop muted></audio>
     <script>
         document.addEventListener('click', function () {
             var audio = document.getElementById('bgm');
