@@ -1,20 +1,26 @@
 /**
  * 海星劇本殺｜玩本記錄寫入 Google Sheet
  *
- * 使用方式：
- * 1. 在榮譽牆目前使用的 Google 試算表中開啟：
- *    擴充功能 → Apps Script。
- * 2. 將本檔完整貼入 Code.gs。
- * 3. 修改 SHEET_NAME；若原本回應工作表名稱就是「表單回應 1」可不改。
- * 4. 部署 → 新增部署作業 → 類型選「網頁應用程式」。
- * 5. 執行身分選「我」，存取權限選「所有人」。
- * 6. 複製 /exec 網址，貼到網站的 play-record-config.js。
+ * 目標試算表：
+ * https://docs.google.com/spreadsheets/d/1hjdPJQo5Z6nVICZsvljihSXoZAJ32DpiAEQikCaog-8/edit?gid=463584243
  *
- * 表頭會沿用榮譽牆目前讀取的名稱：
+ * 使用方式：
+ * 1. 將本檔完整貼入 Apps Script 專案的 Code.gs。
+ * 2. 儲存後選擇：部署 → 新增部署作業 → 網頁應用程式。
+ * 3. 執行身分選「我」，存取權限選「所有人」。
+ * 4. 複製以 /exec 結尾的網址，貼到網站的 play-record-config.js。
+ *
+ * 程式會直接開啟下方指定的試算表與工作表分頁，不依賴 Google 表單，
+ * 也不要求 Apps Script 必須綁定在試算表內。
+ *
+ * 表頭沿用榮譽牆目前讀取的名稱：
  * 怎麼稱呼你呢、日期、劇本、角色、給予評價、50字以內的心得推薦、心情。
  */
 
+const SPREADSHEET_ID = '1hjdPJQo5Z6nVICZsvljihSXoZAJ32DpiAEQikCaog-8';
+const SHEET_GID = 463584243;
 const SHEET_NAME = '表單回應 1';
+
 const REQUIRED_HEADERS = [
   '時間戳記',
   '怎麼稱呼你呢',
@@ -30,6 +36,8 @@ function doGet() {
   return jsonResponse_({
     ok: true,
     service: 'starfishlarp-play-record',
+    spreadsheetId: SPREADSHEET_ID,
+    sheetGid: SHEET_GID,
     message: 'endpoint ready'
   });
 }
@@ -78,7 +86,9 @@ function doPost(e) {
 
     return jsonResponse_({
       ok: true,
-      row: sheet.getLastRow()
+      row: sheet.getLastRow(),
+      sheetName: sheet.getName(),
+      sheetGid: sheet.getSheetId()
     });
   } catch (error) {
     console.error(error);
@@ -90,12 +100,26 @@ function doPost(e) {
 }
 
 function getTargetSheet_() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   if (!spreadsheet) {
-    throw new Error('找不到綁定的 Google 試算表。請從試算表的「擴充功能 → Apps Script」建立此程式。');
+    throw new Error('找不到指定的 Google 試算表，請確認 SPREADSHEET_ID 與帳號權限。');
   }
 
-  return spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.getSheets()[0];
+  const sheets = spreadsheet.getSheets();
+  const sheetByGid = sheets.find(function (sheet) {
+    return sheet.getSheetId() === SHEET_GID;
+  });
+
+  if (sheetByGid) return sheetByGid;
+
+  const sheetByName = spreadsheet.getSheetByName(SHEET_NAME);
+  if (sheetByName) return sheetByName;
+
+  if (!sheets.length) {
+    throw new Error('指定的 Google 試算表中沒有可寫入的工作表。');
+  }
+
+  return sheets[0];
 }
 
 function ensureHeaders_(sheet) {
