@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-28-security-cdn-fallback';
+const CACHE_VERSION = '2026-07-28-tags-duration';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -17,8 +17,8 @@ const APP_SHELL = [
     './manifest.webmanifest',
     './index.css?v=20260716',
     './honor-form.css?v=20260726',
-    './scripts.js?v=20260727-jinmen2',
-    './scripts-data.js?v=20260728',
+    './scripts.js?v=20260728-tags',
+    './scripts-data.js?v=20260728-tags',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20260727',
