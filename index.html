@@ -209,19 +209,23 @@
                 <option value="8">8人</option>
                 <option value="10">10人</option>
             </select>
+            <!-- 這些 option 的 value 必須和下方 .ftag 按鈕的 data-value 完全一致：
+                 hero.js 用 select.value = data-value 來轉送篩選，
+                 沒有對應的 option 會讓 value 變成空字串、篩選靜默失效。 -->
             <select id="typeFilter" class="hidden-select" tabindex="-1" aria-hidden="true">
                 <option value="">全部類型</option>
-                <option value="歡樂">歡樂</option>
                 <option value="推理">推理</option>
+                <option value="還原">還原</option>
                 <option value="情感">情感</option>
+                <option value="歡樂">歡樂</option>
                 <option value="機制">機制</option>
-                <option value="新手">新手</option>
-                <option value="繁體">繁體</option>
                 <option value="陣營">陣營</option>
                 <option value="沉浸">沉浸</option>
-                <option value="微恐">微恐</option>
+                <option value="新手">新手</option>
+                <option value="驚悚">驚悚</option>
                 <option value="無兇手">無兇手</option>
                 <option value="立意">立意</option>
+                <option value="繁體">繁體</option>
             </select>
             <select id="difficultyFilter" class="hidden-select" tabindex="-1" aria-hidden="true">
                 <option value="">全部難度</option>
@@ -250,13 +254,14 @@
                 <div class="tag-row scrollx">
                     <button class="ftag active" data-filter="type" data-value="">全部</button>
                     <button class="ftag" data-filter="type" data-value="推理">推理</button>
+                    <button class="ftag" data-filter="type" data-value="還原">還原</button>
                     <button class="ftag" data-filter="type" data-value="情感">情感</button>
                     <button class="ftag" data-filter="type" data-value="歡樂">歡樂</button>
                     <button class="ftag" data-filter="type" data-value="機制">機制</button>
                     <button class="ftag" data-filter="type" data-value="陣營">陣營</button>
                     <button class="ftag" data-filter="type" data-value="沉浸">沉浸</button>
                     <button class="ftag" data-filter="type" data-value="新手">新手</button>
-                    <button class="ftag" data-filter="type" data-value="微恐">微恐</button>
+                    <button class="ftag" data-filter="type" data-value="驚悚">驚悚</button>
                     <button class="ftag" data-filter="type" data-value="無兇手">無兇手</button>
                     <button class="ftag" data-filter="type" data-value="立意">立意</button>
                     <button class="ftag" data-filter="type" data-value="繁體">繁體</button>
@@ -316,7 +321,7 @@
     </footer>
 
     <script src="scripts.js?v=20260728-tags"></script>
-    <script src="scripts-data.js?v=20260728-tags"></script>
+    <script src="scripts-data.js?v=20260728-tags2"></script>
     <script src="vendor/three.min.js"></script>
     <script src="hero.js?v=20260702a"></script>
 
