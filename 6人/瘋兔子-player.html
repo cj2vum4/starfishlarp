@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#110307">
+  <title>《瘋兔子》玩家端</title>
+  <link rel="stylesheet" href="瘋兔子-online.css">
+  <script
+    src="https://cdn.jsdelivr.net/npm/opencc-js@1.4.1/dist/umd/full.js"
+    onerror="this.onerror=null;this.src='../vendor/opencc-js-full.js'"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="瘋兔子-mock-supabase.js"></script>
+  <script src="瘋兔子-common.js" defer></script>
+  <script src="瘋兔子-player.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-kicker">玩家端</div>
+      <h1>瘋兔子，白又白，砍下腦袋飛起來</h1>
+    </div>
+    <nav class="header-links" aria-label="相關頁面">
+      <a class="header-link" href="瘋兔子白又白砍下腦袋飛起來.html">劇本介紹</a>
+    </nav>
+  </header>
+
+  <main class="player-shell">
+    <section id="joinScreen" class="card join-hero">
+      <div class="brand-kicker">進入遊戲</div>
+      <h2>兔子已經醒了。</h2>
+      <p>輸入主持人提供的場次程式碼。驗證成功後，再選擇角色並留下你的暱稱。</p>
+      <div id="joinNotice" class="notice hidden" role="status"></div>
+
+      <div class="join-form">
+        <div class="field">
+          <label for="sessionCodeInput">場次程式碼</label>
+          <input
+            id="sessionCodeInput"
+            class="input"
+            maxlength="13"
+            placeholder="RT-XXXXXX"
+            autocomplete="off"
+            autocapitalize="characters">
+        </div>
+        <button id="validateButton" class="button primary" type="button">驗證場次</button>
+
+        <div id="identityForm" class="grid hidden">
+          <div class="field">
+            <label for="nicknameInput">玩家暱稱</label>
+            <input
+              id="nicknameInput"
+              class="input"
+              maxlength="40"
+              placeholder="你希望主持人怎麼稱呼你"
+              autocomplete="nickname">
+          </div>
+          <div class="field">
+            <label>選擇角色</label>
+            <div id="roleGrid" class="role-grid"></div>
+          </div>
+          <button id="joinButton" class="button primary" type="button">以此角色加入場次</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="playerScreen" class="hidden">
+      <div id="playerNotice" class="notice hidden" role="status"></div>
+      <div class="player-stage">
+        <div>
+          <div class="stage-label">目前遊戲階段</div>
+          <div id="currentPhase" class="stage-value">等待主持人</div>
+          <div id="currentIdentity" class="muted"></div>
+        </div>
+        <div style="text-align: right">
+          <div id="currentSession" class="session-code" style="font-size: 1rem"></div>
+          <button id="leaveButton" class="button small danger" type="button">離開場次</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button id="cluesTabButton" class="button tab-button active" type="button">我的線索</button>
+        <button id="broadcastTabButton" class="button tab-button" type="button">主持人廣播</button>
+      </div>
+
+      <section id="cluesPanel" class="card">
+        <div class="card-body">
+          <div class="section-heading">
+            <div>
+              <h2>我的線索</h2>
+              <p>只顯示全體線索與目前角色的私人線索</p>
+            </div>
+          </div>
+          <div id="playerClueList" class="clue-list"></div>
+        </div>
+      </section>
+
+      <section id="broadcastPanel" class="card hidden">
+        <div class="card-body">
+          <div class="section-heading">
+            <div>
+              <h2>主持人廣播</h2>
+              <p>最新訊息會顯示在最上方</p>
+            </div>
+          </div>
+          <div id="playerBroadcastHistory" class="history-list"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

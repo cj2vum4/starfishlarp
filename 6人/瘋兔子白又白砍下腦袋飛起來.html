@@ -418,12 +418,51 @@
             box-shadow: 0 15px 40px rgba(200, 30, 30, 0.6);
         }
 
+        .online-entry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            width: min(760px, 100%);
+            margin: 0 auto 22px;
+        }
+
+        .online-entry {
+            display: grid;
+            gap: 8px;
+            padding: 22px;
+            border: 1px solid rgba(215, 74, 87, 0.42);
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(52, 8, 14, 0.96), rgba(18, 3, 7, 0.96));
+            color: #f5e7e8;
+            text-align: left;
+            text-decoration: none;
+            transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+        }
+
+        .online-entry:hover {
+            transform: translateY(-3px);
+            border-color: #e65d69;
+            box-shadow: 0 16px 34px rgba(65, 0, 8, .34);
+        }
+
+        .online-entry strong {
+            color: #ff8993;
+            font-size: 1.18rem;
+        }
+
+        .online-entry span {
+            color: #bfa3a6;
+            font-size: .9rem;
+            line-height: 1.55;
+        }
+
         /* RWD */
         @media (max-width: 768px) {
             .main-content { grid-template-columns: 1fr; gap: 20px; }
             .card.description { grid-column: span 1; }
             .title { font-size: 2rem; }
             .characters-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+            .online-entry-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -567,6 +606,17 @@
                     由<span class="highlight">斐然</span>創作、鑫夢人生發行，迷圈評分 <span class="highlight">7.2分（值得一玩）</span>，3515 人玩過。
                 </div>
             </div>
+        </div>
+
+        <div class="online-entry-grid" aria-label="線上遊玩入口">
+            <a class="online-entry" href="瘋兔子_主持.html">
+                <strong>主持人端</strong>
+                <span>建立場次、控制流程、發放線索與傳送廣播。</span>
+            </a>
+            <a class="online-entry" href="瘋兔子-player.html">
+                <strong>玩家端</strong>
+                <span>輸入場次程式碼、選擇角色並接收專屬線索。</span>
+            </a>
         </div>
 
         <div class="cta-section">

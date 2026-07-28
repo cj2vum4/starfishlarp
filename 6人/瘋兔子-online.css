@@ -1,0 +1,590 @@
+:root {
+  color-scheme: dark;
+  --bg: #090204;
+  --surface: #16080b;
+  --surface-2: #210c10;
+  --surface-3: #2c1116;
+  --border: rgba(211, 73, 85, 0.28);
+  --red: #d43442;
+  --red-bright: #ff6370;
+  --red-dark: #7f1823;
+  --gold: #d7b47a;
+  --text: #f4e8e9;
+  --muted: #b69a9e;
+  --green: #55d792;
+  --yellow: #f1c864;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 20% -10%, rgba(134, 17, 30, 0.3), transparent 34rem),
+    linear-gradient(180deg, #110307, var(--bg) 35rem);
+  color: var(--text);
+  font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(255, 99, 112, 0.42);
+  outline-offset: 2px;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem clamp(1rem, 3vw, 2.5rem);
+  border-bottom: 1px solid var(--border);
+  background: rgba(9, 2, 4, 0.9);
+  backdrop-filter: blur(16px);
+}
+
+.brand {
+  min-width: 0;
+}
+
+.brand-kicker {
+  color: var(--red-bright);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.brand h1 {
+  overflow: hidden;
+  margin: 0.2rem 0 0;
+  font-size: clamp(1rem, 2.7vw, 1.45rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-links,
+.button-row,
+.filter-row,
+.session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.header-link,
+.button {
+  display: inline-flex;
+  min-height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.66rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 160ms ease;
+}
+
+.header-link:hover,
+.button:hover:not(:disabled) {
+  border-color: rgba(255, 99, 112, 0.65);
+  background: var(--surface-3);
+  transform: translateY(-1px);
+}
+
+.button.primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--red), #a61f2d);
+  box-shadow: 0 8px 24px rgba(212, 52, 66, 0.2);
+}
+
+.button.danger {
+  border-color: rgba(255, 99, 112, 0.55);
+  background: rgba(127, 24, 35, 0.35);
+}
+
+.button.small {
+  min-height: 2.2rem;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.83rem;
+}
+
+.button:disabled {
+  cursor: progress;
+  opacity: 0.55;
+  transform: none;
+}
+
+.app-shell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.notice {
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(241, 200, 100, 0.35);
+  border-radius: 0.75rem;
+  background: rgba(94, 68, 15, 0.24);
+  color: #ffeab4;
+  line-height: 1.55;
+}
+
+.notice.error {
+  border-color: rgba(255, 99, 112, 0.5);
+  background: rgba(127, 24, 35, 0.3);
+  color: #ffd5d8;
+}
+
+.notice.success {
+  border-color: rgba(85, 215, 146, 0.4);
+  background: rgba(26, 103, 64, 0.25);
+  color: #c9ffe0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-grid {
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr);
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, rgba(33, 12, 16, 0.96), rgba(18, 7, 10, 0.96));
+  box-shadow: var(--shadow);
+}
+
+.card-body {
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.section-heading {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 1rem;
+}
+
+.section-heading h2,
+.section-heading h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.section-heading p,
+.muted {
+  color: var(--muted);
+}
+
+.section-heading p {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.field label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: rgba(6, 2, 3, 0.62);
+  color: var(--text);
+  padding: 0.7rem 0.82rem;
+}
+
+.textarea {
+  min-height: 7rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.session-code {
+  color: var(--gold);
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: clamp(1.35rem, 5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.session-meta {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-right: 0.35rem;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.status-dot.online {
+  background: var(--green);
+  box-shadow: 0 0 14px rgba(85, 215, 146, 0.7);
+}
+
+.phase-list,
+.role-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.phase-button,
+.role-card {
+  min-height: 6.2rem;
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: rgba(10, 3, 5, 0.55);
+  color: var(--text);
+  text-align: left;
+}
+
+.phase-button {
+  cursor: pointer;
+}
+
+.phase-button.active,
+.role-card.selected {
+  border-color: var(--red-bright);
+  background: rgba(127, 24, 35, 0.32);
+  box-shadow: inset 0 0 0 1px rgba(255, 99, 112, 0.25);
+}
+
+.phase-number {
+  color: var(--red-bright);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.phase-name,
+.role-name {
+  margin-top: 0.35rem;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.role-card {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.role-player {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.role-card.online .role-player {
+  color: var(--green);
+}
+
+.clue-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.clue-card {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: rgba(8, 2, 4, 0.56);
+}
+
+.clue-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.clue-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(212, 52, 66, 0.14);
+  color: #ffc4c9;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.clue-text {
+  max-height: 10rem;
+  overflow: auto;
+  margin: 0;
+  color: #dfced0;
+  font-family: inherit;
+  font-size: 0.87rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.clue-actions {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: auto minmax(130px, 1fr) auto;
+}
+
+.release-summary {
+  color: var(--green);
+  font-size: 0.78rem;
+}
+
+.history-list {
+  display: grid;
+  gap: 0.65rem;
+  max-height: 24rem;
+  overflow: auto;
+}
+
+.history-item {
+  padding: 0.8rem;
+  border-left: 3px solid var(--red);
+  border-radius: 0.3rem 0.7rem 0.7rem 0.3rem;
+  background: rgba(8, 2, 4, 0.58);
+}
+
+.history-item time {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.history-item p {
+  margin: 0.35rem 0 0;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.empty-state {
+  padding: 2rem 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.player-shell {
+  width: min(850px, 100%);
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 2.2rem);
+}
+
+.join-hero {
+  margin: clamp(1rem, 6vh, 4rem) auto;
+  padding: clamp(1.3rem, 5vw, 2.5rem);
+}
+
+.join-hero h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 7vw, 3rem);
+}
+
+.join-hero > p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.join-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.player-stage {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: rgba(33, 12, 16, 0.82);
+}
+
+.stage-label {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.stage-value {
+  margin-top: 0.25rem;
+  color: var(--red-bright);
+  font-weight: 900;
+}
+
+.tabs {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1rem;
+}
+
+.tab-button.active {
+  border-color: var(--red-bright);
+  background: var(--red-dark);
+}
+
+.new-clue {
+  animation: clue-flash 1.6s ease;
+}
+
+@keyframes clue-flash {
+  0%,
+  35% {
+    border-color: var(--yellow);
+    box-shadow: 0 0 24px rgba(241, 200, 100, 0.35);
+  }
+}
+
+.toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 50;
+  max-width: min(25rem, calc(100vw - 2rem));
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(255, 99, 112, 0.5);
+  border-radius: 0.8rem;
+  background: #2b0c12;
+  box-shadow: var(--shadow);
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(1rem);
+  transition: 180ms ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 920px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .header-links {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    position: static;
+    display: grid;
+  }
+
+  .header-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .header-link {
+    padding-inline: 0.6rem;
+    font-size: 0.82rem;
+  }
+
+  .app-shell,
+  .player-shell {
+    padding: 0.8rem;
+  }
+
+  .phase-list,
+  .role-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .clue-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .button {
+    min-height: 2.85rem;
+  }
+
+  .session-actions > * {
+    flex: 1 1 9rem;
+  }
+}
+
+@media (max-width: 410px) {
+  .phase-list,
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+}
