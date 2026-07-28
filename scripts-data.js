@@ -1,6 +1,31 @@
 /* 劇本資料：單一來源 window.SCRIPTS（定義於 scripts.js）。
    新增/修改劇本請改 scripts.js，不要在這裡維護資料。 */
-const scripts = (window.SCRIPTS || []);
+
+/* 標籤同義詞：同一個概念在 scripts.js 裡有不同寫法，
+   篩選是精確字串比對，不對齊就會漏本
+   （例：篩「新手」會漏掉 5 本標為「新手友善」的劇本）。
+   卡片上仍顯示原始標籤文字，這裡只影響篩選比對。 */
+const TYPE_ALIASES = {
+    '新手友善': ['新手'],
+    '微恐怖': ['微恐'],
+    '繁化': ['繁體'],
+    '進階可玩': ['進階'],
+    '硬核推理': ['硬核', '推理'],
+    '日式推理': ['日式', '推理']
+};
+
+function normalizeTypes(types) {
+    const normalized = new Set();
+    (types || []).forEach(type => {
+        (TYPE_ALIASES[type] || [type]).forEach(t => normalized.add(t));
+    });
+    return Array.from(normalized);
+}
+
+const scripts = (window.SCRIPTS || []).map(script => Object.assign({}, script, {
+    // 篩選專用的標籤清單；script.types 保持原樣供卡片顯示
+    filterTypes: normalizeTypes(script.types)
+}));
 
     // DOM載入後執行的初始化函式
     document.addEventListener('DOMContentLoaded', () => {
@@ -45,7 +70,7 @@ const scripts = (window.SCRIPTS || []);
         let filteredScripts = scripts.filter(script => {
             let match = true;
             if (playerFilter && script.players != playerFilter) match = false;
-            if (typeFilter && !script.types.includes(typeFilter)) match = false;
+            if (typeFilter && !script.filterTypes.includes(typeFilter)) match = false;
             if (difficultyFilter && script.difficulty != difficultyFilter) match = false;
             return match;
         });
@@ -72,7 +97,7 @@ const scripts = (window.SCRIPTS || []);
         let availablePlayers = new Set();
         scripts.forEach(script => {
             let match = true;
-            if (typeFilter && !script.types.includes(typeFilter)) match = false;
+            if (typeFilter && !script.filterTypes.includes(typeFilter)) match = false;
             if (difficultyFilter && script.difficulty != difficultyFilter) match = false;
             if (match) {
                 availablePlayers.add(script.players);
@@ -111,7 +136,7 @@ const scripts = (window.SCRIPTS || []);
             if (playerFilter && script.players != playerFilter) match = false;
             if (difficultyFilter && script.difficulty != difficultyFilter) match = false;
             if (match) {
-                script.types.forEach(type => availableTypes.add(type));
+                script.filterTypes.forEach(type => availableTypes.add(type));
             }
         });
         
@@ -144,7 +169,7 @@ const scripts = (window.SCRIPTS || []);
         scripts.forEach(script => {
             let match = true;
             if (playerFilter && script.players != playerFilter) match = false;
-            if (typeFilter && !script.types.includes(typeFilter)) match = false;
+            if (typeFilter && !script.filterTypes.includes(typeFilter)) match = false;
             if (match) {
                 availableDifficulties.add(script.difficulty);
             }
@@ -283,50 +308,35 @@ const scripts = (window.SCRIPTS || []);
     }
 
     // 排序功能
+    // 以 scripts 陣列為排序依據（而非目前的 DOM 順序），
+    // 「預設順序」才能真的還原成 scripts.js 的原始排列。
+    // 排序涵蓋全部卡片（含被篩選隱藏的），避免先排序再篩選與
+    // 先篩選再排序得到不同結果。
     function sortScripts() {
         const sortType = document.getElementById('sortFilter').value;
-        const scriptCards = Array.from(document.querySelectorAll('.script-card:not(.hidden)'));
         const scriptsGrid = document.getElementById('scriptsGrid');
-        
-        if (sortType === 'default') {
-            // 恢復原始順序
-            scriptCards.forEach(card => {
-                scriptsGrid.appendChild(card);
-            });
-            return;
-        }
-        
-        scriptCards.sort((a, b) => {
+        if (!scriptsGrid) return;
+
+        const cardById = new Map(
+            Array.from(scriptsGrid.querySelectorAll('.script-card'))
+                 .map(card => [card.dataset.id, card])
+        );
+
+        const ordered = scripts.slice().sort((a, b) => {
             switch (sortType) {
-                case 'name':
-                    const nameA = a.querySelector('.script-title').textContent;
-                    const nameB = b.querySelector('.script-title').textContent;
-                    return nameA.localeCompare(nameB, 'zh-TW');
-                    
-                case 'difficulty':
-                    const diffA = parseInt(a.dataset.difficulty);
-                    const diffB = parseInt(b.dataset.difficulty);
-                    return diffA - diffB;
-                    
-                case 'time':
-                    const timeA = parseFloat(a.querySelector('.info-badge:nth-child(2)').textContent.replace('⏰ ', '').replace('小時', ''));
-                    const timeB = parseFloat(b.querySelector('.info-badge:nth-child(2)').textContent.replace('⏰ ', '').replace('小時', ''));
-                    return timeA - timeB;
-                    
-                case 'players':
-                    const playersA = parseInt(a.dataset.players);
-                    const playersB = parseInt(b.dataset.players);
-                    return playersA - playersB;
-                    
-                default:
-                    return 0;
+                case 'name':       return a.name.localeCompare(b.name, 'zh-TW');
+                case 'difficulty': return a.difficulty - b.difficulty;
+                case 'time':       return a.time - b.time;
+                case 'players':    return a.players - b.players;
+                default:           return 0;   // 維持 scripts.js 的原始順序
             }
         });
-        
-        // 重新排列卡片
-        scriptCards.forEach(card => {
-            scriptsGrid.appendChild(card);
+
+        ordered.forEach(script => {
+            const card = cardById.get(script.id);
+            if (card) scriptsGrid.appendChild(card);
         });
+
         // 重新計算動畫延遲，確保可見卡片在 2 秒內完成顯示
         applyStaggerAnimationWithinTwoSeconds();
     }
@@ -355,7 +365,7 @@ function renderCards() {
         ];
         const badges = badgeData.map(b => `<span class="info-badge">${b}</span>`).join('');
         const types  = s.types.map(t => `<span class="type-tag">${t}</span>`).join('');
-        return `<article class="script-card" data-theme="${s.theme}" data-players="${s.players}" data-types="${s.types.join(',')}" data-difficulty="${s.difficulty}">
+        return `<article class="script-card" data-id="${s.id}" data-theme="${s.theme}" data-players="${s.players}" data-types="${s.filterTypes.join(',')}" data-difficulty="${s.difficulty}">
             <div class="card-media">
                 <img src="${img}" alt="${s.name}" class="script-image" loading="lazy">
                 <span class="corner-diff">${s.players}人</span>

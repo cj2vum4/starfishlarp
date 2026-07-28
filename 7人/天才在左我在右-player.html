@@ -413,7 +413,7 @@
   }
   .act-nav-inline:hover { background: var(--accent); color: #000; border-color: var(--accent); }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -1180,7 +1180,48 @@ const CLUE_DATA = {
 // ============================================================
 const SUPABASE_URL = 'https://mcphigetltedeadvuvqf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Qdg36jjN7W1DUkBGtrzTtQ_bphP6Zg2';
-const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// CDN 載不到時，用同介面的離線替身接手，讓整頁功能維持可用
+// （進度改存 localStorage，只是收不到 GM 的即時推送）。
+let supabaseOffline = false;
+
+function createOfflineSupabase() {
+  const empty = Promise.resolve({ data: null, error: new Error('Supabase 未載入') });
+  const query = {
+    select() { return query; },
+    eq() { return query; },
+    single() { return empty; },
+    upsert() { return empty; },
+    then(onFulfilled, onRejected) { return empty.then(onFulfilled, onRejected); }
+  };
+  const channel = { on() { return channel; }, subscribe() { return channel; } };
+  return { from() { return query; }, channel() { return channel; } };
+}
+
+const _supa = (function () {
+  try {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  } catch (e) {
+    console.warn('Supabase 初始化失敗:', e);
+  }
+  supabaseOffline = true;
+  window.supabaseOffline = true;
+  console.warn('Supabase 未載入，改用本機模式（收不到 GM 即時更新）。');
+  return createOfflineSupabase();
+})();
+
+// 玩家如果不知道自己收不到 GM 推送，會以為遊戲卡住。
+if (supabaseOffline) {
+  document.addEventListener('DOMContentLoaded', function () {
+    const bar = document.createElement('div');
+    bar.style.cssText = 'background:#5c2c2c;color:#ffdddd;padding:10px 16px;' +
+      'font-size:0.82rem;line-height:1.5;text-align:center';
+    bar.textContent = '⚠️ 連線未建立，收不到主持人的即時更新。請檢查網路後重新整理。';
+    document.body.insertBefore(bar, document.body.firstChild);
+  }, { once: true });
+}
 
 // ============================================================
 // STATE

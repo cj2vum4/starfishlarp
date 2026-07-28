@@ -1,1 +1,22 @@
 .claude/
+
+# 環境變數（.env.example 是範本，真正的 .env 絕對不要提交）
+.env
+.env.*
+!.env.example
+
+# 劇本本體不進 repo：GitHub Pages 會把 repo 內容公開，
+# 角色劇本／搜證卡／台詞卡／手冊等付費內容一旦提交就等於公開散布。
+# 角色海報屬於宣傳素材，仍保留在 劇本資料/角色海報/。
+劇本資料/**/*.pdf
+劇本資料/**/*.docx
+劇本資料/**/*.doc
+劇本資料/**/*.pptx
+劇本資料/**/*.zip
+
+# 系統與編輯器
+.DS_Store
+Thumbs.db
+*.swp
+__pycache__/
+node_modules/

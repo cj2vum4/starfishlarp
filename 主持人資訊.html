@@ -25,6 +25,58 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CDN 載不到時的保底樣式：至少讓 .hidden 生效、版面可讀。
+         不是要重現 Tailwind，只是避免整頁失控（選單/成功訊息永遠展開、文字滿版）。 -->
+    <script>
+    (function () {
+        function applyFallback() {
+            if (document.getElementById('tw-fallback-style')) return;
+            var css =
+                '.hidden{display:none!important}' +
+                'body{margin:0;line-height:1.75;-webkit-font-smoothing:antialiased}' +
+                'main,section,footer>div,header>div,nav>div{max-width:1100px;margin-left:auto;margin-right:auto;padding:20px 18px}' +
+                'section{margin-bottom:40px}' +
+                'h1{font-size:2rem;margin:.6em 0}h2{font-size:1.5rem;margin:.6em 0}h3{font-size:1.15rem;margin:.5em 0}' +
+                'p,li{margin:.5em 0}ul,ol{padding-left:1.4em}' +
+                'img,svg,iframe{max-width:100%;height:auto}' +
+                'a{color:#22d3ee}' +
+                'button,a.hero-cta,form button,[type=submit]{display:inline-block;padding:11px 18px;border-radius:10px;' +
+                'border:1px solid rgba(34,211,238,.5);background:rgba(34,211,238,.14);color:#e6edf3;font:inherit;cursor:pointer}' +
+                'input,select,textarea{display:block;width:100%;box-sizing:border-box;margin:6px 0 14px;padding:10px 12px;' +
+                'border-radius:8px;border:1px solid rgba(139,148,158,.4);background:#0d1117;color:#e6edf3;font:inherit}' +
+                'label{display:block;margin-top:12px;color:#9aa4b2;font-size:.9rem}' +
+                '.card{padding:20px;border-radius:14px;margin-bottom:20px}' +
+                '.grid{display:block}';
+            var style = document.createElement('style');
+            style.id = 'tw-fallback-style';
+            style.textContent = css;
+            document.head.appendChild(style);
+            console.warn('Tailwind CDN 未載入，已套用保底樣式。');
+        }
+
+        // 探針：Tailwind 有載入時 .hidden 會是 display:none
+        function verifyTailwind() {
+            var probe = document.createElement('div');
+            probe.className = 'hidden';
+            probe.setAttribute('aria-hidden', 'true');
+            (document.body || document.documentElement).appendChild(probe);
+            var loaded = getComputedStyle(probe).display === 'none';
+            probe.remove();
+            if (!loaded) applyFallback();
+        }
+
+        window.addEventListener('error', function (event) {
+            var el = event.target;
+            if (el && el.tagName === 'SCRIPT' && /cdn\.tailwindcss\.com/.test(el.src || '')) applyFallback();
+        }, true);
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', verifyTailwind, { once: true });
+        } else {
+            verifyTailwind();
+        }
+    })();
+    </script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -494,13 +546,12 @@
                         </div>
                     </div>
                     <div>
-                        <!-- 
-                            IMPORTANT: To make this form work, you need to:
-                            1. Go to https://formspree.io/ and create a new form.
-                            2. Get your form's endpoint URL (e.g., https://formspree.io/f/xxxxxxxx).
-                            3. Replace the placeholder "YOUR_FORM_ID" below with your actual form ID.
+                        <!--
+                            訂位表單的送出網址設定在頁面底部的 BOOKING_ENDPOINT 常數。
+                            在它填入真實網址之前，表單不會顯示，改為請訪客走 Line / Email，
+                            避免有人填完才發現送不出去。
                         -->
-                        <form id="booking-form" class="space-y-4" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                        <form id="booking-form" class="space-y-4" method="POST" hidden>
                             <!-- Form fields are restyled for dark theme -->
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-400">姓名</label>
@@ -539,6 +590,23 @@
                         <div id="form-success-message" class="hidden mt-4 p-4 bg-green-900/50 text-green-300 border-l-4 border-green-500 rounded-r-lg">
                             <p><strong>收到你的訊息囉！</strong></p>
                             <p>我會在 24–48 小時內以 Email 回覆（也歡迎直接加 Line）。</p>
+                        </div>
+
+                        <!-- BOOKING_ENDPOINT 尚未設定時顯示這一塊，取代表單 -->
+                        <div id="booking-fallback" class="p-6 rounded-xl border border-cyan-500/30 bg-gray-900/50" hidden>
+                            <h3 class="text-xl font-bold mb-3 text-cyan-400">直接聯絡我訂位</h3>
+                            <p class="text-gray-400 mb-5">線上表單整修中。請透過下面任一方式告訴我 <strong class="text-gray-200">日期、地點、人數</strong>，我會回覆適合的本單與時長建議。</p>
+                            <div class="space-y-3">
+                                <a href="https://line.me/ti/p/hd2PUy6C3c" target="_blank" rel="noopener noreferrer"
+                                   class="block w-full text-center bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-cyan-600 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                                    加 Line 好友訂位
+                                </a>
+                                <a href="mailto:starfishlarp@gmail.com?subject=%E5%8A%87%E6%9C%AC%E6%AE%BA%E8%A8%82%E4%BD%8D%E9%9C%80%E6%B1%82&amp;body=%E6%97%A5%E6%9C%9F%EF%BC%9A%0A%E5%9C%B0%E9%BB%9E%EF%BC%9A%0A%E4%BA%BA%E6%95%B8%EF%BC%9A%0A%E6%83%B3%E7%8E%A9%E7%9A%84%E5%8A%87%E6%9C%AC%EF%BC%88%E5%8F%AF%E7%95%99%E7%99%BD%EF%BC%89%EF%BC%9A%0A"
+                                   class="block w-full text-center bg-white/10 border border-white/20 text-white font-bold py-3 px-4 rounded-lg hover:bg-white/20 transition-colors">
+                                    寄信給 starfishlarp@gmail.com
+                                </a>
+                            </div>
+                            <p class="text-gray-500 text-sm mt-4">也可以直接在上方月曆選擇想預約的日期與時段。</p>
                         </div>
                     </div>
                 </div>
@@ -580,7 +648,25 @@
     <script>
         (function() {
             'use strict';
-            
+
+            /* ────────────────────────────────────────────────────────────
+               訂位表單送出網址。
+               填入真實網址後，頁面上的訂位表單才會顯示並可送出；
+               維持預設的佔位字串時，表單會隱藏並改顯示 Line / Email 引導。
+
+               可用的兩種來源：
+               1. Formspree — 到 https://formspree.io 建立表單後取得
+                  https://formspree.io/f/xxxxxxxx
+               2. Google Apps Script — 比照 GoogleAppsScript_玩本記錄.gs 部署一份
+                  寫入用的 Web App，取得以 /exec 結尾的網址
+               ──────────────────────────────────────────────────────────── */
+            const BOOKING_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+
+            function isBookingEndpointConfigured() {
+                return /^https:\/\/\S+$/.test(BOOKING_ENDPOINT) &&
+                       !BOOKING_ENDPOINT.includes('YOUR_FORM_ID');
+            }
+
             // 工具函數：安全的元素選擇器
             const $ = (selector, context = document) => context.querySelector(selector);
             const $$ = (selector, context = document) => context.querySelectorAll(selector);
@@ -597,9 +683,28 @@
                 };
             };
 
+            // AOS 只負責捲動進場動畫。若 CDN 載不到，aos.css 設定的 opacity:0
+            // 會讓內容永遠看不見，所以要把 data-aos 屬性拔掉讓內容直接顯示。
+            const initScrollAnimations = () => {
+                if (window.AOS && typeof window.AOS.init === 'function') {
+                    try {
+                        window.AOS.init({ duration: 800, once: true, offset: 50 });
+                        return;
+                    } catch (error) {
+                        console.warn('AOS 初始化失敗，改為直接顯示內容：', error);
+                    }
+                } else {
+                    console.warn('AOS 未載入，改為直接顯示內容。');
+                }
+                $$('[data-aos]').forEach((el) => {
+                    el.removeAttribute('data-aos');
+                    el.removeAttribute('data-aos-delay');
+                    el.classList.add('aos-animate');
+                });
+            };
+
             document.addEventListener('DOMContentLoaded', () => {
-                // 初始化 AOS
-                AOS.init({ duration: 800, once: true, offset: 50 });
+                initScrollAnimations();
 
                 // 移動端選單
                 const initMobileMenu = () => {
@@ -763,26 +868,47 @@
                     
                     const form = $('#booking-form');
                     const successMsg = $('#form-success-message');
-                    
-                    form?.addEventListener('submit', async (e) => {
+                    const fallback = $('#booking-fallback');
+                    const submitButton = form?.querySelector('button[type="submit"]');
+
+                    // 端點還沒設定就不要顯示表單，否則訪客填完才發現送不出去。
+                    if (!isBookingEndpointConfigured()) {
+                        if (form) form.hidden = true;
+                        if (fallback) fallback.hidden = false;
+                        return;
+                    }
+
+                    form.action = BOOKING_ENDPOINT;
+                    form.hidden = false;
+                    if (fallback) fallback.hidden = true;
+
+                    form.addEventListener('submit', async (e) => {
                         e.preventDefault();
-                        const formData = new FormData(form);
-                        
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                            submitButton.textContent = '送出中…';
+                        }
+
                         try {
                             const response = await fetch(form.action, {
                                 method: form.method,
-                                body: formData,
+                                body: new FormData(form),
                                 headers: { 'Accept': 'application/json' }
                             });
-                            
+
                             if (response.ok) {
-                                form.classList.add('hidden');
+                                form.hidden = true;
                                 successMsg.classList.remove('hidden');
-                            } else {
-                                alert('表單送出失敗，請稍後再試或直接聯絡我。');
+                                return;
                             }
+                            alert('表單送出失敗，請稍後再試，或直接加 Line／寄信到 starfishlarp@gmail.com。');
                         } catch (error) {
-                            alert('發生網路錯誤，請檢查您的連線。');
+                            alert('發生網路錯誤，請檢查連線後再試，或直接加 Line／寄信到 starfishlarp@gmail.com。');
+                        }
+
+                        if (submitButton) {
+                            submitButton.disabled = false;
+                            submitButton.textContent = '送出訂位需求';
                         }
                     });
                 };

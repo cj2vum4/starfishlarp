@@ -883,23 +883,92 @@
             const commentBubbleContainer = document.getElementById('commentBubbleContainer');
             
             // --- 音效設定 ---
+            // Tone.js 只負責點擊音效。CDN 載不到時降級為無聲，
+            // 不可以讓裝飾性的音效庫中斷整頁初始化。
+            const SILENT_SOUND = { triggerAttackRelease: function () {} };
             let isToneStarted = false;
-            const clickSound = new Tone.MembraneSynth({
-                pitchDecay: 0.01,
-                octaves: 2,
-                envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
-            }).toDestination();
+            let clickSound = SILENT_SOUND;
+            let popSound = SILENT_SOUND;
 
-            const popSound = new Tone.Synth({
-                oscillator: { type: 'sine' },
-                envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
-            }).toDestination();
+            try {
+                if (window.Tone) {
+                    clickSound = new Tone.MembraneSynth({
+                        pitchDecay: 0.01,
+                        octaves: 2,
+                        envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
+                    }).toDestination();
+
+                    popSound = new Tone.Synth({
+                        oscillator: { type: 'sine' },
+                        envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+                    }).toDestination();
+                } else {
+                    console.warn('Tone.js 未載入，榮譽牆改以無音效模式運作。');
+                }
+            } catch (error) {
+                console.warn('音效初始化失敗，改以無音效模式運作：', error);
+            }
 
             async function startAudio() {
-                if (!isToneStarted) {
+                if (isToneStarted || !window.Tone) return;
+                try {
                     await Tone.start();
                     isToneStarted = true;
+                } catch (_) { /* 使用者未互動或音訊被封鎖，不影響其他功能 */ }
+            }
+
+            // --- 共用工具 ---
+            // 玩家名稱、角色、日期都來自公開表單，插入 HTML 前一律轉義。
+            function escapeHtml(value) {
+                return String(value == null ? '' : value)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
+            // PapaParse 的最小替代品，CDN 載不到時接手。
+            // 回傳格式刻意與 Papa.parse(text, { header: true }) 一致。
+            function parseCsvFallback(text) {
+                const rows = [];
+                let row = [], field = '', inQuotes = false;
+
+                for (let i = 0; i < text.length; i++) {
+                    const char = text[i];
+                    if (inQuotes) {
+                        if (char === '"') {
+                            if (text[i + 1] === '"') { field += '"'; i++; }
+                            else inQuotes = false;
+                        } else field += char;
+                    } else if (char === '"') inQuotes = true;
+                    else if (char === ',') { row.push(field); field = ''; }
+                    else if (char === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+                    else if (char !== '\r') field += char;
                 }
+                if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+                if (!rows.length) return { data: [], errors: [] };
+
+                const headers = rows[0].map(header => String(header).trim());
+                const data = rows.slice(1)
+                    .filter(cells => cells.some(cell => cell && cell.trim()))
+                    .map(cells => {
+                        const record = {};
+                        headers.forEach((header, index) => {
+                            record[header] = cells[index] != null ? cells[index] : '';
+                        });
+                        return record;
+                    });
+                return { data, errors: [] };
+            }
+
+            function parseCsv(text) {
+                if (window.Papa && typeof window.Papa.parse === 'function') {
+                    return Papa.parse(text, {
+                        header: true,
+                        skipEmptyLines: true,
+                        transformHeader: (header) => header.trim()
+                    });
+                }
+                console.warn('PapaParse 未載入，改用內建 CSV 解析。');
+                return parseCsvFallback(text);
             }
 
             // --- 函式區 ---
@@ -968,13 +1037,9 @@
 
                 try {
 
-                    // 使用 PapaParse 正確解析 CSV（支援引號內的換行）
-                    const parseResult = Papa.parse(csvText, {
-                        header: true,
-                        skipEmptyLines: true,
-                        transformHeader: (header) => header.trim()
-                    });
-                    
+                    // 正確解析 CSV（支援引號內的換行）；PapaParse 不可用時自動降級
+                    const parseResult = parseCsv(csvText);
+
                     if (parseResult.errors.length > 0) {
                         console.warn('CSV 解析警告:', parseResult.errors);
                     }
@@ -1018,7 +1083,7 @@
                 } catch (error) {
                     console.error('❌ 無法獲取劇本資料:', error);
                     console.error('錯誤詳情:', error.stack);
-                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${error.message}<br><br>請檢查：<br>1. Google Sheet 是否已發布為 CSV<br>2. 網路連線是否正常<br>3. 開啟開發者工具查看詳細錯誤</p>`;
+                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${escapeHtml(error.message)}<br><br>請檢查：<br>1. Google Sheet 是否已發布為 CSV<br>2. 網路連線是否正常<br>3. 開啟開發者工具查看詳細錯誤</p>`;
                     playerSelector.innerHTML = '<option value="">讀取失敗</option>';
                     return { playRecords: {}, playerNames: [] };
                 }
@@ -1033,9 +1098,10 @@
                 const placeholderUrl = `https://placehold.co/400x566/2b2b2b/eeeeee?text=${encodeURIComponent(script.title)}`;
                 const imageOnError = `this.onerror=null; this.src='${placeholderUrl}';`;
 
+                const safeTitle = escapeHtml(script.title);
                 card.innerHTML = `
                     <div class="image-container">
-                        <img src="${script.imgSrc}" alt="${script.title} 劇本封面" loading="lazy" onerror="${imageOnError}">
+                        <img src="${escapeHtml(script.imgSrc)}" alt="${safeTitle} 劇本封面" loading="lazy" onerror="${escapeHtml(imageOnError)}">
                         <div class="stamp-overlay">
                             <!-- 印章將會動態生成於此 -->
                         </div>
@@ -1044,7 +1110,7 @@
                         </div>
                     </div>
                     <div class="script-info">
-                        <h3 class="script-title">${script.title}</h3>
+                        <h3 class="script-title">${safeTitle}</h3>
                     </div>
                 `;
                 return card;
@@ -1160,11 +1226,11 @@
                             stamp.className = 'stamp-content';
                             
                             stamp.innerHTML = `
-                                <span class="stamp-character">${record.character}</span>
+                                <span class="stamp-character">${escapeHtml(record.character)}</span>
                                 <div class="stamp-divider"></div>
                                 <div class="stamp-rating">${generateStars(record.rating)}</div>
                                 <div class="stamp-divider"></div>
-                                <span class="stamp-date">${record.date}</span>
+                                <span class="stamp-date">${escapeHtml(record.date)}</span>
                             `;
                             
                             const pos = stampPositions[index % stampPositions.length];
@@ -1218,9 +1284,10 @@
                     const title = calculateTitle(player.count);
                     const titleHtml = title ? `<span class="player-title ${title.cls}">${title.text}</span>` : '';
 
+                    const safePlayerName = escapeHtml(player.name);
                     li.innerHTML = `
                         <span class="rank">${rankDisplay}</span>
-                        <span class="player-name" data-player="${player.name}">${player.name}${titleHtml}</span>
+                        <span class="player-name" data-player="${safePlayerName}">${safePlayerName}${titleHtml}</span>
                         <span class="play-count">${player.count} 次</span>
                     `;
                     

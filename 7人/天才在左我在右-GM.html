@@ -419,7 +419,7 @@
   }
   .unlock-all-btn:hover { background: var(--accent); color: #000; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -913,7 +913,49 @@ const CLUE_CONTENT = {
 // ============================================================
 const SUPABASE_URL = 'https://mcphigetltedeadvuvqf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Qdg36jjN7W1DUkBGtrzTtQ_bphP6Zg2';
-const _supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// CDN 載不到時，用同介面的離線替身接手，讓整頁功能維持可用
+// （狀態改存 localStorage，只是不跨裝置同步）。
+let supabaseOffline = false;
+
+function createOfflineSupabase() {
+  const empty = Promise.resolve({ data: null, error: new Error('Supabase 未載入') });
+  const query = {
+    select() { return query; },
+    eq() { return query; },
+    single() { return empty; },
+    upsert() { return empty; },
+    then(onFulfilled, onRejected) { return empty.then(onFulfilled, onRejected); }
+  };
+  const channel = { on() { return channel; }, subscribe() { return channel; } };
+  return { from() { return query; }, channel() { return channel; } };
+}
+
+const _supa = (function () {
+  try {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  } catch (e) {
+    console.warn('Supabase 初始化失敗:', e);
+  }
+  supabaseOffline = true;
+  window.supabaseOffline = true;
+  console.warn('Supabase 未載入，改用本機模式（場次狀態只存在這台裝置）。');
+  return createOfflineSupabase();
+})();
+
+// 開場當下無聲失去同步比整頁掛掉更危險：GM 會以為玩家端有連上。
+if (supabaseOffline) {
+  document.addEventListener('DOMContentLoaded', function () {
+    const bar = document.createElement('div');
+    bar.style.cssText = 'background:#5c2c2c;color:#ffdddd;padding:10px 20px;' +
+      'font-size:0.85rem;line-height:1.5;border-bottom:1px solid #8b1010';
+    bar.textContent = '⚠️ 雲端同步未啟用（Supabase 未載入）。場次狀態只會存在這台裝置，' +
+      '玩家端不會即時收到更新。請檢查網路後重新整理。';
+    document.body.insertBefore(bar, document.body.firstChild);
+  }, { once: true });
+}
 
 // ============================================================
 // SESSION

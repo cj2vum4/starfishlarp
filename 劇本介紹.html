@@ -6,6 +6,58 @@
     <title>劇本殺：一場可以親身扮演的懸疑故事</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CDN 載不到時的保底樣式：至少讓 .hidden 生效、版面可讀。
+         不是要重現 Tailwind，只是避免整頁失控（選單/成功訊息永遠展開、文字滿版）。 -->
+    <script>
+    (function () {
+        function applyFallback() {
+            if (document.getElementById('tw-fallback-style')) return;
+            var css =
+                '.hidden{display:none!important}' +
+                'body{margin:0;line-height:1.75;-webkit-font-smoothing:antialiased}' +
+                'main,section,footer>div,header>div,nav>div{max-width:1100px;margin-left:auto;margin-right:auto;padding:20px 18px}' +
+                'section{margin-bottom:40px}' +
+                'h1{font-size:2rem;margin:.6em 0}h2{font-size:1.5rem;margin:.6em 0}h3{font-size:1.15rem;margin:.5em 0}' +
+                'p,li{margin:.5em 0}ul,ol{padding-left:1.4em}' +
+                'img,svg,iframe{max-width:100%;height:auto}' +
+                'a{color:#22d3ee}' +
+                'button,a.hero-cta,form button,[type=submit]{display:inline-block;padding:11px 18px;border-radius:10px;' +
+                'border:1px solid rgba(34,211,238,.5);background:rgba(34,211,238,.14);color:#e6edf3;font:inherit;cursor:pointer}' +
+                'input,select,textarea{display:block;width:100%;box-sizing:border-box;margin:6px 0 14px;padding:10px 12px;' +
+                'border-radius:8px;border:1px solid rgba(139,148,158,.4);background:#0d1117;color:#e6edf3;font:inherit}' +
+                'label{display:block;margin-top:12px;color:#9aa4b2;font-size:.9rem}' +
+                '.card{padding:20px;border-radius:14px;margin-bottom:20px}' +
+                '.grid{display:block}';
+            var style = document.createElement('style');
+            style.id = 'tw-fallback-style';
+            style.textContent = css;
+            document.head.appendChild(style);
+            console.warn('Tailwind CDN 未載入，已套用保底樣式。');
+        }
+
+        // 探針：Tailwind 有載入時 .hidden 會是 display:none
+        function verifyTailwind() {
+            var probe = document.createElement('div');
+            probe.className = 'hidden';
+            probe.setAttribute('aria-hidden', 'true');
+            (document.body || document.documentElement).appendChild(probe);
+            var loaded = getComputedStyle(probe).display === 'none';
+            probe.remove();
+            if (!loaded) applyFallback();
+        }
+
+        window.addEventListener('error', function (event) {
+            var el = event.target;
+            if (el && el.tagName === 'SCRIPT' && /cdn\.tailwindcss\.com/.test(el.src || '')) applyFallback();
+        }, true);
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', verifyTailwind, { once: true });
+        } else {
+            verifyTailwind();
+        }
+    })();
+    </script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -243,11 +295,29 @@
     <!-- AOS Script -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // 初始化 AOS 動畫庫
-        AOS.init({
-            duration: 800, // 動畫持續時間
-            once: true,    // 動畫只觸發一次
-        });
+        // 初始化 AOS 動畫庫。
+        // CDN 載不到時 aos.css 的 opacity:0 會讓內容永遠看不見，
+        // 所以要拔掉 data-aos 讓內容直接顯示。
+        (function initScrollAnimations() {
+            if (window.AOS && typeof window.AOS.init === 'function') {
+                try {
+                    window.AOS.init({
+                        duration: 800, // 動畫持續時間
+                        once: true,    // 動畫只觸發一次
+                    });
+                    return;
+                } catch (error) {
+                    console.warn('AOS 初始化失敗，改為直接顯示內容：', error);
+                }
+            } else {
+                console.warn('AOS 未載入，改為直接顯示內容。');
+            }
+            document.querySelectorAll('[data-aos]').forEach((el) => {
+                el.removeAttribute('data-aos');
+                el.removeAttribute('data-aos-delay');
+                el.classList.add('aos-animate');
+            });
+        })();
 
         // 手風琴 (Accordion) 功能
         const accordionHeaders = document.querySelectorAll('.accordion-header');

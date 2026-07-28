@@ -564,5 +564,68 @@
 
 </main>
 
+<script>
+/* ────────────────────────────────────────────────────────────────
+   劇本檔案（角色劇本／台詞卡／搜證卡／手冊）不再放在這個 repo。
+   GitHub Pages 會把 repo 內容完全公開，付費劇本一旦提交就等於公開散布，
+   任何人都能直接下載，也會被玩家提前看到。
+
+   把檔案放到私人空間（Google Drive 資料夾、NAS、或本機資料夾）後，
+   在下面填入它的網址或路徑，這一頁的下載按鈕就會恢復作用。
+
+   範例：
+     const MATERIALS_BASE = 'https://drive.google.com/drive/folders/xxxx/';
+     const MATERIALS_BASE = 'file:///Users/me/劇本/瘋兔子/';
+     const MATERIALS_BASE = '../../劇本資料-private/';
+   ──────────────────────────────────────────────────────────────── */
+const MATERIALS_BASE = '';
+
+(function () {
+    'use strict';
+
+    const MATERIAL_PATH = /(?:\.\.\/)?劇本資料\/(.+\.(?:pdf|docx?|pptx))$/i;
+
+    function collectMaterialLinks() {
+        return Array.from(document.querySelectorAll('a[href]')).filter(function (link) {
+            return MATERIAL_PATH.test(decodeURIComponent(link.getAttribute('href') || ''));
+        });
+    }
+
+    function showNotice(count) {
+        const notice = document.createElement('div');
+        notice.className = 'note-box';
+        notice.style.cssText = 'margin:20px auto;max-width:1100px;border-left:4px solid #ffbb66';
+        notice.innerHTML =
+            '<strong>劇本檔案未設定</strong><br>' +
+            '為了避免付費劇本被公開下載，' + count + ' 個檔案已從網站移除。<br>' +
+            '把檔案放到私人空間後，編輯本頁底部的 <code>MATERIALS_BASE</code> 即可恢復下載按鈕。';
+        const main = document.querySelector('main');
+        if (main) main.insertBefore(notice, main.firstChild);
+    }
+
+    const links = collectMaterialLinks();
+    if (!links.length) return;
+
+    if (MATERIALS_BASE) {
+        const base = MATERIALS_BASE.endsWith('/') ? MATERIALS_BASE : MATERIALS_BASE + '/';
+        links.forEach(function (link) {
+            const match = decodeURIComponent(link.getAttribute('href')).match(MATERIAL_PATH);
+            if (match) link.href = base + match[1];
+        });
+        return;
+    }
+
+    links.forEach(function (link) {
+        link.removeAttribute('href');
+        link.removeAttribute('target');
+        link.setAttribute('aria-disabled', 'true');
+        link.title = '劇本檔案未設定，請見本頁底部的 MATERIALS_BASE 說明';
+        link.style.opacity = '.45';
+        link.style.cursor = 'not-allowed';
+    });
+    showNotice(links.length);
+})();
+</script>
+
 </body>
 </html>
