@@ -49,6 +49,7 @@ const REWARD_SHEET = '獎勵';
 const SUMMARY_SHEET = '點數總覽';
 const MYSTERY_SHEET = '神秘盒';
 const INTERACTION_SHEET = '心得互動';
+const REPORT_SHEET = '月報';
 
 const REQUIRED_HEADERS = [
   '時間戳記',
@@ -73,6 +74,10 @@ const CONFIG_HEADERS = ['設定項', '值', '說明'];
 const REWARD_HEADERS = ['軌道', '品項', '所需點數', '說明', '是否上架'];
 const MYSTERY_HEADERS = ['獎品', '權重', '剩餘數量', '是否啟用'];
 const INTERACTION_HEADERS = ['劇本', '日期', '作者', '讚數', '精選', '最後更新'];
+const REPORT_HEADERS = [
+  '月份', '場次', '填表人次', '每場平均填表', '平日場次', '假日場次', '平日佔比',
+  '活躍玩家', '新玩家', '平均回訪間隔(天)', '介紹人筆數', '發出點數', '兌換點數'
+];
 const SUMMARY_HEADERS = ['歸戶名', '探員編號', '累積點', '已兌換', '餘額', '場次', '最後遊玩日'];
 
 const SOURCE_FORM = '表單';
@@ -139,6 +144,7 @@ function onOpen() {
     .createMenu('🌟 海星集點')
     .addItem('重算所有點數', 'menuRebuild')
     .addItem('開一個神秘盒', 'menuOpenMystery')
+    .addItem('產生月報', 'menuReport')
     .addItem('建立／修復所有分頁', 'menuSetup')
     .addToUi();
 }
@@ -286,6 +292,132 @@ function notify_(message) {
   } catch (error) {
     console.log(message);
   }
+}
+
+/**
+ * 月報：集點系統到底有沒有用，看這一頁。
+ *
+ * 全部從既有資料推導，不需要額外記錄任何東西——
+ * 平日／假日從遊玩日期的星期直接判斷，回訪間隔從同一位玩家的
+ * 前後兩場日期相減，連歷史資料都能回頭補算。
+ *
+ * 「場次」定義為不重複的「劇本＋日期」組合。同一天同一本開兩場會算成一場，
+ * 這是刻意的取捨：資料裡分不出來，而趨勢不受影響。
+ */
+function menuReport() {
+  const rows = buildMonthlyReport_();
+  notify_('月報已更新，共 ' + rows + ' 個月份。請查看「' + REPORT_SHEET + '」分頁。');
+}
+
+function buildMonthlyReport_() {
+  const ss = setupSheets_();
+  const aliasMap = readAliasMap_(ss);
+
+  const plays = readResponses_()
+    .map(function (row) {
+      return {
+        name: canonicalName_(String(row['怎麼稱呼你呢'] || '').trim(), aliasMap),
+        script: String(row['劇本'] || '').trim(),
+        date: parseDate_(row['日期']),
+        referrer: String(row['介紹人'] || '').trim()
+      };
+    })
+    .filter(function (item) { return item.name && item.script && item.date; })
+    .sort(function (a, b) { return a.date - b.date; });
+
+  const months = {};
+  const bucket = function (key) {
+    if (!months[key]) {
+      months[key] = {
+        sessions: {}, responses: 0, weekday: 0, weekend: 0,
+        players: {}, newPlayers: 0, gaps: [], referrals: 0,
+        earned: 0, redeemed: 0
+      };
+    }
+    return months[key];
+  };
+
+  const monthKeyOf = function (date) {
+    return date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2);
+  };
+
+  const firstSeen = {};
+  const lastPlayed = {};
+
+  plays.forEach(function (play) {
+    const key = monthKeyOf(play.date);
+    const month = bucket(key);
+
+    month.responses += 1;
+    month.players[play.name] = true;
+    month.sessions[play.script + '|' + normalizeDate_(play.date)] =
+      (play.date.getDay() === 0 || play.date.getDay() === 6) ? 'weekend' : 'weekday';
+
+    if (play.referrer) month.referrals += 1;
+
+    if (!firstSeen[play.name]) {
+      firstSeen[play.name] = key;
+      month.newPlayers += 1;
+    }
+
+    // 回訪間隔：跟同一位玩家的上一場相差幾天，計入較晚那一場所屬的月份
+    if (lastPlayed[play.name]) {
+      const days = Math.round((play.date - lastPlayed[play.name]) / 86400000);
+      if (days > 0) month.gaps.push(days);
+    }
+    lastPlayed[play.name] = play.date;
+  });
+
+  readRows_(ss.getSheetByName(LEDGER_SHEET)).forEach(function (row) {
+    if (String(row['狀態'] || '').trim() === STATUS_VOID) return;
+    const date = parseDate_(row['日期']);
+    if (!date) return;
+
+    const points = Number(row['點數']) || 0;
+    const month = bucket(monthKeyOf(date));
+    if (points >= 0) month.earned += points;
+    else month.redeemed += Math.abs(points);
+  });
+
+  const output = Object.keys(months).sort().map(function (key) {
+    const month = months[key];
+
+    let weekday = 0;
+    let weekend = 0;
+    Object.keys(month.sessions).forEach(function (session) {
+      if (month.sessions[session] === 'weekend') weekend += 1;
+      else weekday += 1;
+    });
+
+    const sessions = weekday + weekend;
+    const gapTotal = month.gaps.reduce(function (sum, gap) { return sum + gap; }, 0);
+
+    return [
+      key,
+      sessions,
+      month.responses,
+      sessions ? Math.round(month.responses / sessions * 10) / 10 : 0,
+      weekday,
+      weekend,
+      sessions ? Math.round(weekday / sessions * 100) + '%' : '—',
+      Object.keys(month.players).length,
+      month.newPlayers,
+      month.gaps.length ? Math.round(gapTotal / month.gaps.length) : '—',
+      month.referrals,
+      month.earned,
+      month.redeemed
+    ];
+  });
+
+  const sheet = ss.getSheetByName(REPORT_SHEET);
+  if (sheet.getLastRow() > 1) {
+    sheet.getRange(2, 1, sheet.getLastRow() - 1, REPORT_HEADERS.length).clearContent();
+  }
+  if (output.length) {
+    sheet.getRange(2, 1, output.length, REPORT_HEADERS.length).setValues(output);
+  }
+
+  return output.length;
 }
 
 /* ============================================================
@@ -441,6 +573,7 @@ function setupSheets_() {
   seedIfEmpty_(mysterySheet, DEFAULT_MYSTERY);
 
   ensureSheetWithHeaders_(ss, INTERACTION_SHEET, INTERACTION_HEADERS);
+  ensureSheetWithHeaders_(ss, REPORT_SHEET, REPORT_HEADERS);
 
   return ss;
 }
