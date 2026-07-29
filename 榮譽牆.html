@@ -9,7 +9,9 @@
     <!-- 引入 Tone.js 用於音效 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <!-- 劇本資料單一來源（與 index.html 共用） -->
-    <script src="scripts.js"></script>
+    <script src="scripts.js?v=20260728-tags"></script>
+    <script src="play-record-config.js?v=20260729-points"></script>
+    <script src="points.js?v=20260729-points"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -757,6 +759,42 @@
             padding: 1px 6px;
         }
 
+        /* ===== 排行榜排序切換 ===== */
+        .leaderboard-sort {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 0 14px;
+        }
+
+        .sort-btn {
+            padding: 6px 16px;
+            border: 1px solid rgba(233, 185, 79, 0.28);
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #b9aa91;
+            font-family: '微軟正黑體', sans-serif;
+            font-size: 0.86rem;
+            cursor: pointer;
+            transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+        }
+
+        .sort-btn:hover { color: #f7ead0; border-color: rgba(233, 185, 79, 0.55); }
+
+        .sort-btn.active {
+            border-color: #e9b94f;
+            background: linear-gradient(145deg, rgba(141, 91, 26, 0.55), rgba(70, 43, 13, 0.72));
+            color: #ffd978;
+        }
+
+        .player-points {
+            color: #ffd978;
+            font-variant-numeric: tabular-nums;
+            font-size: 0.9rem;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
         /* ===== 成就統計區（排行榜下方） ===== */
         .achievement-section {
             text-align: center;
@@ -798,6 +836,8 @@
             </div>
         </div>
 
+        <p class="pts-double" id="doubleDayBanner" hidden></p>
+
         <div class="player-selector-container">
             <label for="playerSelector">選擇玩家:</label>
             <select id="playerSelector">
@@ -806,7 +846,9 @@
             <input type="text" id="playerSearch" placeholder="搜尋玩家...">
             <button id="clearBubblesBtn" class="clear-bubbles-btn">清除便利貼</button>
         </div>
-        
+
+        <div class="pts-card" id="pointsCard" hidden></div>
+
         <div class="leaderboard-container collapsed">
             <div class="leaderboard-header">
                 <h2 class="leaderboard-title">🏆 榮譽排行榜 🏆</h2>
@@ -815,6 +857,10 @@
             <div class="leaderboard-body">
                 <div class="leaderboard-search">
                     <input type="text" id="leaderboardSearch" placeholder="搜尋玩家...">
+                </div>
+                <div class="leaderboard-sort" role="group" aria-label="排行榜排序方式">
+                    <button type="button" class="sort-btn active" data-sort="plays">依場次</button>
+                    <button type="button" class="sort-btn" data-sort="points">依點數</button>
                 </div>
                 <ol id="leaderboardList">
                     <!-- 排行榜項目將由 JavaScript 動態生成 -->
@@ -1258,6 +1304,10 @@
             }
             
             // 4. 更新排行榜
+            // 稱號維持看場次（沿用原本的六級制），點數是獨立的另一條軌道，
+            // 兩者互不影響，兌換扣點也不會讓稱號退級。
+            let leaderboardSortMode = 'plays';
+
             function updateLeaderboard(playRecords) {
                 const playerCounts = [];
                 for (const playerName in playRecords) {
@@ -1265,10 +1315,21 @@
                     for (const scriptName in playRecords[playerName]) {
                         totalPlays += playRecords[playerName][scriptName].length;
                     }
-                    playerCounts.push({ name: playerName, count: totalPlays });
+                    const points = window.StarfishPoints
+                        ? window.StarfishPoints.getPlayer(playerName)
+                        : null;
+                    playerCounts.push({
+                        name: playerName,
+                        count: totalPlays,
+                        points: points ? points.balance : null
+                    });
                 }
 
-                playerCounts.sort((a, b) => b.count - a.count);
+                if (leaderboardSortMode === 'points') {
+                    playerCounts.sort((a, b) => (b.points ?? -1) - (a.points ?? -1) || b.count - a.count);
+                } else {
+                    playerCounts.sort((a, b) => b.count - a.count);
+                }
 
                 leaderboardList.innerHTML = '';
                 const topPlayers = playerCounts.slice(0, 20);
@@ -1277,35 +1338,50 @@
                     const rank = index + 1;
                     const li = document.createElement('li');
                     li.classList.add(`rank-${rank}`);
-                    
+
                     let rankDisplay = rank;
                     if (rank === 1) rankDisplay = '👑';
 
                     const title = calculateTitle(player.count);
                     const titleHtml = title ? `<span class="player-title ${title.cls}">${title.text}</span>` : '';
 
+                    const pointsHtml = player.points === null
+                        ? ''
+                        : `<span class="player-points">${player.points} 點</span>`;
+
                     const safePlayerName = escapeHtml(player.name);
                     li.innerHTML = `
                         <span class="rank">${rankDisplay}</span>
                         <span class="player-name" data-player="${safePlayerName}">${safePlayerName}${titleHtml}</span>
-                        <span class="play-count">${player.count} 次</span>
+                        <span class="play-count">${player.count} 次${pointsHtml}</span>
                     `;
-                    
+
                     // 為玩家名字添加點擊事件
                     const playerNameSpan = li.querySelector('.player-name');
                     playerNameSpan.addEventListener('click', () => {
                         startAudio();
                         clickSound.triggerAttackRelease('C2', '8n');
-                        
+
                         // 更新下拉選單的值
                         playerSelector.value = player.name;
-                        
+
                         // 更新榮譽牆，並啟用過濾模式（只顯示已玩過的劇本）
                         updateWallForPlayer(player.name, playRecords, true);
+                        showPointsProfile(player.name, playRecords);
                     });
-                    
+
                     leaderboardList.appendChild(li);
                 });
+            }
+
+            // 4b. 我的探員檔案（點數、兌換清單、彩蛋徽章）
+            function showPointsProfile(playerName, playRecords) {
+                if (!window.StarfishPoints) return;
+                window.StarfishPoints.renderProfile(
+                    document.getElementById('pointsCard'),
+                    playerName,
+                    playRecords
+                );
             }
             
             // 5. 顯示評論便利貼
@@ -1575,7 +1651,16 @@
             });
 
             // B. 獲取資料並設定互動功能
-            const { playRecords, playerNames } = await fetchPlayData();
+            // 點數走 Apps Script 的 JSONP 端點，跟 CSV 平行載入。
+            // 點數讀不到時榮譽牆其餘功能照常運作，只是不顯示點數。
+            const [{ playRecords, playerNames }] = await Promise.all([
+                fetchPlayData(),
+                window.StarfishPoints ? window.StarfishPoints.load() : Promise.resolve()
+            ]);
+
+            if (window.StarfishPoints) {
+                window.StarfishPoints.renderDoubleDay(document.getElementById('doubleDayBanner'));
+            }
 
             // C. 填充玩家下拉選單
             if (playerNames.length > 0) {
@@ -1603,7 +1688,33 @@
                 // 如果選擇空白（請選擇玩家），顯示所有劇本
                 const shouldFilter = selectedPlayer !== '';
                 updateWallForPlayer(selectedPlayer, playRecords, shouldFilter);
+                showPointsProfile(selectedPlayer, playRecords);
             });
+
+            // E2. 排行榜排序切換（依場次／依點數）
+            document.querySelectorAll('.sort-btn').forEach((button) => {
+                button.addEventListener('click', () => {
+                    startAudio();
+                    if (leaderboardSortMode === button.dataset.sort) return;
+                    leaderboardSortMode = button.dataset.sort;
+                    document.querySelectorAll('.sort-btn').forEach((other) => {
+                        other.classList.toggle('active', other === button);
+                    });
+                    updateLeaderboard(playRecords);
+                });
+            });
+
+            // E3. 記得上次登記的名字，回到榮譽牆直接看到自己的檔案
+            try {
+                const savedName = localStorage.getItem('starfishlarp-player-name');
+                if (savedName && playerNames.includes(savedName)) {
+                    playerSelector.value = savedName;
+                    updateWallForPlayer(savedName, playRecords, true);
+                    showPointsProfile(savedName, playRecords);
+                }
+            } catch (_) {
+                // 無痕模式可能停用 localStorage，不影響其他功能。
+            }
             
             // F. 監聽排行榜標題的點擊事件
             leaderboardHeader.addEventListener('click', () => {

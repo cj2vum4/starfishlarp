@@ -46,12 +46,21 @@
     const playerName = document.getElementById('playerName');
     const comment = document.getElementById('comment');
     const commentCount = document.getElementById('commentCount');
+    const moodOptions = document.getElementById('moodOptions');
+    const referrer = document.getElementById('referrer');
     const formStatus = document.getElementById('formStatus');
     const submitButton = document.getElementById('submitButton');
     const successPanel = document.getElementById('successPanel');
+    const successNote = document.getElementById('successNote');
+    const awardCard = document.getElementById('awardCard');
+    const awardPoints = document.getElementById('awardPoints');
+    const awardDetail = document.getElementById('awardDetail');
+    const doubleDayNote = document.getElementById('doubleDayNote');
     const addAnotherButton = document.getElementById('addAnotherButton');
     const setupNote = document.getElementById('setupNote');
     const website = document.getElementById('website');
+
+    const MOOD_LIMIT = 3;
 
     const configById = new Map(scripts.map((script) => [script.id, script]));
 
@@ -150,6 +159,11 @@
         }
     }
 
+    function selectedMoods() {
+        return Array.from(form.querySelectorAll('input[name="mood"]:checked'))
+            .map((input) => input.value);
+    }
+
     function buildPayload(script) {
         const selectedRole = form.querySelector('input[name="character"]:checked');
         const selectedRating = form.querySelector('input[name="rating"]:checked');
@@ -163,7 +177,8 @@
             character: selectedRole ? selectedRole.value : '',
             rating: selectedRating ? selectedRating.value : '',
             comment: comment.value.trim(),
-            mood: '',
+            mood: selectedMoods().join('、'),
+            referrer: referrer.value.trim(),
             website: website.value
         };
     }
@@ -174,20 +189,97 @@
             body.set(key, String(value == null ? '' : value));
         });
 
-        // Apps Script Web App 跨網域寫入使用 no-cors。
-        // 回應會是 opaque，但只要 fetch 沒有拋出網路錯誤，資料就已送達端點。
+        let serverError = null;
+
+        // 先用一般請求送出。Apps Script 會 302 轉到 googleusercontent.com，
+        // 那個回應帶著 CORS 標頭，所以這條路徑讀得到得點明細。
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                cache: 'no-store',
+                body
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result && result.ok === false) {
+                    serverError = new Error(result.error || '寫入失敗');
+                } else {
+                    return (result && result.award) || null;
+                }
+            }
+        } catch (error) {
+            // 部分瀏覽器或網路環境會擋掉跨域讀取。此時資料通常已經送達，
+            // 但無法確認，所以下面用 no-cors 再送一次以免漏記錄。
+            // Apps Script 端以「玩家＋劇本＋日期」去重，重送的那筆只會留下記錄、不會重複給點。
+            console.warn('無法讀取送出結果，改用 no-cors 重送:', error);
+        }
+
+        // 伺服器明確拒絕（例如驗證失敗）就不要重送，直接讓使用者看到原因。
+        if (serverError) throw serverError;
+
         await fetch(endpoint, {
             method: 'POST',
             mode: 'no-cors',
             cache: 'no-store',
             body
         });
+
+        return null;
     }
 
-    function completeSubmission() {
+    function completeSubmission(award) {
+        const points = award ? Number(award.points) : 0;
+
+        if (points > 0) {
+            awardPoints.textContent = '+' + points;
+            awardDetail.textContent = award.detail ? award.detail.replace(/＋/g, '　＋　') : '';
+            awardCard.hidden = false;
+            successNote.textContent = '點數已入帳，榮譽牆上的探員檔案同時更新了。';
+        } else {
+            awardCard.hidden = true;
+            successNote.textContent =
+                '謝謝你留下這次的角色與心得。點數與榮譽牆會在幾分鐘內同步。';
+        }
+
         form.hidden = true;
         successPanel.hidden = false;
         successPanel.focus();
+    }
+
+    /** 心情最多選 MOOD_LIMIT 個，選滿之後把其餘選項關掉。 */
+    function syncMoodLimit() {
+        const reachedLimit = selectedMoods().length >= MOOD_LIMIT;
+        moodOptions.classList.toggle('at-limit', reachedLimit);
+        moodOptions.querySelectorAll('input[name="mood"]').forEach((input) => {
+            input.disabled = reachedLimit && !input.checked;
+        });
+    }
+
+    /** 用 JSONP 讀雙倍點數日文案：靜態網站跨網域讀 Apps Script 最穩的方式。 */
+    function loadDoubleDayNote() {
+        if (!endpoint) return;
+
+        const callbackName = 'starfishPoints' + Date.now().toString(36);
+        const script = document.createElement('script');
+        const cleanup = () => {
+            delete window[callbackName];
+            script.remove();
+        };
+
+        window[callbackName] = (payload) => {
+            cleanup();
+            const note = payload && payload.doubleDayNote;
+            if (!note) return;
+            doubleDayNote.textContent = '⚡ ' + note;
+            doubleDayNote.hidden = false;
+        };
+
+        script.src = endpoint +
+            (endpoint.includes('?') ? '&' : '?') +
+            'action=summary&callback=' + callbackName;
+        script.onerror = cleanup;
+        document.head.appendChild(script);
     }
 
     scriptSelect.addEventListener('change', () => {
@@ -245,19 +337,21 @@
         setSubmitting(true);
 
         try {
-            await postRecord(payload);
+            const award = await postRecord(payload);
             try {
                 localStorage.setItem('starfishlarp-player-name', payload.name);
             } catch (_) {
                 // 無痕模式可能停用 localStorage，不影響送出。
             }
-            completeSubmission();
+            completeSubmission(award);
         } catch (error) {
             console.error('送出玩本記錄失敗:', error);
-            showError('送出失敗，請確認網路連線後再試一次。');
+            showError(error.message || '送出失敗，請確認網路連線後再試一次。');
             setSubmitting(false);
         }
     });
+
+    moodOptions.addEventListener('change', syncMoodLimit);
 
     addAnotherButton.addEventListener('click', () => {
         const savedName = playerName.value;
@@ -268,6 +362,8 @@
         setDefaultDate();
         playerName.value = savedName;
         setSubmitting(false);
+        syncMoodLimit();
+        awardCard.hidden = true;
         successPanel.hidden = true;
         form.hidden = false;
         scriptSelect.focus();
@@ -276,6 +372,8 @@
     populateScripts();
     resetRoleChoices();
     setDefaultDate();
+    syncMoodLimit();
+    loadDoubleDayNote();
 
     if (!endpoint) setupNote.hidden = false;
 

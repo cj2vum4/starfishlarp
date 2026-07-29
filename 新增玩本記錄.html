@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" type="image/png" sizes="32x32" href="pwa/favicon-32.png">
     <link rel="apple-touch-icon" href="pwa/apple-touch-icon.png">
-    <link rel="stylesheet" href="honor-form.css?v=20260726">
+    <link rel="stylesheet" href="honor-form.css?v=20260729-points">
 </head>
 <body>
     <div class="ambient" aria-hidden="true"></div>
@@ -26,7 +26,8 @@
         <section class="intro" aria-labelledby="pageTitle">
             <p class="eyebrow">HONOR WALL · PLAY RECORD</p>
             <h1 id="pageTitle">留下你的玩本記錄</h1>
-            <p>選擇劇本後，系統會從首頁共用資料載入角色；送出後直接寫入榮譽牆使用的 Google 試算表，不再經過 Google 表單。</p>
+            <p>每留下一筆記錄就能集點，點數可以在榮譽牆兌換折抵、優先選角權與專屬稱號。寫下心得、開沒人碰過的本、帶朋友來，都能多拿點數。</p>
+            <p class="double-day" id="doubleDayNote" hidden></p>
         </section>
 
         <section class="form-card">
@@ -96,7 +97,35 @@
                         <label for="comment">50 字以內的心得推薦</label>
                         <span id="commentCount" aria-live="polite">0 / 50</span>
                     </div>
-                    <textarea id="comment" maxlength="50" rows="4" placeholder="哪個瞬間最讓你印象深刻？"></textarea>
+                    <p class="field-hint" id="commentHint">寫滿 15 字可以多拿 5 點</p>
+                    <textarea id="comment" maxlength="50" rows="4" aria-describedby="commentHint" placeholder="哪個瞬間最讓你印象深刻？"></textarea>
+                </div>
+
+                <fieldset class="field mood-field">
+                    <legend>這場的心情</legend>
+                    <p class="field-hint">最多選 3 個，會顯示在榮譽牆的評價便利貼上</p>
+                    <div class="mood-options" id="moodOptions">
+                        <label><input type="checkbox" name="mood" value="驚嚇"><span>😱 驚嚇</span></label>
+                        <label><input type="checkbox" name="mood" value="淚崩"><span>😭 淚崩</span></label>
+                        <label><input type="checkbox" name="mood" value="反轉"><span>🤯 反轉</span></label>
+                        <label><input type="checkbox" name="mood" value="爆笑"><span>🤣 爆笑</span></label>
+                        <label><input type="checkbox" name="mood" value="意難平"><span>🥺 意難平</span></label>
+                        <label><input type="checkbox" name="mood" value="燒腦"><span>🧠 燒腦</span></label>
+                        <label><input type="checkbox" name="mood" value="心動"><span>💗 心動</span></label>
+                        <label><input type="checkbox" name="mood" value="療癒"><span>😌 療癒</span></label>
+                    </div>
+                </fieldset>
+
+                <div class="field">
+                    <label for="referrer">是誰帶你來的？</label>
+                    <p class="field-hint" id="referrerHint">只有第一次登記時需要填。填了雙方各得 10 點</p>
+                    <input
+                        id="referrer"
+                        type="text"
+                        maxlength="30"
+                        autocomplete="off"
+                        aria-describedby="referrerHint"
+                    >
                 </div>
 
                 <p class="form-status" id="formStatus" role="alert" hidden></p>
@@ -109,9 +138,17 @@
             <div class="success-panel" id="successPanel" tabindex="-1" hidden>
                 <div class="success-icon" aria-hidden="true">✓</div>
                 <h2>記錄已送出</h2>
-                <p>謝謝你留下這次的角色與心得。試算表同步後，就會出現在榮譽牆上。</p>
+
+                <div class="award-card" id="awardCard" hidden>
+                    <span class="award-label">本場獲得</span>
+                    <strong class="award-points" id="awardPoints">+0</strong>
+                    <span class="award-unit">點</span>
+                    <p class="award-detail" id="awardDetail"></p>
+                </div>
+
+                <p id="successNote">謝謝你留下這次的角色與心得。試算表同步後，就會出現在榮譽牆上。</p>
                 <div class="success-actions">
-                    <a class="primary-link" href="榮譽牆.html">查看榮譽牆</a>
+                    <a class="primary-link" href="榮譽牆.html">查看我的探員檔案</a>
                     <button type="button" id="addAnotherButton">再新增一筆</button>
                 </div>
             </div>
@@ -124,7 +161,7 @@
     </main>
 
     <script src="scripts.js?v=20260728-tags"></script>
-    <script src="play-record-config.js?v=20260727-2"></script>
-    <script src="play-record.js?v=20260727-2"></script>
+    <script src="play-record-config.js?v=20260729-points"></script>
+    <script src="play-record.js?v=20260729-points"></script>
 </body>
 </html>
