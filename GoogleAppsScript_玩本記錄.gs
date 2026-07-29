@@ -9,8 +9,13 @@
  * 2. 儲存後選擇：部署 → 新增部署作業 → 網頁應用程式。
  * 3. 執行身分選「我」，存取權限選「所有人」。
  * 4. 複製以 /exec 結尾的網址，貼到網站的 play-record-config.js。
- * 5. 回到試算表，重新整理後上方會出現「🌟 海星集點」選單。
- *    第一次使用請按「建立／修復所有分頁」，再按「重算所有點數」。
+ * 5. 在編輯器的函式下拉選單選「setupAll」，按「執行」並完成授權。
+ *    這一步會建立所有分頁，並把歷史資料的點數全部算好。
+ * 6. （選用）再執行一次「installMenu」，之後開試算表就會看到
+ *    「🌟 海星集點」選單，日常操作不用回到編輯器。
+ *
+ * 註：本檔是「獨立腳本」（用 openById 指定試算表，沒有綁在試算表上），
+ * 因此 onOpen 這種簡單觸發器不會自動執行，選單必須靠 installMenu 安裝。
  *
  * ── 分頁說明 ────────────────────────────────────────────────
  * 表單回應 1  原始回饋資料。集點的唯一輸入來源，請勿更動表頭。
@@ -108,20 +113,63 @@ const DEFAULT_MYSTERY = [
    選單
    ============================================================ */
 
+/**
+ * 本專案是「獨立腳本」（用 openById 指定試算表，沒有綁在試算表上），
+ * 而 onOpen 這種簡單觸發器只有在腳本綁定於該文件時才會自動執行。
+ * 所以必須先跑一次 installMenu() 建立可安裝的開啟觸發器，選單才會出現。
+ *
+ * 註：函式名稱結尾不能加底線。結尾底線在 Apps Script 代表私有函式，
+ * 無法被選單、觸發器或編輯器的「執行」下拉選單呼叫。
+ */
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('🌟 海星集點')
-    .addItem('重算所有點數', 'menuRebuild_')
-    .addItem('開一個神秘盒', 'menuOpenMystery_')
-    .addItem('建立／修復所有分頁', 'menuSetup_')
+    .addItem('重算所有點數', 'menuRebuild')
+    .addItem('開一個神秘盒', 'menuOpenMystery')
+    .addItem('建立／修復所有分頁', 'menuSetup')
     .addToUi();
+}
+
+/**
+ * 一次性安裝：替指定試算表建立開啟觸發器，之後每次開啟都會出現選單。
+ * 在 Apps Script 編輯器的函式下拉選單選這個，按「執行」即可。
+ */
+function installMenu() {
+  // 先清掉舊的，避免重複安裝跑出多個一樣的選單
+  ScriptApp.getProjectTriggers().forEach(function (trigger) {
+    if (trigger.getHandlerFunction() === 'onOpen') ScriptApp.deleteTrigger(trigger);
+  });
+
+  ScriptApp.newTrigger('onOpen')
+    .forSpreadsheet(SpreadsheetApp.openById(SPREADSHEET_ID))
+    .onOpen()
+    .create();
+
+  const message = '選單已安裝。請重新整理試算表，上方就會出現「🌟 海星集點」。';
+  console.log(message);
+  return message;
+}
+
+/**
+ * 不想裝選單也可以：在編輯器直接執行這一個函式，
+ * 它會建立所有分頁並把歷史資料的點數算好。
+ */
+function setupAll() {
+  setupSheets_();
+  const result = rebuildPoints_();
+  const message = '分頁已建立，點數已重算。\n' +
+    '玩家數：' + result.players + '\n' +
+    '得點記錄：' + result.earnRows + ' 筆\n' +
+    '已發出總點數：' + result.totalEarned;
+  console.log(message);
+  return message;
 }
 
 /**
  * 神秘盒開箱：GM 在現場按一下，程式抽出獎品並自動扣點。
  * 隨機由程式決定，GM 沒有選擇權——這才是「不確定性」真正的來源。
  */
-function menuOpenMystery_() {
+function menuOpenMystery() {
   const ui = SpreadsheetApp.getUi();
   const response = ui.prompt('開神秘盒', '輸入玩家名稱：', ui.ButtonSet.OK_CANCEL);
   if (response.getSelectedButton() !== ui.Button.OK) return;
@@ -202,20 +250,29 @@ function openMysteryBox_(rawName) {
   return { player: player, prize: picked.name, cost: cost, balance: balance - cost };
 }
 
-function menuSetup_() {
+function menuSetup() {
   setupSheets_();
-  SpreadsheetApp.getUi().alert('分頁已建立／修復完成。接著請按「重算所有點數」。');
+  notify_('分頁已建立／修復完成。接著請按「重算所有點數」。');
 }
 
-function menuRebuild_() {
+function menuRebuild() {
   const result = rebuildPoints_();
-  SpreadsheetApp.getUi().alert(
+  notify_(
     '重算完成。\n\n' +
     '玩家數：' + result.players + '\n' +
     '得點記錄：' + result.earnRows + ' 筆\n' +
     '手動記錄：' + result.manualRows + ' 筆（兌換／調整，未更動）\n' +
     '已發出總點數：' + result.totalEarned
   );
+}
+
+/** 從編輯器直接執行時沒有 UI，這時改印到執行紀錄，不要讓整個函式失敗。 */
+function notify_(message) {
+  try {
+    SpreadsheetApp.getUi().alert(message);
+  } catch (error) {
+    console.log(message);
+  }
 }
 
 /* ============================================================
