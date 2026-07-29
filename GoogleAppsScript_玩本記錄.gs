@@ -53,7 +53,6 @@ const REQUIRED_HEADERS = [
   '角色',
   '給予評價',
   '50字以內的心得推薦',
-  '心情',
   '介紹人'
 ];
 
@@ -312,7 +311,6 @@ function doPost(e) {
       '角色': clean_(data.character, 100),
       '給予評價': clean_(data.rating, 10),
       '50字以內的心得推薦': clean_(data.comment, 50),
-      '心情': clean_(data.mood, 100),
       '介紹人': clean_(data.referrer, 30)
     };
 

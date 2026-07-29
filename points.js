@@ -446,16 +446,11 @@
         const thisMonth = [];
         const priorScripts = new Set();
         const priorTypes = new Set();
-        const allMoods = new Set();
 
         Object.keys(records).forEach((scriptId) => {
             records[scriptId].forEach((record) => {
                 const date = parseDate(record.date);
                 const inMonth = date && date.getFullYear() === year && date.getMonth() === month;
-
-                if (record.mood) {
-                    record.mood.split(/[,，、\s]+/).filter(Boolean).forEach((mood) => allMoods.add(mood));
-                }
 
                 if (inMonth) {
                     thisMonth.push({ scriptId, ...record });
@@ -482,8 +477,7 @@
             { label: '本月完成 3 場', now: thisMonth.length, goal: 3 },
             { label: '本月寫 2 篇 15 字以上的心得', now: longComments, goal: 2 },
             { label: '本月開一本沒玩過的劇本', now: freshScripts.size, goal: 1 },
-            { label: '本月碰一種沒玩過的類型', now: freshTypes.size, goal: 1 },
-            { label: '收集 5 種不同心情標籤', now: allMoods.size, goal: 5 }
+            { label: '本月碰一種沒玩過的類型', now: freshTypes.size, goal: 1 }
         ];
     }
 

@@ -46,7 +46,6 @@
     const playerName = document.getElementById('playerName');
     const comment = document.getElementById('comment');
     const commentCount = document.getElementById('commentCount');
-    const moodOptions = document.getElementById('moodOptions');
     const referrer = document.getElementById('referrer');
     const formStatus = document.getElementById('formStatus');
     const submitButton = document.getElementById('submitButton');
@@ -59,8 +58,6 @@
     const addAnotherButton = document.getElementById('addAnotherButton');
     const setupNote = document.getElementById('setupNote');
     const website = document.getElementById('website');
-
-    const MOOD_LIMIT = 3;
 
     const configById = new Map(scripts.map((script) => [script.id, script]));
 
@@ -159,11 +156,6 @@
         }
     }
 
-    function selectedMoods() {
-        return Array.from(form.querySelectorAll('input[name="mood"]:checked'))
-            .map((input) => input.value);
-    }
-
     function buildPayload(script) {
         const selectedRole = form.querySelector('input[name="character"]:checked');
         const selectedRating = form.querySelector('input[name="rating"]:checked');
@@ -177,7 +169,6 @@
             character: selectedRole ? selectedRole.value : '',
             rating: selectedRating ? selectedRating.value : '',
             comment: comment.value.trim(),
-            mood: selectedMoods().join('、'),
             referrer: referrer.value.trim(),
             website: website.value
         };
@@ -245,15 +236,6 @@
         form.hidden = true;
         successPanel.hidden = false;
         successPanel.focus();
-    }
-
-    /** 心情最多選 MOOD_LIMIT 個，選滿之後把其餘選項關掉。 */
-    function syncMoodLimit() {
-        const reachedLimit = selectedMoods().length >= MOOD_LIMIT;
-        moodOptions.classList.toggle('at-limit', reachedLimit);
-        moodOptions.querySelectorAll('input[name="mood"]').forEach((input) => {
-            input.disabled = reachedLimit && !input.checked;
-        });
     }
 
     /** 用 JSONP 讀雙倍點數日文案：靜態網站跨網域讀 Apps Script 最穩的方式。 */
@@ -351,8 +333,6 @@
         }
     });
 
-    moodOptions.addEventListener('change', syncMoodLimit);
-
     addAnotherButton.addEventListener('click', () => {
         const savedName = playerName.value;
         form.reset();
@@ -362,7 +342,6 @@
         setDefaultDate();
         playerName.value = savedName;
         setSubmitting(false);
-        syncMoodLimit();
         awardCard.hidden = true;
         successPanel.hidden = true;
         form.hidden = false;
@@ -372,7 +351,6 @@
     populateScripts();
     resetRoleChoices();
     setDefaultDate();
-    syncMoodLimit();
     loadDoubleDayNote();
 
     if (!endpoint) setupNote.hidden = false;

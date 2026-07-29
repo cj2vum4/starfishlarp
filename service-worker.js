@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-29-points2';
+const CACHE_VERSION = '2026-07-29-nomood';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -16,15 +16,15 @@ const APP_SHELL = [
     './7人/津門遺雲.mp3',
     './manifest.webmanifest',
     './index.css?v=20260716',
-    './honor-form.css?v=20260729-points',
+    './honor-form.css?v=20260729-nomood',
     './scripts.js?v=20260728-tags',
     './scripts-data.js?v=20260728-tags2',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20260727',
     './play-record-config.js?v=20260729-points',
-    './play-record.js?v=20260729-points',
-    './points.js?v=20260729-points2',
+    './play-record.js?v=20260729-nomood',
+    './points.js?v=20260729-nomood',
     './pwa/favicon-32.png',
     './pwa/apple-touch-icon.png',
     './pwa/icon-192.png',

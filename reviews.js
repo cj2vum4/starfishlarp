@@ -104,8 +104,6 @@
     }
     .rv-note .rv-stars { font-size: .95rem; color: #c0392b; letter-spacing: 1px; margin-bottom: 6px; }
     .rv-note .rv-comment { font-size: .95rem; line-height: 1.55; flex: 1; word-break: break-word; white-space: pre-wrap; }
-    .rv-note .rv-meta { margin-top: 10px; font-size: .75rem; color: rgba(0,0,0,.55); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-    .rv-note .rv-mood { background: rgba(0,0,0,.08); border-radius: 10px; padding: 1px 8px; }
     .rv-empty, .rv-loading { text-align: center; color: rgba(255,255,255,.7); padding: 40px 10px; font-size: 1rem; }
     @media (max-width: 600px) {
         .rv-fab { right: 14px; bottom: 76px; padding: 10px 15px; font-size: .85rem; }
@@ -168,7 +166,6 @@
                     name: (row['怎麼稱呼你呢'] || '匿名玩家').trim(),
                     comment,
                     rating: (row['給予評價'] || '').trim(),
-                    mood: (row['心情'] || '').trim(),
                     character: chars.join('、')
                 });
             });
@@ -191,15 +188,11 @@
             const fdelay = (-Math.random() * 6).toFixed(2);          // 負延遲：各自錯開相位
             const bg = colors[i % colors.length];
             const stars = renderStars(r.rating);
-            // 匿名：不顯示是誰留的評論，只保留心情標籤
-            const meta = [];
-            if (r.mood) r.mood.split(/[,，、\s]+/).filter(Boolean).forEach(m =>
-                meta.push('<span class="rv-mood">' + escapeHtml(m) + '</span>'));
+            // 匿名：不顯示是誰留的評論
             const style = '--rot:' + rot + 'deg;--fdur:' + fdur + 's;--fdelay:' + fdelay + 's;background:' + bg;
             return '<div class="rv-note" style="' + style + '">' +
                 (stars ? '<div class="rv-stars">' + stars + '</div>' : '') +
                 '<div class="rv-comment">' + escapeHtml(r.comment) + '</div>' +
-                (meta.length ? '<div class="rv-meta">' + meta.join('') + '</div>' : '') +
             '</div>';
         }).join('');
         bodyEl.innerHTML =

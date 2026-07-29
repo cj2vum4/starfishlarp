@@ -11,7 +11,7 @@
     <!-- 劇本資料單一來源（與 index.html 共用） -->
     <script src="scripts.js?v=20260728-tags"></script>
     <script src="play-record-config.js?v=20260729-points"></script>
-    <script src="points.js?v=20260729-points2"></script>
+    <script src="points.js?v=20260729-nomood"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -743,22 +743,6 @@
             50%       { box-shadow: 0 0 14px rgba(255,60,0,0.9); }
         }
 
-        /* ===== 心情標籤（便利貼） ===== */
-        .mood-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            justify-content: center;
-            margin-bottom: 4px;
-        }
-
-        .mood-tag {
-            font-size: 0.75rem;
-            background: rgba(0,0,0,0.12);
-            border-radius: 8px;
-            padding: 1px 6px;
-        }
-
         /* ===== 排行榜排序切換 ===== */
         .leaderboard-controls {
             display: flex;
@@ -1122,8 +1106,7 @@
                         const script = row['劇本'] ? String(row['劇本']).trim() : '';
                         let comment = row['50字以內的心得推薦']?.trim() || '';
                         const rating = row['給予評價']?.trim();
-                        const mood = row['心情']?.trim() || '';  // 心情標籤欄位（需在 Google Form 新增此問題）
-                        
+
                         // 收集所有角色欄位
                         const characters = [];
                         for (let key in row) {
@@ -1142,7 +1125,7 @@
                             if (!playRecords[name][script]) {
                                 playRecords[name][script] = [];
                             }
-                            playRecords[name][script].push({ date, character, rating, comment, mood });
+                            playRecords[name][script].push({ date, character, rating, comment });
                         }
                     });
 
@@ -1438,7 +1421,6 @@
                                 allComments.push({
                                     comment: record.comment,
                                     rating: record.rating,
-                                    mood: record.mood || '',
                                     playerName: playerName
                                 });
                             }
@@ -1552,22 +1534,6 @@
                         const content = document.createElement('div');
                         content.className = 'sticky-note-content';
                         
-                        // 心情標籤
-                        if (commentData.mood) {
-                            const moodTags = commentData.mood.split(/[,，、\s]+/).filter(Boolean);
-                            if (moodTags.length > 0) {
-                                const moodDiv = document.createElement('div');
-                                moodDiv.className = 'mood-tags';
-                                moodTags.forEach(tag => {
-                                    const span = document.createElement('span');
-                                    span.className = 'mood-tag';
-                                    span.textContent = tag;
-                                    moodDiv.appendChild(span);
-                                });
-                                content.appendChild(moodDiv);
-                            }
-                        }
-
                         // 星星評分區域
                         if (commentData.rating) {
                             const ratingDiv = document.createElement('div');
