@@ -13,10 +13,36 @@
 
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
 
+    const SELF_SCRIPT = document.currentScript ||
+        document.querySelector('script[src*="reviews.js"]');
+
+    // 端點寫在 play-record-config.js。從 reviews.js 自己的路徑推導出來動態載入，
+    // 四十幾個劇本頁就不用各自多加一行 script 標籤。
+    function configUrl() {
+        if (!SELF_SCRIPT || !SELF_SCRIPT.src) return '';
+        return SELF_SCRIPT.src.replace(/reviews\.js(\?.*)?$/, 'play-record-config.js?v=20260729-w3');
+    }
+
+    function loadEndpoint() {
+        if (window.STARFISH_PLAY_RECORD_ENDPOINT) {
+            return Promise.resolve(String(window.STARFISH_PLAY_RECORD_ENDPOINT).trim());
+        }
+
+        const url = configUrl();
+        if (!url) return Promise.resolve('');
+
+        return new Promise((resolve) => {
+            const tag = document.createElement('script');
+            tag.src = url;
+            tag.onload = () => resolve(String(window.STARFISH_PLAY_RECORD_ENDPOINT || '').trim());
+            tag.onerror = () => resolve('');
+            document.head.appendChild(tag);
+        });
+    }
+
     // ── 取得本頁劇本名稱 ──────────────────────────────────────
     function resolveScriptName() {
-        const self = document.currentScript ||
-            document.querySelector('script[src*="reviews.js"]');
+        const self = SELF_SCRIPT;
         if (self && self.dataset && self.dataset.script) return self.dataset.script.trim();
         if (window.SCRIPT_NAME) return String(window.SCRIPT_NAME).trim();
         try {
@@ -104,6 +130,24 @@
     }
     .rv-note .rv-stars { font-size: .95rem; color: #c0392b; letter-spacing: 1px; margin-bottom: 6px; }
     .rv-note .rv-comment { font-size: .95rem; line-height: 1.55; flex: 1; word-break: break-word; white-space: pre-wrap; }
+    .rv-note.rv-featured { box-shadow: 0 0 0 2px #d4a03c, 0 14px 26px rgba(0,0,0,.45), 0 4px 8px rgba(0,0,0,.3); }
+    .rv-pick {
+        align-self: flex-start; margin-bottom: 6px; padding: 1px 8px;
+        border-radius: 3px; background: #8d5b1a; color: #fff2cf;
+        font-size: .7rem; letter-spacing: .08em;
+    }
+    .rv-like {
+        margin-top: 10px; align-self: flex-start;
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px; border-radius: 999px; cursor: pointer;
+        border: 1px solid rgba(0,0,0,.22); background: rgba(255,255,255,.42);
+        color: #3a3326; font-size: .8rem; font-weight: 700;
+        font-family: '微軟正黑體', sans-serif;
+        transition: background .15s ease, transform .15s ease;
+    }
+    .rv-like:hover:not(:disabled) { background: rgba(255,255,255,.75); transform: translateY(-1px); }
+    .rv-like:disabled { cursor: default; opacity: .78; }
+    .rv-like.rv-liked { background: #d4a03c; border-color: #a87d24; color: #2b230f; }
     .rv-empty, .rv-loading { text-align: center; color: rgba(255,255,255,.7); padding: 40px 10px; font-size: 1rem; }
     @media (max-width: 600px) {
         .rv-fab { right: 14px; bottom: 76px; padding: 10px 15px; font-size: .85rem; }
@@ -150,29 +194,116 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
     // ── 載入並渲染評論 ────────────────────────────────────────
+    // 心得的身分是「劇本＋日期＋作者」，跟 Apps Script 那邊一致
+    let endpoint = '';
+    let currentReviews = [];
+
+    const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, '').trim();
+    const normDate = (s) => {
+        const parts = String(s || '').trim().split(/[\/\-.]/).map(n => parseInt(n, 10));
+        if (parts.length < 3 || parts.some(isNaN)) return String(s || '').trim();
+        return parts[0] + '/' + parts[1] + '/' + parts[2];
+    };
+    const likeKey = (review) => 'rv_like_' + norm(SCRIPT_NAME) + '|' + review.date + '|' + norm(review.name);
+
+    function alreadyLiked(review) {
+        try { return localStorage.getItem(likeKey(review)) === '1'; } catch (_) { return false; }
+    }
+
     async function loadReviews() {
         try {
-            const rows = await fetchRows();
-            const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, '').trim();
+            const [rows, interactions] = await Promise.all([fetchRows(), loadInteractions()]);
             const target = norm(SCRIPT_NAME);
             const reviews = [];
+
             rows.forEach(row => {
                 if (norm(row['劇本']) !== target) return;
                 const comment = (row['50字以內的心得推薦'] || '').trim();
                 if (!comment) return;
                 const chars = [];
                 for (const k in row) { if (k.indexOf('角色') === 0 && row[k] && row[k].trim()) chars.push(row[k].trim()); }
+
+                const name = (row['怎麼稱呼你呢'] || '匿名玩家').trim();
+                const date = normDate(row['日期']);
+                const stat = interactions.find(item =>
+                    norm(item.script) === target &&
+                    item.date === date &&
+                    norm(item.author) === norm(name)) || {};
+
                 reviews.push({
-                    name: (row['怎麼稱呼你呢'] || '匿名玩家').trim(),
+                    name,
+                    date,
                     comment,
                     rating: (row['給予評價'] || '').trim(),
-                    character: chars.join('、')
+                    character: chars.join('、'),
+                    likes: Number(stat.likes) || 0,
+                    featured: !!stat.featured
                 });
             });
+
+            // 精選排前面，其次按讚數
+            reviews.sort((a, b) =>
+                (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || b.likes - a.likes);
+
+            currentReviews = reviews;
             renderReviews(reviews);
         } catch (err) {
             bodyEl.innerHTML = '<div class="rv-empty">評價讀取失敗 😢<br><span style="font-size:.8rem;opacity:.7">' +
                 escapeHtml(err.message || '') + '</span></div>';
+        }
+    }
+
+    /** 讚數與精選走 Apps Script 的 JSONP，端點讀不到就只是沒有互動功能。 */
+    async function loadInteractions() {
+        endpoint = await loadEndpoint();
+        if (!endpoint) return [];
+
+        return new Promise((resolve) => {
+            const callbackName = 'rvLikes' + Date.now().toString(36);
+            const tag = document.createElement('script');
+            let settled = false;
+
+            const finish = (data) => {
+                if (settled) return;
+                settled = true;
+                delete window[callbackName];
+                tag.remove();
+                resolve(data || []);
+            };
+
+            window[callbackName] = (payload) => {
+                finish(payload && Array.isArray(payload.interactions) ? payload.interactions : []);
+            };
+
+            tag.src = endpoint + (endpoint.includes('?') ? '&' : '?') +
+                'action=summary&callback=' + callbackName;
+            tag.onerror = () => finish([]);
+            document.head.appendChild(tag);
+
+            setTimeout(() => finish([]), 8000);
+        });
+    }
+
+    async function sendLike(review, button) {
+        if (!endpoint || alreadyLiked(review)) return;
+
+        button.disabled = true;
+        try { localStorage.setItem(likeKey(review), '1'); } catch (_) {}
+
+        review.likes += 1;
+        button.classList.add('rv-liked');
+        button.innerHTML = '👍 ' + review.likes;
+
+        const body = new URLSearchParams();
+        body.set('action', 'like');
+        body.set('script', SCRIPT_NAME);
+        body.set('date', review.date);
+        body.set('author', review.name);
+
+        try {
+            await fetch(endpoint, { method: 'POST', mode: 'no-cors', cache: 'no-store', body });
+        } catch (error) {
+            console.warn('按讚沒送出去:', error);
         }
     }
 
@@ -188,17 +319,33 @@
             const fdelay = (-Math.random() * 6).toFixed(2);          // 負延遲：各自錯開相位
             const bg = colors[i % colors.length];
             const stars = renderStars(r.rating);
-            // 匿名：不顯示是誰留的評論
+            // 匿名：不顯示是誰留的評論。作者名只留在 JS 裡供按讚使用，不寫進 HTML。
             const style = '--rot:' + rot + 'deg;--fdur:' + fdur + 's;--fdelay:' + fdelay + 's;background:' + bg;
-            return '<div class="rv-note" style="' + style + '">' +
+            const liked = alreadyLiked(r);
+            const likeBtn = endpoint
+                ? '<button class="rv-like' + (liked ? ' rv-liked' : '') + '" data-index="' + i + '"' +
+                  (liked ? ' disabled' : '') + '>👍 ' + r.likes + '</button>'
+                : '';
+
+            return '<div class="rv-note' + (r.featured ? ' rv-featured' : '') + '" style="' + style + '">' +
+                (r.featured ? '<span class="rv-pick">★ 精選</span>' : '') +
                 (stars ? '<div class="rv-stars">' + stars + '</div>' : '') +
                 '<div class="rv-comment">' + escapeHtml(r.comment) + '</div>' +
+                likeBtn +
             '</div>';
         }).join('');
+
         bodyEl.innerHTML =
             '<div style="text-align:center;color:rgba(255,255,255,.55);font-size:.82rem;margin-bottom:14px">' +
             '共 ' + reviews.length + ' 則玩家評價</div>' +
             '<div class="rv-grid">' + html + '</div>';
+
+        bodyEl.querySelectorAll('.rv-like').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                sendLike(currentReviews[Number(button.dataset.index)], button);
+            });
+        });
     }
 
     function renderStars(ratingStr) {

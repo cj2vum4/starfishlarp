@@ -173,6 +173,138 @@
     }
     .pts-mystery span { color: #9c9080; font-size: .8rem; }
 
+    /* ── 榮耀軌 ──────────────────────────────────────────────
+       這三種裝飾都是玩家用點數換來的，成本為零但只有網站給得起，
+       所以視覺要做得夠有份量。 */
+
+    /* 名字鍍金：金屬光澤沿著文字緩慢流動 */
+    .pts-gilded {
+        background: linear-gradient(100deg,
+            #a87f24 0%, #ffe9a8 36%, #fffaea 46%, #ffe9a8 56%, #a87f24 100%);
+        background-size: 240% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        animation: pts-shimmer 5s linear infinite;
+    }
+    @keyframes pts-shimmer {
+        from { background-position: 240% 0; }
+        to { background-position: -240% 0; }
+    }
+
+    /* 自訂稱號：做成刻上去的銘牌，跟系統發的稱號區隔開 */
+    .pts-custom-title {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 10px;
+        border: 1px solid rgba(233, 185, 79, .55);
+        border-radius: 3px;
+        background: linear-gradient(160deg, rgba(141, 91, 26, .5), rgba(40, 26, 10, .7));
+        color: #ffe9a8;
+        font-size: .78rem;
+        letter-spacing: .06em;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, .6);
+        vertical-align: middle;
+    }
+
+    .pts-legend-mark { margin-left: 6px; filter: drop-shadow(0 0 6px rgba(255, 217, 120, .8)); }
+
+    /* 傳奇殿堂 */
+    .pts-hall {
+        max-width: 1000px;
+        margin: 0 auto 26px;
+        padding: 26px 24px 28px;
+        border: 1px solid rgba(233, 185, 79, .34);
+        border-radius: 16px;
+        background:
+            radial-gradient(120% 80% at 50% 0%, rgba(141, 91, 26, .34), transparent 62%),
+            linear-gradient(180deg, rgba(28, 20, 10, .94), rgba(14, 10, 6, .96));
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 224, 148, .12);
+        text-align: center;
+        font-family: '微軟正黑體', sans-serif;
+    }
+    .pts-hall[hidden] { display: none; }
+    .pts-hall h3 {
+        margin: 0 0 4px;
+        font-size: 1.3rem;
+        letter-spacing: .22em;
+        color: #ffd978;
+        text-shadow: 0 0 26px rgba(255, 217, 120, .4);
+    }
+    .pts-hall p { margin: 0 0 20px; font-size: .82rem; color: #9c9080; letter-spacing: .06em; }
+    .pts-hall-names {
+        display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 26px;
+    }
+    .pts-hall-name {
+        font-size: 1.45rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        cursor: pointer;
+        transition: transform 180ms ease;
+    }
+    .pts-hall-name:hover { transform: translateY(-2px); }
+    .pts-hall-name small {
+        display: block;
+        margin-top: 2px;
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: .68rem;
+        font-weight: 400;
+        letter-spacing: .14em;
+        color: #8d8272;
+        -webkit-text-fill-color: #8d8272;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .pts-gilded { animation: none; background-position: 46% 0; }
+    }
+
+    /* 成就卡 */
+    .pts-share {
+        display: flex; justify-content: center; margin: 4px 0 2px;
+    }
+    .pts-share button {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 11px 24px; border-radius: 999px;
+        border: 1px solid rgba(233, 185, 79, .5);
+        background: linear-gradient(145deg, rgba(141, 91, 26, .5), rgba(40, 26, 10, .72));
+        color: #ffe9a8; font-size: .95rem; font-weight: 700; cursor: pointer;
+        font-family: '微軟正黑體', sans-serif;
+        transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    .pts-share button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
+    }
+    .pts-share button:disabled { opacity: .5; cursor: default; transform: none; }
+
+    .pts-shot {
+        position: fixed; inset: 0; z-index: 10000;
+        display: none; align-items: flex-start; justify-content: center;
+        padding: 32px 16px; overflow-y: auto;
+        background: rgba(6, 4, 9, .88); backdrop-filter: blur(8px);
+        font-family: '微軟正黑體', sans-serif;
+    }
+    .pts-shot.open { display: flex; }
+    .pts-shot-inner { width: 100%; max-width: 420px; text-align: center; }
+    .pts-shot img {
+        width: 100%; height: auto; display: block;
+        border-radius: 12px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, .6);
+    }
+    .pts-shot-actions {
+        display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px;
+    }
+    .pts-shot-actions a, .pts-shot-actions button {
+        padding: 11px 22px; border-radius: 999px; cursor: pointer;
+        font-size: .92rem; font-weight: 700; text-decoration: none;
+        border: 1px solid rgba(233, 185, 79, .5);
+        background: linear-gradient(145deg, rgba(141, 91, 26, .5), rgba(40, 26, 10, .72));
+        color: #ffe9a8; font-family: '微軟正黑體', sans-serif;
+    }
+    .pts-shot-actions button { border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: #d9ccb4; }
+    .pts-shot-hint { margin: 14px 0 0; font-size: .82rem; color: #9c9080; }
+
     /* 全站累計案件數 */
     .pts-collective {
         margin: 0 auto 18px; max-width: 1000px; text-align: center;
@@ -529,6 +661,308 @@
         container.hidden = false;
     }
 
+    /**
+     * 傳奇殿堂：只列出用 500 點兌換過「傳奇殿堂留名」的玩家。
+     * 沒有人達標時整個區塊不出現——空的殿堂比沒有殿堂更難看。
+     */
+    function renderLegendHall(container) {
+        if (!container) return;
+
+        const legends = Array.from(state.summary.values())
+            .filter((player) => player.legend)
+            .sort((a, b) => b.earned - a.earned);
+
+        if (!legends.length) {
+            container.hidden = true;
+            return;
+        }
+
+        container.innerHTML =
+            '<h3>傳 奇 殿 堂</h3>' +
+            '<p>用 500 點換來的永久席位</p>' +
+            '<div class="pts-hall-names">' +
+                legends.map((player) =>
+                    '<span class="pts-hall-name pts-gilded" data-player="' + escapeHtml(player.name) + '">' +
+                        escapeHtml(player.name) +
+                        '<small>' + escapeHtml(player.agent || '') + '</small>' +
+                    '</span>').join('') +
+            '</div>';
+
+        container.hidden = false;
+
+        container.querySelectorAll('.pts-hall-name').forEach((el) => {
+            el.addEventListener('click', () => {
+                if (typeof state.onSelectPlayer === 'function') {
+                    state.onSelectPlayer(el.dataset.player);
+                }
+            });
+        });
+    }
+
+    /* ── 成就卡產圖 ──────────────────────────────────────────
+       設計方向「案卷編錄」：把玩家的遊玩史當成檔案館裡的標本記錄。
+       深墨底、單一金色重音、大量留白；資訊靠痕跡的累積傳達而非文字——
+       每一格是一本劇本，填滿代表玩過、空框代表還沒碰，
+       收藏的缺口一眼看得出來。文字一律壓到最小，只留必要的標籤。 */
+
+    const CARD = {
+        width: 1080,
+        minHeight: 1000,
+        margin: 84,
+        ink: '#0d0a11',
+        inkWarm: '#17110b',
+        gold: '#d9a844',
+        goldBright: '#ffe9a8',
+        cream: '#f2e6cd',
+        muted: '#6f6858',
+        hairline: 'rgba(233, 185, 79, 0.24)',
+        serif: '"Noto Serif TC", "Songti TC", Georgia, serif',
+        sans: '"PingFang TC", "Microsoft JhengHei", system-ui, sans-serif',
+        mono: 'ui-monospace, Menlo, monospace'
+    };
+
+    /** 逐字繪製以精確控制字距，順便避開瀏覽器對 ctx.letterSpacing 的支援差異。 */
+    function trackedText(ctx, text, x, y, tracking, align) {
+        const chars = Array.from(String(text || ''));
+        if (!chars.length) return 0;
+
+        const widths = chars.map((char) => ctx.measureText(char).width);
+        const total = widths.reduce((sum, w) => sum + w, 0) + tracking * (chars.length - 1);
+
+        let cursor = x;
+        if (align === 'center') cursor = x - total / 2;
+        else if (align === 'right') cursor = x - total;
+
+        chars.forEach((char, index) => {
+            ctx.fillText(char, cursor, y);
+            cursor += widths[index] + tracking;
+        });
+
+        return total;
+    }
+
+    function drawAchievementCard(playerName, playRecords, options) {
+        const settings = options || {};
+        const player = getPlayer(playerName);
+        const badges = computeBadges(playerName, playRecords);
+        const records = playRecords[playerName] || {};
+
+        const M = CARD.margin;
+        const W = CARD.width;
+        const innerWidth = W - M * 2;
+        const centerX = W / 2;
+
+        // ── 先算版面再決定畫布高度 ──────────────────────────
+        // 固定成 4:5 的話，劇本數少的玩家底部會空一大片，構圖整個垮掉。
+        // 讓內容決定框的高度，卡片永遠是滿的。
+        const titles = [];
+        if (settings.title) titles.push(settings.title);
+        if (player && player.title) titles.push(player.title);
+        if (player && player.legend) titles.push('傳奇殿堂');
+
+        const allScripts = (window.SCRIPTS || []);
+        const total = allScripts.length || Object.keys(records).length;
+        const cleared = allScripts.length
+            ? allScripts.filter((script) => records[script.reviewKey || script.name] || records[script.name]).length
+            : Object.keys(records).length;
+
+        const perRow = 20;
+        const gap = 12;
+        const cellW = (innerWidth - gap * (perRow - 1)) / perRow;
+        const cellH = Math.min(Math.max(Math.round(cellW * 1.25), 38), 70);
+        const rows = Math.max(1, Math.ceil(total / perRow));
+        const hasBadges = badges.length > 0;
+
+        const eyebrowY = M + 44;
+        const topRuleY = eyebrowY + 34;
+        const agentY = topRuleY + 150;
+        const nameY = agentY + 84;
+        const titleY = titles.length ? nameY + 50 : nameY;
+        const recordLabelY = titleY + 78;
+        const gridTop = recordLabelY + 24;
+        const midRuleY = gridTop + rows * (cellH + gap) + 44;
+        const statLabelY = midRuleY + 52;
+        const statValueY = statLabelY + 56;
+        const lowRuleY = statLabelY + 104;
+        const badgeLabelY = lowRuleY + 46;
+        const badgeChipY = badgeLabelY + 42;
+        const contentBottom = hasBadges ? badgeChipY + 18 : lowRuleY;
+
+        const height = Math.max(CARD.minHeight, Math.round(contentBottom + 96 + M));
+        const footY = height - M - 8;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        // ── 底：墨色縱向漸層，靠近底部微微轉暖 ──────────────
+        const ground = ctx.createLinearGradient(0, 0, 0, height);
+        ground.addColorStop(0, CARD.ink);
+        ground.addColorStop(0.62, '#110d13');
+        ground.addColorStop(1, CARD.inkWarm);
+        ctx.fillStyle = ground;
+        ctx.fillRect(0, 0, W, height);
+
+        // 頂部一圈極淡的暈光，讓大字有立足點
+        const halo = ctx.createRadialGradient(centerX, 190, 0, centerX, 190, 620);
+        halo.addColorStop(0, 'rgba(217, 168, 68, 0.13)');
+        halo.addColorStop(1, 'rgba(217, 168, 68, 0)');
+        ctx.fillStyle = halo;
+        ctx.fillRect(0, 0, W, 820);
+
+        // ── 檔案框與四角定位標記 ────────────────────────────
+        ctx.strokeStyle = CARD.hairline;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(M - 26, M - 26, innerWidth + 52, height - (M - 26) * 2);
+
+        const tick = 16;
+        ctx.strokeStyle = 'rgba(233, 185, 79, 0.5)';
+        [[M - 26, M - 26, 1, 1], [W - M + 26, M - 26, -1, 1],
+         [M - 26, height - M + 26, 1, -1], [W - M + 26, height - M + 26, -1, -1]]
+            .forEach(function (corner) {
+                const x = corner[0], cy = corner[1], dx = corner[2], dy = corner[3];
+                ctx.beginPath();
+                ctx.moveTo(x + dx * tick, cy);
+                ctx.lineTo(x, cy);
+                ctx.lineTo(x, cy + dy * tick);
+                ctx.stroke();
+            });
+
+        ctx.textBaseline = 'alphabetic';
+
+        // ── 眉標 ────────────────────────────────────────────
+        ctx.fillStyle = CARD.muted;
+        ctx.font = '400 19px ' + CARD.sans;
+        trackedText(ctx, '海星劇本殺　探員檔案', centerX, eyebrowY, 9, 'center');
+
+        ctx.strokeStyle = CARD.hairline;
+        ctx.beginPath();
+        ctx.moveTo(M, topRuleY);
+        ctx.lineTo(W - M, topRuleY);
+        ctx.stroke();
+
+        // ── 主角：探員編號 ──────────────────────────────────
+        ctx.fillStyle = CARD.gold;
+        ctx.font = '200 148px ' + CARD.mono;
+        ctx.shadowColor = 'rgba(255, 233, 168, 0.34)';
+        ctx.shadowBlur = 44;
+        trackedText(ctx, player && player.agent ? player.agent : '#—', centerX, agentY, 10, 'center');
+        ctx.shadowBlur = 0;
+
+        // ── 玩家名 ──────────────────────────────────────────
+        ctx.fillStyle = player && player.gilded ? CARD.goldBright : CARD.cream;
+        ctx.font = '600 62px ' + CARD.serif;
+        trackedText(ctx, playerName, centerX, nameY, 6, 'center');
+
+        // ── 稱號（系統稱號 + 自訂稱號 + 傳奇殿堂）────────────
+        if (titles.length) {
+            ctx.font = '400 22px ' + CARD.sans;
+            ctx.fillStyle = CARD.gold;
+            trackedText(ctx, titles.join('　·　'), centerX, titleY, 4, 'center');
+        }
+
+        // ── 案件記錄：填滿＝玩過，空框＝還沒碰 ──────────────
+        ctx.fillStyle = CARD.muted;
+        ctx.font = '400 17px ' + CARD.sans;
+        trackedText(ctx, '案件記錄', M, recordLabelY, 7, 'left');
+
+        ctx.fillStyle = CARD.cream;
+        ctx.font = '400 19px ' + CARD.mono;
+        trackedText(ctx, cleared + ' / ' + total, W - M, recordLabelY, 3, 'right');
+
+        // 已玩的排在前面，讓填滿的區塊聚成一片，缺口才讀得出來
+        for (let i = 0; i < total; i++) {
+            const cx = M + (i % perRow) * (cellW + gap);
+            const cy = gridTop + Math.floor(i / perRow) * (cellH + gap);
+
+            if (i < cleared) {
+                const fill = ctx.createLinearGradient(cx, cy, cx, cy + cellH);
+                fill.addColorStop(0, CARD.goldBright);
+                fill.addColorStop(1, CARD.gold);
+                ctx.fillStyle = fill;
+                ctx.fillRect(cx, cy, cellW, cellH);
+            } else {
+                ctx.strokeStyle = 'rgba(233, 185, 79, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(cx + 0.5, cy + 0.5, cellW - 1, cellH - 1);
+            }
+        }
+
+        // ── 三欄數據 ────────────────────────────────────────
+        ctx.strokeStyle = CARD.hairline;
+        ctx.beginPath();
+        ctx.moveTo(M, midRuleY);
+        ctx.lineTo(W - M, midRuleY);
+        ctx.stroke();
+
+        [['場次', player ? player.plays : Object.keys(records).length],
+         ['累積點數', player ? player.earned : '—'],
+         ['徽章', badges.length]].forEach(function (stat, index) {
+            const x = M + innerWidth * (index * 2 + 1) / 6;
+
+            ctx.fillStyle = CARD.muted;
+            ctx.font = '400 16px ' + CARD.sans;
+            trackedText(ctx, stat[0], x, statLabelY, 6, 'center');
+
+            ctx.fillStyle = CARD.cream;
+            ctx.font = '300 52px ' + CARD.mono;
+            trackedText(ctx, String(stat[1]), x, statValueY, 2, 'center');
+        });
+
+        ctx.strokeStyle = CARD.hairline;
+        ctx.beginPath();
+        ctx.moveTo(M, lowRuleY);
+        ctx.lineTo(W - M, lowRuleY);
+        ctx.stroke();
+
+        // ── 徽章 ────────────────────────────────────────────
+        if (hasBadges) {
+            ctx.fillStyle = CARD.muted;
+            ctx.font = '400 17px ' + CARD.sans;
+            trackedText(ctx, '彩蛋徽章', M, badgeLabelY, 7, 'left');
+
+            ctx.font = '400 26px ' + CARD.sans;
+            let cursorX = M;
+            badges.forEach(function (badge) {
+                const label = badge.icon + ' ' + badge.name;
+                const chipWidth = ctx.measureText(label).width + 34;
+                if (cursorX + chipWidth > W - M) return;
+
+                ctx.strokeStyle = 'rgba(233, 185, 79, 0.32)';
+                ctx.lineWidth = 1;
+                roundRect(ctx, cursorX, badgeChipY - 28, chipWidth, 46, 23);
+                ctx.stroke();
+
+                ctx.fillStyle = CARD.cream;
+                ctx.fillText(label, cursorX + 17, badgeChipY + 1);
+                cursorX += chipWidth + 12;
+            });
+        }
+
+        // ── 頁腳 ────────────────────────────────────────────
+        ctx.fillStyle = CARD.muted;
+        ctx.font = '400 16px ' + CARD.mono;
+        trackedText(ctx, new Date().toISOString().slice(0, 10).replace(/-/g, '.'), M, footY, 4, 'left');
+        trackedText(ctx, 'STARFISH LARP', W - M, footY, 5, 'right');
+
+        return canvas;
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
+
     /** 本月場次，給排行榜的「本月榜」使用。 */
     function monthlyPlays(playerName, playRecords) {
         const records = playRecords[playerName];
@@ -561,6 +995,16 @@
 
         const safeName = escapeHtml(playerName);
         const agent = player && player.agent ? escapeHtml(player.agent) : '';
+
+        // 榮耀軌裝飾：鍍金、自訂稱號、傳奇殿堂標記
+        const nameHtml =
+            '<span class="pts-name' + (player && player.gilded ? ' pts-gilded' : '') + '">' +
+                safeName +
+            '</span>' +
+            (player && player.legend ? '<span class="pts-legend-mark">👑</span>' : '') +
+            (player && player.title
+                ? '<span class="pts-custom-title">' + escapeHtml(player.title) + '</span>'
+                : '');
 
         let statsHtml;
         let rewardsHtml;
@@ -603,7 +1047,7 @@
                     '<h3>探員檔案</h3>' +
                     (agent ? '<span class="pts-agent">' + agent + '</span>' : '') +
                 '</div>' +
-                '<span class="pts-name">' + safeName + '</span>' +
+                '<span class="pts-name-wrap">' + nameHtml + '</span>' +
             '</div>' +
             (greeting ? '<p class="pts-greeting">' + greeting + '</p>' : '') +
             statsHtml +
@@ -613,6 +1057,7 @@
             renderMates(mates) +
             '<p class="pts-section-title">彩蛋徽章</p>' +
             badgeHtml +
+            '<div class="pts-share"><button type="button">🪪 產生我的成就卡</button></div>' +
             '<p class="pts-hint">兌換請直接跟現場的海星說，點數會由 GM 手動核銷。</p>';
 
         // 點戰友的名字就切換到對方的檔案
@@ -623,6 +1068,82 @@
                 }
             });
         });
+
+        container.querySelector('.pts-share button').addEventListener('click', (event) => {
+            openAchievementCard(playerName, playRecords, event.currentTarget);
+        });
+    }
+
+    /* ── 成就卡預覽與下載 ────────────────────────────────── */
+    function openAchievementCard(playerName, playRecords, button) {
+        button.disabled = true;
+        button.textContent = '繪製中…';
+
+        // 讓瀏覽器先把按鈕狀態畫出來再開始畫圖，避免整頁卡住沒有回饋
+        setTimeout(() => {
+            try {
+                const title = typeof state.titleResolver === 'function'
+                    ? state.titleResolver(playerName)
+                    : '';
+                const canvas = drawAchievementCard(playerName, playRecords, { title });
+
+                canvas.toBlob((blob) => {
+                    showAchievementOverlay(blob, playerName);
+                    button.disabled = false;
+                    button.textContent = '🪪 產生我的成就卡';
+                }, 'image/png');
+            } catch (error) {
+                console.error('成就卡繪製失敗:', error);
+                button.disabled = false;
+                button.textContent = '🪪 產生我的成就卡';
+            }
+        }, 30);
+    }
+
+    function showAchievementOverlay(blob, playerName) {
+        const url = URL.createObjectURL(blob);
+
+        let overlay = document.querySelector('.pts-shot');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'pts-shot';
+            overlay.innerHTML =
+                '<div class="pts-shot-inner">' +
+                    '<img alt="成就卡">' +
+                    '<div class="pts-shot-actions">' +
+                        '<a download>下載圖片</a>' +
+                        '<button type="button">關閉</button>' +
+                    '</div>' +
+                    '<p class="pts-shot-hint">手機長按圖片也可以直接存下來</p>' +
+                '</div>';
+            document.body.appendChild(overlay);
+
+            const close = () => {
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+                const previous = overlay.querySelector('img').src;
+                if (previous.startsWith('blob:')) URL.revokeObjectURL(previous);
+            };
+
+            overlay.querySelector('button').addEventListener('click', close);
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay) close();
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && overlay.classList.contains('open')) close();
+            });
+        }
+
+        const image = overlay.querySelector('img');
+        if (image.src && image.src.startsWith('blob:')) URL.revokeObjectURL(image.src);
+        image.src = url;
+
+        const link = overlay.querySelector('a');
+        link.href = url;
+        link.download = '海星探員檔案-' + playerName + '.png';
+
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
     }
 
     function renderQuests(quests) {
@@ -732,10 +1253,13 @@
         renderProfile: renderProfile,
         renderDoubleDay: renderDoubleDay,
         renderCollective: renderCollective,
+        renderLegendHall: renderLegendHall,
         computeBadges: computeBadges,
         monthlyPlays: monthlyPlays,
         isReady: function () { return state.ok; },
         // 榮譽牆用它接手「點戰友名字就跳到對方檔案」的行為
-        setPlayerSelectHandler: function (handler) { state.onSelectPlayer = handler; }
+        setPlayerSelectHandler: function (handler) { state.onSelectPlayer = handler; },
+        // 稱號規則留在榮譽牆（單一來源），成就卡透過這個取用，避免兩邊各寫一套門檻
+        setTitleResolver: function (resolver) { state.titleResolver = resolver; }
     };
 })();

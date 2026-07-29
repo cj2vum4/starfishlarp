@@ -21,10 +21,11 @@
  * 表單回應 1  原始回饋資料。集點的唯一輸入來源，請勿更動表頭。
  * 點數帳本    每一列一筆加減點。來源=表單 的列由系統產生，重算時會整批重建；
  *             來源=手動 的列（兌換、補登、調整）永遠保留，重算不會動到。
- * 玩家        別名歸戶與探員編號。同一人用了多個名字時，把其他名字填進「別名」。
+ * 玩家        別名歸戶、探員編號，以及榮耀軌的鍍金／自訂稱號／傳奇殿堂。
  * 設定        點數規則與活動參數，改完按「重算所有點數」生效。
  * 獎勵        兌換清單，前端榮譽牆直接讀這一頁。
  * 神秘盒      神秘盒的可能內容與權重，只有 GM 看得到，玩家端不會顯示。
+ * 心得互動    每則心得的讚數與精選狀態。讚由玩家在劇本頁按，精選由 GM 打勾。
  * 點數總覽    系統算出來的結果，給網站讀。請勿手動編輯。
  *
  * ── GM 日常操作 ─────────────────────────────────────────────
@@ -32,6 +33,9 @@
  * 兌換扣點：在「點數帳本」新增一列，類型 redeem、點數填負數、來源填 手動。
  * 開神秘盒：選單按「開一個神秘盒」，輸入玩家名稱，程式會抽獎並自動扣點。
  * 合併同一人的多個名字：在「玩家」分頁的「別名」欄填入其他名字（逗號分隔）。
+ * 核銷榮耀軌：玩家換了之後，在「玩家」分頁把「鍍金」或「傳奇殿堂」打勾，
+ *             或在「自訂稱號」填上他要的稱號，重整網站就會生效。
+ * 精選心得：在「心得互動」把該列的「精選」改成 TRUE，再按「重算所有點數」。
  */
 
 const SPREADSHEET_ID = '1hjdPJQo5Z6nVICZsvljihSXoZAJ32DpiAEQikCaog-8';
@@ -44,6 +48,7 @@ const CONFIG_SHEET = '設定';
 const REWARD_SHEET = '獎勵';
 const SUMMARY_SHEET = '點數總覽';
 const MYSTERY_SHEET = '神秘盒';
+const INTERACTION_SHEET = '心得互動';
 
 const REQUIRED_HEADERS = [
   '時間戳記',
@@ -61,14 +66,20 @@ const LEDGER_HEADERS = [
   '劇本', '日期', '來源', '狀態', '備註', '去重鍵'
 ];
 
-const PLAYER_HEADERS = ['顯示名', '別名', '探員編號', '加入日期', '備註'];
+// 榮耀軌的三個欄位一律加在最後面。插在中間會讓既有試算表的資料整排錯位，
+// 因為 ensureSheetWithHeaders_ 只覆寫表頭、不會搬動下面的資料。
+const PLAYER_HEADERS = ['顯示名', '別名', '探員編號', '加入日期', '備註', '鍍金', '自訂稱號', '傳奇殿堂'];
 const CONFIG_HEADERS = ['設定項', '值', '說明'];
 const REWARD_HEADERS = ['軌道', '品項', '所需點數', '說明', '是否上架'];
 const MYSTERY_HEADERS = ['獎品', '權重', '剩餘數量', '是否啟用'];
+const INTERACTION_HEADERS = ['劇本', '日期', '作者', '讚數', '精選', '最後更新'];
 const SUMMARY_HEADERS = ['歸戶名', '探員編號', '累積點', '已兌換', '餘額', '場次', '最後遊玩日'];
 
 const SOURCE_FORM = '表單';
 const SOURCE_MANUAL = '手動';
+const SOURCE_LIKE = '心得讚';
+// 系統會整批重建的來源。其餘一律當成 GM 手動輸入而保留。
+const GENERATED_SOURCES = [SOURCE_FORM, SOURCE_LIKE];
 const STATUS_VOID = '作廢';
 
 const DEFAULT_CONFIG = [
@@ -81,8 +92,11 @@ const DEFAULT_CONFIG = [
   ['介紹人點數', 10, '成功介紹新玩家，介紹人可得'],
   ['被介紹點數', 10, '填寫了介紹人的新玩家可得'],
   ['每日上限筆數', 3, '同一位玩家同一天最多幾筆可以得點，超過的只收記錄不給點'],
-  ['雙倍日', '', '填星期（例：二,三）或指定日期（例：2026/08/15），逗號分隔。當天所有點數 x2'],
-  ['雙倍日文案', '', '顯示在表單上的活動說明，留空則不顯示']
+  ['讚點數', 2, '心得每被按一個讚，作者可得的點數'],
+  ['讚點數上限', 10, '單一則心得靠讚最多可得幾點，避免灌讚'],
+  ['精選點數', 20, 'GM 在「心得互動」標為精選的心得，作者可得的點數'],
+  ['雙倍日', '平日', '可填「平日」「假日」、星期（例：二,三）或指定日期（例：2026/08/15），逗號分隔。當天所有點數 x2'],
+  ['雙倍日文案', '平日開本，點數兩倍', '顯示在表單與榮譽牆上的活動說明，留空則不顯示']
 ];
 
 const DEFAULT_REWARDS = [
@@ -302,6 +316,10 @@ function doPost(e) {
       return jsonResponse_({ ok: true });
     }
 
+    if (String(data.action || '').trim() === 'like') {
+      return jsonResponse_(recordLike_(data));
+    }
+
     const record = {
       '時間戳記': new Date(),
       '怎麼稱呼你呢': clean_(data.name, 30),
@@ -360,6 +378,46 @@ function doPost(e) {
   }
 }
 
+/**
+ * 心得按讚：以「劇本＋日期＋作者」認一則心得，同一則就累加讚數。
+ * 前端只用 localStorage 擋重複按，這裡不做身分驗證——
+ * 跟整套系統一致，防線是 GM 的人工審核而不是程式。
+ */
+function recordLike_(data) {
+  const script = clean_(data.script, 100);
+  const date = normalizeDate_(clean_(data.date, 20));
+  const author = clean_(data.author, 30);
+
+  if (!script || !date || !author) {
+    return { ok: false, error: '缺少劇本、日期或作者' };
+  }
+
+  const ss = setupSheets_();
+  const sheet = ss.getSheetByName(INTERACTION_SHEET);
+  const rows = readRows_(sheet);
+
+  const match = function (row) {
+    return String(row['劇本'] || '').trim() === script &&
+      normalizeDate_(row['日期']) === date &&
+      normalizeName_(row['作者']) === normalizeName_(author);
+  };
+
+  let likes = 1;
+  const index = rows.findIndex(match);
+
+  if (index >= 0) {
+    likes = (Number(rows[index]['讚數']) || 0) + 1;
+    sheet.getRange(index + 2, 4).setValue(likes);
+    sheet.getRange(index + 2, 6).setValue(new Date());
+  } else {
+    sheet.appendRow([script, date, author, 1, '', new Date()]);
+  }
+
+  rebuildPoints_();
+
+  return { ok: true, likes: likes };
+}
+
 /* ============================================================
    分頁建立
    ============================================================ */
@@ -381,6 +439,8 @@ function setupSheets_() {
 
   const mysterySheet = ensureSheetWithHeaders_(ss, MYSTERY_SHEET, MYSTERY_HEADERS);
   seedIfEmpty_(mysterySheet, DEFAULT_MYSTERY);
+
+  ensureSheetWithHeaders_(ss, INTERACTION_SHEET, INTERACTION_HEADERS);
 
   return ss;
 }
@@ -425,9 +485,11 @@ function rebuildPoints_() {
   const ledgerSheet = ss.getSheetByName(LEDGER_SHEET);
   const existingLedger = readRows_(ledgerSheet);
 
-  // 來源=手動 的列（兌換、補登、調整）完全保留；只有系統產生的表單列會重建。
+  // 系統產生的列（表單得點、心得讚）會整批重建；
+  // 其餘一律保留，包含 GM 手動記的兌換與調整。
+  // 用白名單而不是黑名單，是為了讓 GM 忘記填「來源」的列也能安全留下。
   const manualRows = existingLedger.filter(function (row) {
-    return String(row['來源'] || '').trim() !== SOURCE_FORM;
+    return GENERATED_SOURCES.indexOf(String(row['來源'] || '').trim()) === -1;
   });
 
   // GM 先前標成作廢的表單列，重建後要維持作廢。
@@ -583,6 +645,37 @@ function rebuildPoints_() {
     }
   });
 
+  // ── 心得互動：被按讚與被選為精選的作者得點 ────────────────
+  // 這些列的來源標成「心得讚」，跟表單列一樣每次重算都會重建，
+  // 所以 GM 改了讚數或精選欄位，按一次重算就會生效。
+  readRows_(ss.getSheetByName(INTERACTION_SHEET)).forEach(function (row) {
+    const author = canonicalName_(String(row['作者'] || '').trim(), aliasMap);
+    if (!author) return;
+
+    const script = String(row['劇本'] || '').trim();
+    const date = normalizeDate_(row['日期']);
+    const likes = Number(row['讚數']) || 0;
+    const featured = truthy_(row['精選']);
+
+    const parts = [];
+    let points = Math.min(likes * config['讚點數'], config['讚點數上限']);
+    if (points > 0) parts.push('心得獲讚' + points);
+
+    if (featured) {
+      points += config['精選點數'];
+      parts.push('精選心得' + config['精選點數']);
+    }
+
+    if (points <= 0) return;
+
+    totalEarned += points;
+    generated.push([
+      row['最後更新'] || new Date(), author, author, 'earn', points,
+      parts.join('＋'), script, date, SOURCE_LIKE, '有效',
+      likes ? (likes + ' 個讚') : '', 'like|' + author + '|' + script + '|' + date
+    ]);
+  });
+
   // ── 寫回帳本：手動列在前，系統列在後 ──────────────────────
   const manualMatrix = manualRows.map(function (row) {
     return LEDGER_HEADERS.map(function (header) { return row[header]; });
@@ -729,7 +822,11 @@ function assignAgentNumbers_(ss, ordered, aliasMap) {
         sheet.getRange(existingRow, 4).setValue(item.dateText);
       }
     } else {
-      appended.push([canon, '', code, item.dateText, '']);
+      const blank = PLAYER_HEADERS.map(function () { return ''; });
+      blank[0] = canon;
+      blank[2] = code;
+      blank[3] = item.dateText;
+      appended.push(blank);
     }
   });
 
@@ -781,8 +878,21 @@ function buildPublicPayload_() {
     monthEarned[name] = (monthEarned[name] || 0) + points;
   });
 
+  // 榮耀軌：GM 在「玩家」分頁核銷後打勾，這裡帶給前端渲染。
+  const decorations = {};
+  readRows_(ss.getSheetByName(PLAYER_SHEET)).forEach(function (row) {
+    const name = String(row['顯示名'] || '').trim();
+    if (!name) return;
+    decorations[name] = {
+      gilded: truthy_(row['鍍金']),
+      title: String(row['自訂稱號'] || '').trim(),
+      legend: truthy_(row['傳奇殿堂'])
+    };
+  });
+
   const summary = readRows_(ss.getSheetByName(SUMMARY_SHEET)).map(function (row) {
     const name = String(row['歸戶名'] || '').trim();
+    const decoration = decorations[name] || {};
     return {
       name: name,
       agent: String(row['探員編號'] || '').trim(),
@@ -791,9 +901,22 @@ function buildPublicPayload_() {
       balance: Number(row['餘額']) || 0,
       monthEarned: monthEarned[name] || 0,
       plays: Number(row['場次']) || 0,
-      last: String(row['最後遊玩日'] || '').trim()
+      last: String(row['最後遊玩日'] || '').trim(),
+      gilded: !!decoration.gilded,
+      title: decoration.title || '',
+      legend: !!decoration.legend
     };
   }).filter(function (item) { return item.name; });
+
+  const interactions = readRows_(ss.getSheetByName(INTERACTION_SHEET)).map(function (row) {
+    return {
+      script: String(row['劇本'] || '').trim(),
+      date: normalizeDate_(row['日期']),
+      author: String(row['作者'] || '').trim(),
+      likes: Number(row['讚數']) || 0,
+      featured: truthy_(row['精選'])
+    };
+  }).filter(function (item) { return item.script && item.author; });
 
   const rewards = readRows_(ss.getSheetByName(REWARD_SHEET)).map(function (row) {
     return {
@@ -812,7 +935,8 @@ function buildPublicPayload_() {
     doubleDayNote: config['雙倍日文案'] || '',
     summary: summary,
     rewards: rewards,
-    mystery: mystery
+    mystery: mystery,
+    interactions: interactions
   };
 }
 
@@ -859,7 +983,8 @@ function readConfig_(ss) {
 
   // 數值型設定一律轉成數字，避免試算表存成文字造成字串相加。
   ['基本點數', '心得點數', '心得字數門檻', '首玩點數', '首探點數',
-   '新手好運點數', '介紹人點數', '被介紹點數', '每日上限筆數'].forEach(function (key) {
+   '新手好運點數', '介紹人點數', '被介紹點數', '每日上限筆數',
+   '讚點數', '讚點數上限', '精選點數'].forEach(function (key) {
     const value = Number(config[key]);
     config[key] = isNaN(value) ? 0 : value;
   });
@@ -904,6 +1029,12 @@ function normalizeName_(name) {
   return String(name || '').replace(/\s+/g, '').toLowerCase();
 }
 
+/** 試算表的勾選欄可能存成布林、TRUE、是、1、V，一律當成真。 */
+function truthy_(value) {
+  if (value === true) return true;
+  return /^(true|yes|是|y|v|1|✓|✔)$/i.test(String(value == null ? '' : value).trim());
+}
+
 /* ============================================================
    日期與雙倍日
    ============================================================ */
@@ -942,12 +1073,18 @@ function isDoubleDay_(dateValue, dateText, setting) {
 
   if (!entries.length) return false;
 
-  const weekday = dateValue ? WEEKDAY_LABELS[dateValue.getDay()] : '';
+  const day = dateValue ? dateValue.getDay() : -1;
+  const weekday = dateValue ? WEEKDAY_LABELS[day] : '';
+  const isWeekend = day === 0 || day === 6;
 
   return entries.some(function (entry) {
+    // 「平日」「假日」這類整段關鍵字，比逐一列出星期好維護
+    if (/^(平日|平常日|週間|周間)$/.test(entry)) return day >= 1 && day <= 5;
+    if (/^(假日|週末|周末|例假日)$/.test(entry)) return isWeekend;
+
     const cleaned = entry.replace(/^(每週|每周|週|周|星期|禮拜)/, '');
     if (cleaned && cleaned === weekday) return true;
-    if (/^[0-6]$/.test(entry) && dateValue && Number(entry) === dateValue.getDay()) return true;
+    if (/^[0-6]$/.test(entry) && dateValue && Number(entry) === day) return true;
     return normalizeDate_(entry) === dateText;
   });
 }

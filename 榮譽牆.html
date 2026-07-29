@@ -10,8 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <!-- 劇本資料單一來源（與 index.html 共用） -->
     <script src="scripts.js?v=20260728-tags"></script>
-    <script src="play-record-config.js?v=20260729-points"></script>
-    <script src="points.js?v=20260729-nomood"></script>
+    <script src="play-record-config.js?v=20260729-w3"></script>
+    <script src="points.js?v=20260729-w3"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -323,6 +323,37 @@
         /* 隱藏未玩過的劇本 */
         .script-card.hidden {
             display: none;
+        }
+
+        /* 收藏冊模式：未玩過的劇本壓成剪影。
+           留著空格比直接藏起來更能催人補滿，這是收藏冊的重點。 */
+        .script-card.silhouette img {
+            filter: grayscale(1) brightness(0.22) contrast(1.15);
+        }
+
+        .script-card.silhouette .script-title {
+            color: #5f584f;
+        }
+
+        .script-card.silhouette .image-container::after {
+            content: '🔒';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .script-card.silhouette:hover img {
+            filter: grayscale(0.55) brightness(0.5) contrast(1.05);
+        }
+
+        .script-card.silhouette:hover .image-container::after {
+            opacity: 0.15;
         }
 
         .script-card:hover {
@@ -758,6 +789,15 @@
             gap: 8px;
         }
 
+        .wall-view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 0 20px;
+        }
+
+        .wall-view-toggle[hidden] { display: none; }
+
         .sort-btn {
             padding: 6px 16px;
             border: 1px solid rgba(233, 185, 79, 0.28);
@@ -846,6 +886,11 @@
             <button id="clearBubblesBtn" class="clear-bubbles-btn">清除便利貼</button>
         </div>
 
+        <div class="wall-view-toggle" id="wallViewToggle" role="group" aria-label="劇本牆顯示方式" hidden>
+            <button type="button" class="sort-btn active" data-view="collection">收藏冊</button>
+            <button type="button" class="sort-btn" data-view="played">只看玩過</button>
+        </div>
+
         <div class="pts-card" id="pointsCard" hidden></div>
 
         <div class="leaderboard-container collapsed">
@@ -872,6 +917,8 @@
                 </ol>
             </div>
         </div>
+
+        <div class="pts-hall" id="legendHall" hidden></div>
 
         <div class="honor-wall" id="honorWall">
             <!-- 劇本卡片將由 JavaScript 動態生成 -->
@@ -932,6 +979,7 @@
             const introContainer = document.querySelector('.intro-container');
             const introHeader = document.querySelector('.intro-header');
             const commentBubbleContainer = document.getElementById('commentBubbleContainer');
+            const wallViewToggle = document.getElementById('wallViewToggle');
             
             // --- 音效設定 ---
             // Tone.js 只負責點擊音效。CDN 載不到時降級為無聲，
@@ -1248,6 +1296,9 @@
             }
 
             // 3. 根據選擇的玩家更新榮譽牆
+            // 收藏冊模式：未玩的壓成剪影；只看玩過：直接隱藏
+            let wallViewMode = 'collection';
+
             function updateWallForPlayer(selectedPlayer, playRecords, filterMode = false) {
                 const stampPositions = [
                     { top: '35%', left: '35%', rotate: -18 },
@@ -1270,6 +1321,7 @@
                     if (records.length > 0) {
                         card.classList.add('played');
                         card.classList.remove('hidden'); // 移除隱藏類別
+                        card.classList.remove('silhouette');
                         
                         records.forEach((record, index) => {
                             const stamp = document.createElement('div');
@@ -1296,13 +1348,11 @@
 
                     } else {
                         card.classList.remove('played');
-                        
-                        // 如果啟用過濾模式，隱藏未玩過的劇本
-                        if (filterMode && selectedPlayer) {
-                            card.classList.add('hidden');
-                        } else {
-                            card.classList.remove('hidden');
-                        }
+
+                        // 未玩過的劇本有三種呈現方式，由 wallViewMode 決定
+                        const isFiltering = filterMode && selectedPlayer;
+                        card.classList.toggle('hidden', isFiltering && wallViewMode === 'played');
+                        card.classList.toggle('silhouette', isFiltering && wallViewMode === 'collection');
                     }
                 });
             }
@@ -1334,7 +1384,11 @@
                         // 排行榜用「累積獲得」而不是餘額：換過獎勵不該讓人掉名次
                         points: stats
                             ? (leaderboardScope === 'month' ? (stats.monthEarned || 0) : stats.earned)
-                            : null
+                            : null,
+                        // 榮耀軌：玩家用點數換來的裝飾
+                        gilded: !!(stats && stats.gilded),
+                        legend: !!(stats && stats.legend),
+                        customTitle: (stats && stats.title) || ''
                     });
                 }
 
@@ -1377,9 +1431,17 @@
                         : `<span class="player-points">${player.points} 點</span>`;
 
                     const safePlayerName = escapeHtml(player.name);
+                    const nameInner = player.gilded
+                        ? `<span class="pts-gilded">${safePlayerName}</span>`
+                        : safePlayerName;
+                    const legendHtml = player.legend
+                        ? '<span class="pts-legend-mark">👑</span>' : '';
+                    const customHtml = player.customTitle
+                        ? `<span class="pts-custom-title">${escapeHtml(player.customTitle)}</span>` : '';
+
                     li.innerHTML = `
                         <span class="rank">${rankDisplay}</span>
-                        <span class="player-name" data-player="${safePlayerName}">${safePlayerName}${titleHtml}</span>
+                        <span class="player-name" data-player="${safePlayerName}">${nameInner}${legendHtml}${customHtml}${titleHtml}</span>
                         <span class="play-count">${player.count} 次${pointsHtml}</span>
                     `;
 
@@ -1389,12 +1451,7 @@
                         startAudio();
                         clickSound.triggerAttackRelease('C2', '8n');
 
-                        // 更新下拉選單的值
-                        playerSelector.value = player.name;
-
-                        // 更新榮譽牆，並啟用過濾模式（只顯示已玩過的劇本）
-                        updateWallForPlayer(player.name, playRecords, true);
-                        showPointsProfile(player.name, playRecords);
+                        selectPlayer(player.name, playRecords);
                     });
 
                     leaderboardList.appendChild(li);
@@ -1409,6 +1466,21 @@
                     playerName,
                     playRecords
                 );
+            }
+
+            // 4c. 選定玩家的統一入口。
+            // 下拉選單、排行榜、同場戰友、傳奇殿堂都走這裡，避免各自漏做某一步。
+            function selectPlayer(playerName, playRecords, options) {
+                const settings = options || {};
+                playerSelector.value = playerName || '';
+                updateWallForPlayer(playerName, playRecords, !!playerName);
+                showPointsProfile(playerName, playRecords);
+                wallViewToggle.hidden = !playerName;
+
+                if (settings.scroll) {
+                    document.getElementById('pointsCard')
+                        .scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
             
             // 5. 顯示評論便利貼
@@ -1672,15 +1744,22 @@
                 window.StarfishPoints.renderDoubleDay(document.getElementById('doubleDayBanner'));
                 window.StarfishPoints.renderCollective(
                     document.getElementById('collectiveBanner'), playRecords);
+                window.StarfishPoints.renderLegendHall(document.getElementById('legendHall'));
 
                 // 探員檔案裡點戰友的名字，直接跳到對方的檔案
+                // 成就卡上的稱號沿用榮譽牆這一套六級制，不另外複製門檻
+                window.StarfishPoints.setTitleResolver((name) => {
+                    let plays = 0;
+                    for (const scriptName in (playRecords[name] || {})) {
+                        plays += playRecords[name][scriptName].length;
+                    }
+                    const title = calculateTitle(plays);
+                    return title ? title.text.replace(/^[^一-龥]+/, '') : '';
+                });
+
                 window.StarfishPoints.setPlayerSelectHandler((name) => {
                     if (!name || !playRecords[name]) return;
-                    playerSelector.value = name;
-                    updateWallForPlayer(name, playRecords, true);
-                    showPointsProfile(name, playRecords);
-                    document.getElementById('pointsCard')
-                        .scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    selectPlayer(name, playRecords, { scroll: true });
                 });
             }
 
@@ -1705,12 +1784,21 @@
 
             // E. 監聽下拉選單的變化
             playerSelector.addEventListener('change', (event) => {
-                const selectedPlayer = event.target.value;
-                // 如果選擇了玩家，啟用過濾模式（只顯示已玩過的劇本）
-                // 如果選擇空白（請選擇玩家），顯示所有劇本
-                const shouldFilter = selectedPlayer !== '';
-                updateWallForPlayer(selectedPlayer, playRecords, shouldFilter);
-                showPointsProfile(selectedPlayer, playRecords);
+                // 選空白（請選擇玩家）時 selectPlayer 會還原成顯示全部劇本
+                selectPlayer(event.target.value, playRecords);
+            });
+
+            // E1b. 劇本牆顯示方式：收藏冊（未玩的變剪影）／只看玩過
+            wallViewToggle.querySelectorAll('.sort-btn').forEach((button) => {
+                button.addEventListener('click', () => {
+                    startAudio();
+                    if (wallViewMode === button.dataset.view) return;
+                    wallViewMode = button.dataset.view;
+                    wallViewToggle.querySelectorAll('.sort-btn').forEach((other) => {
+                        other.classList.toggle('active', other === button);
+                    });
+                    updateWallForPlayer(playerSelector.value, playRecords, !!playerSelector.value);
+                });
             });
 
             // E2. 排行榜切換：範圍（總榜／本月榜）與排序（場次／點數）各自獨立
@@ -1742,9 +1830,7 @@
             try {
                 const savedName = localStorage.getItem('starfishlarp-player-name');
                 if (savedName && playerNames.includes(savedName)) {
-                    playerSelector.value = savedName;
-                    updateWallForPlayer(savedName, playRecords, true);
-                    showPointsProfile(savedName, playRecords);
+                    selectPlayer(savedName, playRecords);
                 }
             } catch (_) {
                 // 無痕模式可能停用 localStorage，不影響其他功能。
