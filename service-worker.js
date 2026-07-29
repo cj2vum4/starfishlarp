@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-29-points';
+const CACHE_VERSION = '2026-07-29-points2';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -24,7 +24,7 @@ const APP_SHELL = [
     './pwa.js?v=20260727',
     './play-record-config.js?v=20260729-points',
     './play-record.js?v=20260729-points',
-    './points.js?v=20260729-points',
+    './points.js?v=20260729-points2',
     './pwa/favicon-32.png',
     './pwa/apple-touch-icon.png',
     './pwa/icon-192.png',

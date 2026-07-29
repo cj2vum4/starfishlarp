@@ -19,11 +19,13 @@
  * 玩家        別名歸戶與探員編號。同一人用了多個名字時，把其他名字填進「別名」。
  * 設定        點數規則與活動參數，改完按「重算所有點數」生效。
  * 獎勵        兌換清單，前端榮譽牆直接讀這一頁。
+ * 神秘盒      神秘盒的可能內容與權重，只有 GM 看得到，玩家端不會顯示。
  * 點數總覽    系統算出來的結果，給網站讀。請勿手動編輯。
  *
  * ── GM 日常操作 ─────────────────────────────────────────────
  * 作廢一筆點數：在「點數帳本」把該列的「狀態」改成 作廢，再按「重算所有點數」。
  * 兌換扣點：在「點數帳本」新增一列，類型 redeem、點數填負數、來源填 手動。
+ * 開神秘盒：選單按「開一個神秘盒」，輸入玩家名稱，程式會抽獎並自動扣點。
  * 合併同一人的多個名字：在「玩家」分頁的「別名」欄填入其他名字（逗號分隔）。
  */
 
@@ -36,6 +38,7 @@ const PLAYER_SHEET = '玩家';
 const CONFIG_SHEET = '設定';
 const REWARD_SHEET = '獎勵';
 const SUMMARY_SHEET = '點數總覽';
+const MYSTERY_SHEET = '神秘盒';
 
 const REQUIRED_HEADERS = [
   '時間戳記',
@@ -57,6 +60,7 @@ const LEDGER_HEADERS = [
 const PLAYER_HEADERS = ['顯示名', '別名', '探員編號', '加入日期', '備註'];
 const CONFIG_HEADERS = ['設定項', '值', '說明'];
 const REWARD_HEADERS = ['軌道', '品項', '所需點數', '說明', '是否上架'];
+const MYSTERY_HEADERS = ['獎品', '權重', '剩餘數量', '是否啟用'];
 const SUMMARY_HEADERS = ['歸戶名', '探員編號', '累積點', '已兌換', '餘額', '場次', '最後遊玩日'];
 
 const SOURCE_FORM = '表單';
@@ -89,6 +93,17 @@ const DEFAULT_REWARDS = [
   ['神秘', '神秘盒 ???', 30, '內容隨機，開了才知道', 'TRUE']
 ];
 
+// 神秘盒的內容。權重越大越容易抽到；剩餘數量填 -1 代表無限。
+// 開箱由 GM 從選單觸發，隨機結果由程式決定，避免變成 GM 挑一個給。
+const DEFAULT_MYSTERY = [
+  ['免費飲料一杯', 30, -1, 'TRUE'],
+  ['下次開本折抵 30 元', 25, -1, 'TRUE'],
+  ['隨機角色小卡一張', 20, -1, 'TRUE'],
+  ['雙倍點數卡（下一場點數 x2）', 15, -1, 'TRUE'],
+  ['優先選角權一次', 8, -1, 'TRUE'],
+  ['免費入場一次', 2, -1, 'TRUE']
+];
+
 /* ============================================================
    選單
    ============================================================ */
@@ -97,8 +112,94 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('🌟 海星集點')
     .addItem('重算所有點數', 'menuRebuild_')
+    .addItem('開一個神秘盒', 'menuOpenMystery_')
     .addItem('建立／修復所有分頁', 'menuSetup_')
     .addToUi();
+}
+
+/**
+ * 神秘盒開箱：GM 在現場按一下，程式抽出獎品並自動扣點。
+ * 隨機由程式決定，GM 沒有選擇權——這才是「不確定性」真正的來源。
+ */
+function menuOpenMystery_() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.prompt('開神秘盒', '輸入玩家名稱：', ui.ButtonSet.OK_CANCEL);
+  if (response.getSelectedButton() !== ui.Button.OK) return;
+
+  try {
+    const result = openMysteryBox_(response.getResponseText());
+    ui.alert(
+      '🎁 ' + result.player + ' 開出了\n\n' +
+      result.prize + '\n\n' +
+      '已扣除 ' + result.cost + ' 點，剩餘 ' + result.balance + ' 點。'
+    );
+  } catch (error) {
+    ui.alert('無法開箱：' + (error && error.message ? error.message : error));
+  }
+}
+
+function openMysteryBox_(rawName) {
+  const ss = setupSheets_();
+  const aliasMap = readAliasMap_(ss);
+  const player = canonicalName_(String(rawName || '').trim(), aliasMap);
+  if (!player) throw new Error('請輸入玩家名稱。');
+
+  const reward = readRows_(ss.getSheetByName(REWARD_SHEET)).find(function (row) {
+    return String(row['軌道'] || '').trim() === '神秘';
+  });
+  if (!reward) throw new Error('「獎勵」分頁裡找不到軌道為「神秘」的品項。');
+
+  const cost = Number(reward['所需點數']) || 0;
+
+  const summaryRow = readRows_(ss.getSheetByName(SUMMARY_SHEET)).find(function (row) {
+    return String(row['歸戶名'] || '').trim() === player;
+  });
+
+  // 名字打錯時要講清楚是找不到人，不然 GM 會看到「只有 0 點」而以為是點數問題。
+  if (!summaryRow) {
+    throw new Error('找不到玩家「' + player + '」。請確認名字，或先在「玩家」分頁設定別名。');
+  }
+
+  const balance = Number(summaryRow['餘額']) || 0;
+  if (balance < cost) {
+    throw new Error(player + ' 目前只有 ' + balance + ' 點，不足 ' + cost + ' 點。');
+  }
+
+  const sheet = ss.getSheetByName(MYSTERY_SHEET);
+  const rows = readRows_(sheet);
+  const pool = [];
+  rows.forEach(function (row, index) {
+    if (String(row['是否啟用'] || '').trim().toUpperCase() === 'FALSE') return;
+    const remaining = Number(row['剩餘數量']);
+    if (!isNaN(remaining) && remaining === 0) return;
+    const weight = Number(row['權重']) || 0;
+    if (weight <= 0) return;
+    pool.push({ name: String(row['獎品'] || '').trim(), weight: weight, rowIndex: index + 2, remaining: remaining });
+  });
+
+  if (!pool.length) throw new Error('「神秘盒」分頁裡沒有可抽的獎品。');
+
+  const total = pool.reduce(function (sum, item) { return sum + item.weight; }, 0);
+  let roll = Math.random() * total;
+  let picked = pool[pool.length - 1];
+  for (let i = 0; i < pool.length; i++) {
+    roll -= pool[i].weight;
+    if (roll <= 0) { picked = pool[i]; break; }
+  }
+
+  if (!isNaN(picked.remaining) && picked.remaining > 0) {
+    sheet.getRange(picked.rowIndex, 3).setValue(picked.remaining - 1);
+  }
+
+  const today = normalizeDate_(new Date());
+  ss.getSheetByName(LEDGER_SHEET).appendRow([
+    new Date(), player, player, 'redeem', -cost, '神秘盒',
+    '', today, SOURCE_MANUAL, '有效', '開出：' + picked.name, ''
+  ]);
+
+  rebuildPoints_();
+
+  return { player: player, prize: picked.name, cost: cost, balance: balance - cost };
 }
 
 function menuSetup_() {
@@ -222,6 +323,9 @@ function setupSheets_() {
 
   const rewardSheet = ensureSheetWithHeaders_(ss, REWARD_SHEET, REWARD_HEADERS);
   seedIfEmpty_(rewardSheet, DEFAULT_REWARDS);
+
+  const mysterySheet = ensureSheetWithHeaders_(ss, MYSTERY_SHEET, MYSTERY_HEADERS);
+  seedIfEmpty_(mysterySheet, DEFAULT_MYSTERY);
 
   return ss;
 }
@@ -590,13 +694,47 @@ function buildPublicPayload_() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const config = readConfig_(ss);
 
+  // 本月點數直接從帳本現算，而不是存在總覽裡。
+  // 存起來的話，跨月之後要等下一次有人送出記錄才會歸零。
+  const now = new Date();
+  const monthKey = now.getFullYear() + '/' + (now.getMonth() + 1);
+  const monthEarned = {};
+  const mystery = [];
+
+  readRows_(ss.getSheetByName(LEDGER_SHEET)).forEach(function (row) {
+    if (String(row['狀態'] || '').trim() === STATUS_VOID) return;
+
+    const name = String(row['歸戶名'] || '').trim();
+    if (!name) return;
+
+    const note = String(row['備註'] || '').trim();
+    if (note.indexOf('開出：') === 0) {
+      mystery.push({
+        name: name,
+        prize: note.slice(3),
+        date: normalizeDate_(row['日期'])
+      });
+    }
+
+    const points = Number(row['點數']) || 0;
+    if (points <= 0) return;
+
+    const date = parseDate_(row['日期']);
+    if (!date) return;
+    if (date.getFullYear() !== now.getFullYear() || date.getMonth() !== now.getMonth()) return;
+
+    monthEarned[name] = (monthEarned[name] || 0) + points;
+  });
+
   const summary = readRows_(ss.getSheetByName(SUMMARY_SHEET)).map(function (row) {
+    const name = String(row['歸戶名'] || '').trim();
     return {
-      name: String(row['歸戶名'] || '').trim(),
+      name: name,
       agent: String(row['探員編號'] || '').trim(),
       earned: Number(row['累積點']) || 0,
       redeemed: Number(row['已兌換']) || 0,
       balance: Number(row['餘額']) || 0,
+      monthEarned: monthEarned[name] || 0,
       plays: Number(row['場次']) || 0,
       last: String(row['最後遊玩日'] || '').trim()
     };
@@ -614,10 +752,12 @@ function buildPublicPayload_() {
 
   return {
     ok: true,
-    updatedAt: new Date().toISOString(),
+    updatedAt: now.toISOString(),
+    monthKey: monthKey,
     doubleDayNote: config['雙倍日文案'] || '',
     summary: summary,
-    rewards: rewards
+    rewards: rewards,
+    mystery: mystery
   };
 }
 

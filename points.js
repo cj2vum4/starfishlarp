@@ -17,9 +17,11 @@
     const state = {
         loaded: false,
         ok: false,
-        summary: new Map(),   // 歸戶名 → { agent, earned, redeemed, balance, plays, last }
+        summary: new Map(),   // 歸戶名 → { agent, earned, redeemed, balance, monthEarned, plays, last }
         rewards: [],
-        doubleDayNote: ''
+        mystery: [],
+        doubleDayNote: '',
+        monthKey: ''
     };
 
     /* ── 樣式（跟 reviews.js 一樣自帶，不動榮譽牆原本的 CSS）── */
@@ -121,6 +123,66 @@
     .pts-empty { color: #9c9080; font-size: .88rem; margin: 0; }
     .pts-hint { margin: 16px 0 0; font-size: .78rem; color: #8d8272; }
 
+    .pts-greeting {
+        margin: -6px 0 18px; font-size: .92rem; color: #d9ccb4;
+    }
+    .pts-greeting b { color: #ffd978; }
+
+    /* 本月任務：只顯示進度，不給點數 */
+    .pts-quests { display: grid; gap: 10px; margin-bottom: 20px; }
+    .pts-quest {
+        padding: 10px 14px; border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(0, 0, 0, .26);
+    }
+    .pts-quest.done { border-color: rgba(142, 224, 161, .45); background: rgba(40, 90, 55, .22); }
+    .pts-quest-top {
+        display: flex; flex-wrap: wrap; justify-content: space-between;
+        gap: 4px 12px; margin-bottom: 7px; font-size: .9rem;
+    }
+    .pts-quest-top span { color: #b9aa91; font-variant-numeric: tabular-nums; }
+    .pts-quest.done .pts-quest-top span { color: #8ee0a1; }
+    .pts-quest-bar { height: 5px; border-radius: 999px; background: rgba(255, 255, 255, .08); overflow: hidden; }
+    .pts-quest-bar i {
+        display: block; height: 100%; border-radius: 999px;
+        background: linear-gradient(90deg, #8f6424, #e9b94f);
+    }
+    .pts-quest.done .pts-quest-bar i { background: linear-gradient(90deg, #3f8a5c, #8ee0a1); }
+
+    /* 同場戰友 */
+    .pts-mates { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .pts-mate {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 13px; border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .14);
+        background: rgba(0, 0, 0, .3);
+        font-size: .88rem; color: #f2e6cd; cursor: pointer;
+        transition: border-color 150ms ease, transform 150ms ease;
+    }
+    .pts-mate:hover { border-color: rgba(233, 185, 79, .6); transform: translateY(-1px); }
+    .pts-mate b { color: #ffd978; font-variant-numeric: tabular-nums; }
+
+    /* 神秘盒開箱紀錄 */
+    .pts-mystery { display: grid; gap: 6px; margin-bottom: 20px; }
+    .pts-mystery div {
+        display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px;
+        padding: 8px 14px; border-radius: 8px;
+        background: rgba(90, 60, 140, .16);
+        border: 1px solid rgba(179, 157, 219, .3);
+        font-size: .88rem;
+    }
+    .pts-mystery span { color: #9c9080; font-size: .8rem; }
+
+    /* 全站累計案件數 */
+    .pts-collective {
+        margin: 0 auto 18px; max-width: 1000px; text-align: center;
+        color: #b9aa91; font-size: .95rem; font-family: '微軟正黑體', sans-serif;
+    }
+    .pts-collective b {
+        color: #ffd978; font-size: 1.5rem; font-weight: 700;
+        font-variant-numeric: tabular-nums; margin: 0 6px;
+    }
+
     .pts-double {
         margin: 0 auto 18px; max-width: 1000px;
         padding: 11px 18px; border-radius: 12px;
@@ -184,7 +246,9 @@
                 if (payload && payload.ok) {
                     state.ok = true;
                     state.doubleDayNote = payload.doubleDayNote || '';
+                    state.monthKey = payload.monthKey || '';
                     state.rewards = Array.isArray(payload.rewards) ? payload.rewards : [];
+                    state.mystery = Array.isArray(payload.mystery) ? payload.mystery : [];
                     (payload.summary || []).forEach((item) => {
                         state.summary.set(normalizeName(item.name), item);
                     });
@@ -317,6 +381,176 @@
         return badges;
     }
 
+    /* ── 同場戰友 ────────────────────────────────────────────
+       同一天玩同一本＝同一場。這個關聯早就藏在既有資料裡，
+       不需要多收集任何欄位。 */
+    function computeTeammates(playerName, playRecords) {
+        const mine = playRecords[playerName];
+        if (!mine) return [];
+
+        const sessions = new Set();
+        Object.keys(mine).forEach((scriptId) => {
+            mine[scriptId].forEach((record) => {
+                if (record.date) sessions.add(scriptId + '|' + record.date);
+            });
+        });
+        if (!sessions.size) return [];
+
+        const mates = [];
+        for (const other in playRecords) {
+            if (other === playerName) continue;
+
+            let shared = 0;
+            let latest = '';
+            let latestValue = 0;
+
+            Object.keys(playRecords[other]).forEach((scriptId) => {
+                playRecords[other][scriptId].forEach((record) => {
+                    if (!record.date || !sessions.has(scriptId + '|' + record.date)) return;
+                    shared += 1;
+
+                    const played = parseDate(record.date);
+                    const value = played ? played.getTime() : 0;
+                    if (value >= latestValue) { latestValue = value; latest = scriptId; }
+                });
+            });
+
+            if (shared) mates.push({ name: other, count: shared, latest });
+        }
+
+        return mates.sort((a, b) => b.count - a.count).slice(0, 12);
+    }
+
+    /* ── 本月任務 ────────────────────────────────────────────
+       只顯示進度、不發點數。要發點數就得把判定搬到 Apps Script，
+       但那邊沒有劇本類型資料——把 scripts.js 複製一份到試算表
+       會變成兩份真相，違反單一資料來源的原則。 */
+    function currentMonth() {
+        if (state.monthKey) {
+            const parts = state.monthKey.split('/').map((part) => parseInt(part, 10));
+            if (parts.length === 2 && !parts.some(isNaN)) {
+                return { year: parts[0], month: parts[1] - 1 };
+            }
+        }
+        const now = new Date();
+        return { year: now.getFullYear(), month: now.getMonth() };
+    }
+
+    function computeQuests(playerName, playRecords) {
+        const records = playRecords[playerName];
+        if (!records) return [];
+
+        const meta = scriptMetaMap();
+        const { year, month } = currentMonth();
+
+        const thisMonth = [];
+        const priorScripts = new Set();
+        const priorTypes = new Set();
+        const allMoods = new Set();
+
+        Object.keys(records).forEach((scriptId) => {
+            records[scriptId].forEach((record) => {
+                const date = parseDate(record.date);
+                const inMonth = date && date.getFullYear() === year && date.getMonth() === month;
+
+                if (record.mood) {
+                    record.mood.split(/[,，、\s]+/).filter(Boolean).forEach((mood) => allMoods.add(mood));
+                }
+
+                if (inMonth) {
+                    thisMonth.push({ scriptId, ...record });
+                } else if (date) {
+                    priorScripts.add(scriptId);
+                    const info = meta.get(scriptId);
+                    if (info) info.types.forEach((type) => priorTypes.add(type));
+                }
+            });
+        });
+
+        const freshScripts = new Set();
+        const freshTypes = new Set();
+        thisMonth.forEach((play) => {
+            if (!priorScripts.has(play.scriptId)) freshScripts.add(play.scriptId);
+            const info = meta.get(play.scriptId);
+            if (info) info.types.forEach((type) => { if (!priorTypes.has(type)) freshTypes.add(type); });
+        });
+
+        const longComments = thisMonth.filter((play) =>
+            Array.from(String(play.comment || '').replace(/\s+/g, '')).length >= 15).length;
+
+        return [
+            { label: '本月完成 3 場', now: thisMonth.length, goal: 3 },
+            { label: '本月寫 2 篇 15 字以上的心得', now: longComments, goal: 2 },
+            { label: '本月開一本沒玩過的劇本', now: freshScripts.size, goal: 1 },
+            { label: '本月碰一種沒玩過的類型', now: freshTypes.size, goal: 1 },
+            { label: '收集 5 種不同心情標籤', now: allMoods.size, goal: 5 }
+        ];
+    }
+
+    /* ── 管家效應：記得玩家上次來是什麼時候 ─────────────────── */
+    function greetingFor(playerName, playRecords) {
+        const records = playRecords[playerName];
+        if (!records) return '';
+
+        let latest = null;
+        Object.keys(records).forEach((scriptId) => {
+            records[scriptId].forEach((record) => {
+                const date = parseDate(record.date);
+                if (date && (!latest || date > latest)) latest = date;
+            });
+        });
+        if (!latest) return '';
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const days = Math.round((today - latest) / 86400000);
+
+        if (days <= 0) return '歡迎回來，<b>' + escapeHtml(playerName) + '</b>。今天的記錄已經登記好了。';
+        if (days === 1) return '歡迎回來，<b>' + escapeHtml(playerName) + '</b>。昨天那場還記憶猶新吧。';
+        if (days <= 14) return '歡迎回來，<b>' + escapeHtml(playerName) + '</b>。上次玩本是 <b>' + days + '</b> 天前。';
+        if (days <= 60) return '歡迎回來，<b>' + escapeHtml(playerName) + '</b>。距離上次玩本已經 <b>' + days + '</b> 天了。';
+        return '好久不見，<b>' + escapeHtml(playerName) + '</b>。已經 <b>' + days + '</b> 天沒見到你了，這段時間開了不少新本。';
+    }
+
+    /* ── 全站累計案件數（集體使命感）────────────────────────── */
+    function totalSessions(playRecords) {
+        const seen = new Set();
+        for (const name in playRecords) {
+            for (const scriptId in playRecords[name]) {
+                playRecords[name][scriptId].forEach((record) => {
+                    seen.add(name + '|' + scriptId + '|' + (record.date || ''));
+                });
+            }
+        }
+        return seen.size;
+    }
+
+    function renderCollective(container, playRecords) {
+        if (!container) return;
+        const total = totalSessions(playRecords);
+        if (!total) return;
+        const players = Object.keys(playRecords).length;
+        container.innerHTML = '海星的探員們已經累計破解<b>' + total + '</b>起案件，' +
+            '共 <b>' + players + '</b> 位夥伴參與其中';
+        container.hidden = false;
+    }
+
+    /** 本月場次，給排行榜的「本月榜」使用。 */
+    function monthlyPlays(playerName, playRecords) {
+        const records = playRecords[playerName];
+        if (!records) return 0;
+
+        const { year, month } = currentMonth();
+        let count = 0;
+        Object.keys(records).forEach((scriptId) => {
+            records[scriptId].forEach((record) => {
+                const date = parseDate(record.date);
+                if (date && date.getFullYear() === year && date.getMonth() === month) count += 1;
+            });
+        });
+        return count;
+    }
+
     /* ── 渲染 ────────────────────────────────────────────────── */
     function renderProfile(container, playerName, playRecords) {
         if (!container) return;
@@ -364,6 +598,11 @@
                 badge.icon + ' ' + escapeHtml(badge.name) + '</span>').join('') + '</div>'
             : '<p class="pts-empty">還沒有解鎖任何徽章。它們不會事先公告，玩著玩著就會跳出來。</p>';
 
+        const greeting = greetingFor(playerName, playRecords);
+        const mates = computeTeammates(playerName, playRecords);
+        const quests = computeQuests(playerName, playRecords);
+        const opened = state.mystery.filter((item) => normalizeName(item.name) === normalizeName(playerName));
+
         container.innerHTML =
             '<div class="pts-head">' +
                 '<div class="pts-title">' +
@@ -372,11 +611,66 @@
                 '</div>' +
                 '<span class="pts-name">' + safeName + '</span>' +
             '</div>' +
+            (greeting ? '<p class="pts-greeting">' + greeting + '</p>' : '') +
             statsHtml +
+            renderQuests(quests) +
             rewardsHtml +
+            renderMystery(opened) +
+            renderMates(mates) +
             '<p class="pts-section-title">彩蛋徽章</p>' +
             badgeHtml +
             '<p class="pts-hint">兌換請直接跟現場的海星說，點數會由 GM 手動核銷。</p>';
+
+        // 點戰友的名字就切換到對方的檔案
+        container.querySelectorAll('.pts-mate').forEach((chip) => {
+            chip.addEventListener('click', () => {
+                if (typeof state.onSelectPlayer === 'function') {
+                    state.onSelectPlayer(chip.dataset.player);
+                }
+            });
+        });
+    }
+
+    function renderQuests(quests) {
+        if (!quests.length) return '';
+
+        const items = quests.map((quest) => {
+            const done = quest.now >= quest.goal;
+            const percent = Math.min(quest.now / quest.goal, 1) * 100;
+            return '<div class="pts-quest' + (done ? ' done' : '') + '">' +
+                '<div class="pts-quest-top">' +
+                    '<b>' + (done ? '✓ ' : '') + escapeHtml(quest.label) + '</b>' +
+                    '<span>' + Math.min(quest.now, quest.goal) + ' / ' + quest.goal + '</span>' +
+                '</div>' +
+                '<div class="pts-quest-bar"><i style="width:' + percent.toFixed(0) + '%"></i></div>' +
+            '</div>';
+        }).join('');
+
+        return '<p class="pts-section-title">本月任務</p>' +
+            '<div class="pts-quests">' + items + '</div>';
+    }
+
+    function renderMates(mates) {
+        if (!mates.length) return '';
+
+        const chips = mates.map((mate) =>
+            '<span class="pts-mate" data-player="' + escapeHtml(mate.name) + '" ' +
+            'title="一起玩過 ' + mate.count + ' 場，最近一次是《' + escapeHtml(mate.latest) + '》">' +
+            escapeHtml(mate.name) + ' <b>' + mate.count + '</b></span>').join('');
+
+        return '<p class="pts-section-title">同場戰友</p>' +
+            '<div class="pts-mates">' + chips + '</div>';
+    }
+
+    function renderMystery(opened) {
+        if (!opened.length) return '';
+
+        const items = opened.slice().reverse().map((item) =>
+            '<div><b>🎁 ' + escapeHtml(item.prize) + '</b><span>' + escapeHtml(item.date) + '</span></div>'
+        ).join('');
+
+        return '<p class="pts-section-title">神秘盒紀錄</p>' +
+            '<div class="pts-mystery">' + items + '</div>';
     }
 
     function renderNextGoal(balance) {
@@ -443,7 +737,11 @@
         getPlayer: getPlayer,
         renderProfile: renderProfile,
         renderDoubleDay: renderDoubleDay,
+        renderCollective: renderCollective,
         computeBadges: computeBadges,
-        isReady: function () { return state.ok; }
+        monthlyPlays: monthlyPlays,
+        isReady: function () { return state.ok; },
+        // 榮譽牆用它接手「點戰友名字就跳到對方檔案」的行為
+        setPlayerSelectHandler: function (handler) { state.onSelectPlayer = handler; }
     };
 })();

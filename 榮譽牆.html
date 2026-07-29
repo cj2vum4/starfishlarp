@@ -11,7 +11,7 @@
     <!-- 劇本資料單一來源（與 index.html 共用） -->
     <script src="scripts.js?v=20260728-tags"></script>
     <script src="play-record-config.js?v=20260729-points"></script>
-    <script src="points.js?v=20260729-points"></script>
+    <script src="points.js?v=20260729-points2"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -760,11 +760,18 @@
         }
 
         /* ===== 排行榜排序切換 ===== */
+        .leaderboard-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 22px;
+            margin: 0 0 14px;
+        }
+
         .leaderboard-sort {
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin: 0 0 14px;
         }
 
         .sort-btn {
@@ -793,6 +800,13 @@
             font-size: 0.9rem;
             margin-left: 8px;
             white-space: nowrap;
+        }
+
+        .leaderboard-empty {
+            padding: 22px 12px;
+            text-align: center;
+            color: #b9aa91;
+            font-size: 0.92rem;
         }
 
         /* ===== 成就統計區（排行榜下方） ===== */
@@ -836,6 +850,7 @@
             </div>
         </div>
 
+        <p class="pts-collective" id="collectiveBanner" hidden></p>
         <p class="pts-double" id="doubleDayBanner" hidden></p>
 
         <div class="player-selector-container">
@@ -858,9 +873,15 @@
                 <div class="leaderboard-search">
                     <input type="text" id="leaderboardSearch" placeholder="搜尋玩家...">
                 </div>
-                <div class="leaderboard-sort" role="group" aria-label="排行榜排序方式">
-                    <button type="button" class="sort-btn active" data-sort="plays">依場次</button>
-                    <button type="button" class="sort-btn" data-sort="points">依點數</button>
+                <div class="leaderboard-controls">
+                    <div class="leaderboard-sort" role="group" aria-label="榜單範圍">
+                        <button type="button" class="sort-btn active" data-scope="all">總榜</button>
+                        <button type="button" class="sort-btn" data-scope="month">本月榜</button>
+                    </div>
+                    <div class="leaderboard-sort" role="group" aria-label="排行榜排序方式">
+                        <button type="button" class="sort-btn active" data-sort="plays">依場次</button>
+                        <button type="button" class="sort-btn" data-sort="points">依點數</button>
+                    </div>
                 </div>
                 <ol id="leaderboardList">
                     <!-- 排行榜項目將由 JavaScript 動態生成 -->
@@ -1307,32 +1328,55 @@
             // 稱號維持看場次（沿用原本的六級制），點數是獨立的另一條軌道，
             // 兩者互不影響，兌換扣點也不會讓稱號退級。
             let leaderboardSortMode = 'plays';
+            let leaderboardScope = 'all';
 
             function updateLeaderboard(playRecords) {
+                const points = window.StarfishPoints;
                 const playerCounts = [];
+
                 for (const playerName in playRecords) {
                     let totalPlays = 0;
                     for (const scriptName in playRecords[playerName]) {
                         totalPlays += playRecords[playerName][scriptName].length;
                     }
-                    const points = window.StarfishPoints
-                        ? window.StarfishPoints.getPlayer(playerName)
-                        : null;
+
+                    const stats = points ? points.getPlayer(playerName) : null;
+                    const monthPlays = points ? points.monthlyPlays(playerName, playRecords) : 0;
+
                     playerCounts.push({
                         name: playerName,
-                        count: totalPlays,
-                        points: points ? points.balance : null
+                        // 稱號永遠看生涯場次，不受本月榜影響
+                        careerPlays: totalPlays,
+                        count: leaderboardScope === 'month' ? monthPlays : totalPlays,
+                        // 排行榜用「累積獲得」而不是餘額：換過獎勵不該讓人掉名次
+                        points: stats
+                            ? (leaderboardScope === 'month' ? (stats.monthEarned || 0) : stats.earned)
+                            : null
                     });
                 }
 
+                // 本月榜只留這個月有動靜的人
+                const ranked = leaderboardScope === 'month'
+                    ? playerCounts.filter((player) => player.count > 0 || (player.points || 0) > 0)
+                    : playerCounts;
+
                 if (leaderboardSortMode === 'points') {
-                    playerCounts.sort((a, b) => (b.points ?? -1) - (a.points ?? -1) || b.count - a.count);
+                    ranked.sort((a, b) => (b.points ?? -1) - (a.points ?? -1) || b.count - a.count);
                 } else {
-                    playerCounts.sort((a, b) => b.count - a.count);
+                    ranked.sort((a, b) => b.count - a.count || (b.points ?? -1) - (a.points ?? -1));
                 }
 
                 leaderboardList.innerHTML = '';
-                const topPlayers = playerCounts.slice(0, 20);
+
+                if (!ranked.length) {
+                    const empty = document.createElement('li');
+                    empty.className = 'leaderboard-empty';
+                    empty.textContent = '這個月還沒有人留下記錄，第一個就是你了。';
+                    leaderboardList.appendChild(empty);
+                    return;
+                }
+
+                const topPlayers = ranked.slice(0, 20);
 
                 topPlayers.forEach((player, index) => {
                     const rank = index + 1;
@@ -1342,7 +1386,7 @@
                     let rankDisplay = rank;
                     if (rank === 1) rankDisplay = '👑';
 
-                    const title = calculateTitle(player.count);
+                    const title = calculateTitle(player.careerPlays);
                     const titleHtml = title ? `<span class="player-title ${title.cls}">${title.text}</span>` : '';
 
                     const pointsHtml = player.points === null
@@ -1660,6 +1704,18 @@
 
             if (window.StarfishPoints) {
                 window.StarfishPoints.renderDoubleDay(document.getElementById('doubleDayBanner'));
+                window.StarfishPoints.renderCollective(
+                    document.getElementById('collectiveBanner'), playRecords);
+
+                // 探員檔案裡點戰友的名字，直接跳到對方的檔案
+                window.StarfishPoints.setPlayerSelectHandler((name) => {
+                    if (!name || !playRecords[name]) return;
+                    playerSelector.value = name;
+                    updateWallForPlayer(name, playRecords, true);
+                    showPointsProfile(name, playRecords);
+                    document.getElementById('pointsCard')
+                        .scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
             }
 
             // C. 填充玩家下拉選單
@@ -1691,13 +1747,25 @@
                 showPointsProfile(selectedPlayer, playRecords);
             });
 
-            // E2. 排行榜排序切換（依場次／依點數）
-            document.querySelectorAll('.sort-btn').forEach((button) => {
+            // E2. 排行榜切換：範圍（總榜／本月榜）與排序（場次／點數）各自獨立
+            document.querySelectorAll('.sort-btn[data-sort]').forEach((button) => {
                 button.addEventListener('click', () => {
                     startAudio();
                     if (leaderboardSortMode === button.dataset.sort) return;
                     leaderboardSortMode = button.dataset.sort;
-                    document.querySelectorAll('.sort-btn').forEach((other) => {
+                    document.querySelectorAll('.sort-btn[data-sort]').forEach((other) => {
+                        other.classList.toggle('active', other === button);
+                    });
+                    updateLeaderboard(playRecords);
+                });
+            });
+
+            document.querySelectorAll('.sort-btn[data-scope]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    startAudio();
+                    if (leaderboardScope === button.dataset.scope) return;
+                    leaderboardScope = button.dataset.scope;
+                    document.querySelectorAll('.sort-btn[data-scope]').forEach((other) => {
                         other.classList.toggle('active', other === button);
                     });
                     updateLeaderboard(playRecords);
