@@ -158,23 +158,6 @@
              cursor: pointer;
         }
         
-        /* 清除便利貼按鈕樣式 */
-        .clear-bubbles-btn {
-            padding: 10px 15px;
-            font-size: 1rem;
-            border-radius: 8px;
-            border: 1px solid #dc3545;
-            background-color: #dc3545;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        
-        .clear-bubbles-btn:hover {
-            background-color: #c82333;
-            transform: translateY(-2px);
-        }
-        
         /* --- 全新排行榜樣式 --- */
         .leaderboard-container {
             background-color: #2b2b2b;
@@ -883,7 +866,6 @@
                 <option value="">-- 讀取資料中 --</option>
             </select>
             <input type="text" id="playerSearch" placeholder="搜尋玩家...">
-            <button id="clearBubblesBtn" class="clear-bubbles-btn">清除便利貼</button>
         </div>
 
         <div class="wall-view-toggle" id="wallViewToggle" role="group" aria-label="劇本牆顯示方式" hidden>
@@ -1891,15 +1873,7 @@
                 });
             });
             
-            // K. 監聽清除便利貼按鈕的點擊事件
-            const clearBubblesBtn = document.getElementById('clearBubblesBtn');
-            clearBubblesBtn.addEventListener('click', () => {
-                startAudio();
-                clickSound.triggerAttackRelease('C2', '8n');
-                commentBubbleContainer.innerHTML = '';
-            });
-            
-            // L. 監聽視窗大小變更，重新調整便利貼位置
+            // K. 監聽視窗大小變更，重新調整便利貼位置
             window.addEventListener('resize', () => {
                 // 延遲執行，避免頻繁觸發
                 clearTimeout(window.resizeTimeout);

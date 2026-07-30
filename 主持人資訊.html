@@ -139,16 +139,18 @@
         }
         .slider-wrapper {
             display: flex;
+            align-items: flex-start;
             transition: transform 0.5s ease-in-out;
         }
         .slider-slide {
             flex: 0 0 100%;
+            min-width: 0;
         }
+        /* 依照照片原始比例呈現，不要裁切或壓扁 */
         .slider-slide img {
+            display: block;
             width: 100%;
             height: auto;
-            object-fit: cover;
-            aspect-ratio: 3/4;
         }
         .slider-button {
             position: absolute;
@@ -168,6 +170,17 @@
         }
         .slider-button.prev { left: 0.5rem; }
         .slider-button.next { right: 0.5rem; }
+
+        /* 手機瀏覽器的網址列會讓 100vh 比實際可視高度還高，改用 svh 才是真正的一屏 */
+        @supports (height: 100svh) {
+            #hero { height: 100svh; }
+        }
+
+        /* 評價卡固定高度在窄螢幕會把長評價切掉，改成隨螢幕放寬 */
+        #testimonial-slider { height: 18rem; }
+        @media (min-width: 640px) {
+            #testimonial-slider { height: 13rem; }
+        }
     </style>
 
     <!-- SEO Schema.org -->

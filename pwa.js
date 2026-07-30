@@ -10,8 +10,6 @@
     var deferredInstallPrompt = null;
     var toastTimer = null;
     var refreshing = false;
-    var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
     document.documentElement.dataset.pwaStatus = 'supported';
@@ -59,29 +57,22 @@
         revealInstallButton('安裝 App');
     });
 
-    if (isIos && !isStandalone) {
-        revealInstallButton('加入主畫面');
-    }
-
+    // iOS 不支援 beforeinstallprompt，只能靠 Safari 的「加入主畫面」，
+    // 所以不顯示安裝按鈕、也不再跳教學提示。
     if (installButton) {
         installButton.addEventListener('click', async function () {
-            if (deferredInstallPrompt) {
-                installButton.disabled = true;
-                try {
-                    deferredInstallPrompt.prompt();
-                    await deferredInstallPrompt.userChoice;
-                    installButton.hidden = true;
-                } catch (error) {
-                    showToast('目前無法開啟安裝視窗，請稍後再試。');
-                } finally {
-                    deferredInstallPrompt = null;
-                    installButton.disabled = false;
-                }
-                return;
-            }
+            if (!deferredInstallPrompt) return;
 
-            if (isIos) {
-                showToast('在 Safari 點擊「分享」按鈕，再選擇「加入主畫面」。', { duration: 7000 });
+            installButton.disabled = true;
+            try {
+                deferredInstallPrompt.prompt();
+                await deferredInstallPrompt.userChoice;
+                installButton.hidden = true;
+            } catch (error) {
+                showToast('目前無法開啟安裝視窗，請稍後再試。');
+            } finally {
+                deferredInstallPrompt = null;
+                installButton.disabled = false;
             }
         });
     }
