@@ -181,6 +181,22 @@
         @media (min-width: 640px) {
             #testimonial-slider { height: 13rem; }
         }
+
+        /* AOS 的 fade-left/fade-right 在進場前會把元素往兩側推 100px，
+           扣掉容器內距後整頁會多出 76px 寬，於是可以左右滑動、右邊出現空白。
+           改成從下方淡入（跟頁面其他 fade-up 一致），從源頭消掉水平溢出。
+           注意：這段必須放在 aos.css 之後才蓋得過去。 */
+        [data-aos="fade-left"],
+        [data-aos="fade-right"] {
+            transform: translate3d(0, 40px, 0);
+        }
+
+        /* 保險：日後再有水平溢出也不該讓整頁能左右滑。
+           這裡用 clip 而不是 hidden——hidden 會讓 body 變成捲動容器，
+           上方的 sticky 導覽列會失效（實測會整個捲走）。 */
+        body {
+            overflow-x: clip;
+        }
     </style>
 
     <!-- SEO Schema.org -->
