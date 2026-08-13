@@ -11,6 +11,11 @@
     --line: rgba(233, 185, 79, 0.22);
     --danger: #ff998a;
     --success: #8ee0a1;
+    /* iOS 安全區：本頁用 viewport-fit=cover，內容會延伸到瀏海與 home indicator 底下 */
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-l: env(safe-area-inset-left, 0px);
+    --safe-r: env(safe-area-inset-right, 0px);
     font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
 }
 
@@ -61,9 +66,10 @@ a { color: inherit; }
 .site-header {
     position: relative;
     z-index: 1;
-    width: min(1120px, calc(100% - 32px));
+    width: min(1120px, calc(100% - 32px - var(--safe-l) - var(--safe-r)));
     margin: 0 auto;
-    padding: 22px 0;
+    /* 瀏海高度不分螢幕寬度都要讓開（平板橫向同樣有安全區） */
+    padding: calc(22px + var(--safe-t)) 0 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -97,8 +103,8 @@ a { color: inherit; }
 .page-shell {
     position: relative;
     z-index: 1;
-    width: min(820px, calc(100% - 32px));
-    margin: 18px auto 64px;
+    width: min(820px, calc(100% - 32px - var(--safe-l) - var(--safe-r)));
+    margin: 18px auto calc(64px + var(--safe-b));
 }
 
 .intro { margin: 0 0 28px; text-align: center; }
@@ -413,7 +419,6 @@ textarea:focus {
 .fallback-note a { margin-left: 4px; color: var(--gold-bright); }
 
 @media (max-width: 680px) {
-    .site-header { padding-top: calc(16px + env(safe-area-inset-top)); }
     .brand span { display: none; }
     .page-shell { margin-top: 8px; }
     .two-columns { grid-template-columns: 1fr; gap: 0; }

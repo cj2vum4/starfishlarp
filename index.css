@@ -9,6 +9,14 @@
     --bdr:rgba(200,160,86,.16); --bdr-h:rgba(200,160,86,.5);
     --r-s:8px; --r-m:14px; --r-l:22px;
     --nav-h:60px;
+    /* iOS 安全區：本頁用 viewport-fit=cover + black-translucent 狀態列，
+       內容會延伸到瀏海／動態島與底部 home indicator 底下，
+       固定定位與貼邊的元件都必須自己讓出這段距離。
+       非 iOS 或無瀏海時 env() 回傳 0px，不影響版面。 */
+    --safe-t:env(safe-area-inset-top,0px);
+    --safe-b:env(safe-area-inset-bottom,0px);
+    --safe-l:env(safe-area-inset-left,0px);
+    --safe-r:env(safe-area-inset-right,0px);
     --ease:cubic-bezier(.22,1,.36,1);
     --shadow:0 18px 50px -20px rgba(0,0,0,.85);
     --font:"Noto Serif TC","Noto Serif CJK TC","Source Han Serif TC","Songti TC","宋體-繁","宋體",ui-serif,Georgia,serif;
@@ -69,9 +77,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 
 /* ===== Navbar ===== */
 .nav{
-    position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    /* 高度加上瀏海高度，並把內容往下推，否則品牌與選單鈕會被瀏海切掉 */
+    height:calc(var(--nav-h) + var(--safe-t));
+    padding-top:var(--safe-t);
     display:flex;align-items:center;justify-content:space-between;
-    padding:0 clamp(16px,4vw,40px);
+    padding-left:calc(clamp(16px,4vw,40px) + var(--safe-l));
+    padding-right:calc(clamp(16px,4vw,40px) + var(--safe-r));
     transition:background .4s var(--ease),border-color .4s,backdrop-filter .4s;
     border-bottom:1px solid transparent;
 }
@@ -155,7 +167,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     border-left:1px solid var(--bdr);
     box-shadow:-30px 0 70px -30px rgba(0,0,0,.9);
     transform:translateX(105%);transition:transform .5s var(--ease);
-    display:flex;flex-direction:column;padding:26px 22px;overflow-y:auto;
+    display:flex;flex-direction:column;overflow-y:auto;
+    /* 抽屜貼齊右側且滿版高度，四邊都要讓開安全區 */
+    padding:calc(26px + var(--safe-t)) calc(22px + var(--safe-r)) calc(26px + var(--safe-b)) 22px;
 }
 .drawer.open{transform:translateX(0)}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
@@ -233,7 +247,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 }
 .hero-cta:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 22px 52px -10px rgba(200,160,86,.9),0 0 0 1px rgba(200,160,86,.5);filter:brightness(1.06)}
 .hero-scroll{
-    position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:3;
+    /* hero 是滿版 100svh，SCROLL 提示要避開底部 home indicator */
+    position:absolute;left:50%;bottom:calc(26px + var(--safe-b));transform:translateX(-50%);z-index:3;
     font-size:.74rem;letter-spacing:.3em;color:var(--text-d);
     display:flex;flex-direction:column;align-items:center;gap:8px;
     animation:bob 2.2s ease-in-out infinite;
@@ -244,8 +259,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
 
 /* ===== Container ===== */
-.container{position:relative;z-index:5;max-width:1280px;margin:0 auto;padding:0 clamp(14px,4vw,32px) 80px}
-[id]{scroll-margin-top:calc(var(--nav-h) + 16px)}
+.container{position:relative;z-index:5;max-width:1280px;margin:0 auto;
+    /* 橫向時瀏海會在左右任一側，內容要一併讓開 */
+    padding:0 calc(clamp(14px,4vw,32px) + var(--safe-r)) 80px calc(clamp(14px,4vw,32px) + var(--safe-l))}
+[id]{scroll-margin-top:calc(var(--nav-h) + var(--safe-t) + 16px)}
 
 /* section heading shared */
 .sec-head{text-align:center;margin:64px 0 30px}
@@ -404,7 +421,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 
 /* ===== Footer ===== */
 .site-footer{position:relative;z-index:5;border-top:1px solid var(--bdr);margin-top:40px;
-    background:linear-gradient(180deg,transparent,rgba(16,12,7,.7));padding:54px clamp(16px,4vw,40px) 40px}
+    background:linear-gradient(180deg,transparent,rgba(16,12,7,.7));
+    /* 底部要讓開 home indicator，否則版權列會被橫條壓住 */
+    padding:54px calc(clamp(16px,4vw,40px) + var(--safe-r)) calc(40px + var(--safe-b)) calc(clamp(16px,4vw,40px) + var(--safe-l))}
 .footer-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:30px;justify-content:space-between;align-items:flex-start}
 .footer-brand{max-width:320px}
 .footer-brand .f-logo{font-family:var(--font);font-size:1.4rem;color:var(--gold-l);margin-bottom:10px}

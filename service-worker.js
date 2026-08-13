@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-07-30-ui';
+const CACHE_VERSION = '2026-07-30-ios-safe-area';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -15,8 +15,8 @@ const APP_SHELL = [
     './7人/津門遺雲.html',
     './7人/津門遺雲.mp3',
     './manifest.webmanifest',
-    './index.css?v=20260716',
-    './honor-form.css?v=20260730-date',
+    './index.css?v=20260728-safearea',
+    './honor-form.css?v=20260730-safearea',
     './scripts.js?v=20260728-tags',
     './scripts-data.js?v=20260728-tags2',
     './hero.js?v=20260702a',
