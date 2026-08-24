@@ -936,17 +936,25 @@
             // --- 資料來源設定 ---
             // Google Sheet 發布到網路的 CSV 網址
             const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR36D_er_9eC5E2l551e9d09nj4puUiAQUqXbeX_o-c-6FO5AY3jTJ_WX33Xu0SReW06RmSmzzKgNqk/pub?output=csv';
-            // 【建議】自建 Google Apps Script 代理網址：可完全避開 CORS、讀取快又穩。留空則使用下方備援代理。
-            // 設定方式見同目錄「GoogleAppsScript_代理說明.txt」
+            // 選填：自建 Google Apps Script 代理網址。多數情況不需要——
+            // 直接請求 Google Sheet 已經可行（見下方 fetchPlayData 的說明），
+            // 只有在直接請求被公司網路、瀏覽器擴充套件等環境擋下時才需要這個備援。
+            // 部署方式可比照 GoogleAppsScript_玩本記錄.gs，另開一支 doGet 回傳 CSV 內容。
             const GAS_PROXY_URL = '';  // 例：'https://script.google.com/macros/s/你的部署ID/exec'
-            // 單一請求逾時（毫秒），避免某個代理卡住導致整頁等很久
+            // 請求逾時（毫秒），避免網路異常時整頁卡住等很久
             const FETCH_TIMEOUT_MS = 6000;
-            // 備援來源（當 GAS_PROXY_URL 為空或失敗時依序嘗試）
+            // 資料來源：直接請求為主，GAS_PROXY_URL 有設定時當作額外備援。
+            //
+            // 這裡曾經還有三個公共 CORS 代理（corsproxy.io / allorigins.win / codetabs.com）
+            // 當直接請求失敗時依序頂上，已經移除：
+            //   - 直接請求在修正 preflight 問題後就能成功，代理已無用武之地
+            //   - 三個代理都不受海星控制，玩家的暱稱、心得、遊玩日期會先經過它們才到瀏覽器，
+            //     是不必要的第三方資料暴露面
+            //   - 代理逾時或掛掉時，使用者要多等最多 18 秒才看到錯誤，體感更差
+            // 若直接請求真的被環境擋下，設定 GAS_PROXY_URL 是更安全的備援
+            // （資料只會經過自己部署的 Apps Script，不會流向不受控的第三方）。
             const CORS_SOURCES = [
-                () => GOOGLE_SHEET_URL,
-                () => 'https://corsproxy.io/?' + encodeURIComponent(GOOGLE_SHEET_URL),
-                () => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GOOGLE_SHEET_URL),
-                () => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(GOOGLE_SHEET_URL)
+                () => GOOGLE_SHEET_URL
             ];
 
 
@@ -1083,10 +1091,11 @@
                     labels.push('GAS 代理');
                     isDirectSource.push(false);
                 }
-                CORS_SOURCES.forEach((fn, i) => {
+                // CORS_SOURCES 現在只有直接請求這一種來源
+                CORS_SOURCES.forEach((fn) => {
                     sources.push(fn);
-                    labels.push(i === 0 ? '直接請求' : `代理 ${i}`);
-                    isDirectSource.push(i === 0);  // 第一個是直接請求，其他是代理
+                    labels.push('直接請求');
+                    isDirectSource.push(true);
                 });
                 let lastError = null;
                 let csvText = null;
