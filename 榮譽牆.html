@@ -1063,16 +1063,16 @@
 
             // 1. 從 Google Sheet 獲取並解析 CSV 資料（可選 GAS 代理 + 備援 + 逾時；Excel 儲存格內換行已由 PapaParse 正確處理）
             async function fetchPlayData() {
-                // 直接請求 Google Sheet 時使用完整標頭；代理服務只用 cache，避免觸發 CORS preflight
-                const directFetchOpts = { 
-                    cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                };
-                const proxyFetchOpts = { cache: 'no-store' };  // 代理服務不設自訂標頭，避免 preflight
+                // 所有來源都只用 cache:'no-store'，不加任何自訂標頭。
+                //
+                // 這裡曾經對「直接請求」加上 Cache-Control / Pragma / Expires，
+                // 但這三個不是 CORS 安全標頭，會讓瀏覽器先送 preflight(OPTIONS)，
+                // 而 Google Sheets 的「發布到網路」CSV 端點不支援 preflight，
+                // 結果直接請求 100% 失敗、每次都被迫走公共代理，
+                // 代理再慢或掛掉整頁就讀不到資料。
+                // cache:'no-store' 本身就能繞過 HTTP 快取，且屬於簡單請求。
+                const directFetchOpts = { cache: 'no-store' };
+                const proxyFetchOpts = { cache: 'no-store' };
                 const sources = [];
                 const labels = [];
                 const isDirectSource = [];  // 標記是否為直接請求
