@@ -96,6 +96,14 @@
             background-clip: text;
             letter-spacing: 4px;
         }
+        .secret-link-trigger {
+            color: inherit;
+            cursor: pointer;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         .subtitle {
             font-size: 1.3rem;
             color: rgba(247, 236, 210, 0.85);
@@ -374,7 +382,7 @@
     <div class="container">
         <!-- 頁首標題 -->
         <header class="header">
-            <h1 class="title">極目2：九爺！我想給您養老</h1>
+            <h1 class="title">極目2：<span id="jiuye-secret-trigger" class="secret-link-trigger" role="button" tabindex="0">九爺</span>！我想給您養老</h1>
             <p class="subtitle">"拜拜把子、打打鬼子、騙騙傻子、賺賺元子——九爺，這南洋的天下，咱們一塊兒打！"</p>
         </header>
 
@@ -545,6 +553,28 @@
         })();
 
         document.addEventListener('DOMContentLoaded', function () {
+            // --- 連點標題「九爺」十次開啟玩家頁面 ---
+            const secretTrigger = document.getElementById('jiuye-secret-trigger');
+            let secretClickCount = 0;
+
+            function activateSecretLink() {
+                secretClickCount += 1;
+                if (secretClickCount === 10) {
+                    secretClickCount = 0;
+                    window.location.href = 'https://jiuye-yanglao.onrender.com/player/';
+                }
+            }
+
+            // pointerup 比 click 更適合手機上的快速連點，並搭配 touch-action
+            // 避免雙擊縮放或選取文字吃掉部分點擊事件。
+            secretTrigger.addEventListener('pointerup', activateSecretLink);
+            secretTrigger.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    activateSecretLink();
+                }
+            });
+
             // --- 星星評分懸停效果 ---
             document.querySelectorAll('.stars-rating').forEach(rating => {
                 const stars = rating.querySelectorAll('.star-rating:not(.empty)');
