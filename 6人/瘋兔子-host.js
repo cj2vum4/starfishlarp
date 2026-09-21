@@ -1,15 +1,12 @@
 "use strict";
 
 const RabbitHost = {
-  client: null,
   converter: null,
   sessionId: "",
   gameState: null,
   cards: [],
   playerRows: [],
-  gameChannel: null,
-  playerChannel: null,
-  writeQueue: Promise.resolve(),
+  socketHandle: null,
 
   elements: {},
 
@@ -17,14 +14,6 @@ const RabbitHost = {
     this.collectElements();
     this.bindEvents();
     this.converter = FengTuz.createTraditionalConverter();
-
-    try {
-      this.client = FengTuz.createSupabaseClient();
-    } catch (error) {
-      FengTuz.setNotice(this.elements.globalNotice, error.message, "error");
-      this.disableOnlineControls();
-      return;
-    }
 
     this.renderPhases();
     this.renderPlayers();
@@ -98,17 +87,7 @@ const RabbitHost = {
         this.elements.broadcastInput.focus();
       }
     });
-    window.addEventListener("pagehide", () => this.cleanupChannels());
-  },
-
-  disableOnlineControls() {
-    [
-      this.elements.createSessionButton,
-      this.elements.joinSessionButton,
-      this.elements.broadcastButton
-    ].forEach((button) => {
-      button.disabled = true;
-    });
+    window.addEventListener("pagehide", () => this.cleanupSocket());
   },
 
   async createSession() {
@@ -125,38 +104,18 @@ const RabbitHost = {
       return;
     }
 
-    const existing = await this.fetchGameRow(proposed, true);
-    if (existing) {
-      FengTuz.setNotice(
-        this.elements.globalNotice,
-        "此場次程式碼已存在。請清空欄位後建立新的隨機程式碼，或按「加入場次」。",
-        "error"
-      );
-      return;
+    let session;
+    try {
+      session = await FengTuz.createSessionApi(proposed);
+    } catch (error) {
+      if (error.code === "SESSION_EXISTS") {
+        FengTuz.setNotice(this.elements.globalNotice, error.message, "error");
+        return;
+      }
+      throw error;
     }
 
-    const now = new Date().toISOString();
-    const initialState = FengTuz.normalizeGameState({
-      script: FengTuz.config.script,
-      status: "active",
-      currentPhase: 0,
-      releasedClues: {},
-      broadcasts: [],
-      createdAt: now,
-      updatedAt: now,
-      revision: 1
-    });
-
-    const response = await this.client.from("game_state").upsert({
-      id: proposed,
-      state: initialState,
-      updated_at: now
-    });
-    if (response.error) {
-      throw new Error("無法建立場次：" + response.error.message);
-    }
-
-    await this.activateSession(proposed, initialState);
+    await this.activateSession(proposed, session);
     FengTuz.setNotice(
       this.elements.globalNotice,
       "場次已建立。請把程式碼或玩家端連結提供給玩家。",
@@ -179,8 +138,8 @@ const RabbitHost = {
       return;
     }
 
-    const row = await this.fetchGameRow(proposed, options.silent);
-    if (!row) {
+    const session = await FengTuz.fetchSessionApi(proposed);
+    if (!session) {
       if (!options.silent) {
         FengTuz.setNotice(
           this.elements.globalNotice,
@@ -190,15 +149,7 @@ const RabbitHost = {
       }
       return;
     }
-
-    let state;
-    try {
-      state = FengTuz.validateRabbitState(row.state);
-    } catch (error) {
-      FengTuz.setNotice(this.elements.globalNotice, error.message, "error");
-      return;
-    }
-    if (state.status === "ended") {
+    if (session.status === "ended") {
       FengTuz.setNotice(
         this.elements.globalNotice,
         "此場次已由主持人結束，請建立新場次。",
@@ -207,30 +158,14 @@ const RabbitHost = {
       return;
     }
 
-    await this.activateSession(proposed, state);
+    await this.activateSession(proposed, session);
     if (!options.silent) {
       FengTuz.setNotice(this.elements.globalNotice, "已加入主持場次。", "success");
     }
   },
 
-  async fetchGameRow(sessionId, ignoreErrors = false) {
-    const response = await this.client
-      .from("game_state")
-      .select("state,updated_at")
-      .eq("id", sessionId)
-      .maybeSingle();
-
-    if (response.error) {
-      if (ignoreErrors && response.error.code === "PGRST116") {
-        return null;
-      }
-      throw new Error("場次查詢失敗：" + response.error.message);
-    }
-    return response.data;
-  },
-
   async activateSession(sessionId, state) {
-    await this.cleanupChannels();
+    this.cleanupSocket();
     this.sessionId = sessionId;
     this.gameState = FengTuz.validateRabbitState(state);
     localStorage.setItem("fengtuz_host_session", sessionId);
@@ -258,9 +193,6 @@ const RabbitHost = {
 
     if (active) {
       const url = new URL("瘋兔子-player.html", window.location.href);
-      if (new URLSearchParams(window.location.search).get("mock") === "1") {
-        url.searchParams.set("mock", "1");
-      }
       url.searchParams.set("session", this.sessionId);
       this.elements.playerLink.href = url.toString();
       this.elements.playerLink.textContent = url.toString();
@@ -278,10 +210,8 @@ const RabbitHost = {
       return;
     }
 
-    await this.mutateGameState((draft) => {
-      draft.status = "ended";
-    });
-    await this.cleanupChannels();
+    await FengTuz.endSessionApi(this.sessionId);
+    this.cleanupSocket();
     localStorage.removeItem("fengtuz_host_session");
     this.sessionId = "";
     this.gameState = null;
@@ -290,85 +220,50 @@ const RabbitHost = {
     FengTuz.setNotice(this.elements.globalNotice, "場次已結束。", "success");
   },
 
-  async cleanupChannels() {
-    const channels = [this.gameChannel, this.playerChannel].filter(Boolean);
-    this.gameChannel = null;
-    this.playerChannel = null;
-    if (!this.client) {
-      return;
+  cleanupSocket() {
+    if (this.socketHandle) {
+      this.socketHandle.close();
+      this.socketHandle = null;
     }
-    await Promise.allSettled(
-      channels.map((channel) => this.client.removeChannel(channel))
-    );
   },
 
   subscribeToSession() {
-    if (!this.sessionId || this.gameChannel || this.playerChannel) {
+    if (!this.sessionId || this.socketHandle) {
       return;
     }
-    const safeCode = this.sessionId.replace(/[^A-Z0-9]/g, "");
+    this.socketHandle = FengTuz.connectSessionSocket(this.sessionId, {
+      onState: () => this.refreshGameState(),
+      onPlayers: () => this.loadPlayers()
+    });
+  },
 
-    this.gameChannel = this.client
-      .channel("fengtuz_host_game_" + safeCode)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "game_state",
-          filter: `id=eq.${this.sessionId}`
-        },
-        (payload) => {
-          if (!payload.new?.state) {
-            return;
-          }
-          try {
-            const incoming = FengTuz.validateRabbitState(payload.new.state);
-            if (incoming.revision >= (this.gameState?.revision || 0)) {
-              this.gameState = incoming;
-              this.renderAll();
-            }
-          } catch (error) {
-            FengTuz.setNotice(this.elements.globalNotice, error.message, "error");
-          }
-        }
-      )
-      .subscribe();
-
-    this.playerChannel = this.client
-      .channel("fengtuz_host_players_" + safeCode)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "player_state",
-          filter: `session_id=eq.${this.sessionId}`
-        },
-        () => this.loadPlayers()
-      )
-      .subscribe();
+  async refreshGameState() {
+    try {
+      const session = await FengTuz.fetchSessionApi(this.sessionId);
+      if (!session) {
+        return;
+      }
+      this.gameState = FengTuz.validateRabbitState(session);
+      this.renderAll();
+    } catch (error) {
+      FengTuz.setNotice(this.elements.globalNotice, error.message, "error");
+    }
   },
 
   async loadPlayers() {
     if (!this.sessionId) {
       return;
     }
-    const response = await this.client
-      .from("player_state")
-      .select("id,char_id,player_name,updated_at")
-      .eq("session_id", this.sessionId);
-
-    if (response.error) {
+    try {
+      this.playerRows = await FengTuz.fetchPlayersApi(this.sessionId);
+      this.renderPlayers();
+    } catch (error) {
       FengTuz.setNotice(
         this.elements.globalNotice,
-        "玩家狀態讀取失敗：" + response.error.message,
+        "玩家狀態讀取失敗：" + error.message,
         "error"
       );
-      return;
     }
-    this.playerRows = response.data || [];
-    this.renderPlayers();
   },
 
   renderPlayers() {
@@ -377,9 +272,9 @@ const RabbitHost = {
     let onlineCount = 0;
 
     FengTuz.config.roles.forEach((role) => {
-      const row = this.playerRows.find((player) => player.char_id === role.id);
-      const updatedAt = row ? new Date(row.updated_at).getTime() : 0;
-      const online = Boolean(row?.player_name && updatedAt >= onlineThreshold);
+      const row = this.playerRows.find((player) => player.roleId === role.id);
+      const updatedAt = row ? new Date(row.updatedAt).getTime() : 0;
+      const online = Boolean(row?.nickname && updatedAt >= onlineThreshold);
       onlineCount += online ? 1 : 0;
 
       const card = FengTuz.createElement("article", {
@@ -399,7 +294,7 @@ const RabbitHost = {
         status,
         FengTuz.createElement("div", {
           className: "role-player",
-          text: row?.player_name || "尚無玩家"
+          text: row?.nickname || "尚無玩家"
         })
       );
       this.elements.playerGrid.appendChild(card);
@@ -426,9 +321,9 @@ const RabbitHost = {
       );
       button.addEventListener("click", () => {
         FengTuz.withBusy(button, async () => {
-          await this.mutateGameState((draft) => {
-            draft.currentPhase = index;
-          });
+          const session = await FengTuz.setPhaseApi(this.sessionId, index);
+          this.gameState = FengTuz.validateRabbitState(session);
+          this.renderAll();
           FengTuz.showToast("遊戲階段已更新");
         });
       });
@@ -440,7 +335,6 @@ const RabbitHost = {
     this.elements.clueStatus.textContent = "正在分頁載入線索…";
     try {
       this.cards = await FengTuz.fetchAllRabbitCards(
-        this.client,
         this.converter,
         (count) => {
           this.elements.clueStatus.textContent = `已載入 ${count} 筆線索…`;
@@ -589,28 +483,16 @@ const RabbitHost = {
   },
 
   async releaseClue(cardId, recipient) {
-    await this.mutateGameState((draft) => {
-      const key = String(cardId);
-      const existing = draft.releasedClues[key] || {
-        id: Number(cardId),
-        recipients: [],
-        releasedAt: new Date().toISOString()
-      };
-      if (recipient === "all") {
-        existing.recipients = ["all"];
-      } else if (!existing.recipients.includes("all")) {
-        existing.recipients = [...new Set([...existing.recipients, recipient])];
-      }
-      existing.releasedAt = new Date().toISOString();
-      draft.releasedClues[key] = existing;
-    });
+    const session = await FengTuz.releaseClueApi(this.sessionId, cardId, recipient);
+    this.gameState = FengTuz.validateRabbitState(session);
+    this.renderAll();
     FengTuz.showToast("線索已發放");
   },
 
   async revokeClue(cardId) {
-    await this.mutateGameState((draft) => {
-      delete draft.releasedClues[String(cardId)];
-    });
+    const session = await FengTuz.revokeClueApi(this.sessionId, cardId);
+    this.gameState = FengTuz.validateRabbitState(session);
+    this.renderAll();
     FengTuz.showToast("線索已收回");
   },
 
@@ -625,14 +507,9 @@ const RabbitHost = {
       return;
     }
 
-    await this.mutateGameState((draft) => {
-      draft.broadcasts.unshift({
-        id: crypto.randomUUID(),
-        message,
-        createdAt: new Date().toISOString()
-      });
-      draft.broadcasts = draft.broadcasts.slice(0, 100);
-    });
+    const session = await FengTuz.sendBroadcastApi(this.sessionId, message);
+    this.gameState = FengTuz.validateRabbitState(session);
+    this.renderAll();
     this.elements.broadcastInput.value = "";
     FengTuz.showToast("廣播已送出");
   },
@@ -659,39 +536,6 @@ const RabbitHost = {
       );
       this.elements.broadcastHistory.appendChild(item);
     });
-  },
-
-  mutateGameState(mutator) {
-    this.writeQueue = this.writeQueue
-      .catch(() => undefined)
-      .then(async () => {
-        if (!this.sessionId) {
-          throw new Error("請先建立或加入場次。");
-        }
-
-        // 每次操作先抓取最新版並只修改目標欄位，降低多主持人同時操作互相覆寫的風險。
-        const latestRow = await this.fetchGameRow(this.sessionId);
-        const draft = FengTuz.validateRabbitState(latestRow.state);
-        mutator(draft);
-        draft.revision += 1;
-        draft.updatedAt = new Date().toISOString();
-
-        const response = await this.client.from("game_state").upsert({
-          id: this.sessionId,
-          state: draft,
-          updated_at: draft.updatedAt
-        });
-        if (response.error) {
-          throw new Error("場次同步失敗：" + response.error.message);
-        }
-        this.gameState = draft;
-        this.renderAll();
-      })
-      .catch((error) => {
-        FengTuz.setNotice(this.elements.globalNotice, error.message, "error");
-        throw error;
-      });
-    return this.writeQueue;
   }
 };
 

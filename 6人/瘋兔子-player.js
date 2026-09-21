@@ -1,14 +1,13 @@
 "use strict";
 
 const RabbitPlayer = {
-  client: null,
   converter: null,
   sessionId: "",
   roleId: "",
   nickname: "",
   gameState: null,
   cards: [],
-  gameChannel: null,
+  socketHandle: null,
   heartbeatTimer: null,
   seenClueIds: new Set(),
   activeTab: "clues",
@@ -19,14 +18,6 @@ const RabbitPlayer = {
     this.collectElements();
     this.bindEvents();
     this.converter = FengTuz.createTraditionalConverter();
-
-    try {
-      this.client = FengTuz.createSupabaseClient();
-    } catch (error) {
-      FengTuz.setNotice(this.elements.joinNotice, error.message, "error");
-      this.elements.validateButton.disabled = true;
-      return;
-    }
 
     this.renderRoleChoices();
     this.renderPlayerView();
@@ -109,18 +100,11 @@ const RabbitPlayer = {
   },
 
   async fetchGameState(sessionId) {
-    const response = await this.client
-      .from("game_state")
-      .select("state")
-      .eq("id", sessionId)
-      .maybeSingle();
-    if (response.error) {
-      throw new Error("場次驗證失敗：" + response.error.message);
-    }
-    if (!response.data?.state) {
+    const session = await FengTuz.fetchSessionApi(sessionId);
+    if (!session) {
       throw new Error("找不到此場次，請向主持人確認程式碼。");
     }
-    const state = FengTuz.validateRabbitState(response.data.state);
+    const state = FengTuz.validateRabbitState(session);
     if (state.status === "ended") {
       throw new Error("此場次已結束，請向主持人索取新的程式碼。");
     }
@@ -185,22 +169,20 @@ const RabbitPlayer = {
   },
 
   async markOccupiedRoles() {
-    const response = await this.client
-      .from("player_state")
-      .select("char_id,player_name,updated_at")
-      .eq("session_id", this.sessionId);
-    if (response.error) {
-      throw new Error("角色狀態讀取失敗：" + response.error.message);
+    let players;
+    try {
+      players = await FengTuz.fetchPlayersApi(this.sessionId);
+    } catch (error) {
+      throw new Error("角色狀態讀取失敗：" + error.message);
     }
+
     const onlineThreshold = Date.now() - 100000;
     const onlineRoles = new Map(
-      (response.data || [])
+      players
         .filter(
-          (row) =>
-            row.player_name &&
-            new Date(row.updated_at).getTime() >= onlineThreshold
+          (row) => row.nickname && new Date(row.updatedAt).getTime() >= onlineThreshold
         )
-        .map((row) => [row.char_id, row.player_name])
+        .map((row) => [row.roleId, row.nickname])
     );
 
     this.elements.roleGrid.querySelectorAll(".role-card").forEach((button) => {
@@ -251,10 +233,6 @@ const RabbitPlayer = {
     }
   },
 
-  playerKey() {
-    return `${this.sessionId}_${this.roleId}`;
-  },
-
   visibleClueIds(state = this.gameState) {
     return Object.entries(state?.releasedClues || {})
       .filter(([, entry]) => FengTuz.isClueVisibleToRole(entry, this.roleId))
@@ -262,17 +240,10 @@ const RabbitPlayer = {
   },
 
   async savePlayerState() {
-    const row = {
-      id: this.playerKey(),
-      session_id: this.sessionId,
-      char_id: this.roleId,
-      player_name: this.nickname,
-      unlocked_codes: this.visibleClueIds(),
-      updated_at: new Date().toISOString()
-    };
-    const response = await this.client.from("player_state").upsert(row);
-    if (response.error) {
-      throw new Error("玩家狀態同步失敗：" + response.error.message);
+    try {
+      await FengTuz.joinPlayerApi(this.sessionId, this.roleId, this.nickname);
+    } catch (error) {
+      throw new Error("玩家狀態同步失敗：" + error.message);
     }
   },
 
@@ -286,7 +257,6 @@ const RabbitPlayer = {
 
     try {
       this.cards = await FengTuz.fetchAllRabbitCards(
-        this.client,
         this.converter,
         (count) => {
           FengTuz.setNotice(
@@ -387,23 +357,23 @@ const RabbitPlayer = {
   },
 
   subscribeToGameState() {
-    if (!this.sessionId || this.gameChannel) {
+    if (!this.sessionId || this.socketHandle) {
       return;
     }
-    const safeCode = this.sessionId.replace(/[^A-Z0-9]/g, "");
-    this.gameChannel = this.client
-      .channel("fengtuz_player_game_" + safeCode + "_" + this.roleId)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "game_state",
-          filter: `id=eq.${this.sessionId}`
-        },
-        (payload) => this.applyRealtimeState(payload.new?.state)
-      )
-      .subscribe();
+    this.socketHandle = FengTuz.connectSessionSocket(this.sessionId, {
+      onState: () => this.refreshGameStateFromServer()
+    });
+  },
+
+  async refreshGameStateFromServer() {
+    try {
+      const session = await FengTuz.fetchSessionApi(this.sessionId);
+      if (session) {
+        await this.applyRealtimeState(session);
+      }
+    } catch (error) {
+      FengTuz.setNotice(this.elements.playerNotice, error.message, "error");
+    }
   },
 
   async applyRealtimeState(rawState) {
@@ -467,12 +437,10 @@ const RabbitPlayer = {
     }
     await this.cleanupRealtime();
     if (this.sessionId && this.roleId) {
-      const response = await this.client
-        .from("player_state")
-        .delete()
-        .eq("id", this.playerKey());
-      if (response.error) {
-        console.warn("離開時無法刪除玩家狀態", response.error);
+      try {
+        await FengTuz.leavePlayerApi(this.sessionId, this.roleId);
+      } catch (error) {
+        console.warn("離開時無法刪除玩家狀態", error);
       }
     }
     localStorage.removeItem("fengtuz_player_login");
@@ -491,13 +459,12 @@ const RabbitPlayer = {
     FengTuz.setNotice(this.elements.joinNotice, "已離開場次。", "success");
   },
 
-  async cleanupRealtime() {
+  cleanupRealtime() {
     clearInterval(this.heartbeatTimer);
     this.heartbeatTimer = null;
-    const channel = this.gameChannel;
-    this.gameChannel = null;
-    if (channel && this.client) {
-      await this.client.removeChannel(channel);
+    if (this.socketHandle) {
+      this.socketHandle.close();
+      this.socketHandle = null;
     }
   }
 };

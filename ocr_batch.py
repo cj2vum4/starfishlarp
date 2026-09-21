@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """
-批次 OCR 腳本：掃描 JPG/PDF → Claude Vision API → Supabase
+批次 OCR 腳本：掃描 JPG/PDF → Claude Vision API → Supabase（tiancai 等）／
+fengtuz-server（fengtuz 專用的獨立後端）
 
 安裝依賴：
-    pip install anthropic supabase pymupdf pillow tqdm
+    pip install anthropic supabase pymupdf pillow tqdm requests
 
 使用方式：
-    python ocr_batch.py --dir "C:/Users/Michael.Huang/Downloads/劇本/疯兔子白又白砍下脑袋飞起来"
+    python ocr_batch.py --dir "C:/Users/Michael.Huang/Downloads/劇本/疯兔子白又白砍下脑袋飞起来" --script fengtuz
 
 環境變數（或複製 .env.example 為 .env）：
     ANTHROPIC_API_KEY=sk-ant-...
+    # --script 不是 fengtuz 時（例如 tiancai）用 Supabase：
     SUPABASE_URL=https://xxxx.supabase.co
     SUPABASE_KEY=eyJ...
+    # --script fengtuz 時改用獨立後端（也可用 --api-url 覆寫）：
+    FENGTUZ_API_URL=https://fengtuz-server.onrender.com
+    FENGTUZ_IMPORT_TOKEN=（同 fengtuz-server 專案的 ADMIN_IMPORT_TOKEN）
 """
 
 import os
@@ -50,11 +55,18 @@ try:
 except ImportError:
     tqdm = lambda x, **kw: x  # noqa: E731
 
+try:
+    import requests
+except ImportError:
+    requests = None
+
 # ── 設定 ──────────────────────────────────────────────────────────────────────
 
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-SUPABASE_URL      = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY      = os.environ.get("SUPABASE_KEY", "")
+ANTHROPIC_API_KEY    = os.environ.get("ANTHROPIC_API_KEY", "")
+SUPABASE_URL         = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY         = os.environ.get("SUPABASE_KEY", "")
+FENGTUZ_API_URL      = os.environ.get("FENGTUZ_API_URL", "")
+FENGTUZ_IMPORT_TOKEN = os.environ.get("FENGTUZ_IMPORT_TOKEN", "")
 
 OCR_PROMPT = (
     "請完整轉錄這張圖片中所有可見的文字，保留原始排版（段落、換行）。"
@@ -162,7 +174,7 @@ def ocr_image(client: anthropic.Anthropic, b64: str, media_type: str) -> str:
             raise
 
 
-def upload_records(supabase_client, records: list[dict], table: str = "cards") -> int:
+def upload_to_supabase(supabase_client, records: list[dict], table: str = "cards") -> int:
     """批次上傳到 Supabase，回傳成功筆數"""
     if not records:
         return 0
@@ -173,6 +185,43 @@ def upload_records(supabase_client, records: list[dict], table: str = "cards") -
         chunk = records[i:i + BATCH]
         resp = supabase_client.table(table).insert(chunk).execute()
         uploaded += len(resp.data)
+    return uploaded
+
+
+def upload_to_fengtuz_api(api_url: str, token: str, records: list[dict], script: str) -> int:
+    """批次上傳到 fengtuz-server 的 /api/cards/import，回傳成功筆數。
+    依 (script, filename, folder, pageNum) upsert，重跑不會產生重複資料。"""
+    if not requests:
+        raise RuntimeError("未安裝 requests，請執行: pip install requests")
+    if not records:
+        return 0
+    BATCH = 50
+    uploaded = 0
+    for i in range(0, len(records), BATCH):
+        chunk = records[i:i + BATCH]
+        payload = {
+            "script": script,
+            "records": [
+                {
+                    "filename": r["filename"],
+                    "folder": r.get("folder", ""),
+                    "pageNum": r.get("page_num", 0),
+                    "text": r.get("text", ""),
+                }
+                for r in chunk
+            ],
+        }
+        resp = requests.post(
+            f"{api_url.rstrip('/')}/api/cards/import",
+            json=payload,
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        body = resp.json()
+        if not body.get("ok"):
+            raise RuntimeError(body.get("error", "未知錯誤"))
+        uploaded += body.get("imported", 0)
     return uploaded
 
 
@@ -187,21 +236,27 @@ def collect_files(root: Path) -> list[Path]:
     return files
 
 
-def process_directory(root: Path, output_json: Path, script: str, skip_upload: bool = False):
+def process_directory(root: Path, output_json: Path, script: str, skip_upload: bool = False, api_url: str = ""):
     load_env()
 
-    global ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY
-    ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", ANTHROPIC_API_KEY)
-    SUPABASE_URL      = os.environ.get("SUPABASE_URL", SUPABASE_URL)
-    SUPABASE_KEY      = os.environ.get("SUPABASE_KEY", SUPABASE_KEY)
+    global ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_KEY, FENGTUZ_API_URL, FENGTUZ_IMPORT_TOKEN
+    ANTHROPIC_API_KEY    = os.environ.get("ANTHROPIC_API_KEY", ANTHROPIC_API_KEY)
+    SUPABASE_URL         = os.environ.get("SUPABASE_URL", SUPABASE_URL)
+    SUPABASE_KEY         = os.environ.get("SUPABASE_KEY", SUPABASE_KEY)
+    FENGTUZ_API_URL      = api_url or os.environ.get("FENGTUZ_API_URL", FENGTUZ_API_URL)
+    FENGTUZ_IMPORT_TOKEN = os.environ.get("FENGTUZ_IMPORT_TOKEN", FENGTUZ_IMPORT_TOKEN)
+
+    is_fengtuz = script == "fengtuz"
 
     if not ANTHROPIC_API_KEY:
         sys.exit("❌ 請設定環境變數 ANTHROPIC_API_KEY")
-    if not skip_upload and (not SUPABASE_URL or not SUPABASE_KEY):
+    if not skip_upload and is_fengtuz and (not FENGTUZ_API_URL or not FENGTUZ_IMPORT_TOKEN):
+        sys.exit("❌ 請設定環境變數 FENGTUZ_API_URL 和 FENGTUZ_IMPORT_TOKEN（或加上 --no-upload）")
+    if not skip_upload and not is_fengtuz and (not SUPABASE_URL or not SUPABASE_KEY):
         sys.exit("❌ 請設定環境變數 SUPABASE_URL 和 SUPABASE_KEY（或加上 --no-upload）")
 
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
-    supabase = None if skip_upload else create_client(SUPABASE_URL, SUPABASE_KEY)
+    supabase = None if skip_upload or is_fengtuz else create_client(SUPABASE_URL, SUPABASE_KEY)
 
     files = collect_files(root)
     if not files:
@@ -282,10 +337,18 @@ def process_directory(root: Path, output_json: Path, script: str, skip_upload: b
 
     print(f"\n✓ OCR 完成，共 {len(records)} 筆，已儲存至 {output_json}")
 
-    if not skip_upload and supabase and records:
+    if not skip_upload and records and is_fengtuz:
+        print(f"\n⬆ 上傳至 fengtuz-server…")
+        try:
+            n = upload_to_fengtuz_api(FENGTUZ_API_URL, FENGTUZ_IMPORT_TOKEN, records, script)
+            print(f"✓ 上傳完成：{n} 筆")
+        except Exception as e:
+            print(f"✗ 上傳失敗：{e}")
+            print("  JSON 已保留在本地，可稍後手動重傳。")
+    elif not skip_upload and supabase and records:
         print(f"\n⬆ 上傳至 Supabase…")
         try:
-            n = upload_records(supabase, records)
+            n = upload_to_supabase(supabase, records)
             print(f"✓ 上傳完成：{n} 筆")
         except Exception as e:
             print(f"✗ 上傳失敗：{e}")
@@ -308,7 +371,11 @@ def main():
     )
     parser.add_argument(
         "--no-upload", action="store_true",
-        help="只做 OCR 輸出 JSON，不上傳 Supabase"
+        help="只做 OCR 輸出 JSON，不上傳資料庫（Supabase 或 fengtuz-server）"
+    )
+    parser.add_argument(
+        "--api-url", default="",
+        help="--script fengtuz 時的 fengtuz-server 網址，覆寫環境變數 FENGTUZ_API_URL"
     )
     args = parser.parse_args()
 
@@ -316,7 +383,10 @@ def main():
     if not root.exists():
         sys.exit(f"❌ 目錄不存在：{root}")
 
-    process_directory(root, Path(args.output), script=args.script, skip_upload=args.no_upload)
+    process_directory(
+        root, Path(args.output), script=args.script,
+        skip_upload=args.no_upload, api_url=args.api_url
+    )
 
 
 if __name__ == "__main__":
