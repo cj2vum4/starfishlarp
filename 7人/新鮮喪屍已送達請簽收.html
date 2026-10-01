@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070a05">
+    <meta name="description" content="新鮮喪屍已送達請簽收｜7人・5男2女的未來喪屍機制陣營本。2050 強酸雨紀年，七個失憶者困在高科技公司裡，五小時後喪屍送達。">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="新鮮喪屍已送達請簽收｜海星劇本殺">
+    <meta property="og:description" content="您的新鮮喪屍將於 5 小時後送達，請準備簽收。">
+    <title>新鮮喪屍已送達請簽收｜海星劇本殺</title>
+    <style>
+        :root {
+            --acid: #a6ff3d;
+            --acid-dim: rgba(166, 255, 61, .25);
+            --warn: #ffcc00;
+            --blood: #d8262b;
+            --ink: #e9f3df;
+            --muted: rgba(220, 235, 205, .7);
+            --panel: rgba(12, 18, 9, .84);
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0; min-height: 100vh; overflow-x: hidden; color: var(--ink);
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background:
+                radial-gradient(ellipse at 50% 120%, rgba(166, 255, 61, .18), transparent 55%),
+                radial-gradient(circle at 15% 20%, rgba(216, 38, 43, .12), transparent 35%),
+                linear-gradient(180deg, #0a0f07, #10180b 50%, #050703);
+        }
+        #acidRain { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .hazard {
+            position: fixed; left: 0; right: 0; height: 14px; z-index: 40; pointer-events: none;
+            background: repeating-linear-gradient(-45deg, var(--warn) 0 16px, #111 16px 32px);
+            animation: crawl 1.4s linear infinite; opacity: .9;
+        }
+        .hazard.top { top: 0; }
+        .hazard.bottom { bottom: 0; animation-direction: reverse; }
+        @keyframes crawl { to { background-position: 45px 0; } }
+        .back-btn {
+            position: fixed; top: 26px; left: 18px; z-index: 50;
+            padding: 10px 16px; text-decoration: none; font-weight: 800;
+            color: #0a0f07; background: var(--acid); border: 2px solid #0a0f07;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+        .container { position: relative; z-index: 1; width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 92px 0 80px; }
+        .hero { text-align: center; padding-bottom: 34px; }
+        .alert {
+            display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px;
+            padding: 6px 14px; border: 1px solid rgba(216, 38, 43, .7); color: #ff8a8d;
+            font: 700 .8rem/1 ui-monospace, Consolas, monospace; letter-spacing: .2em;
+        }
+        .alert i { width: 9px; height: 9px; border-radius: 50%; background: var(--blood); animation: blink 1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        h1 {
+            margin: 0; font-size: clamp(2.2rem, 7.5vw, 4.8rem); font-weight: 900; letter-spacing: .06em; line-height: 1.2;
+            color: var(--acid); text-shadow: 0 0 18px rgba(166, 255, 61, .45), 3px 3px 0 #2c4610;
+        }
+        h1 span { display: block; color: var(--ink); font-size: .55em; letter-spacing: .3em; text-shadow: none; margin-top: 8px; }
+        .countdown {
+            display: inline-block; margin-top: 22px; padding: 12px 22px; border: 2px solid var(--acid-dim);
+            background: rgba(0, 0, 0, .55); font: 800 clamp(1.6rem, 5vw, 2.4rem)/1 ui-monospace, Consolas, monospace;
+            color: var(--warn); letter-spacing: .12em; text-shadow: 0 0 12px rgba(255, 204, 0, .5);
+        }
+        .countdown small { display: block; margin-bottom: 6px; font-size: .75rem; letter-spacing: .3em; color: var(--muted); text-shadow: none; }
+        .subtitle { max-width: 760px; margin: 22px auto 0; color: var(--muted); line-height: 1.9; font-size: clamp(1rem, 2vw, 1.12rem); }
+
+        .poster-placeholder {
+            position: relative; max-width: 420px; aspect-ratio: 3 / 4; margin: 0 auto 44px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+            background: #d9c9a3; color: #3b2d17; border-radius: 4px; transform: rotate(-1.5deg);
+            box-shadow: 0 24px 50px rgba(0, 0, 0, .55);
+        }
+        .poster-placeholder::before {
+            content: "FRAGILE · 生鮮 · 請勿倒置"; position: absolute; top: 18px; left: 18px; right: 18px;
+            padding: 6px; border: 2px solid var(--blood); color: var(--blood);
+            font: 800 .8rem/1.2 ui-monospace, Consolas, monospace; text-align: center; letter-spacing: .1em;
+        }
+        .poster-placeholder::after {
+            content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 34px; transform: translateY(-50%);
+            background: rgba(166, 140, 90, .55); border-top: 1px dashed rgba(59, 45, 23, .3); border-bottom: 1px dashed rgba(59, 45, 23, .3);
+        }
+        .poster-placeholder span { position: relative; z-index: 1; font-weight: 800; letter-spacing: .15em; }
+        .poster-placeholder span:first-child { font-size: 3.4rem; }
+
+        .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+        .card {
+            position: relative; padding: 28px 24px 24px; background: var(--panel);
+            border: 1px solid var(--acid-dim); box-shadow: 0 20px 46px rgba(0, 0, 0, .5);
+            clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+        }
+        .card.description { grid-column: 1 / -1; }
+        .card h2 {
+            margin: 0 0 18px; padding-bottom: 12px; border-bottom: 2px solid var(--acid-dim);
+            font-size: 1.4rem; letter-spacing: .12em; color: var(--acid);
+        }
+        .card h2::before { content: "▣ "; color: var(--warn); }
+        .waybill { display: grid; gap: 0; border: 1px solid var(--acid-dim); }
+        .waybill .info-row { display: grid; grid-template-columns: 110px 1fr; border-bottom: 1px solid var(--acid-dim); }
+        .waybill .info-row:last-child { border-bottom: 0; }
+        .waybill strong {
+            padding: 12px; background: rgba(166, 255, 61, .08); color: var(--acid);
+            font: 700 .86rem/1.4 ui-monospace, Consolas, "Noto Sans TC", monospace; border-right: 1px solid var(--acid-dim);
+        }
+        .waybill .info-row > span { padding: 12px 14px; }
+        .stars { color: var(--warn); letter-spacing: .12em; }
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { padding: 3px 10px; font-size: .82rem; color: #0a0f07; background: var(--acid); font-weight: 700; }
+        .tag:nth-child(even) { background: var(--warn); }
+        .roster { display: grid; gap: 8px; }
+        .subject {
+            display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center;
+            padding: 10px 12px; background: rgba(166, 255, 61, .04); border-left: 3px solid var(--acid-dim);
+            transition: border-color .2s, background .2s;
+        }
+        .subject:hover { border-color: var(--acid); background: rgba(166, 255, 61, .1); }
+        .subject:hover .status { color: var(--blood); }
+        .subject .avatar { font-size: 1.8rem; text-align: center; }
+        .subject h3 { margin: 0; font-size: 1.05rem; }
+        .subject p { margin: 2px 0 0; font-size: .82rem; color: var(--muted); }
+        .status { font: 700 .72rem/1 ui-monospace, Consolas, monospace; color: var(--acid); letter-spacing: .1em; }
+        .copy { margin: 0 0 14px; line-height: 2; font-size: 1.02rem; color: rgba(233, 243, 223, .85); text-align: justify; }
+        .copy:last-child { margin-bottom: 0; }
+        .copy strong { color: var(--acid); }
+        .features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+        .feature { padding: 16px; background: rgba(0, 0, 0, .35); border: 1px dashed var(--acid-dim); }
+        .feature b { display: block; margin-bottom: 6px; color: var(--warn); }
+        .feature span { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+        .cta { margin-top: 42px; text-align: center; }
+        .cta a {
+            display: inline-block; padding: 16px 36px; text-decoration: none; font-weight: 900; letter-spacing: .15em;
+            color: #0a0f07; background: var(--acid); box-shadow: 0 0 26px rgba(166, 255, 61, .45);
+            clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+            transition: filter .2s;
+        }
+        .cta a:hover { filter: brightness(1.15); }
+        @media (max-width: 860px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .features { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .container { width: calc(100% - 32px); padding-top: 84px; }
+            .card { padding: 24px 16px 20px; }
+            .waybill .info-row { grid-template-columns: 1fr; }
+            .waybill strong { border-right: 0; border-bottom: 1px solid var(--acid-dim); }
+            .back-btn { top: 22px; left: 12px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .hazard, .alert i { animation: none; } }
+    </style>
+</head>
+<body>
+    <canvas id="acidRain" aria-hidden="true"></canvas>
+    <div class="hazard top" aria-hidden="true"></div>
+    <div class="hazard bottom" aria-hidden="true"></div>
+    <a href="../index.html" class="back-btn">← 返回劇本總覽</a>
+
+    <main class="container">
+        <header class="hero">
+            <span class="alert"><i></i>H 市 · 2050 強酸雨紀年</span>
+            <h1>新鮮喪屍已送達<span>請簽收</span></h1>
+            <div class="countdown" aria-live="off">
+                <small>距離喪屍送達</small>
+                <span id="countdown">05:00:00</span>
+            </div>
+            <p class="subtitle">七個記憶全失、滿身血跡的人在陌生的高科技公司裡醒來，門外傳來喪屍的低吼。電子屏上只有一行字——<br>「您的新鮮喪屍將於 5 小時後送達，請準備簽收。」</p>
+        </header>
+
+        <div class="poster-placeholder">
+            <span>📦</span>
+            <span>海報準備中</span>
+        </div>
+
+        <section class="content-grid">
+            <article class="card">
+                <h2>配送單</h2>
+                <div class="waybill">
+                    <div class="info-row"><strong>劇本名稱</strong><span>新鮮喪屍已送達請簽收</span></div>
+                    <div class="info-row"><strong>遊戲人數</strong><span>7 人・5 男 2 女</span></div>
+                    <div class="info-row"><strong>遊戲時間</strong><span>約 4–5 小時</span></div>
+                    <div class="info-row"><strong>推理程度</strong><span class="stars">★★★☆☆</span></div>
+                    <div class="info-row"><strong>作者／發行</strong><span>黑熊道人／鮮焰文化</span></div>
+                    <div class="info-row">
+                        <strong>劇本標籤</strong>
+                        <span class="tags">
+                            <span class="tag">未來</span><span class="tag">喪屍</span><span class="tag">機制</span><span class="tag">陣營</span>
+                            <span class="tag">本格</span><span class="tag">還原</span><span class="tag">逃生</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>受試者名單</h2>
+                <div class="roster">
+                    <div class="subject"><div class="avatar">👩‍🔬</div><div><h3>沈琳琳</h3><p>女・28歲</p></div><span class="status">#01 存活</span></div>
+                    <div class="subject"><div class="avatar">👩</div><div><h3>馬芸芸</h3><p>女・27歲</p></div><span class="status">#02 存活</span></div>
+                    <div class="subject"><div class="avatar">🧑</div><div><h3>張彬</h3><p>男・24歲</p></div><span class="status">#03 存活</span></div>
+                    <div class="subject"><div class="avatar">🧔</div><div><h3>胡澤元</h3><p>男・39歲</p></div><span class="status">#04 存活</span></div>
+                    <div class="subject"><div class="avatar">👨‍💼</div><div><h3>孫文瀚</h3><p>男・47歲</p></div><span class="status">#05 存活</span></div>
+                    <div class="subject"><div class="avatar">🧑‍💻</div><div><h3>王遠哲</h3><p>男・26歲</p></div><span class="status">#06 存活</span></div>
+                    <div class="subject"><div class="avatar">🕶️</div><div><h3>潘維凱</h3><p>男・27歲</p></div><span class="status">#07 存活</span></div>
+                </div>
+            </article>
+
+            <article class="card description">
+                <h2>故事背景</h2>
+                <p class="copy"><strong>2050 年，世界進入強酸雨紀年。</strong>多年後的 H 市，一則「人體實驗招募啟事」掀起了一陣熱潮，數名各懷鬼胎的市民報名參加。</p>
+                <p class="copy">再睜開眼時，七個人記憶全失、渾身是血，被困在一間高科技公司裡，四周盡是喪屍。誰是隊友？誰在說謊？解藥在哪裡？倒數已經開始——你們只有五個小時。</p>
+            </article>
+
+            <article class="card description">
+                <h2>劇本介紹</h2>
+                <p class="copy">《新鮮喪屍已送達請簽收》是一部把<strong>推理與逃生</strong>融為一體的未來機制陣營本。每個人每輪都有專屬技能，規則簡單粗暴、一聽就懂，自由度卻極高；角色設定飽滿，全員體驗都在線。</p>
+                <p class="copy">從失憶到一點一滴找回記憶，每一幕都面臨截然不同的處境。在資訊最少的開局就得找到隊友結盟、交換情報與道具，同時提防欺騙與背叛——<strong>只有找到隊友與解藥，才可能活到最後。</strong></p>
+                <div class="features">
+                    <div class="feature"><b>🧟 喪屍圍城</b><span>每一幕局勢都在變，存活本身就是挑戰。</span></div>
+                    <div class="feature"><b>🧠 失憶推理</b><span>從零開始拼回記憶，推理與求生同步進行。</span></div>
+                    <div class="feature"><b>🤝 結盟背叛</b><span>專屬技能＋陣營博弈，嘴砲與手段都派得上用場。</span></div>
+                </div>
+            </article>
+        </section>
+
+        <div class="cta">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" target="_blank" rel="noopener">立即預約・簽收你的喪屍</a>
+        </div>
+    </main>
+
+    <audio id="bgm" src="新鮮喪屍已送達請簽收.mp3" autoplay loop muted></audio>
+    <script>
+        document.addEventListener('click', function () {
+            var audio = document.getElementById('bgm');
+            if (audio) audio.muted = false;
+        }, { once: true });
+
+        // 五小時倒數（從進頁面開始算）
+        (function () {
+            var el = document.getElementById('countdown');
+            var end = Date.now() + 5 * 3600 * 1000;
+            function pad(n) { return String(n).padStart(2, '0'); }
+            function tick() {
+                var s = Math.max(0, Math.floor((end - Date.now()) / 1000));
+                el.textContent = pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60);
+                if (s === 0) el.textContent = '已送達・請簽收';
+            }
+            tick(); setInterval(tick, 1000);
+        })();
+
+        // 2D 強酸雨（3D 引擎啟動後由 data-hide 隱藏）
+        (function () {
+            var cv = document.getElementById('acidRain');
+            var ctx = cv.getContext('2d');
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var drops = [];
+            function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+            resize(); addEventListener('resize', resize);
+            var n = innerWidth < 600 ? 70 : 140;
+            for (var i = 0; i < n; i++) {
+                drops.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, l: 10 + Math.random() * 18, v: 6 + Math.random() * 8, a: .15 + Math.random() * .35 });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, cv.width, cv.height);
+                ctx.lineWidth = 1.2;
+                drops.forEach(function (d) {
+                    ctx.strokeStyle = 'rgba(166,255,61,' + d.a + ')';
+                    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - 2, d.y + d.l); ctx.stroke();
+                    d.y += d.v; d.x -= .4;
+                    if (d.y > cv.height) { d.y = -20; d.x = Math.random() * cv.width; }
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+    </script>
+    <script src="../bgm-control.js?v=20260727"></script>
+    <script src="../reviews.js?v=20260729-w3"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="rain" data-tint="#a6ff3d" data-hide="#acidRain"></script>
+</body>
+</html>

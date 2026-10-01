@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2a070c">
+    <meta name="description" content="青樓｜7人・4男3女的唐朝古風歡樂機制本，長安第一青樓玉滿樓，一夜風月一場局。">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="青樓｜海星劇本殺">
+    <meta property="og:description" content="大唐長安，一等青樓「玉滿樓」——玉月滿花，一夜笙歌，一樁命案。">
+    <title>青樓｜海星劇本殺</title>
+    <style>
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0; min-height: 100vh; overflow-x: hidden;
+            color: #fbe9dc;
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background:
+                radial-gradient(ellipse at 50% -10%, rgba(255, 128, 92, .28), transparent 55%),
+                radial-gradient(circle at 10% 70%, rgba(170, 20, 50, .3), transparent 40%),
+                radial-gradient(circle at 92% 60%, rgba(214, 160, 72, .16), transparent 38%),
+                linear-gradient(180deg, #2a070c, #3c0b14 45%, #16040a);
+        }
+        #petals { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .petal {
+            position: absolute; top: -40px; width: 14px; height: 11px;
+            background: radial-gradient(circle at 30% 30%, #ffd0dc, #ff6f91);
+            border-radius: 70% 0 70% 0; opacity: .75;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translate3d(var(--dx), 110vh, 0) rotate(540deg); }
+        }
+        .lanterns {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1; pointer-events: none;
+            display: flex; justify-content: space-between; padding: 0 4vw;
+        }
+        .lantern {
+            position: relative; width: 44px; height: 58px; margin-top: 46px;
+            border-radius: 45% 45% 40% 40%;
+            background: radial-gradient(circle at 50% 45%, #ffcf6e, #e2321f 60%, #8f1010);
+            box-shadow: 0 0 34px rgba(255, 120, 60, .55);
+            transform-origin: 50% -46px;
+            animation: sway 4.5s ease-in-out infinite;
+        }
+        .lantern::before { content: ""; position: absolute; left: 50%; top: -46px; width: 2px; height: 46px; background: rgba(214, 160, 72, .6); }
+        .lantern::after { content: ""; position: absolute; left: 50%; bottom: -16px; width: 3px; height: 16px; margin-left: -1px; background: #f0b84a; border-radius: 2px; }
+        .lantern:nth-child(2) { animation-delay: -1.2s; margin-top: 18px; }
+        .lantern:nth-child(3) { animation-delay: -2.4s; margin-top: 34px; }
+        .lantern:nth-child(4) { animation-delay: -3.1s; margin-top: 12px; }
+        @keyframes sway { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+        .back-btn {
+            position: fixed; bottom: 18px; left: 18px; z-index: 50;
+            padding: 11px 18px; border-radius: 4px; text-decoration: none; font-weight: 700;
+            color: #ffe7b5; background: rgba(60, 10, 18, .85);
+            border: 1px solid rgba(240, 184, 74, .45); backdrop-filter: blur(8px);
+            font-family: "Noto Serif TC", serif; letter-spacing: .08em;
+        }
+        .container { position: relative; z-index: 2; width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 130px 0 90px; }
+        .hero { text-align: center; padding-bottom: 40px; }
+        .plaque {
+            display: inline-block; padding: 18px 34px 14px;
+            border: 3px double #e9b24f; border-radius: 6px;
+            background: linear-gradient(180deg, #5b0f19, #2f060c);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .45), inset 0 0 22px rgba(233, 178, 79, .18);
+        }
+        .plaque small { display: block; margin-bottom: 6px; color: #e9b24f; letter-spacing: .5em; font-size: .78rem; }
+        h1 {
+            margin: 0; font-family: "Noto Serif TC", "PMingLiU", serif;
+            font-size: clamp(3.4rem, 11vw, 6.5rem); letter-spacing: .3em; text-indent: .3em;
+            color: #ffe2a4;
+            text-shadow: 0 0 22px rgba(255, 150, 70, .45), 0 4px 0 #6d1219;
+        }
+        .subtitle { max-width: 720px; margin: 24px auto 0; line-height: 2; color: rgba(251, 233, 220, .82); font-size: clamp(1rem, 2vw, 1.15rem); }
+        .poster-placeholder {
+            max-width: 420px; aspect-ratio: 3 / 4; margin: 0 auto 44px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+            border: 1px solid rgba(233, 178, 79, .4); border-radius: 4px;
+            background: repeating-linear-gradient(90deg, rgba(233, 178, 79, .05) 0 2px, transparent 2px 22px), rgba(48, 8, 14, .78);
+            color: rgba(255, 226, 164, .75); letter-spacing: .2em;
+        }
+        .poster-placeholder span:first-child { font-size: 3.2rem; }
+        .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; align-items: start; }
+        .card {
+            position: relative; padding: 30px 28px;
+            background: linear-gradient(180deg, rgba(74, 13, 22, .82), rgba(38, 6, 12, .86));
+            border: 1px solid rgba(233, 178, 79, .32);
+            box-shadow: 0 22px 50px rgba(0, 0, 0, .42);
+        }
+        /* 窗格四角 */
+        .card::before, .card::after {
+            content: ""; position: absolute; width: 22px; height: 22px; border: 2px solid #e9b24f;
+        }
+        .card::before { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+        .card::after { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+        .card.description { grid-column: 1 / -1; }
+        .card h2 {
+            margin: 0 0 20px; text-align: center;
+            font-family: "Noto Serif TC", serif; font-size: 1.55rem; letter-spacing: .3em; color: #ffd27a;
+        }
+        .card h2::after { content: "❀"; display: block; margin-top: 6px; font-size: .9rem; color: #ff8fa8; letter-spacing: 0; }
+        .info-list { display: grid; gap: 10px; }
+        .info-row {
+            display: flex; justify-content: space-between; gap: 18px; padding: 12px 6px;
+            border-bottom: 1px dotted rgba(233, 178, 79, .3);
+        }
+        .info-row strong { color: #ffe7c0; }
+        .info-row > span { text-align: right; color: #f5c9a4; }
+        .stars { color: #ffcf6e; letter-spacing: .15em; }
+        .stars span { transition: transform .2s, color .2s; display: inline-block; }
+        .stars span:hover { transform: scale(1.35); color: #fff2b8; }
+        .tags { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+        .tag { padding: 4px 12px; font-size: .84rem; border-radius: 999px; background: rgba(226, 50, 31, .35); border: 1px solid rgba(255, 143, 168, .4); color: #ffe0e7; }
+        .characters-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .character {
+            padding: 14px 12px; text-align: center; border-radius: 4px;
+            background: rgba(255, 207, 110, .05); border: 1px solid rgba(233, 178, 79, .18);
+            transition: transform .25s, box-shadow .25s, border-color .25s;
+        }
+        .character:hover { transform: translateY(-4px); border-color: #ff8fa8; box-shadow: 0 0 22px rgba(255, 111, 145, .3); }
+        .character .avatar { font-size: 2rem; }
+        .character h3 { margin: 6px 0 2px; font-family: "Noto Serif TC", serif; color: #ffe2a4; font-size: 1.12rem; letter-spacing: .1em; }
+        .character .meta { font-size: .78rem; color: #ff9fb4; }
+        .character p { margin: 6px 0 0; color: rgba(251, 233, 220, .72); font-size: .86rem; line-height: 1.6; }
+        .character.wide { grid-column: 1 / -1; }
+        .copy { margin: 0 0 14px; color: rgba(251, 233, 220, .85); line-height: 2.05; font-size: 1.03rem; text-align: justify; }
+        .copy:last-child { margin-bottom: 0; }
+        .copy strong { color: #ffd27a; }
+        .poem { text-align: center; font-family: "Noto Serif TC", serif; color: #ff9fb4; letter-spacing: .25em; margin: 0 0 18px; }
+        .cta { margin-top: 44px; text-align: center; }
+        .cta a {
+            display: inline-block; padding: 16px 40px; text-decoration: none; letter-spacing: .25em;
+            font-family: "Noto Serif TC", serif; font-weight: 800; color: #3a0710;
+            background: linear-gradient(180deg, #ffe08e, #e9a63a);
+            border-radius: 2px; box-shadow: 0 0 0 3px #3a0710, 0 0 0 5px #e9b24f, 0 16px 34px rgba(0, 0, 0, .4);
+            transition: transform .2s;
+        }
+        .cta a:hover { transform: scale(1.04); }
+        @media (max-width: 860px) { .content-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) {
+            .container { width: calc(100% - 32px); padding-top: 110px; }
+            .lantern { width: 32px; height: 42px; }
+            .lantern:nth-child(n+4) { display: none; }
+            .card { padding: 26px 18px; }
+            .info-row { flex-direction: column; gap: 6px; }
+            .info-row > span, .tags { text-align: left; justify-content: flex-start; }
+            .back-btn { bottom: 12px; left: 12px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .lantern, .petal { animation: none; } }
+    </style>
+</head>
+<body>
+    <div id="petals" aria-hidden="true"></div>
+    <div class="lanterns" aria-hidden="true">
+        <div class="lantern"></div><div class="lantern"></div><div class="lantern"></div><div class="lantern"></div>
+    </div>
+    <a href="../index.html" class="back-btn">← 返回劇本總覽</a>
+
+    <main class="container">
+        <header class="hero">
+            <div class="plaque">
+                <small>長 安 · 玉 滿 樓</small>
+                <h1>青樓</h1>
+            </div>
+            <p class="subtitle">大唐長安，城中一等青樓「玉滿樓」，人稱「玉月滿花」。<br>今夜笙歌未歇，名伎、公子、劍客、捕快齊聚一堂——有人為情而來，有人為仇而來。</p>
+        </header>
+
+        <div class="poster-placeholder">
+            <span>🏮</span>
+            <span>海報準備中</span>
+        </div>
+
+        <section class="content-grid">
+            <article class="card">
+                <h2>遊戲資訊</h2>
+                <div class="info-list">
+                    <div class="info-row"><strong>劇本名稱</strong><span>青樓</span></div>
+                    <div class="info-row"><strong>遊戲人數</strong><span>7 人・4 男 3 女（建議全員反串）</span></div>
+                    <div class="info-row"><strong>遊戲時間</strong><span>約 3–4 小時</span></div>
+                    <div class="info-row"><strong>推理程度</strong><span class="stars"><span>★</span><span>★</span><span>☆</span><span>☆</span><span>☆</span></span></div>
+                    <div class="info-row"><strong>劇本類型</strong><span>古風・機制歡樂本</span></div>
+                    <div class="info-row">
+                        <strong>劇本標籤</strong>
+                        <span class="tags">
+                            <span class="tag">古風</span><span class="tag">歡樂</span><span class="tag">機制</span>
+                            <span class="tag">情感</span><span class="tag">陣營</span><span class="tag">新手</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>角色介紹</h2>
+                <div class="characters-grid">
+                    <div class="character"><div class="avatar">🪭</div><h3>莫懷</h3><div class="meta">男・23歲</div><p>莫府大少爺，風流倜儻的長安第一公子。</p></div>
+                    <div class="character"><div class="avatar">⚔️</div><h3>齊劍心</h3><div class="meta">男・28歲</div><p>出師名劍山莊，江南第一劍客。</p></div>
+                    <div class="character"><div class="avatar">🏛️</div><h3>杜霄元</h3><div class="meta">男</div><p>長安第一捕快，衙門裡最難纏的那雙眼。</p></div>
+                    <div class="character"><div class="avatar">📜</div><h3>白齋子</h3><div class="meta">男</div><p>江南第一才子，一身詩酒，滿腹心事。</p></div>
+                    <div class="character"><div class="avatar">🌙</div><h3>陳一兔</h3><div class="meta">女・20歲</div><p>玉滿樓四大名伎之「月」伎，樓裡最受寵愛的姑娘。</p></div>
+                    <div class="character"><div class="avatar">🌺</div><h3>姜紅兒</h3><div class="meta">女</div><p>玉滿樓四大名伎之一，紅姨一手帶大的養女。</p></div>
+                    <div class="character wide"><div class="avatar">🎐</div><h3>舒悅</h3><div class="meta">女・20歲</div><p>玉滿樓四大名伎之一，與莫府二少爺莫寒青梅竹馬。</p></div>
+                </div>
+            </article>
+
+            <article class="card description">
+                <h2>故事背景</h2>
+                <p class="poem">玉樓春暖笙歌夜・一曲終了血滿樓</p>
+                <p class="copy">唐朝年間，長安城內最負盛名的青樓——<strong>玉滿樓</strong>。四大名伎「玉、月、滿、花」豔冠京城，達官顯貴、江湖俠客無不慕名而來。</p>
+                <p class="copy">這一夜，莫府的公子、名劍山莊的劍客、衙門的捕快與江南的才子同時踏進了玉滿樓的大門。燈影搖曳之間，一樁命案打破了滿樓的鶯歌燕語，而每個人的過去，都與這座樓纏得太深。</p>
+            </article>
+
+            <article class="card description">
+                <h2>劇本介紹</h2>
+                <p class="copy">《青樓》是公認的<strong>經典機制歡樂本</strong>，全本共四章。劇情流程會隨性別與選擇而改變，陣營可分可合、機制環節多卻流暢自然，被許多玩家列為機制本的天花板。</p>
+                <p class="copy">推理難度不高，重點在<strong>角色扮演、互動博弈與滿場笑聲</strong>——強烈建議大家全員反串，效果加倍！非常適合朋友聚會、第一次玩劇本殺的新手，老玩家也能玩得盡興。</p>
+            </article>
+        </section>
+
+        <div class="cta">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" target="_blank" rel="noopener">立即預約・夜遊玉滿樓</a>
+        </div>
+    </main>
+
+    <audio id="bgm" src="青樓.mp3" autoplay loop muted></audio>
+    <script>
+        document.addEventListener('click', function () {
+            var audio = document.getElementById('bgm');
+            if (audio) audio.muted = false;
+        }, { once: true });
+
+        // 2D 花瓣（3D 引擎啟動後由 data-hide 隱藏）
+        (function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var box = document.getElementById('petals');
+            var count = innerWidth < 600 ? 16 : 30;
+            for (var i = 0; i < count; i++) {
+                var p = document.createElement('span');
+                p.className = 'petal';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+                p.style.animationDuration = (9 + Math.random() * 10) + 's';
+                p.style.animationDelay = (-Math.random() * 18) + 's';
+                p.style.transform = 'scale(' + (.6 + Math.random() * .8) + ')';
+                box.appendChild(p);
+            }
+        })();
+    </script>
+    <script src="../bgm-control.js?v=20260727"></script>
+    <script src="../reviews.js?v=20260729-w3"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="petals" data-tint="#ff8fa8" data-hide="#petals"></script>
+</body>
+</html>

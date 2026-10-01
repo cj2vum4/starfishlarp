@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3b2a6b">
+    <meta name="description" content="咆哮吧！惡龍｜8人・4男4女的童話冒險歡樂機制本，跑團式 PVE 大地圖，一起守護伊甸園！">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="咆哮吧！惡龍｜海星劇本殺">
+    <meta property="og:description" content="惡龍甦醒在即！精英協會的勇者們，是時候拿起武器守衛家園了！">
+    <title>咆哮吧！惡龍｜海星劇本殺</title>
+    <style>
+        :root {
+            --pink: #ff8fcf;
+            --lilac: #b79cff;
+            --sky: #8fd8ff;
+            --gold: #ffd36b;
+            --ink: #fffaff;
+            --panel: rgba(46, 30, 92, .72);
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0; min-height: 100vh; overflow-x: hidden; color: var(--ink);
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background:
+                radial-gradient(circle at 80% 8%, rgba(255, 211, 107, .45), transparent 22%),
+                radial-gradient(ellipse at 20% 30%, rgba(255, 143, 207, .35), transparent 45%),
+                linear-gradient(180deg, #ff9fc8 0%, #b98cf0 32%, #5b45a8 62%, #241a4e 100%);
+            background-attachment: fixed;
+        }
+        #bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bubble {
+            position: absolute; bottom: -60px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .9), rgba(255, 255, 255, .15) 30%, rgba(143, 216, 255, .2) 60%, rgba(255, 143, 207, .35));
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, .5);
+            animation: rise linear infinite;
+        }
+        @keyframes rise {
+            0% { transform: translate(0, 0); opacity: 0; }
+            10% { opacity: .9; }
+            50% { transform: translate(var(--dx), -55vh); }
+            100% { transform: translate(0, -115vh); opacity: 0; }
+        }
+        .castle {
+            position: fixed; right: -20px; bottom: 0; z-index: 0; font-size: clamp(9rem, 22vw, 18rem);
+            opacity: .22; filter: hue-rotate(290deg) saturate(1.4); pointer-events: none; line-height: 1;
+        }
+        .back-btn {
+            position: fixed; top: 16px; left: 16px; z-index: 50;
+            padding: 10px 18px; border-radius: 14px; text-decoration: none; font-weight: 800;
+            color: #4a2e8a; background: #fff6fd; border: 3px solid #4a2e8a;
+            box-shadow: 0 4px 0 #4a2e8a; transition: transform .15s, box-shadow .15s;
+        }
+        .back-btn:hover { transform: translateY(2px); box-shadow: 0 2px 0 #4a2e8a; }
+        .container { position: relative; z-index: 1; width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 84px 0 70px; }
+        .hero { text-align: center; padding-bottom: 36px; }
+        .dragon { display: inline-block; font-size: clamp(4rem, 12vw, 6.5rem); cursor: pointer; user-select: none; animation: bob 2.6s ease-in-out infinite; }
+        .dragon.roar { animation: roar .6s ease; }
+        @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-10px) rotate(4deg); } }
+        @keyframes roar { 0% { transform: scale(1); } 30% { transform: scale(1.35) rotate(-8deg); } 60% { transform: scale(1.2) rotate(8deg); } 100% { transform: scale(1); } }
+        .roar-text {
+            height: 1.6em; margin: 0; font-weight: 900; letter-spacing: .2em; color: var(--gold);
+            text-shadow: 0 3px 0 #b3471b; opacity: 0; transition: opacity .2s;
+        }
+        .roar-text.show { opacity: 1; }
+        h1 {
+            margin: 6px 0 0; font-size: clamp(2.8rem, 9vw, 5.6rem); font-weight: 900; letter-spacing: .08em;
+            color: #fff; -webkit-text-stroke: 3px #4a2e8a; paint-order: stroke fill;
+            text-shadow: 0 6px 0 #4a2e8a, 0 12px 26px rgba(74, 46, 138, .5);
+        }
+        .subtitle { max-width: 740px; margin: 18px auto 0; line-height: 1.9; font-size: clamp(1rem, 2vw, 1.15rem); color: #fff3fb; text-shadow: 0 1px 6px rgba(74, 46, 138, .6); }
+        .poster-placeholder {
+            max-width: 420px; aspect-ratio: 3 / 4; margin: 0 auto 44px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+            border-radius: 26px; border: 4px dashed rgba(255, 255, 255, .6);
+            background: linear-gradient(160deg, rgba(255, 143, 207, .35), rgba(143, 216, 255, .25)), var(--panel);
+            font-weight: 800; letter-spacing: .15em;
+        }
+        .poster-placeholder span:first-child { font-size: 3.6rem; }
+        .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+        .card {
+            padding: 26px; border-radius: 24px; background: var(--panel); backdrop-filter: blur(10px);
+            border: 3px solid rgba(255, 255, 255, .55); box-shadow: 0 8px 0 rgba(74, 46, 138, .55), 0 24px 44px rgba(20, 10, 50, .4);
+        }
+        .card.description { grid-column: 1 / -1; }
+        .card h2 {
+            display: inline-block; margin: 0 0 18px; padding: 6px 18px; border-radius: 999px;
+            font-size: 1.3rem; letter-spacing: .1em; color: #4a2e8a; background: var(--gold);
+            box-shadow: 0 4px 0 #c98a1e;
+        }
+        .info-list { display: grid; gap: 10px; }
+        .info-row {
+            display: flex; justify-content: space-between; gap: 18px; padding: 12px 16px; border-radius: 14px;
+            background: rgba(255, 255, 255, .1);
+        }
+        .info-row > span { text-align: right; color: #ffe8f6; }
+        .stars { color: var(--gold); letter-spacing: .1em; }
+        .tags { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+        .tag { padding: 4px 12px; border-radius: 999px; font-size: .84rem; font-weight: 700; color: #4a2e8a; background: #fff0fa; }
+        .tag:nth-child(3n+2) { background: #e3f6ff; }
+        .tag:nth-child(3n) { background: #f0e8ff; }
+        .party { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .hero-card {
+            position: relative; padding: 14px 12px 12px; border-radius: 18px; text-align: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .06));
+            border: 2px solid rgba(255, 255, 255, .35); transition: transform .2s, border-color .2s;
+        }
+        .hero-card:hover { transform: translateY(-5px) rotate(-1deg); border-color: var(--gold); }
+        .hero-card .avatar { font-size: 2.2rem; }
+        .hero-card h3 { margin: 4px 0 2px; font-size: 1.05rem; }
+        .hero-card .cls { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: .72rem; font-weight: 800; color: #4a2e8a; background: var(--sky); }
+        .hero-card.f .cls { background: var(--pink); }
+        .hero-card p { margin: 7px 0 0; font-size: .84rem; line-height: 1.55; color: rgba(255, 245, 252, .82); }
+        .copy { margin: 0 0 14px; line-height: 2; font-size: 1.03rem; color: rgba(255, 245, 252, .9); text-align: justify; }
+        .copy:last-child { margin-bottom: 0; }
+        .copy strong { color: var(--gold); }
+        .quests { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+        .quest { padding: 16px; border-radius: 18px; background: rgba(255, 255, 255, .1); border: 2px dashed rgba(255, 211, 107, .6); }
+        .quest b { display: block; margin-bottom: 6px; color: var(--gold); }
+        .quest span { font-size: .9rem; line-height: 1.7; color: rgba(255, 245, 252, .85); }
+        .cta { margin-top: 42px; text-align: center; }
+        .cta a {
+            display: inline-block; padding: 16px 38px; border-radius: 20px; text-decoration: none;
+            font-size: 1.1rem; font-weight: 900; letter-spacing: .12em; color: #4a2e8a;
+            background: linear-gradient(180deg, #fff2a8, var(--gold)); border: 3px solid #4a2e8a;
+            box-shadow: 0 6px 0 #4a2e8a; transition: transform .15s, box-shadow .15s;
+        }
+        .cta a:hover { transform: translateY(3px); box-shadow: 0 3px 0 #4a2e8a; }
+        @media (max-width: 860px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .quests { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .container { width: calc(100% - 32px); padding-top: 76px; }
+            .card { padding: 20px 16px; }
+            .info-row { flex-direction: column; gap: 6px; }
+            .info-row > span, .tags { text-align: left; justify-content: flex-start; }
+            .back-btn { top: 10px; left: 10px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .dragon, .bubble { animation: none; } }
+    </style>
+</head>
+<body>
+    <div id="bubbles" aria-hidden="true"></div>
+    <div class="castle" aria-hidden="true">🏰</div>
+    <a href="../index.html" class="back-btn">← 返回劇本總覽</a>
+
+    <main class="container">
+        <header class="hero">
+            <div class="dragon" id="dragon" role="button" tabindex="0" aria-label="點我讓惡龍咆哮">🐲</div>
+            <p class="roar-text" id="roarText" aria-live="polite">吼——！！</p>
+            <h1>咆哮吧！惡龍</h1>
+            <p class="subtitle">惡龍甦醒在即！可愛的童話世界即將被顛覆！<br>身為精英協會成員的你們，是時候拿起手中的武器守衛家園了！</p>
+        </header>
+
+        <div class="poster-placeholder">
+            <span>🫧</span>
+            <span>海報準備中</span>
+        </div>
+
+        <section class="content-grid">
+            <article class="card">
+                <h2>📜 冒險資訊</h2>
+                <div class="info-list">
+                    <div class="info-row"><strong>劇本名稱</strong><span>咆哮吧！惡龍</span></div>
+                    <div class="info-row"><strong>遊戲人數</strong><span>8 人・4 男 4 女</span></div>
+                    <div class="info-row"><strong>遊戲時間</strong><span>約 3.5–4 小時</span></div>
+                    <div class="info-row"><strong>推理程度</strong><span class="stars">★☆☆☆☆</span></div>
+                    <div class="info-row"><strong>作者／發行</strong><span>三撇／浮生夢 × 飯糰娛樂</span></div>
+                    <div class="info-row">
+                        <strong>劇本標籤</strong>
+                        <span class="tags">
+                            <span class="tag">架空</span><span class="tag">歡樂</span><span class="tag">機制</span>
+                            <span class="tag">冒險</span><span class="tag">童話</span><span class="tag">跑團</span><span class="tag">新手</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>⚔️ 勇者隊伍</h2>
+                <div class="party">
+                    <div class="hero-card f"><div class="avatar">🧙‍♀️</div><h3>無敵大法師</h3><span class="cls">女・法師</span><p>嬌小天然呆，厚法袍配厚厚的水晶眼鏡。</p></div>
+                    <div class="hero-card f"><div class="avatar">👑</div><h3>莉莉絲</h3><span class="cls">女・女王</span><p>戴荊棘王冠、一襲白紗，高挑優雅的貴族女王。</p></div>
+                    <div class="hero-card f"><div class="avatar">👸</div><h3>瑞秋</h3><span class="cls">女・公主</span><p>粉色金繡舞會禮服、鑲寶石王冠，純真可愛的公主。</p></div>
+                    <div class="hero-card f"><div class="avatar">🏹</div><h3>謝麗</h3><span class="cls">女・冒險者</span><p>俐落短髮、金色護腕，說走就走的女冒險者。</p></div>
+                    <div class="hero-card"><div class="avatar">🪕</div><h3>王爾德</h3><span class="cls">男・吟遊詩人</span><p>灰色麻布長袍，懷揣一本古老的精靈詩集。</p></div>
+                    <div class="hero-card"><div class="avatar">🛡️</div><h3>理查德</h3><span class="cls">男・冒險者</span><p>棉甲配護肩護腿，可靠的前線冒險者。</p></div>
+                    <div class="hero-card"><div class="avatar">🤴</div><h3>拉斐爾</h3><span class="cls">男・王子</span><p>黑色金繡燕尾服、白絲手套，完美高貴的王子。</p></div>
+                    <div class="hero-card"><div class="avatar">🗡️</div><h3>邦德</h3><span class="cls">男・騎士</span><p>暗紅全身板甲、手持騎士劍，高大堅毅的騎士。</p></div>
+                </div>
+            </article>
+
+            <article class="card description">
+                <h2>🏰 故事背景</h2>
+                <p class="copy">夢幻而純粹的<strong>伊甸園</strong>，矗立著一座華麗耀眼的粉色城堡。黃昏的金光灑在漫天飛舞的泡泡上，把光芒折射成七彩，照進每個人的夢裡。</p>
+                <p class="copy">然而沉睡已久的<strong>惡龍</strong>即將甦醒，童話世界岌岌可危。法師、女王、公主、騎士、詩人與冒險者——精英協會的八位成員集結於此，一場關乎家園存亡的冒險，就此展開！</p>
+            </article>
+
+            <article class="card description">
+                <h2>🎲 劇本介紹</h2>
+                <p class="copy">《咆哮吧！惡龍》是一部<strong>PVE 跑團式</strong>的歡樂機制本。一群人圍著大地圖擲骰、行動、闖關，就像小時候玩大富翁一樣，找回最純粹的快樂。約兩小時的機制分成三個部分，合作與思考交織，玩起來不累也不脫節。</p>
+                <p class="copy">機制與劇情完美融合，玩著玩著就會被故事打動。推理門檻低、互動量大，<strong>新手、團建、朋友聚會</strong>都超適合！</p>
+                <div class="quests">
+                    <div class="quest"><b>🗺️ 大地圖冒險</b><span>擲骰前進、觸發事件，全員圍桌一起闖關。</span></div>
+                    <div class="quest"><b>🤝 合作機制</b><span>三段機制環環相扣，要靠隊友才能打倒惡龍。</span></div>
+                    <div class="quest"><b>💖 童話劇情</b><span>歡樂之外，還有讓人意想不到的溫柔故事。</span></div>
+                </div>
+            </article>
+        </section>
+
+        <div class="cta">
+            <a href="https://line.me/ti/p/hd2PUy6C3c" target="_blank" rel="noopener">立即預約・加入精英協會</a>
+        </div>
+    </main>
+
+    <audio id="bgm" src="咆哮吧惡龍.mp3" autoplay loop muted></audio>
+    <script>
+        document.addEventListener('click', function () {
+            var audio = document.getElementById('bgm');
+            if (audio) audio.muted = false;
+        }, { once: true });
+
+        // 點惡龍會咆哮
+        (function () {
+            var dragon = document.getElementById('dragon');
+            var text = document.getElementById('roarText');
+            var roars = ['吼——！！', '嗷嗚～～', '我才不是壞龍！', '誰吵醒我的？！'];
+            var timer;
+            function roar() {
+                dragon.classList.remove('roar'); void dragon.offsetWidth; dragon.classList.add('roar');
+                text.textContent = roars[Math.floor(Math.random() * roars.length)];
+                text.classList.add('show');
+                clearTimeout(timer);
+                timer = setTimeout(function () { text.classList.remove('show'); dragon.classList.remove('roar'); }, 1400);
+            }
+            dragon.addEventListener('click', roar);
+            dragon.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); roar(); } });
+        })();
+
+        // 2D 泡泡（3D 引擎啟動後由 data-hide 隱藏）
+        (function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var box = document.getElementById('bubbles');
+            var count = innerWidth < 600 ? 14 : 26;
+            for (var i = 0; i < count; i++) {
+                var b = document.createElement('span');
+                var size = 12 + Math.random() * 46;
+                b.className = 'bubble';
+                b.style.width = b.style.height = size + 'px';
+                b.style.left = Math.random() * 100 + 'vw';
+                b.style.setProperty('--dx', (Math.random() * 120 - 60) + 'px');
+                b.style.animationDuration = (10 + Math.random() * 12) + 's';
+                b.style.animationDelay = (-Math.random() * 20) + 's';
+                box.appendChild(b);
+            }
+        })();
+    </script>
+    <script src="../bgm-control.js?v=20260727"></script>
+    <script src="../reviews.js?v=20260729-w3"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="bubbles" data-tint="#ff8fcf" data-hide="#bubbles"></script>
+</body>
+</html>

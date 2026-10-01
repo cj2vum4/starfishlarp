@@ -370,7 +370,9 @@ function renderCards() {
         const types  = s.types.map(t => `<span class="type-tag">${t}</span>`).join('');
         return `<article class="script-card" data-id="${s.id}" data-theme="${s.theme}" data-players="${s.players}" data-types="${s.filterTypes.join(',')}" data-difficulty="${s.difficulty}">
             <div class="card-media">
-                <img src="${img}" alt="${s.name}" class="script-image" loading="lazy">
+                ${img
+                    ? `<img src="${img}" alt="${s.name}" class="script-image" loading="lazy">`
+                    : `<div class="script-image" role="img" aria-label="${s.name}（海報準備中）" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center;font-weight:800;letter-spacing:.08em;line-height:1.5;color:rgba(255,255,255,.82);background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.12),transparent 60%)"><span style="font-size:2.4rem">🎭</span><span>${s.name}</span><span style="font-size:.78rem;font-weight:600;opacity:.65">海報準備中</span></div>`}
                 <span class="corner-diff">${s.players}人</span>
             </div>
             <div class="card-body">
