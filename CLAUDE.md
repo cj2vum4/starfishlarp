@@ -36,7 +36,12 @@
 - `difficulty` 與 ⭐ 星數必須一致（0–5）
 - `reviewKey`：若劇本在評價表單裡用的名字與 `name` 不同（例如別名、去掉前綴），填表單實際用的字串；否則＝`name`
 - `youtube`：可填 11 碼影片 ID 或整串網址（watch / youtu.be / shorts；shorts 會用直式播放器）。
-  由 `video.js` 讀取，**改 `scripts.js` 版號時，`video.js` 裡的 `SCRIPTS_VERSION` 也要一起改**
+  有填的劇本：劇本頁出現「▶ 介紹影片」（`video.js`），首頁卡片右上角出現「▶ 影片」。
+  **通常不用手填**：GitHub Action「同步 YouTube 影片」每 2 小時讀頻道 RSS，
+  標題用《劇本名》包住劇本名稱（5 字以上的劇本名不包也行）就會自動填入並上線。
+  手填的值永遠不會被自動覆蓋；不想自動填某個劇本就填 `"-"`。
+- **`scripts.js?v=` 與劇本頁的 `video.js?v=` 共用同一個版號**（video.js 用自己的版號去載 scripts.js），
+  進版時兩者一起全站替換
 - 卡片、榮譽牆清單、badges 全部自動產生，**不需手動改 index.html 或 榮譽牆.html**
 
 ---

@@ -4,20 +4,21 @@
    - 點了才載入 YouTube 播放器（不拖慢劇本頁的 3D 背景與 BGM）
    - 播放時暫停 BGM，關閉影片後恢復
    劇本對應：用目前頁面路徑比對 scripts.js 的 file 欄位
+   版號：video.js?v= 必須與 scripts.js?v= 相同（會用同一個版號載入 scripts.js）
    youtube 欄位可填影片 ID（11 碼）或整串網址（watch / youtu.be / shorts 皆可）
    ============================================================ */
 (function () {
     'use strict';
-
-    // 與 index.html 載入的 scripts.js 同一個版號；scripts.js 進版時這裡一起改
-    const SCRIPTS_VERSION = '20261002-chunbai-yt';
 
     const SELF_SCRIPT = document.currentScript ||
         document.querySelector('script[src*="video.js"]');
 
     function scriptsUrl() {
         if (!SELF_SCRIPT || !SELF_SCRIPT.src) return '';
-        return SELF_SCRIPT.src.replace(/video\.js(\?.*)?$/, 'scripts.js?v=' + SCRIPTS_VERSION);
+        // 劇本頁的 video.js?v= 與 scripts.js?v= 用同一個版號，
+        // 所以直接沿用自己的版號去載 scripts.js，不必另外維護
+        const m = SELF_SCRIPT.src.match(/video\.js\?(?:[^#]*&)?v=([^&#]+)/);
+        return SELF_SCRIPT.src.replace(/video\.js(\?.*)?$/, 'scripts.js' + (m ? '?v=' + m[1] : ''));
     }
 
     function loadScripts() {
@@ -177,7 +178,10 @@
         loadScripts().then((list) => {
             const script = findCurrentScript(list);
             const video = script && parseYoutube(script.youtube);
-            if (video) mount(script, video);
+            if (!video) return;
+            mount(script, video);
+            // 首頁卡片的「▶ 影片」連到 劇本頁#video，進來直接打開影片
+            if (location.hash === '#video') document.querySelector('.vd-fab').click();
         });
     }
 

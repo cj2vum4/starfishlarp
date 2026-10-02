@@ -1,0 +1,36 @@
+# 定時讀 YouTube 頻道最新影片，標題對到劇本就自動把影片填進 scripts.js 並上線。
+# 影片標題用《劇本名》包住劇本名稱就會被認出來（細節見 .github/scripts/sync-youtube.mjs）。
+# 也可以到 Actions → 同步 YouTube 影片 → Run workflow 立刻跑一次。
+name: 同步 YouTube 影片
+on:
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sync-youtube
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 抓影片並填入 scripts.js
+        id: sync
+        env:
+          YT_CHANNEL: ${{ vars.YT_CHANNEL || '' }}
+        run: node .github/scripts/sync-youtube.mjs
+      - name: 推上 main
+        if: steps.sync.outputs.summary != ''
+        env:
+          SUMMARY: ${{ steps.sync.outputs.summary }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: 自動同步 YouTube 介紹影片" -m "$SUMMARY"
+          git push origin HEAD:main

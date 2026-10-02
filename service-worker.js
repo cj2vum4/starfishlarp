@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-10-02-chunbai-yt';
+const CACHE_VERSION = '2026-10-02-ytbadge';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -15,10 +15,10 @@ const APP_SHELL = [
     './7人/津門遺雲.html',
     './7人/津門遺雲.mp3',
     './manifest.webmanifest',
-    './index.css?v=20260728-safearea',
+    './index.css?v=20261002-ytbadge',
     './honor-form.css?v=20260730-safearea',
-    './scripts.js?v=20261002-chunbai-yt',
-    './scripts-data.js?v=20261001-new4',
+    './scripts.js?v=20261002-ytbadge',
+    './scripts-data.js?v=20261002-ytbadge',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20260730-noios',

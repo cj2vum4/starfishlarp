@@ -394,6 +394,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 .script-card:hover .script-image{transform:scale(1.07)}
 .corner-diff{position:absolute;top:10px;left:10px;z-index:2;font-size:.72rem;font-weight:700;color:var(--gold-l);
     padding:4px 10px;border-radius:50px;background:rgba(8,6,3,.7);border:1px solid var(--bdr);backdrop-filter:blur(4px)}
+.video-badge{position:absolute;top:10px;right:10px;z-index:2;font-size:.72rem;font-weight:800;letter-spacing:.04em;color:#fff;
+    padding:4px 10px;border-radius:50px;background:rgba(204,24,30,.88);border:1px solid rgba(255,255,255,.25);
+    text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);transition:transform .2s,background .2s}
+.video-badge:hover{transform:scale(1.08);background:#e0242b}
 .card-body{display:flex;flex-direction:column;gap:10px;padding:clamp(12px,2.4vw,16px);flex:1}
 .script-title{
     font-family:var(--font);font-size:clamp(.98rem,2.8vw,1.2rem);font-weight:800;

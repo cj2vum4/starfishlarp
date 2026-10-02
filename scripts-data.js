@@ -355,6 +355,13 @@ const scripts = (window.SCRIPTS || []).map(script => Object.assign({}, script, {
         }
     }
 
+// youtube 欄位填的是影片 ID 或網址（規則與 video.js 相同），格式不對就當沒有
+function hasVideo(script) {
+    const raw = String(script.youtube || '').trim();
+    return /^[\w-]{11}$/.test(raw) ||
+        /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)[\w-]{11}/.test(raw);
+}
+
 // Dynamically generate card DOM from scripts data
 function renderCards() {
     const grid = document.getElementById('scriptsGrid');
@@ -374,6 +381,7 @@ function renderCards() {
                     ? `<img src="${img}" alt="${s.name}" class="script-image" loading="lazy">`
                     : `<div class="script-image" role="img" aria-label="${s.name}（海報準備中）" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center;font-weight:800;letter-spacing:.08em;line-height:1.5;color:rgba(255,255,255,.82);background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.12),transparent 60%)"><span style="font-size:2.4rem">🎭</span><span>${s.name}</span><span style="font-size:.78rem;font-weight:600;opacity:.65">海報準備中</span></div>`}
                 <span class="corner-diff">${s.players}人</span>
+                ${hasVideo(s) ? `<a class="video-badge" href="${s.file}#video" aria-label="觀看${s.name}介紹影片">▶ 影片</a>` : ''}
             </div>
             <div class="card-body">
                 <h3 class="script-title">${s.name}</h3>
