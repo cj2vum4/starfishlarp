@@ -7,6 +7,7 @@
         difficulty 難度 0-5 / types 標籤 / theme 主題色
         poster 海報URL / reviewKey 榮譽牆評價對應鍵(CSV「劇本」欄)
         characters 角色名單（新增玩本記錄表單的角色下拉選項）
+        youtube 劇本介紹影片（選填）：影片 ID 或網址，有填劇本頁才會出現「▶ 介紹影片」
    ========================================================== */
 window.SCRIPTS = [
   {"id":"wangzuo","name":"王座","file":"7人/王座.html","players":7,"playersLabel":"4男3女","time":4.5,"timeLabel":"4.5小時","difficulty":2,"types":["神話","陣營","機制","新手","身份轉換"],"theme":"mytho","poster":"https://i.postimg.cc/d0cKpGxL/2021-11-13-195627.jpg","reviewKey":"王座","characters":["巨狼芬里爾","守護神海姆達爾","神后弗麗嘉","雷神托爾","詭計之神洛基","女武神瓦基里","青春女神希芙"]},

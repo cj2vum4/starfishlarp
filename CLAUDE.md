@@ -26,7 +26,8 @@
     "theme": "THEME",
     "poster": "https://i.postimg.cc/...",  // 海報直連，未取得先留 ""
     "reviewKey": "劇本名稱",         // 榮譽牆/問卷 CSV「劇本」欄對應鍵；通常＝name
-    "characters": ["角色A", "角色B"] // 角色名單（新增玩本記錄表單的角色下拉；與頁面角色卡一致）
+    "characters": ["角色A", "角色B"], // 角色名單（新增玩本記錄表單的角色下拉；與頁面角色卡一致）
+    "youtube": ""                    // 選填：YT 劇本介紹影片 ID 或網址，有填劇本頁才出現「▶ 介紹影片」
 }
 ```
 
@@ -34,6 +35,8 @@
 - `theme`：`horror` / `mystery` / `love` / `history` / `ancient` / `desert` / `mytho` / `modern` / `happy` / `shrine` / `space`
 - `difficulty` 與 ⭐ 星數必須一致（0–5）
 - `reviewKey`：若劇本在評價表單裡用的名字與 `name` 不同（例如別名、去掉前綴），填表單實際用的字串；否則＝`name`
+- `youtube`：可填 11 碼影片 ID 或整串網址（watch / youtu.be / shorts；shorts 會用直式播放器）。
+  由 `video.js` 讀取，**改 `scripts.js` 版號時，`video.js` 裡的 `SCRIPTS_VERSION` 也要一起改**
 - 卡片、榮譽牆清單、badges 全部自動產生，**不需手動改 index.html 或 榮譽牆.html**
 
 ---
@@ -63,7 +66,8 @@
 7. **JS 互動** — 背景動畫產生、星星 hover、卡片光效等（可各頁自訂）
 8. 結尾依序放：`<script src="../bgm-control.js?v=日期">`、
    `<script src="../reviews.js?v=日期">`（玩家評價按鈕，劇本名以檔名自動對應；
-   若檔名與評價表單名不同，加 `data-script="評價用名稱"`）。
+   若檔名與評價表單名不同，加 `data-script="評價用名稱"`）、
+   `<script src="../video.js?v=日期">`（YT 介紹影片按鈕，依頁面路徑對應 `scripts.js` 的 `file`）。
    **共用 JS 一律帶 `?v=` 版本號**（GitHub Pages 快取 10 分鐘）；
    修改任何共用 JS 時，全站進版號。Three.js 自架於 `vendor/three.min.js`，
    fx3d 會自動載入，不依賴外部 CDN。
