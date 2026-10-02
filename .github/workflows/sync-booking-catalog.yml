@@ -1,0 +1,34 @@
+# scripts.js 一有變動，就通知 LINE 預約系統（cj2vum4/starfish-booking-system）同步劇本。
+# 預約系統會讀取「這次 commit」的 scripts.js，只當成資料解析，不執行任何程式碼。
+# 需要在本 repo 的 Settings → Secrets and variables → Actions 設定 BOOKING_SYNC_SECRET，
+# 值必須與 Supabase Edge Function Secrets 的 CATALOG_SYNC_SECRET 相同。
+name: 同步劇本到預約系統
+on:
+  push:
+    branches: [main]
+    paths: ['scripts.js']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: booking-catalog-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 通知預約系統同步
+        env:
+          SYNC_SECRET: ${{ secrets.BOOKING_SYNC_SECRET }}
+        run: |
+          if [ -z "$SYNC_SECRET" ]; then
+            echo "::error::尚未設定 BOOKING_SYNC_SECRET，無法同步劇本到預約系統"
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            -X POST "https://qrcpmxejhqrvvpnjehri.supabase.co/functions/v1/api/hooks/catalog-sync" \
+            -H "Content-Type: application/json" \
+            -H "X-Sync-Secret: $SYNC_SECRET" \
+            -d "{\"commit\":\"$GITHUB_SHA\"}"
+          echo
+          echo "已同步 commit $GITHUB_SHA 的劇本資料"
