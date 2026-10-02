@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-10-01-new4-showcase';
+const CACHE_VERSION = '2026-10-02-chunbai-yt';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -17,7 +17,7 @@ const APP_SHELL = [
     './manifest.webmanifest',
     './index.css?v=20260728-safearea',
     './honor-form.css?v=20260730-safearea',
-    './scripts.js?v=20261001-new4',
+    './scripts.js?v=20261002-chunbai-yt',
     './scripts-data.js?v=20261001-new4',
     './hero.js?v=20260702a',
     './vendor/three.min.js',

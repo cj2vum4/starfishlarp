@@ -10,7 +10,7 @@
     'use strict';
 
     // 與 index.html 載入的 scripts.js 同一個版號；scripts.js 進版時這裡一起改
-    const SCRIPTS_VERSION = '20261001-new4';
+    const SCRIPTS_VERSION = '20261002-chunbai-yt';
 
     const SELF_SCRIPT = document.currentScript ||
         document.querySelector('script[src*="video.js"]');
