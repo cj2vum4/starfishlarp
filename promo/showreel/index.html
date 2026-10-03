@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>海星劇本殺 · 形象影片</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{display:block;width:100vw;height:auto}
+</style>
+</head>
+<body>
+<canvas id="out" width="1920" height="1080"></canvas>
+<script src="../../scripts.js"></script>
+<script src="../../vendor/three.min.js"></script>
+<script src="reel.js"></script>
+<script>
+// 直接開啟頁面＝即時預覽（?f=幀號 可停在某一格）；render.js 擷取時會帶 ?capture
+const q = new URLSearchParams(location.search);
+if (!q.has('capture')) reelReady.then(() => {
+  if (q.has('f')) { renderFrame(+q.get('f')); return; }
+  let f = 0; (function loop() { renderFrame(f); f = (f + 1) % reelInfo.frames; requestAnimationFrame(loop); })();
+});
+</script>
+</body>
+</html>
