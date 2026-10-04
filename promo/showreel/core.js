@@ -180,8 +180,48 @@ function posterCard(s, i, img) {
   txt(x, 'No.' + String(i + 1).padStart(2, '0'), 65, 38, { fam: F.cin, wt: 700, px: 16, ls: .12, fill: GOLDL });
   return c;
 }
+/* ---------- 海報放進各劇本世界 ----------
+   poster(id)：該劇本的海報（沒有就是 null，那個世界照原本的純設計版面畫）。
+   art(id, tone)：海報轉成該世界配色的雙色調（快取）。每個通道都夾在 dark～light 之間，
+   不論海報本身多亮多暗，畫面亮度上限都固定——快剪時的光敏檢查才有保證。 */
+const poster = id => (A.posters && A.posters[id]) || null;
+const TONES = {
+  night: ['#03060f', '#5b7fd0'],   // 王座：月夜藍
+  space: ['#020109', '#8fd2ff'],   // 群星：以 screen 疊在星雲上，暗部直接變成太空
+  ink: ['#120b04', '#a8834a'],     // 津門：老照片褐
+  sky: ['#6fa9e6', '#f6fbff'],     // 神社：高調晴空
+  abyss: ['#010708', '#1c6a62'],   // 漓川：暗處隱約的線索
+  lens: ['#021a19', '#a6f7e8'],    // 漓川：放大鏡下現形
+};
+const hexRGB = s => [1, 3, 5].map(i => parseInt(s.slice(i, i + 2), 16));
+function duotone(img, dark, light, lo = .05, hi = .92) {
+  const c = mk(img.width, img.height), x = c.ctx, D = hexRGB(dark), L = hexRGB(light);
+  x.drawImage(img, 0, 0); const d = x.getImageData(0, 0, c.width, c.height), p = d.data;
+  for (let i = 0; i < p.length; i += 4) {
+    const t = clamp(((.2126 * p[i] + .7152 * p[i + 1] + .0722 * p[i + 2]) / 255 - lo) / (hi - lo));
+    p[i] = D[0] + (L[0] - D[0]) * t; p[i + 1] = D[1] + (L[1] - D[1]) * t; p[i + 2] = D[2] + (L[2] - D[2]) * t;
+  }
+  x.putImageData(d, 0, 0); return c;
+}
+const ART = {};
+function art(id, tone) { const img = poster(id); if (!img) return null; const k = id + ':' + tone; return ART[k] || (ART[k] = duotone(img, ...TONES[tone])); }
+// cover 裁切鋪滿 (x,y,w,h)：fx/fy 是裁切焦點（0 左/上、1 右/下），z 推近倍率
+function drawCover(c, img, x, y, w, h, o = {}) {
+  const { fx = .5, fy = .5, z = 1 } = o, k = Math.max(w / img.width, h / img.height) * z, iw = img.width * k, ih = img.height * k;
+  c.drawImage(img, x + (w - iw) * fx, y + (h - ih) * fy, iw, ih);
+}
+// 有白邊的實體相片／貼紙卡（春晝短的拍立得、沸騰的貼紙）
+function photoCard(c, img, cx, cy, w, h, o = {}) {
+  const { rot = 0, sc = 1, b = 14, bb = b, paper = '#fffaf3', shadow = 'rgba(0,0,0,.45)', blur = 30, fy = .3 } = o, cw = w + b * 2, ch = h + b + bb;
+  c.save(); c.translate(cx, cy); c.rotate(rot); c.scale(sc, sc); c.translate(-cw / 2, -ch / 2);
+  c.save(); c.shadowColor = shadow; c.shadowBlur = blur; c.shadowOffsetY = blur * .35; c.fillStyle = paper; c.fillRect(0, 0, cw, ch); c.restore();
+  c.save(); c.beginPath(); c.rect(b, b, w, h); c.clip(); drawCover(c, img, b, b, w, h, { fy }); c.restore();
+  c.fillStyle = 'rgba(0,0,0,.08)'; c.fillRect(b, b, w, 2);   // 相片邊緣的一點厚度
+  c.restore();
+}
+
 function cardCanvas(s, i) {
-  if (A.posters && A.posters[s.id]) return posterCard(s, i, A.posters[s.id]);
+  if (poster(s.id)) return posterCard(s, i, poster(s.id));
   const cw = 480, ch = 720, c = mk(cw, ch), x = c.ctx, th = THEME[s.theme] || THEME.modern, r = rng(500 + i);
   x.fillStyle = lgrad(x, 0, 0, 0, ch, [[0, th.c1], [1, th.c2]]); x.fillRect(0, 0, cw, ch);
   const g = x.createRadialGradient(240, 260, 0, 240, 260, 340); g.addColorStop(0, th.acc + '55'); g.addColorStop(1, th.acc + '00'); x.fillStyle = g; x.fillRect(0, 0, cw, ch);
@@ -356,7 +396,7 @@ window.Reel = {
   mk, SCN, ACC, TA, TB, F, setFont, txt, tw, lgrad, goldText, starPath, stars, charRow,
   SCRIPTS, byId, THEME, mainName, NS, zhNum,
   checkIds(ids) { const miss = [...new Set(ids)].filter(id => !SCRIPTS.some(s => s.id === id)); if (miss.length) throw new Error('scripts.js 找不到影片要用的劇本 id：' + miss.join(', ')); },
-  A, loadImg, glow, petalShape, boltPts, keyholePath, cardCanvas, build3D, W3, ARM_ROWS, armPose, P, buildParticles,
+  A, loadImg, glow, petalShape, boltPts, keyholePath, cardCanvas, poster, art, drawCover, photoCard, build3D, W3, ARM_ROWS, armPose, P, buildParticles,
   use(scene) { S = scene; window.reelReady = start(); return window.reelReady; },
 };
 })();

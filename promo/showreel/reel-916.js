@@ -25,6 +25,7 @@ const {
   clamp, lerp, inv, E, rng, hash, vnoise, pulse,
   mk, TA, TB, F, setFont, txt, tw, lgrad, goldText, stars, charRow,
   SCRIPTS, byId, NS, zhNum, A, boltPts, keyholePath, build3D, W3, P, buildParticles,
+  poster, art, drawCover, photoCard,
 } = window.Reel;
 const CX = W / 2, CY = H / 2;
 
@@ -175,6 +176,11 @@ function bigIndex(c, n, x, y, u, col, align = 'right', px = 520) {
 function cutThrone(c, u, s) {
   const g = c.createRadialGradient(540, 760, 0, 540, 900, 1350); g.addColorStop(0, '#22407e'); g.addColorStop(.45, '#0b1736'); g.addColorStop(1, '#03060f');
   c.fillStyle = g; c.fillRect(0, 0, W, H);
+  const night = art(s.id, 'night');   // 海報：月夜藍、緩慢推近，四周壓暗把視線收回標題
+  if (night) {
+    c.globalAlpha = .62; drawCover(c, night, 0, 0, W, H, { fy: .3, z: 1.1 - u * .08 }); c.globalAlpha = 1;
+    const vg = c.createRadialGradient(540, 880, 300, 540, 880, 1300); vg.addColorStop(0, 'rgba(3,6,15,0)'); vg.addColorStop(1, 'rgba(3,6,15,.9)'); c.fillStyle = vg; c.fillRect(0, 0, W, H);
+  }
   c.globalCompositeOperation = 'lighter';
   for (let k = 0; k < 12; k++) { c.globalAlpha = .13; c.drawImage(A.cloud, ((hash(k * 3.1) * 1700 + u * (60 + k * 30)) % 1900) - 600, 40 + hash(k) * 1600, 1000, 400); }
   c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
@@ -209,6 +215,8 @@ function cutSpring(c, u, s) {
   bigIndex(c, 2, 1030, 1580, u, 'rgba(255,255,255,.25)');
   const petal = big => { for (const p of PETALS) { if ((p.z > 1.15) !== big) continue; const tt = u + 1; const x = p.x + tt * (big ? 300 : 260) * p.sp * p.z + (big ? 0 : Math.sin(tt * 2 + p.ph) * 40), y = p.y + tt * (big ? 340 : 300) * p.sp * p.z; c.save(); c.translate(x, y); c.rotate(p.ph + tt * p.rs); const k = big ? p.z * 2.4 : p.z; c.scale(k, k * Math.cos(tt * 3 + p.ph)); c.globalAlpha = big ? .7 : .85; c.drawImage(big ? A.petalB : A.petal, big ? -48 : -32, big ? -48 : -32); c.restore(); } };
   petal(false);
+  const img = poster(s.id);   // 海報：一張拍立得落定在光暈下
+  if (img) { const q = E.outExpo(inv(-.1, .3, u)); photoCard(c, img, 752, 486 + (1 - q) * 70 - u * 20, 270, 384, { rot: .07 - (1 - q) * .1 - u * .025, b: 14, bb: 54, shadow: 'rgba(74,14,42,.5)', blur: 40 }); }
   // 直書標題：一字一字落下
   [...'春晝短'].forEach((ch, i) => { const q = E.outExpo(inv(i * .05, .22 + i * .05, u)); if (q <= 0) return; const y = 620 + i * 280 - (1 - q) * 120; txt(c, ch, 338 + 9, y + 9, { px: 266, fill: 'rgba(80,8,34,.45)', alpha: q }); txt(c, ch, 338, y, { px: 266, fill: '#fffaf6', alpha: q }); });
   label(c, 'ROMANCE', 560, 760, u, { align: 'left', fill: '#fff' });
@@ -243,6 +251,8 @@ const WARP = Array.from({ length: 640 }, (_, i) => { const r = rng(1300 + i); co
 function cutStars(c, u, s) {
   const g = c.createRadialGradient(540, 820, 0, 540, 820, 1400); g.addColorStop(0, '#231a63'); g.addColorStop(.5, '#0b0828'); g.addColorStop(1, '#020109');
   c.fillStyle = g; c.fillRect(0, 0, W, H);
+  const sp0 = art(s.id, 'space');   // 海報：暗部融成太空，跟著超光速減速一起抵達
+  if (sp0) { c.globalCompositeOperation = 'screen'; c.globalAlpha = .5; drawCover(c, sp0, 0, 0, W, H, { fy: .3, z: lerp(1.4, 1.04, E.outExpo(inv(-.05, .3, u))) - u * .03 }); c.globalAlpha = 1; }
   c.globalCompositeOperation = 'lighter';
   [[260, 520, 900, '#6a3cff', .35], [820, 1250, 820, '#1fb6ff', .22], [760, 300, 640, '#ff3cc8', .14]].forEach(([x, y, r, col, al], k) => { const gg = c.createRadialGradient(x + u * 40 * (k - 1), y, 0, x, y, r); gg.addColorStop(0, col); gg.addColorStop(1, 'rgba(0,0,0,0)'); c.globalAlpha = al; c.fillStyle = gg; c.fillRect(0, 0, W, H); });
   c.globalAlpha = 1;
@@ -267,6 +277,8 @@ function cutStars(c, u, s) {
 }
 function cutTianjin(c, u, s) {
   c.fillStyle = lgrad(c, 0, 0, W, H, [[0, '#3a2812'], [1, '#120b04']]); c.fillRect(0, 0, W, H);
+  const ink = art(s.id, 'ink');   // 海報：褪色老照片，墨痕從上面刷過
+  if (ink) { c.globalAlpha = .55; drawCover(c, ink, 0, 0, W, H, { fy: .3, z: 1.06 - u * .1 }); c.globalAlpha = 1; }
   c.globalAlpha = .18; c.globalCompositeOperation = 'overlay'; c.drawImage(A.grain[2], 0, 0, W, H); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   const bq = E.outExpo(inv(0, .1, u));
   c.save(); c.beginPath(); c.rect(0, 0, W * bq + 40, H); c.clip(); c.drawImage(A.brush, -260 - u * 90, 560, 2300 * .92, 420 * .92); c.restore();
@@ -280,6 +292,8 @@ function cutTianjin(c, u, s) {
 }
 function cutShrine(c, u, s) {
   c.fillStyle = lgrad(c, 0, 0, 0, H, [[0, '#2f7fd0'], [.55, '#a6d6f6'], [1, '#fff3e2']]); c.fillRect(0, 0, W, H);
+  const sky = art(s.id, 'sky');   // 海報：高調晴空，往下融進地平線的暖白
+  if (sky) { c.globalAlpha = .5; drawCover(c, sky, 0, 0, W, H, { fy: .25, z: 1.04 + u * .1 }); c.globalAlpha = 1; c.fillStyle = lgrad(c, 0, H * .45, 0, H, [[0, 'rgba(255,243,226,0)'], [1, 'rgba(255,243,226,.95)']]); c.fillRect(0, H * .45, W, H * .55); }
   c.globalCompositeOperation = 'lighter'; c.globalAlpha = .95; c.drawImage(A.gWhite, 820 - 520, 250 - 520, 1040, 1040); c.globalAlpha = 1;
   for (let k = 0; k < 7; k++) { c.globalAlpha = .35; c.drawImage(A.cloud, ((hash(k * 5.3) * 1800 - u * 300 * (1 + k * .2)) % 2000 + 2000) % 2000 - 500, 1000 + hash(k + 2) * 600, 900, 300); }
   c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
@@ -292,6 +306,8 @@ function cutShrine(c, u, s) {
 const WISP = Array.from({ length: 24 }, (_, i) => { const r = rng(1600 + i); return { x: 70 + r() * 940, y: 260 + r() * 1500, s: 40 + r() * 90, ph: r() * TAU }; });
 function cutLichuan(c, u, s) {
   c.fillStyle = lgrad(c, 0, 0, 0, H, [[0, '#062729'], [1, '#010708']]); c.fillRect(0, 0, W, H);
+  const dim = art(s.id, 'abyss'), lens = art(s.id, 'lens'), PO = { fy: .3, z: 1.08 - u * .1 };   // 海報：暗處隱約，放大鏡掃過才現形
+  if (dim) { c.globalAlpha = .6; drawCover(c, dim, 0, 0, W, H, PO); c.globalAlpha = 1; }
   c.globalCompositeOperation = 'lighter';
   for (let k = 0; k < 9; k++) { c.globalAlpha = .12; c.drawImage(A.cloud, ((hash(k * 2.7) * 1800 + u * 200 * (k % 2 ? 1 : -1)) % 2000 + 2000) % 2000 - 600, 300 + hash(k + 9) * 1300, 1300, 380); }
   for (const w of WISP) { const f = .7 + .3 * Math.sin(u * 40 + w.ph); c.globalAlpha = .6 * f; const y = w.y - u * 120; c.drawImage(A.gTeal, w.x - w.s, y - w.s * 1.3, w.s * 2, w.s * 2.6); c.globalAlpha = .9 * f; c.drawImage(A.gWhite, w.x - w.s * .18, y - w.s * .1, w.s * .36, w.s * .5); }
@@ -301,7 +317,9 @@ function cutLichuan(c, u, s) {
   const lx = lerp(170, 865, E.inOutCubic(inv(.15, .4, u))), lr = 150;
   if (a > 0) {
     c.save(); c.beginPath(); c.arc(lx, TY, lr, 0, TAU); c.clip(); c.fillStyle = 'rgba(2,20,20,.9)'; c.fillRect(0, 0, W, H);
-    c.translate(lx, TY); c.scale(1.35, 1.35); c.translate(-lx, -TY); txt(c, T, 540, TY, { ...o, fill: '#7ff5e2' }); c.restore();
+    c.translate(lx, TY); c.scale(1.35, 1.35); c.translate(-lx, -TY);
+    if (lens) { drawCover(c, lens, 0, 0, W, H, PO); c.fillStyle = 'rgba(2,20,20,.5)'; c.fillRect(0, 0, W, H); }
+    txt(c, T, 540, TY, { ...o, fill: '#7ff5e2' }); c.restore();
     c.strokeStyle = '#bff8ee'; c.lineWidth = 6; c.beginPath(); c.arc(lx, TY, lr, 0, TAU); c.stroke();
     c.lineWidth = 16; c.lineCap = 'round'; c.beginPath(); c.moveTo(lx + lr * .72, TY + lr * .72); c.lineTo(lx + lr * 1.2, TY + lr * 1.2); c.stroke();
   }
@@ -314,6 +332,8 @@ function cutBoil(c, u, s) {
   c.fillStyle = g; c.fillRect(0, 0, W, H);
   c.save(); c.translate(540, 900); c.rotate(u * .8); c.fillStyle = 'rgba(255,255,255,.12)';
   for (let k = 0; k < 18; k++) { c.rotate(TAU / 18); c.beginPath(); c.moveTo(0, 0); c.lineTo(-210, -1700); c.lineTo(210, -1700); c.closePath(); c.fill(); } c.restore();
+  const img = poster(s.id), pq = E.outBack(inv(.02, .16, u));   // 海報：貼紙一樣彈出來
+  if (img && pq > 0) photoCard(c, img, 540, 452, 250, 356, { rot: -.11 + u * .05, sc: lerp(.35, 1, pq), b: 13, paper: '#fffdf6', shadow: 'rgba(90,21,0,.5)', blur: 26 });
   for (const f of CONF) { const tt = Math.max(0, u) + .02, x = 540 + f.vx * tt * Math.exp(-tt * 1.5), y = 900 + f.vy * tt * Math.exp(-tt * 1.5) + 900 * tt * tt; c.save(); c.translate(x, y); c.rotate(f.ph + f.rs * tt); c.scale(1, Math.cos(f.ph + tt * 18)); c.fillStyle = f.c; c.fillRect(-f.w / 2, -f.h / 2, f.w, f.h); c.restore(); }
   const q = E.outBack(inv(0, .14, u)), sc = lerp(.3, 1, q);
   if (q > 0) {
