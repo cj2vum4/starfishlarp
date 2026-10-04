@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """下載影片用字型（Google Fonts，OFL 授權）→ fonts/ 與 fonts/fonts.css。
 
-中文字型只取影片實際會用到的字（scripts.js＋reel.js 內的全部 CJK 字元），
+中文字型只取影片實際會用到的字（scripts.js、core.js、reel.js、reel-916.js 內的全部 CJK 字元），
 每 120 字一包向 Google Fonts 要 text= 子集（一次給太多字它會改回整套切片）。
-修改 reel.js 的文案或 scripts.js 新增劇本後重跑一次即可。
+修改任一分鏡檔的文案或 scripts.js 新增劇本後重跑一次即可。
 """
 import os, re, subprocess, urllib.parse
 
@@ -15,8 +15,8 @@ LATIN = [('Cinzel', 'Cinzel:wght@400..900', '400 900', 'cinzel'), ('Mono', 'JetB
 def get(url):
     return subprocess.run(['curl', '-sSf', '-A', UA, url], check=True, capture_output=True).stdout
 
-src = ''.join(open(os.path.join(HERE, p), encoding='utf-8').read() for p in ('../../scripts.js', 'reel.js'))
-chars = sorted(set(c for c in src if ord(c) > 0x2E7F) | set('０１２３４５６７８９'))
+src = ''.join(open(os.path.join(HERE, p), encoding='utf-8').read() for p in ('../../scripts.js', 'core.js', 'reel.js', 'reel-916.js'))
+chars = sorted(set(c for c in src if ord(c) > 0x2E7F) | set('０１２３４５６７８９〇一二三四五六七八九十'))   # 數字文案是程式產生的
 chunks = [chars[i:i + 120] for i in range(0, len(chars), 120)]
 os.makedirs(os.path.join(HERE, 'fonts'), exist_ok=True)
 for f in os.listdir(os.path.join(HERE, 'fonts')):

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>海星劇本殺 · IG Reels 直式版</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{display:block;height:100vh;width:auto;margin:0 auto}
+</style>
+</head>
+<body>
+<canvas id="out" width="1080" height="1920"></canvas>
+<script>window.REEL_CFG = { W: 1080, H: 1920, DUR: 16, FPS: (f => f > 0 ? f : 30)(+new URLSearchParams(location.search).get('fps')) };   // IG 以 30fps 播放：直接算 30fps（快門 1/60 秒）</script>
+<script src="../../scripts.js"></script>
+<script src="../../vendor/three.min.js"></script>
+<script src="core.js"></script>
+<script src="reel-916.js"></script>
+<script>
+// 直接開啟頁面＝即時預覽（?f=幀號 可停在某一格）；render.js 擷取時會帶 ?capture
+const q = new URLSearchParams(location.search);
+if (!q.has('capture')) reelReady.then(() => {
+  if (q.has('f')) { renderFrame(+q.get('f')); return; }
+  let f = 0; (function loop() { renderFrame(f); f = (f + 1) % reelInfo.frames; requestAnimationFrame(loop); })();
+});
+</script>
+</body>
+</html>
