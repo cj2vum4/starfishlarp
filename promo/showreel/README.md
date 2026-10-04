@@ -10,8 +10,10 @@
 各格式只在自己的分鏡檔裡寫版面與時間軸，用 `Reel.use({...})` 註冊。
 
 整支片都是程式產生的：畫面用 Canvas 2D＋three.js 逐格繪製，配樂與音效用 Node 合成，
-沒有使用任何外部影音素材。用到的圖只有 repo 裡已有的 Logo（`pwa/icon-512.png`）
-和《瘋兔子》主海報（`劇本資料/角色海報/`），劇本名稱、角色名、標籤、人數、難度都從 `scripts.js` 讀。
+沒有使用任何外部影音素材。劇本名稱、角色名、標籤、人數、難度都從 `scripts.js` 讀；
+用到的圖是 repo 裡的 Logo（`pwa/icon-512.png`）、《瘋兔子》主海報（`劇本資料/角色海報/`），
+以及 `fetch-posters.py` 依 `scripts.js` 的 `poster` 欄位下載到 `posters/` 的各劇本海報——
+3D 劇本牆的卡片就是這些海報；沒有海報的劇本才用文字設計的卡片。
 
 ## 16:9 分鏡（150 BPM，一拍 0.4 秒）
 
@@ -55,6 +57,7 @@
 ```bash
 cd promo/showreel
 python3 fetch-fonts.py                 # 只有改了文案或 scripts.js 新增劇本時才需要
+python3 fetch-posters.py               # 下載劇本海報到 posters/（新增劇本或換海報後重跑；需能連到 i.postimg.cc 等圖床）
 # 16:9
 node render.js --out /tmp/reel-frames                          # 600 張 PNG，4 核約 8 分鐘
 node audio.js /tmp/soundtrack.wav

@@ -159,8 +159,29 @@ function buildLogo() {
   A.logoWork = mk(S, S);
 }
 
-/* ---------- cards (57 劇本卡，3D 牆用的貼圖) ---------- */
+/* ---------- cards (劇本卡，3D 牆用的貼圖) ----------
+   有海報（posters/<id>.jpg，由 fetch-posters.py 下載）就用海報；沒有的才用文字設計 */
+function posterCard(s, i, img) {
+  const cw = 480, ch = 720, c = mk(cw, ch), x = c.ctx, th = THEME[s.theme] || THEME.modern;
+  x.fillStyle = '#080603'; x.fillRect(0, 0, cw, ch);
+  const k = Math.max(cw / img.width, ch / img.height), w = img.width * k, h = img.height * k;
+  x.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);   // cover 裁切，置中
+  // 下緣資訊條：劇本名＋人數時長＋難度（小尺寸時也認得出是哪一本）
+  x.fillStyle = lgrad(x, 0, 500, 0, ch, [[0, 'rgba(8,6,3,0)'], [.42, 'rgba(8,6,3,.8)'], [1, 'rgba(8,6,3,.96)']]); x.fillRect(0, 500, cw, ch - 500);
+  const nm = mainName(s.name), px = Math.min(46, 400 / Math.max(1, [...nm].length));
+  x.save(); x.shadowColor = 'rgba(0,0,0,.8)'; x.shadowBlur = 10; txt(x, nm, 240, 622, { px, fill: '#fffaf0', ls: .06 }); x.restore();
+  x.fillStyle = th.acc; x.fillRect(240 - 26, 652, 52, 2);
+  txt(x, `${s.players}人 · ${s.timeLabel}`, 240 - 52, 682, { fam: F.sans, wt: 500, px: 18, fill: 'rgba(236,227,207,.85)', ls: .06 });
+  stars(x, 240 + 92, 682, s.difficulty, 8, GOLDL, 'rgba(236,208,138,.28)', 'center', 4);
+  // 框與編號
+  x.strokeStyle = 'rgba(236,208,138,.9)'; x.lineWidth = 3; x.strokeRect(10, 10, cw - 20, ch - 20);
+  x.strokeStyle = 'rgba(236,208,138,.35)'; x.lineWidth = 1; x.strokeRect(18, 18, cw - 36, ch - 36);
+  x.fillStyle = 'rgba(8,6,3,.72)'; x.fillRect(22, 22, 86, 30);
+  txt(x, 'No.' + String(i + 1).padStart(2, '0'), 65, 38, { fam: F.cin, wt: 700, px: 16, ls: .12, fill: GOLDL });
+  return c;
+}
 function cardCanvas(s, i) {
+  if (A.posters && A.posters[s.id]) return posterCard(s, i, A.posters[s.id]);
   const cw = 480, ch = 720, c = mk(cw, ch), x = c.ctx, th = THEME[s.theme] || THEME.modern, r = rng(500 + i);
   x.fillStyle = lgrad(x, 0, 0, 0, ch, [[0, th.c1], [1, th.c2]]); x.fillRect(0, 0, cw, ch);
   const g = x.createRadialGradient(240, 260, 0, 240, 260, 340); g.addColorStop(0, th.acc + '55'); g.addColorStop(1, th.acc + '00'); x.fillStyle = g; x.fillRect(0, 0, cw, ch);
@@ -322,6 +343,10 @@ async function start() {
   await document.fonts.ready;
   A.logoImg = await loadImg('../../pwa/icon-512.png');
   A.rabbit = await loadImg('../../劇本資料/角色海報/《疯兔子》—主海报.jpg');
+  // 劇本海報（posters/index.json 列出已下載的 id；沒有清單或單張失敗都改用文字卡）
+  A.posters = {};
+  const ids = await fetch('posters/index.json').then(r => r.ok ? r.json() : [], () => []);
+  await Promise.all(ids.map(id => loadImg(`posters/${encodeURIComponent(id)}.jpg`).then(img => { A.posters[id] = img; }, () => {})));
   buildSprites(); buildLogo(); await S.init();
   return true;
 }
