@@ -73,7 +73,10 @@
 8. 結尾依序放：`<script src="../bgm-control.js?v=日期">`、
    `<script src="../reviews.js?v=日期">`（玩家評價按鈕，劇本名以檔名自動對應；
    若檔名與評價表單名不同，加 `data-script="評價用名稱"`）、
-   `<script src="../video.js?v=日期">`（YT 介紹影片按鈕，依頁面路徑對應 `scripts.js` 的 `file`）。
+   `<script src="../video.js?v=日期">`（YT 介紹影片按鈕，依頁面路徑對應 `scripts.js` 的 `file`）、
+   `<script src="../booking.js?v=日期">`、
+   `<script src="../lightbox.js?v=日期">`（點海報／角色圖在原頁跳出全螢幕大圖，可縮放、左右滑換張；
+   自動套用在 `img/劇本/` 底下的圖，**圖片不用再包 `<a href="圖檔">`**，不想被放大的圖加 `data-no-zoom`）。
    **共用 JS 一律帶 `?v=` 版本號**（GitHub Pages 快取 10 分鐘）；
    修改任何共用 JS 時，全站進版號。Three.js 自架於 `vendor/three.min.js`，
    fx3d 會自動載入，不依賴外部 CDN。
