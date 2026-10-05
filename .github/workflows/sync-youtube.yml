@@ -22,7 +22,7 @@ jobs:
       - name: 抓影片並填入 scripts.js
         id: sync
         env:
-          YT_CHANNEL: ${{ vars.YT_CHANNEL || '' }}
+          YT_CHANNEL: ${{ vars.YT_CHANNEL || '@starfish0522' }}
         run: node .github/scripts/sync-youtube.mjs
       - name: 推上 main
         if: steps.sync.outputs.summary != ''
