@@ -36,6 +36,14 @@
  * 核銷榮耀軌：玩家換了之後，在「玩家」分頁把「鍍金」或「傳奇殿堂」打勾，
  *             或在「自訂稱號」填上他要的稱號，重整網站就會生效。
  * 精選心得：在「心得互動」把該列的「精選」改成 TRUE，再按「重算所有點數」。
+ *
+ * ── LINE 預約系統串接（老玩家回歸禮）─────────────────────────
+ * 玩家在 LINE 綁定以前用的名字、GM 在 LINE 店家後台核准後，預約系統會呼叫
+ * doPost(action=grant_bonus) 發一次回歸禮：在「點數帳本」加一列 來源=LINE（重算不會動到），
+ * 同一個歸戶名只會發一次。只有「加入日期」早於設定頁「回歸禮資格日」的老玩家才發。
+ * 需要在 Apps Script「專案設定 → 指令碼屬性」新增 BOOKING_SECRET，
+ * 值與 Supabase Edge Function Secrets 的 PLAY_RECORD_SECRET 相同。
+ * 想作廢回歸禮：把該列狀態改成 作廢 再重算，之後也不會再補發。
  */
 
 const SPREADSHEET_ID = '1hjdPJQo5Z6nVICZsvljihSXoZAJ32DpiAEQikCaog-8';
@@ -83,6 +91,7 @@ const SUMMARY_HEADERS = ['歸戶名', '探員編號', '累積點', '已兌換', 
 const SOURCE_FORM = '表單';
 const SOURCE_MANUAL = '手動';
 const SOURCE_LIKE = '心得讚';
+const SOURCE_LINE = 'LINE';
 // 系統會整批重建的來源。其餘一律當成 GM 手動輸入而保留。
 const GENERATED_SOURCES = [SOURCE_FORM, SOURCE_LIKE];
 const STATUS_VOID = '作廢';
@@ -101,7 +110,8 @@ const DEFAULT_CONFIG = [
   ['讚點數上限', 10, '單一則心得靠讚最多可得幾點，避免灌讚'],
   ['精選點數', 20, 'GM 在「心得互動」標為精選的心得，作者可得的點數'],
   ['雙倍日', '平日', '可填「平日」「假日」、星期（例：二,三）或指定日期（例：2026/08/15），逗號分隔。當天所有點數 x2'],
-  ['雙倍日文案', '平日開本，點數兩倍', '顯示在表單與榮譽牆上的活動說明，留空則不顯示']
+  ['雙倍日文案', '平日開本，點數兩倍', '顯示在表單與榮譽牆上的活動說明，留空則不顯示'],
+  ['回歸禮資格日', '2026/10/06', 'LINE 綁定回歸禮：玩家的「加入日期」早於這天才發（老玩家）。留空則所有綁定的玩家都發']
 ];
 
 const DEFAULT_REWARDS = [
@@ -452,6 +462,10 @@ function doPost(e) {
       return jsonResponse_(recordLike_(data));
     }
 
+    if (String(data.action || '').trim() === 'grant_bonus') {
+      return jsonResponse_(grantReturnBonus_(data));
+    }
+
     const record = {
       '時間戳記': new Date(),
       '怎麼稱呼你呢': clean_(data.name, 30),
@@ -508,6 +522,58 @@ function doPost(e) {
       error: String(error && error.message ? error.message : error)
     });
   }
+}
+
+/**
+ * LINE 綁定回歸禮。只接受預約系統（帶 BOOKING_SECRET）呼叫，冪等：
+ * 同一個歸戶名已有回歸禮（含已作廢）就不再發，回傳 reason=ALREADY。
+ */
+function grantReturnBonus_(data) {
+  const expected = PropertiesService.getScriptProperties().getProperty('BOOKING_SECRET');
+  if (!expected || !sameSecret_(String(data.secret || ''), expected)) {
+    return { ok: false, error: 'INVALID_SECRET' };
+  }
+  const points = Number(data.points);
+  if (!(points > 0 && points <= 500)) return { ok: false, error: 'INVALID_POINTS' };
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const ss = setupSheets_();
+    const config = readConfig_(ss);
+    const name = canonicalName_(clean_(data.name, 60), readAliasMap_(ss));
+    const player = readRows_(ss.getSheetByName(PLAYER_SHEET)).filter(function (row) {
+      return String(row['顯示名'] || '').trim() === name;
+    })[0];
+    if (!name || !player) return { ok: false, error: 'NAME_NOT_FOUND' };
+
+    const key = 'return-bonus|' + name;
+    const ledger = ss.getSheetByName(LEDGER_SHEET);
+    const already = readRows_(ledger).some(function (row) { return String(row['去重鍵'] || '') === key; });
+    if (already) return { ok: true, granted: false, reason: 'ALREADY', name: name };
+
+    const cutoff = parseDate_(config['回歸禮資格日']);
+    const joined = parseDate_(player['加入日期']);
+    if (cutoff && (!joined || joined.getTime() >= cutoff.getTime())) {
+      return { ok: true, granted: false, reason: 'INELIGIBLE', name: name };
+    }
+
+    // 日期留空：回歸禮不算進榮譽牆的「本月點數」排行。
+    ledger.appendRow([new Date(), name, name, 'bonus', points, '老玩家回歸禮（LINE 綁定）', '', '',
+      SOURCE_LINE, '有效', clean_(data.note, 100), key]);
+    rebuildPoints_();
+    return { ok: true, granted: true, name: name };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** 逐字比較，不因第一個不同的字元就提早結束。 */
+function sameSecret_(given, expected) {
+  if (given.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < given.length; i++) diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
+  return diff === 0;
 }
 
 /**
