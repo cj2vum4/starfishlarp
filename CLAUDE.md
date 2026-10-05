@@ -126,7 +126,12 @@
 
 ## 六、上傳劇本介紹影片到 YouTube（頻道 @starfish0522）
 
-用 YouTube API 上傳某個劇本的介紹影片時，**上傳完成就順手登記到網站，不要等使用者另外交代**：
+上傳工具在使用者電腦本機的另一個專案（不在 GitHub），那邊的 Claude 讀不到這份文件，
+所以網站登記**不靠上傳端改 repo**，只靠一件事：**說明欄第一行放劇本頁網址**。
+GitHub Action「同步 YouTube 影片」會讀頻道 RSS、依說明欄網址自動填入並上線（最慢 2 小時；
+上傳端若有 `gh` 可執行 `gh workflow run sync-youtube.yml -R cj2vum4/starfishlarp` 立刻同步）。
+
+若是在本 repo 的 session 裡用 YouTube API 上傳，則上傳完成就直接登記，不要等使用者另外交代：
 
 1. 說明欄第一行放該劇本頁網址：`https://cj2vum4.github.io/starfishlarp/<scripts.js 的 file>`
    （例：`https://cj2vum4.github.io/starfishlarp/7人/王座.html`）。
