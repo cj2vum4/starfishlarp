@@ -4,7 +4,8 @@
 // 對應規則（只處理 youtube 欄位還是空的劇本，手動填的永遠不會被蓋掉）：
 //   1. 說明欄裡有劇本頁網址（…/starfishlarp/7人/王座.html）→ 最準，優先採用
 //   2. 標題裡用《》「」『』【】包住劇本名 → 一定對得到（短名如「45」「你好」只認這種）
-//   3. 劇本名 5 個字以上，標題直接包含也算
+//   3. 標題第一段（「｜」之前）整段等於劇本名，例：「年輪｜無劇透玩家心得｜…」
+//   4. 劇本名 5 個字以上，標題直接包含也算
 //   同一支影片對到多個劇本時取名字最長的；同一個劇本有多支影片時，一般影片優先於 Shorts，再取最新的。
 //   不想讓某個劇本自動填，把它的 youtube 設成 "-"。
 //
@@ -92,6 +93,8 @@ function matchVideo(video, scripts) {
 
 function matchScript(title, scripts) {
     const bracketed = [...title.matchAll(/[《「『【]([^》」』】]+)[》」』】]/g)].map(m => norm(m[1]));
+    // 頻道標題慣例「劇本名｜無劇透玩家心得｜…」：第一段整段等於劇本名（短名也安全）
+    bracketed.push(norm(title.split(/[｜|]/)[0]));
     const whole = norm(title);
     let best = null;
     for (const s of scripts) {
@@ -214,7 +217,11 @@ async function fetchVideoInfo(id, shorts) {
         (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '').replace(/ - YouTube$/, '');
     const description = jsonString((html.match(/"shortDescription":"((?:\\.|[^"\\])*)"/) || [])[1] || '');
     const published = (html.match(/"publishDate":"([^"]+)"/) || [])[1] || '';
-    return { id, title, description, published, shorts };
+    if (title) return { id, title, description, published, shorts };
+    // GitHub 的機房 IP 常被 YouTube 擋成「確認你不是機器人」頁，改用 oEmbed 拿標題（拿不到說明欄）
+    const oembed = JSON.parse(await fetchText(
+        `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent('https://www.youtube.com/watch?v=' + id)}`));
+    return { id, title: oembed.title || '', description, published, shorts };
 }
 
 async function listAllVideos(channelId, scripts) {
