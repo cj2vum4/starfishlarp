@@ -147,6 +147,14 @@
             .back-btn { top: 22px; left: 12px; }
         }
         @media (prefers-reduced-motion: reduce) { .hazard, .alert i { animation: none; } }
+
+        /* 海報與角色海報（本機圖檔） */
+        .poster-gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; margin: 0 auto 42px; }
+        .poster-gallery a { flex: 1 1 300px; max-width: 420px; }
+        .poster-gallery img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 22px 50px rgba(0, 0, 0, .45); transition: transform .3s; }
+        .poster-gallery img:hover { transform: translateY(-4px); }
+        .avatar a { display: block; }
+        .avatar img { display: block; width: 80px; aspect-ratio: 3 / 4; object-fit: cover; object-position: center 25%; border-radius: 6px; margin: 0 auto; box-shadow: 0 6px 16px rgba(0, 0, 0, .4); }
     </style>
 </head>
 <body>
@@ -166,9 +174,9 @@
             <p class="subtitle">七個記憶全失、滿身血跡的人在陌生的高科技公司裡醒來，門外傳來喪屍的低吼。電子屏上只有一行字——<br>「您的新鮮喪屍將於 5 小時後送達，請準備簽收。」</p>
         </header>
 
-        <div class="poster-placeholder">
-            <span>📦</span>
-            <span>海報準備中</span>
+        <div class="poster-gallery">
+            <a href="../img/劇本/新鮮喪屍已送達請簽收/海報.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/海報.webp" alt="新鮮喪屍已送達請簽收 劇本海報" loading="lazy"></a>
+            <a href="../img/劇本/新鮮喪屍已送達請簽收/介紹.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/介紹.webp" alt="新鮮喪屍已送達請簽收 劇本介紹" loading="lazy"></a>
         </div>
 
         <section class="content-grid">
@@ -193,13 +201,13 @@
             <article class="card">
                 <h2>受試者名單</h2>
                 <div class="roster">
-                    <div class="subject"><div class="avatar">👩‍🔬</div><div><h3>沈琳琳</h3><p>女・28歲</p></div><span class="status">#01 存活</span></div>
-                    <div class="subject"><div class="avatar">👩</div><div><h3>馬芸芸</h3><p>女・27歲</p></div><span class="status">#02 存活</span></div>
-                    <div class="subject"><div class="avatar">🧑</div><div><h3>張彬</h3><p>男・24歲</p></div><span class="status">#03 存活</span></div>
-                    <div class="subject"><div class="avatar">🧔</div><div><h3>胡澤元</h3><p>男・39歲</p></div><span class="status">#04 存活</span></div>
-                    <div class="subject"><div class="avatar">👨‍💼</div><div><h3>孫文瀚</h3><p>男・47歲</p></div><span class="status">#05 存活</span></div>
-                    <div class="subject"><div class="avatar">🧑‍💻</div><div><h3>王遠哲</h3><p>男・26歲</p></div><span class="status">#06 存活</span></div>
-                    <div class="subject"><div class="avatar">🕶️</div><div><h3>潘維凱</h3><p>男・27歲</p></div><span class="status">#07 存活</span></div>
+                    <div class="subject"><div class="avatar"><a href="../img/劇本/新鮮喪屍已送達請簽收/沈琳琳.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/沈琳琳.webp" alt="沈琳琳" loading="lazy"></a></div><div><h3>沈琳琳</h3><p>女・28歲</p></div><span class="status">#01 存活</span></div>
+                    <div class="subject"><div class="avatar"><a href="../img/劇本/新鮮喪屍已送達請簽收/馬芸芸.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/馬芸芸.webp" alt="馬芸芸" loading="lazy"></a></div><div><h3>馬芸芸</h3><p>女・27歲</p></div><span class="status">#02 存活</span></div>
+                    <div class="subject"><div class="avatar"><a href="../img/劇本/新鮮喪屍已送達請簽收/張彬.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/張彬.webp" alt="張彬" loading="lazy"></a></div><div><h3>張彬</h3><p>男・24歲</p></div><span class="status">#03 存活</span></div>
+                    <div class="subject"><div class="avatar"><a href="../img/劇本/新鮮喪屍已送達請簽收/胡澤元.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/胡澤元.webp" alt="胡澤元" loading="lazy"></a></div><div><h3>胡澤元</h3><p>男・39歲</p></div><span class="status">#04 存活</span></div>
+                    <div class="subject"><div class="avatar"><a href="../img/劇本/新鮮喪屍已送達請簽收/孫文瀚.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/孫文瀚.webp" alt="孫文瀚" loading="lazy"></a></div><div><h3>孫文瀚</h3><p>男・47歲</p></div><span class="status">#05 存活</span></div>
+                    <div class="subject"><div class="avatar"><a href="../img/劇本/新鮮喪屍已送達請簽收/王遠哲.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/王遠哲.webp" alt="王遠哲" loading="lazy"></a></div><div><h3>王遠哲</h3><p>男・26歲</p></div><span class="status">#06 存活</span></div>
+                    <div class="subject"><div class="avatar"><a href="../img/劇本/新鮮喪屍已送達請簽收/潘維凱.webp" target="_blank" rel="noopener"><img src="../img/劇本/新鮮喪屍已送達請簽收/潘維凱.webp" alt="潘維凱" loading="lazy"></a></div><div><h3>潘維凱</h3><p>男・27歲</p></div><span class="status">#07 存活</span></div>
                 </div>
             </article>
 
@@ -274,7 +282,7 @@
     </script>
     <script src="../bgm-control.js?v=20260727"></script>
     <script src="../reviews.js?v=20260729-w3"></script>
-<script src="../video.js?v=20261002-ytbadge"></script>
+<script src="../video.js?v=20261005-localimg"></script>
     <script src="../fx3d.js?v=20260714" data-fx="rain" data-tint="#a6ff3d" data-hide="#acidRain"></script>
 </body>
 </html>

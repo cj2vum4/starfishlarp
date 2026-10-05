@@ -186,6 +186,14 @@
         @media (prefers-reduced-motion: reduce) {
             h1::before, h1::after, .poster-placeholder span:first-child { animation: none; }
         }
+
+        /* 海報與角色海報（本機圖檔） */
+        .poster-gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; margin: 0 auto 42px; }
+        .poster-gallery a { flex: 1 1 300px; max-width: 420px; }
+        .poster-gallery img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 22px 50px rgba(0, 0, 0, .45); transition: transform .3s; }
+        .poster-gallery img:hover { transform: translateY(-4px); }
+        .avatar a { display: block; }
+        .avatar img { display: block; width: 80px; aspect-ratio: 3 / 4; object-fit: cover; object-position: center 25%; border-radius: 6px; margin: 0 auto; box-shadow: 0 6px 16px rgba(0, 0, 0, .4); }
     </style>
 </head>
 <body>
@@ -204,9 +212,9 @@
             <p class="verdict-msg" id="verdictMsg" aria-live="polite"></p>
         </header>
 
-        <div class="poster-placeholder">
-            <span>🌀</span>
-            <span>海報準備中</span>
+        <div class="poster-gallery">
+            <a href="../img/劇本/三觀失控/海報.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/海報.webp" alt="三觀失控 劇本海報" loading="lazy"></a>
+            <a href="../img/劇本/三觀失控/介紹.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/介紹.webp" alt="三觀失控 劇本介紹" loading="lazy"></a>
         </div>
 
         <section class="content-grid">
@@ -236,15 +244,15 @@
                         <div><h3>蘇渺<small>女</small></h3><p>沉浸於三重設定的敏感少女，總在真相與幻覺的縫隙間戰慄徘徊。</p></div>
                     </div>
                     <div class="character">
-                        <div class="avatar">🐶</div>
+                        <div class="avatar"><a href="../img/劇本/三觀失控/吳夏.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/吳夏.webp" alt="吳夏" loading="lazy"></a></div>
                         <div><h3>吳夏<small>男</small></h3><p>表面陽光的犬系男友，在忠誠與癲狂的拉扯中不斷突破認知邊界。</p></div>
                     </div>
                     <div class="character">
-                        <div class="avatar">🧠</div>
+                        <div class="avatar"><a href="../img/劇本/三觀失控/蘇果.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/蘇果.webp" alt="蘇果" loading="lazy"></a></div>
                         <div><h3>蘇果</h3><p>自詡正常的理智擔當，卻被迫在瘋人院裡死守搖搖欲墜的三觀堡壘。</p></div>
                     </div>
                     <div class="character">
-                        <div class="avatar">🖋️</div>
+                        <div class="avatar"><a href="../img/劇本/三觀失控/周渺.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/周渺.webp" alt="周渺" loading="lazy"></a></div>
                         <div><h3>周渺</h3><p>浪漫與偏執交織的作家，筆下的愛情故事暗藏令人毛骨悚然的隱喻。</p></div>
                     </div>
                 </div>
@@ -332,7 +340,7 @@
     </script>
     <script src="../bgm-control.js?v=20260727"></script>
     <script src="../reviews.js?v=20260729-w3"></script>
-<script src="../video.js?v=20261002-ytbadge"></script>
+<script src="../video.js?v=20261005-localimg"></script>
     <script src="../fx3d.js?v=20260714" data-fx="dust" data-tint="#6fe3d2"></script>
 </body>
 </html>

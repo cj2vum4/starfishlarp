@@ -148,6 +148,14 @@
             .back-btn { bottom: 12px; left: 12px; }
         }
         @media (prefers-reduced-motion: reduce) { .lantern, .petal { animation: none; } }
+
+        /* 海報與角色海報（本機圖檔） */
+        .poster-gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; margin: 0 auto 42px; }
+        .poster-gallery a { flex: 1 1 300px; max-width: 420px; }
+        .poster-gallery img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 22px 50px rgba(0, 0, 0, .45); transition: transform .3s; }
+        .poster-gallery img:hover { transform: translateY(-4px); }
+        .avatar a { display: block; }
+        .avatar img { display: block; width: 80px; aspect-ratio: 3 / 4; object-fit: cover; object-position: center 25%; border-radius: 6px; margin: 0 auto; box-shadow: 0 6px 16px rgba(0, 0, 0, .4); }
     </style>
 </head>
 <body>
@@ -166,9 +174,9 @@
             <p class="subtitle">大唐長安，城中一等青樓「玉滿樓」，人稱「玉月滿花」。<br>今夜笙歌未歇，名伎、公子、劍客、捕快齊聚一堂——有人為情而來，有人為仇而來。</p>
         </header>
 
-        <div class="poster-placeholder">
-            <span>🏮</span>
-            <span>海報準備中</span>
+        <div class="poster-gallery">
+            <a href="../img/劇本/青樓/海報.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/海報.webp" alt="青樓 劇本海報" loading="lazy"></a>
+            <a href="../img/劇本/青樓/介紹.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/介紹.webp" alt="青樓 劇本介紹" loading="lazy"></a>
         </div>
 
         <section class="content-grid">
@@ -193,13 +201,13 @@
             <article class="card">
                 <h2>角色介紹</h2>
                 <div class="characters-grid">
-                    <div class="character"><div class="avatar">🪭</div><h3>莫懷</h3><div class="meta">男・23歲</div><p>莫府大少爺，風流倜儻的長安第一公子。</p></div>
-                    <div class="character"><div class="avatar">⚔️</div><h3>齊劍心</h3><div class="meta">男・28歲</div><p>出師名劍山莊，江南第一劍客。</p></div>
-                    <div class="character"><div class="avatar">🏛️</div><h3>杜霄元</h3><div class="meta">男</div><p>長安第一捕快，衙門裡最難纏的那雙眼。</p></div>
-                    <div class="character"><div class="avatar">📜</div><h3>白齋子</h3><div class="meta">男</div><p>江南第一才子，一身詩酒，滿腹心事。</p></div>
-                    <div class="character"><div class="avatar">🌙</div><h3>陳一兔</h3><div class="meta">女・20歲</div><p>玉滿樓四大名伎之「月」伎，樓裡最受寵愛的姑娘。</p></div>
-                    <div class="character"><div class="avatar">🌺</div><h3>姜紅兒</h3><div class="meta">女</div><p>玉滿樓四大名伎之一，紅姨一手帶大的養女。</p></div>
-                    <div class="character wide"><div class="avatar">🎐</div><h3>舒悅</h3><div class="meta">女・20歲</div><p>玉滿樓四大名伎之一，與莫府二少爺莫寒青梅竹馬。</p></div>
+                    <div class="character"><div class="avatar"><a href="../img/劇本/青樓/莫懷.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/莫懷.webp" alt="莫懷" loading="lazy"></a></div><h3>莫懷</h3><div class="meta">男・23歲</div><p>莫府大少爺，風流倜儻的長安第一公子。</p></div>
+                    <div class="character"><div class="avatar"><a href="../img/劇本/青樓/齊劍心.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/齊劍心.webp" alt="齊劍心" loading="lazy"></a></div><h3>齊劍心</h3><div class="meta">男・28歲</div><p>出師名劍山莊，江南第一劍客。</p></div>
+                    <div class="character"><div class="avatar"><a href="../img/劇本/青樓/杜霄元.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/杜霄元.webp" alt="杜霄元" loading="lazy"></a></div><h3>杜霄元</h3><div class="meta">男</div><p>長安第一捕快，衙門裡最難纏的那雙眼。</p></div>
+                    <div class="character"><div class="avatar"><a href="../img/劇本/青樓/白齋子.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/白齋子.webp" alt="白齋子" loading="lazy"></a></div><h3>白齋子</h3><div class="meta">男</div><p>江南第一才子，一身詩酒，滿腹心事。</p></div>
+                    <div class="character"><div class="avatar"><a href="../img/劇本/青樓/陳一兔.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/陳一兔.webp" alt="陳一兔" loading="lazy"></a></div><h3>陳一兔</h3><div class="meta">女・20歲</div><p>玉滿樓四大名伎之「月」伎，樓裡最受寵愛的姑娘。</p></div>
+                    <div class="character"><div class="avatar"><a href="../img/劇本/青樓/姜紅兒.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/姜紅兒.webp" alt="姜紅兒" loading="lazy"></a></div><h3>姜紅兒</h3><div class="meta">女</div><p>玉滿樓四大名伎之一，紅姨一手帶大的養女。</p></div>
+                    <div class="character wide"><div class="avatar"><a href="../img/劇本/青樓/舒悅.webp" target="_blank" rel="noopener"><img src="../img/劇本/青樓/舒悅.webp" alt="舒悅" loading="lazy"></a></div><h3>舒悅</h3><div class="meta">女・20歲</div><p>玉滿樓四大名伎之一，與莫府二少爺莫寒青梅竹馬。</p></div>
                 </div>
             </article>
 
@@ -248,7 +256,7 @@
     </script>
     <script src="../bgm-control.js?v=20260727"></script>
     <script src="../reviews.js?v=20260729-w3"></script>
-<script src="../video.js?v=20261002-ytbadge"></script>
+<script src="../video.js?v=20261005-localimg"></script>
     <script src="../fx3d.js?v=20260714" data-fx="petals" data-tint="#ff8fa8" data-hide="#petals"></script>
 </body>
 </html>
