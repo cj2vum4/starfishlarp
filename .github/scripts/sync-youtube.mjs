@@ -2,14 +2,19 @@
 // 把影片網址填進 scripts.js 的 youtube 欄位，並進 scripts.js / video.js 版號。
 //
 // 對應規則（只處理 youtube 欄位還是空的劇本，手動填的永遠不會被蓋掉）：
-//   1. 標題裡用《》「」『』【】包住劇本名 → 一定對得到（短名如「45」「你好」只認這種）
-//   2. 劇本名 5 個字以上，標題直接包含也算
+//   1. 說明欄裡有劇本頁網址（…/starfishlarp/7人/王座.html）→ 最準，優先採用
+//   2. 標題裡用《》「」『』【】包住劇本名 → 一定對得到（短名如「45」「你好」只認這種）
+//   3. 劇本名 5 個字以上，標題直接包含也算
 //   同一支影片對到多個劇本時取名字最長的；同一個劇本有多支影片時，一般影片優先於 Shorts，再取最新的。
 //   不想讓某個劇本自動填，把它的 youtube 設成 "-"。
 //
 // 環境變數：
 //   YT_CHANNEL    頻道 ID（UC 開頭）、@handle 或頻道網址
 //   YT_FEED_FILE  （測試用）直接讀本機 RSS 檔，不連網
+//
+// 手動登記（上傳完影片馬上填，不必等排程，也不受標題規則限制）：
+//   node .github/scripts/sync-youtube.mjs --set <劇本名或id> <影片網址或ID>
+//   會覆寫該劇本原本的 youtube，並全站進版號；之後 commit 推 main 即可。
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -49,7 +54,8 @@ function parseFeed(xml) {
         const title = decodeXml((e.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || '');
         const link = (e.match(/<link rel="alternate" href="([^"]+)"/) || [])[1] || '';
         const published = (e.match(/<published>([^<]+)<\/published>/) || [])[1] || '';
-        return { id, title, published, shorts: link.includes('/shorts/') };
+        const description = decodeXml((e.match(/<media:description>([\s\S]*?)<\/media:description>/) || [])[1] || '');
+        return { id, title, description, published, shorts: link.includes('/shorts/') };
     }).filter(v => v.id);
 }
 
@@ -61,7 +67,21 @@ function loadScripts() {
 
 const norm = s => String(s || '').normalize('NFKC').replace(/[\s\p{P}\p{S}]/gu, '');
 
-/** 這支影片對應哪個劇本（取最長的劇本名），沒有就回傳 null。 */
+function safeDecode(s) {
+    try { return decodeURIComponent(s); } catch (_) { return s; }
+}
+
+/** 說明欄裡出現的劇本頁網址（例：…/starfishlarp/7人/王座.html，中文可被網址編碼）。 */
+function matchByLink(description, scripts) {
+    const text = safeDecode(description.replace(/%(?![0-9A-Fa-f]{2})/g, '%25'));
+    return scripts.find(s => s.file && text.includes('starfishlarp/' + s.file)) || null;
+}
+
+/** 這支影片對應哪個劇本（說明欄網址優先，其次標題取最長的劇本名），沒有就回傳 null。 */
+function matchVideo(video, scripts) {
+    return matchByLink(video.description || '', scripts) || matchScript(video.title, scripts);
+}
+
 function matchScript(title, scripts) {
     const bracketed = [...title.matchAll(/[《「『【]([^》」』】]+)[》」』】]/g)].map(m => norm(m[1]));
     const whole = norm(title);
@@ -102,7 +122,8 @@ function bumpVersion() {
     const old = (index.match(/scripts\.js\?v=([\w-]+)/) || [])[1];
     if (!old) throw new Error('index.html 找不到 scripts.js?v=');
     const now = new Date(Date.now() + 8 * 3600e3).toISOString(); // 台灣時間
-    const next = now.slice(0, 10).replace(/-/g, '') + '-yt' + now.slice(11, 16).replace(':', '');
+    let next = now.slice(0, 10).replace(/-/g, '') + '-yt' + now.slice(11, 19).replace(/:/g, '');
+    if (next === old) next += 'b'; // 同一秒內連續登記也要換新版號
     const pattern = new RegExp(`((?:scripts|video)\\.js\\?v=)${old.replace(/[-]/g, '\\-')}(?![\\w-])`, 'g');
 
     const files = [];
@@ -129,7 +150,35 @@ function bumpVersion() {
     console.log(`版號 ${old} → ${next}（${changed} 個檔案）`);
 }
 
+/** --set 劇本 影片：直接登記一支影片（覆寫原值）。 */
+function setVideo(target, value) {
+    const scripts = loadScripts();
+    const key = norm(target);
+    const s = scripts.find(x => x.id === target) ||
+        scripts.find(x => [x.name, x.reviewKey, path.basename(x.file || '', '.html')].map(norm).includes(key));
+    if (!s) throw new Error(`找不到劇本：${target}`);
+    const raw = String(value || '').trim();
+    const m = raw.match(/^([\w-]{11})$/) ||
+        raw.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
+    if (!m) throw new Error(`看不懂影片網址：${raw}`);
+    const url = videoUrl({ id: m[1], shorts: raw.includes('/shorts/') });
+    if (s.youtube === url) {
+        console.log(`${s.name} 已經是 ${url}，不用改`);
+        return;
+    }
+    fs.writeFileSync(SCRIPTS_FILE, writeYoutube(fs.readFileSync(SCRIPTS_FILE, 'utf8'), s.id, url));
+    loadScripts();
+    bumpVersion();
+    console.log(`已登記 ${s.name}：${url}`);
+}
+
 async function main() {
+    const setAt = process.argv.indexOf('--set');
+    if (setAt >= 0) {
+        setVideo(process.argv[setAt + 1], process.argv[setAt + 2]);
+        return;
+    }
+
     let xml;
     if (process.env.YT_FEED_FILE) {
         xml = fs.readFileSync(process.env.YT_FEED_FILE, 'utf8');
@@ -148,7 +197,7 @@ async function main() {
 
     const picked = new Map(); // script.id → video
     for (const v of videos) {
-        const s = matchScript(v.title, scripts);
+        const s = matchVideo(v, scripts);
         console.log(`  ${v.id} ${v.shorts ? '[Shorts] ' : ''}${v.title} → ${s ? s.name : '（沒對到劇本）'}`);
         if (!s || String(s.youtube || '').trim()) continue;
         const cur = picked.get(s.id);

@@ -37,8 +37,8 @@
 - `reviewKey`：若劇本在評價表單裡用的名字與 `name` 不同（例如別名、去掉前綴），填表單實際用的字串；否則＝`name`
 - `youtube`：可填 11 碼影片 ID 或整串網址（watch / youtu.be / shorts；shorts 會用直式播放器）。
   有填的劇本：劇本頁出現「▶ 介紹影片」（`video.js`），首頁卡片右上角出現「▶ 影片」。
-  **通常不用手填**：GitHub Action「同步 YouTube 影片」每 2 小時讀頻道 RSS，
-  標題用《劇本名》包住劇本名稱（5 字以上的劇本名不包也行）就會自動填入並上線。
+  **通常不用手填**：上傳影片的流程見下方「六、上傳劇本介紹影片」；另有 GitHub Action
+  「同步 YouTube 影片」每 2 小時讀頻道 RSS 當備援（說明欄有劇本頁網址、或標題用《劇本名》就對得到）。
   手填的值永遠不會被自動覆蓋；不想自動填某個劇本就填 `"-"`。
 - **`scripts.js?v=` 與劇本頁的 `video.js?v=` 共用同一個版號**（video.js 用自己的版號去載 scripts.js），
   進版時兩者一起全站替換
@@ -120,6 +120,23 @@
   - 檔名用中文說明用途：主海報、介紹圖、角色名（例：`img/劇本/青樓/莫懷.webp`）
   - 劇本頁內用相對路徑 `../img/劇本/...`；`scripts.js` 的 `poster` 用 `img/劇本/...`
   - 只放宣傳素材（海報、介紹、角色海報），劇本本體與線索卡不可放進 repo
+
+---
+
+## 六、上傳劇本介紹影片到 YouTube（頻道 @starfish0522）
+
+用 YouTube API 上傳某個劇本的介紹影片時，**上傳完成就順手登記到網站，不要等使用者另外交代**：
+
+1. 說明欄第一行放該劇本頁網址：`https://cj2vum4.github.io/starfishlarp/<scripts.js 的 file>`
+   （例：`https://cj2vum4.github.io/starfishlarp/7人/王座.html`）。
+   這同時是導流，也是自動同步的對應依據（比標題比對準，短劇本名也不會認錯）
+2. 拿到上傳回傳的影片 ID 後執行：
+   `node .github/scripts/sync-youtube.mjs --set <劇本名或id> <影片網址或ID>`
+   會寫入 `scripts.js` 的 `youtube` 並全站進版號（scripts.js / video.js / service-worker）
+3. commit 後推 main，回報使用者「已上傳並登記到網站」與劇本頁網址
+
+Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
+`--set` 會覆寫原本的值；換新版影片時同樣用它。
 
 ---
 
