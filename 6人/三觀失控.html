@@ -192,6 +192,8 @@
         .poster-gallery a { flex: 1 1 300px; max-width: 420px; }
         .poster-gallery img { display: block; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 22px 50px rgba(0, 0, 0, .45); transition: transform .3s; }
         .poster-gallery img:hover { transform: translateY(-4px); }
+        .character:has(.avatar img) { grid-template-columns: 80px minmax(0, 1fr); }
+        .character .avatar:has(img) { width: 80px; height: auto; border: 0; background: none; border-radius: 6px; }
         .avatar a { display: block; }
         .avatar img { display: block; width: 80px; aspect-ratio: 3 / 4; object-fit: cover; object-position: center 25%; border-radius: 6px; margin: 0 auto; box-shadow: 0 6px 16px rgba(0, 0, 0, .4); }
     </style>
@@ -240,23 +242,30 @@
                 <h2>角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character">
-                        <div class="avatar">🫧</div>
-                        <div><h3>蘇渺<small>女</small></h3><p>沉浸於三重設定的敏感少女，總在真相與幻覺的縫隙間戰慄徘徊。</p></div>
+                        <div class="avatar"><a href="../img/劇本/三觀失控/董婭.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/董婭.webp" alt="董婭" loading="lazy"></a></div>
+                        <div><h3>董婭<small>女</small></h3><p>角色詳情開本時由主持人揭曉。</p></div>
+                    </div>
+                    <div class="character">
+                        <div class="avatar"><a href="../img/劇本/三觀失控/周渺.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/周渺.webp" alt="周渺" loading="lazy"></a></div>
+                        <div><h3>周渺<small>男</small></h3><p>浪漫與偏執交織的作家，筆下的愛情故事暗藏令人毛骨悚然的隱喻。</p></div>
+                    </div>
+                    <div class="character">
+                        <div class="avatar"><a href="../img/劇本/三觀失控/蘇果.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/蘇果.webp" alt="蘇果" loading="lazy"></a></div>
+                        <div><h3>蘇果<small>女</small></h3><p>自詡正常的理智擔當，卻被迫在瘋人院裡死守搖搖欲墜的三觀堡壘。</p></div>
+                    </div>
+                    <div class="character">
+                        <div class="avatar"><a href="../img/劇本/三觀失控/李冉.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/李冉.webp" alt="李冉" loading="lazy"></a></div>
+                        <div><h3>李冉<small>男</small></h3><p>角色詳情開本時由主持人揭曉。</p></div>
+                    </div>
+                    <div class="character">
+                        <div class="avatar"><a href="../img/劇本/三觀失控/林沐.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/林沐.webp" alt="林沐" loading="lazy"></a></div>
+                        <div><h3>林沐<small>女</small></h3><p>角色詳情開本時由主持人揭曉。</p></div>
                     </div>
                     <div class="character">
                         <div class="avatar"><a href="../img/劇本/三觀失控/吳夏.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/吳夏.webp" alt="吳夏" loading="lazy"></a></div>
                         <div><h3>吳夏<small>男</small></h3><p>表面陽光的犬系男友，在忠誠與癲狂的拉扯中不斷突破認知邊界。</p></div>
                     </div>
-                    <div class="character">
-                        <div class="avatar"><a href="../img/劇本/三觀失控/蘇果.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/蘇果.webp" alt="蘇果" loading="lazy"></a></div>
-                        <div><h3>蘇果</h3><p>自詡正常的理智擔當，卻被迫在瘋人院裡死守搖搖欲墜的三觀堡壘。</p></div>
-                    </div>
-                    <div class="character">
-                        <div class="avatar"><a href="../img/劇本/三觀失控/周渺.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/周渺.webp" alt="周渺" loading="lazy"></a></div>
-                        <div><h3>周渺</h3><p>浪漫與偏執交織的作家，筆下的愛情故事暗藏令人毛骨悚然的隱喻。</p></div>
-                    </div>
                 </div>
-                <p class="note">※ 其餘角色開本時由主持人揭曉。</p>
             </article>
 
             <article class="card description" data-code="FORM-03">
@@ -340,7 +349,7 @@
     </script>
     <script src="../bgm-control.js?v=20260727"></script>
     <script src="../reviews.js?v=20260729-w3"></script>
-<script src="../video.js?v=20261005-localimg"></script>
+<script src="../video.js?v=20261005-sanguan6"></script>
     <script src="../fx3d.js?v=20260714" data-fx="dust" data-tint="#6fe3d2"></script>
 </body>
 </html>
