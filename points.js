@@ -17,6 +17,7 @@
     const state = {
         loaded: false,
         ok: false,
+        stale: false,         // 端點活著，但部署的是沒有 action=summary 的舊版
         summary: new Map(),   // 歸戶名 → { agent, earned, redeemed, balance, monthEarned, plays, last }
         rewards: [],
         mystery: [],
@@ -375,15 +376,20 @@
             };
 
             window[callbackName] = (payload) => {
-                if (payload && payload.ok) {
+                // 舊版的 Apps Script 沒有 action=summary，doGet 會回一包
+                // { ok: true, service: ... } 但不帶 summary。只看 ok 會把
+                // 「部署沒更新」誤判成「這個玩家沒有記錄」，所以要認 summary。
+                if (payload && payload.ok && Array.isArray(payload.summary)) {
                     state.ok = true;
                     state.doubleDayNote = payload.doubleDayNote || '';
                     state.monthKey = payload.monthKey || '';
                     state.rewards = Array.isArray(payload.rewards) ? payload.rewards : [];
                     state.mystery = Array.isArray(payload.mystery) ? payload.mystery : [];
-                    (payload.summary || []).forEach((item) => {
+                    payload.summary.forEach((item) => {
                         state.summary.set(normalizeName(item.name), item);
                     });
+                } else if (payload && payload.ok) {
+                    state.stale = true;
                 }
                 finish();
             };
@@ -1024,6 +1030,11 @@
             statsHtml = '<p class="pts-empty">這個名字還沒有點數記錄。' +
                 '如果你之前用別的名字登記過，可以跟海星說一聲合併起來。</p>';
             rewardsHtml = renderRewards(0);
+        } else if (state.stale) {
+            statsHtml = '<p class="pts-empty">點數服務還是舊版本，' +
+                '請 GM 重新部署 Apps Script（管理部署作業 → 編輯 → 版本選「新版本」），' +
+                '再執行一次 setupAll。</p>';
+            rewardsHtml = '';
         } else {
             statsHtml = '<p class="pts-empty">點數服務暫時讀不到，稍後再試。' +
                 '下面的徽章與場次仍然是正確的。</p>';

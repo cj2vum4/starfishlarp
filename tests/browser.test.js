@@ -393,6 +393,30 @@ async function launchBrowser() {
   check('有說明點數讀不到', fallback.includes('讀不到'), true);
   await offline.close();
 
+  /* ================= 舊版部署的辨識 ================= */
+  console.log('\n=== 部署的是舊版 Apps Script ===');
+  // 舊版 doGet 沒有 action=summary，會回一包有 ok 但沒有 summary 的 JSON。
+  // 這種情況要講「部署是舊的」，不能講成「這個玩家沒有記錄」。
+  await context.route('**/script.google.com/**', (route) => {
+    const callback = new URL(route.request().url()).searchParams.get('callback') || 'cb';
+    return route.fulfill({
+      status: 200, contentType: 'text/javascript; charset=utf-8',
+      body: callback + '({"ok":true,"service":"starfishlarp-play-record","message":"endpoint ready"});'
+    });
+  });
+
+  const stale = await context.newPage();
+  await stale.goto(url('榮譽牆.html'), { waitUntil: 'networkidle' });
+  await stale.waitForTimeout(800);
+  await stale.selectOption('#playerSelector', '海星');
+  await stale.waitForTimeout(500);
+
+  const staleText = await stale.locator('#pointsCard').textContent();
+  check('舊版部署會說是部署問題', staleText.includes('舊版本'), true);
+  check('不會誤導成玩家沒有記錄', staleText.includes('還沒有點數記錄'), false);
+  check('有指出要重新部署', staleText.includes('重新部署'), true);
+  await stale.close();
+
   /* ================= 結果 ================= */
   console.log('\n=== JS 執行錯誤 ===');
   const realErrors = errors.filter((message) =>
