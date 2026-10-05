@@ -1133,19 +1133,29 @@ function readConfig_(ss) {
  */
 function readAliasMap_(ss) {
   const map = {};
+  const rows = readRows_(ss.getSheetByName(PLAYER_SHEET));
 
-  readRows_(ss.getSheetByName(PLAYER_SHEET)).forEach(function (row) {
+  // 分兩輪，別名要蓋過自己的名字。
+  // 被合併掉的那個人通常也有自己的一列（名字第一次出現時自動建的），
+  // 單輪掃描的話那一列會把別名對應覆蓋回去，合併就靜默失效了。
+  rows.forEach(function (row) {
+    const display = String(row['顯示名'] || '').trim();
+    if (display) map[normalizeName_(display)] = display;
+  });
+
+  rows.forEach(function (row) {
     const display = String(row['顯示名'] || '').trim();
     if (!display) return;
-
-    map[normalizeName_(display)] = display;
 
     String(row['別名'] || '')
       .split(/[,，、;；]/)
       .map(function (alias) { return alias.trim(); })
       .filter(Boolean)
       .forEach(function (alias) {
-        map[normalizeName_(alias)] = display;
+        const key = normalizeName_(alias);
+        // 自己列自己當別名沒有意義，跳過以免蓋掉別人的歸戶
+        if (key === normalizeName_(display)) return;
+        map[key] = display;
       });
   });
 
