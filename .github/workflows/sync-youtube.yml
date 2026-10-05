@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: '17 */2 * * *'
   workflow_dispatch:
+    inputs:
+      full:
+        description: '完整掃描所有影片（補舊影片；RSS 只看得到最新 15 支）'
+        type: boolean
+        default: true
 permissions:
   contents: write
 concurrency:
@@ -23,6 +28,7 @@ jobs:
         id: sync
         env:
           YT_CHANNEL: ${{ vars.YT_CHANNEL || '@starfish0522' }}
+          YT_FULL: ${{ inputs.full && '1' || '' }}
         run: node .github/scripts/sync-youtube.mjs
       - name: 推上 main
         if: steps.sync.outputs.summary != ''

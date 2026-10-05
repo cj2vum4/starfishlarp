@@ -11,6 +11,8 @@
 // 環境變數：
 //   YT_CHANNEL    頻道 ID（UC 開頭）、@handle 或頻道網址
 //   YT_FEED_FILE  （測試用）直接讀本機 RSS 檔，不連網
+//   YT_FULL=1     完整掃描頻道所有影片（RSS 只有最新 15 支，補舊影片用；
+//                 逐支讀影片頁取說明欄，較慢，Actions 手動執行時預設開啟）
 //
 // 手動登記（上傳完影片馬上填，不必等排程，也不受標題規則限制）：
 //   node .github/scripts/sync-youtube.mjs --set <劇本名或id> <影片網址或ID>
@@ -22,8 +24,14 @@ import vm from 'node:vm';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
 const SCRIPTS_FILE = path.join(ROOT, 'scripts.js');
 
+const YT_HEADERS = {
+    'Accept-Language': 'zh-TW,zh;q=0.9',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+    'Cookie': 'CONSENT=YES+1; SOCS=CAI'
+};
+
 async function fetchText(url) {
-    const res = await fetch(url, { headers: { 'Accept-Language': 'zh-TW,zh;q=0.9' } });
+    const res = await fetch(url, { headers: YT_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}：${url}`);
     return res.text();
 }
@@ -172,6 +180,57 @@ function setVideo(target, value) {
     console.log(`已登記 ${s.name}：${url}`);
 }
 
+// ── 完整掃描：頻道「影片」「Shorts」分頁 + 逐支讀說明欄 ─────────────
+function jsonString(raw) {
+    try { return JSON.parse('"' + raw + '"'); } catch (_) { return ''; }
+}
+
+async function listChannelIds(channelId, tab) {
+    const html = await fetchText(`https://www.youtube.com/channel/${channelId}/${tab}`);
+    const key = (html.match(/"INNERTUBE_API_KEY":"([^"]+)"/) || [])[1];
+    const clientVersion = (html.match(/"INNERTUBE_CLIENT_VERSION":"([^"]+)"/) || [])[1] || '2.20240101.00.00';
+    const ids = new Set();
+    const collect = text => {
+        for (const m of text.matchAll(/"videoId":"([\w-]{11})"/g)) ids.add(m[1]);
+        return (text.match(/"continuationCommand":\{"token":"([^"]+)"/) || [])[1];
+    };
+    let token = collect(html);
+    for (let page = 0; token && key && page < 30; page++) {
+        const res = await fetch(`https://www.youtube.com/youtubei/v1/browse?key=${key}`, {
+            method: 'POST',
+            headers: { ...YT_HEADERS, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ context: { client: { clientName: 'WEB', clientVersion, hl: 'zh-TW' } }, continuation: token })
+        });
+        if (!res.ok) break;
+        token = collect(await res.text());
+    }
+    return [...ids];
+}
+
+async function fetchVideoInfo(id, shorts) {
+    const html = await fetchText(`https://www.youtube.com/watch?v=${id}`);
+    const details = html.slice(html.indexOf('"videoDetails"'));
+    const title = jsonString((details.match(/"title":"((?:\\.|[^"\\])*)"/) || [])[1] || '');
+    const description = jsonString((details.match(/"shortDescription":"((?:\\.|[^"\\])*)"/) || [])[1] || '');
+    const published = (html.match(/"publishDate":"([^"]+)"/) || [])[1] || '';
+    return { id, title, description, published, shorts };
+}
+
+async function listAllVideos(channelId, scripts) {
+    const used = new Set(scripts.map(s => String(s.youtube || '')).join(' ').match(/[\w-]{11}/g) || []);
+    const regular = await listChannelIds(channelId, 'videos');
+    const shorts = await listChannelIds(channelId, 'shorts').catch(() => []);
+    const all = [...regular.map(id => [id, false]), ...shorts.filter(id => !regular.includes(id)).map(id => [id, true])];
+    console.log(`完整掃描：一般影片 ${regular.length} 支、Shorts ${shorts.length} 支（已登記的略過）`);
+    const videos = [];
+    for (const [id, isShort] of all) {
+        if (used.has(id)) continue;
+        try { videos.push(await fetchVideoInfo(id, isShort)); }
+        catch (err) { console.log(`  ${id} 讀取失敗：${err.message}`); }
+    }
+    return videos;
+}
+
 async function main() {
     const setAt = process.argv.indexOf('--set');
     if (setAt >= 0) {
@@ -179,21 +238,25 @@ async function main() {
         return;
     }
 
-    let xml;
+    const scripts = loadScripts();
+    let videos;
     if (process.env.YT_FEED_FILE) {
-        xml = fs.readFileSync(process.env.YT_FEED_FILE, 'utf8');
+        videos = parseFeed(fs.readFileSync(process.env.YT_FEED_FILE, 'utf8'));
     } else {
         if (!process.env.YT_CHANNEL) {
             console.log('::warning::尚未設定 YT_CHANNEL，略過');
             return;
         }
         const channelId = await resolveChannelId(process.env.YT_CHANNEL);
-        xml = await fetchText(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
+        if (process.env.YT_FULL === '1') {
+            try { videos = await listAllVideos(channelId, scripts); }
+            catch (err) { console.log(`::warning::完整掃描失敗，改用 RSS：${err.message}`); }
+        }
+        if (!videos) {
+            videos = parseFeed(await fetchText(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`));
+        }
     }
-
-    const videos = parseFeed(xml);
-    const scripts = loadScripts();
-    console.log(`頻道最新 ${videos.length} 支影片`);
+    console.log(`待比對 ${videos.length} 支影片`);
 
     const picked = new Map(); // script.id → video
     for (const v of videos) {
