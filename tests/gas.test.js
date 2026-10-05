@@ -8,7 +8,7 @@
  */
 
 const {
-  spreadsheet, freshEnv, setConfig, summaryOf, sheetRows
+  spreadsheet, freshEnv, setConfig, summaryOf, sheetRows, setScriptProperty
 } = require('./gas-mock');
 
 let pass = 0;
@@ -615,6 +615,79 @@ group('對外端點');
   console.error = realError;
   check('評價超出範圍會被拒絕', bad.ok, false);
   check('拒絕時回報原因', /評價/.test(String(bad.error)), true);
+}
+
+/* ============================================================
+   點數總覽快取（榮譽牆與 LINE 會員卡讀的 doGet?action=summary）
+   ============================================================ */
+group('點數總覽快取');
+{
+  freshEnv([['2026/3/1', '阿明', '2026/3/1', '年輪', '甲', '5', LONG, '']]);
+  const read = () => JSON.parse(global.doGet({ parameter: { action: 'summary' } }));
+  const balanceOf = (payload, name) => (payload.summary.find((x) => x.name === name) || {}).balance;
+  const first = read();
+  check('第一次讀到點數', balanceOf(first, '阿明') > 0, true);
+
+  // GM 直接在帳本加一列扣點、沒有重算：快取期間先維持原值
+  spreadsheet.getSheetByName('點數總覽').getRange(2, 5).setValue(1);
+  check('快取期間不重讀試算表', balanceOf(read(), '阿明'), balanceOf(first, '阿明'));
+
+  // 重算一定清快取
+  global.rebuildPoints_();
+  check('重算後快取清掉、讀到最新', balanceOf(read(), '阿明'), balanceOf(first, '阿明'));
+
+  // 送出記錄 → doPost 內重算 → 新玩家立刻出現在快取的總覽
+  global.doPost({ parameter: { name: '小華', date: '2026/3/2', script: '年輪', character: '乙', rating: '4', comment: LONG } });
+  check('新記錄立刻出現（不用等快取過期）', read().summary.some((x) => x.name === '小華'), true);
+
+  // 沒有 CacheService（舊環境）也照常運作
+  const realCache = global.CacheService;
+  delete global.CacheService;
+  check('沒有快取服務也讀得到', read().summary.length >= 2, true);
+  global.CacheService = realCache;
+}
+
+/* ============================================================
+   LINE 綁定回歸禮（預約系統呼叫 doPost action=grant_bonus）
+   ============================================================ */
+group('LINE 綁定回歸禮');
+{
+  freshEnv([
+    ['2025/3/2', '阿明', '2025/3/1', '年輪', '甲', '5', LONG, ''],
+    ['2026/10/10', '新人', '2026/10/10', '年輪', '乙', '4', '', '']
+  ]);
+  setConfig('回歸禮資格日', '2026/10/06');
+  const secret = 'S'.repeat(43);
+  const grant = (params) => JSON.parse(global.doPost({ parameter: Object.assign({ action: 'grant_bonus', points: '50' }, params) }));
+  setScriptProperty('BOOKING_SECRET', null);
+  check('沒設定 BOOKING_SECRET 一律拒絕', grant({ secret: '', name: '阿明' }).error, 'INVALID_SECRET');
+  setScriptProperty('BOOKING_SECRET', secret);
+  check('密碼錯誤拒絕', grant({ secret: 'wrong', name: '阿明' }).error, 'INVALID_SECRET');
+  check('不存在的名字拒絕', grant({ secret: secret, name: '不存在' }).error, 'NAME_NOT_FOUND');
+  check('點數超出範圍拒絕', grant({ secret: secret, name: '阿明', points: '9999' }).error, 'INVALID_POINTS');
+
+  const before = summaryOf('阿明').balance;
+  const monthBefore = summaryOf('阿明').monthEarned;
+  check('老玩家拿到回歸禮', grant({ secret: secret, name: '阿明', note: 'LINE 綁定' }).granted, true);
+  check('餘額加 50', summaryOf('阿明').balance, before + 50);
+  check('不算進本月點數排行', summaryOf('阿明').monthEarned, monthBefore);
+  check('同一個名字不會再發', grant({ secret: secret, name: '阿明' }).reason, 'ALREADY');
+  check('資格日之後才加入的不發', grant({ secret: secret, name: '新人' }).reason, 'INELIGIBLE');
+
+  global.rebuildPoints_();
+  check('重算後回歸禮還在', summaryOf('阿明').balance, before + 50);
+  const rows = sheetRows('點數帳本').filter((row) => row[11] === 'return-bonus|阿明');
+  check('帳本只有一列回歸禮', rows.length, 1);
+  check('來源標 LINE（重算不會動到）', rows[0][8], 'LINE');
+
+  // GM 作廢之後也不會再補發
+  const ledger = spreadsheet.getSheetByName('點數帳本');
+  const all = sheetRows('點數帳本');
+  const index = all.findIndex((row) => row[11] === 'return-bonus|阿明');
+  ledger.getRange(index + 2, 10).setValue('作廢');
+  global.rebuildPoints_();
+  check('作廢後扣回', summaryOf('阿明').balance, before);
+  check('作廢後不再補發', grant({ secret: secret, name: '阿明' }).reason, 'ALREADY');
 }
 
 /* ============================================================ */

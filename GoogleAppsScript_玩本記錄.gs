@@ -453,7 +453,7 @@ function doGet(e) {
   const params = (e && e.parameter) || {};
 
   if (params.action === 'summary') {
-    return maybeJsonp_(params, buildPublicPayload_());
+    return maybeJsonp_(params, cachedPublicPayload_());
   }
 
   return maybeJsonp_(params, {
@@ -953,6 +953,7 @@ function rebuildPoints_() {
   }
 
   const summary = writeSummary_(ss, allRows, ordered, aliasMap);
+  clearSummaryCache_();
 
   return {
     players: summary.length,
@@ -1104,6 +1105,46 @@ function assignAgentNumbers_(ss, ordered, aliasMap) {
 /* ============================================================
    對外 JSON（讓網站即時讀，避開 CSV 發布的 5–10 分鐘快取）
    ============================================================ */
+
+/**
+ * 點數總覽要讀七、八個分頁，Google 偶爾會讓這一步卡到 20 秒以上，
+ * 榮譽牆（等 8 秒）就會顯示不出點數。所以把算好的結果放進快取：
+ * 重算點數（送出記錄、按讚、回歸禮、選單的重算）時立刻清掉，
+ * GM 直接改試算表但沒有重算的話，最多 10 分鐘後也會更新。
+ */
+const SUMMARY_CACHE_KEY = 'public-summary';
+const SUMMARY_CACHE_SECONDS = 600;
+
+function cachedPublicPayload_() {
+  const cache = summaryCache_();
+  if (cache) {
+    const hit = cache.get(SUMMARY_CACHE_KEY);
+    if (hit) {
+      try { return JSON.parse(hit); } catch (_) { /* 壞掉的快取就重算 */ }
+    }
+  }
+  const payload = buildPublicPayload_();
+  if (cache) {
+    // 單筆上限 100KB；超過就不快取，照樣回傳。
+    try { cache.put(SUMMARY_CACHE_KEY, JSON.stringify(payload), SUMMARY_CACHE_SECONDS); } catch (_) {}
+  }
+  return payload;
+}
+
+function clearSummaryCache_() {
+  const cache = summaryCache_();
+  if (cache) {
+    try { cache.remove(SUMMARY_CACHE_KEY); } catch (_) {}
+  }
+}
+
+function summaryCache_() {
+  try {
+    return typeof CacheService === 'undefined' ? null : CacheService.getScriptCache();
+  } catch (_) {
+    return null;
+  }
+}
 
 function buildPublicPayload_() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);

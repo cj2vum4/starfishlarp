@@ -402,17 +402,28 @@
 
         if (!ENDPOINT) return Promise.resolve(state);
 
+        // Apps Script 偶爾要 10 秒以上才回應。第一次 8 秒沒回來就再試一次
+        // （再等 10 秒），兩次都失敗才當作讀不到點數。
+        return requestSummary(8000)
+            .then((done) => done || requestSummary(10000))
+            .then(() => state);
+    }
+
+    /** 送一次 JSONP；有拿到可用的資料回傳 true。 */
+    function requestSummary(timeoutMs) {
         return new Promise((resolve) => {
-            const callbackName = 'starfishPointsCb' + Date.now().toString(36);
+            const callbackName = 'starfishPointsCb' + Date.now().toString(36) +
+                Math.random().toString(36).slice(2, 6);
             const script = document.createElement('script');
             let settled = false;
 
             const finish = () => {
                 if (settled) return;
                 settled = true;
-                delete window[callbackName];
+                // 逾時之後才回來的回應呼叫空函式，不要在 console 報錯。
+                window[callbackName] = function () {};
                 script.remove();
-                resolve(state);
+                resolve(state.ok || state.stale);
             };
 
             window[callbackName] = (payload) => {
@@ -443,7 +454,7 @@
             document.head.appendChild(script);
 
             // 端點沒回應時不要卡住整頁
-            setTimeout(finish, 8000);
+            setTimeout(finish, timeoutMs);
         });
     }
 

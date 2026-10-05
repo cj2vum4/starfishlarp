@@ -115,10 +115,31 @@ global.ScriptApp = {
   deleteTrigger: () => {}
 };
 
+/** 快取與指令碼屬性：各組測試可以用 resetCache() / setScriptProperty() 控制。 */
+const cacheStore = new Map();
+global.CacheService = {
+  getScriptCache: () => ({
+    get: (key) => (cacheStore.has(key) ? cacheStore.get(key) : null),
+    put: (key, value) => { cacheStore.set(key, value); },
+    remove: (key) => { cacheStore.delete(key); }
+  })
+};
+const scriptProperties = new Map();
+global.PropertiesService = {
+  getScriptProperties: () => ({ getProperty: (key) => (scriptProperties.has(key) ? scriptProperties.get(key) : null) })
+};
+global.LockService = { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) };
+
+function resetCache() { cacheStore.clear(); }
+function setScriptProperty(key, value) {
+  if (value == null) scriptProperties.delete(key); else scriptProperties.set(key, value);
+}
+
 vm.runInThisContext(fs.readFileSync(GAS_PATH, 'utf8'));
 
 function resetSheets() {
   sheets.length = 0;
+  cacheStore.clear();
 }
 
 /**
@@ -182,5 +203,6 @@ function sheetRows(name) {
 
 module.exports = {
   sheets, spreadsheet, makeSheet,
-  resetSheets, freshEnv, setConfig, disableQuests, summaryOf, sheetRows
+  resetSheets, freshEnv, setConfig, disableQuests, summaryOf, sheetRows,
+  resetCache, setScriptProperty
 };
