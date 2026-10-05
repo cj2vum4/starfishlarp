@@ -222,6 +222,7 @@ async function listAllVideos(channelId, scripts) {
     const shorts = await listChannelIds(channelId, 'shorts').catch(() => []);
     const all = [...regular.map(id => [id, false]), ...shorts.filter(id => !regular.includes(id)).map(id => [id, true])];
     console.log(`完整掃描：一般影片 ${regular.length} 支、Shorts ${shorts.length} 支（已登記的略過）`);
+    SCAN_COUNTS = `一般 ${regular.length}／Shorts ${shorts.length}／已登記略過 ${all.filter(([id]) => used.has(id)).length}`;
     const videos = [];
     for (const [id, isShort] of all) {
         if (used.has(id)) continue;
@@ -230,6 +231,9 @@ async function listAllVideos(channelId, scripts) {
     }
     return videos;
 }
+
+let SCAN_MODE = '';
+let SCAN_COUNTS = '';
 
 async function main() {
     const setAt = process.argv.indexOf('--set');
@@ -240,6 +244,7 @@ async function main() {
 
     const scripts = loadScripts();
     let videos;
+    SCAN_MODE = 'RSS';
     if (process.env.YT_FEED_FILE) {
         videos = parseFeed(fs.readFileSync(process.env.YT_FEED_FILE, 'utf8'));
     } else {
@@ -249,7 +254,7 @@ async function main() {
         }
         const channelId = await resolveChannelId(process.env.YT_CHANNEL);
         if (process.env.YT_FULL === '1') {
-            try { videos = await listAllVideos(channelId, scripts); }
+            try { videos = await listAllVideos(channelId, scripts); SCAN_MODE = '完整掃描'; }
             catch (err) { console.log(`::warning::完整掃描失敗，改用 RSS：${err.message}`); }
         }
         if (!videos) {
@@ -259,14 +264,24 @@ async function main() {
     console.log(`待比對 ${videos.length} 支影片`);
 
     const picked = new Map(); // script.id → video
+    const report = [];
     for (const v of videos) {
         const s = matchVideo(v, scripts);
-        console.log(`  ${v.id} ${v.shorts ? '[Shorts] ' : ''}${v.title} → ${s ? s.name : '（沒對到劇本）'}`);
+        const line = `${v.id} ${v.shorts ? '[Shorts] ' : ''}${v.title || '（無標題）'} → ${s ? s.name : '（沒對到劇本）'}` +
+            (s && String(s.youtube || '').trim() ? '（已有影片，略過）' : '');
+        console.log('  ' + line);
+        report.push(line);
         if (!s || String(s.youtube || '').trim()) continue;
         const cur = picked.get(s.id);
         const better = !cur || (cur.shorts && !v.shorts) ||
             (cur.shorts === v.shorts && v.published > cur.published);
         if (better) picked.set(s.id, v);
+    }
+
+    // 掃描結果寫成一則 annotation：Actions 頁面與 API 都看得到，不用下載整份 log
+    if (process.env.GITHUB_ACTIONS) {
+        const text = [`${SCAN_MODE}${SCAN_COUNTS ? '（' + SCAN_COUNTS + '）' : ''}，待比對 ${videos.length} 支`, ...report].join('\n');
+        console.log('::notice title=YouTube 同步結果::' + text.replace(/%/g, '%25').replace(/\r/g, '').replace(/\n/g, '%0A'));
     }
 
     if (!picked.size) {
