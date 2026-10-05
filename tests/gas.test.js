@@ -124,8 +124,9 @@ group('介紹人');
   // 50(新手好運那場) + 10(被介紹) + 30(第二場)
   check('被介紹者拿到 10 點', summaryOf('小明').earned, 50 + 10 + 30);
 
+  // 只認表單來源，否則「本月介紹 1 位新朋友」這個任務說明也會被算進來
   const referralRows = sheetRows('點數帳本')
-    .filter((row) => /介紹/.test(String(row[5])));
+    .filter((row) => String(row[8]).trim() === '表單' && /介紹/.test(String(row[5])));
   check('介紹只結算一次（雙方各一列）', referralRows.length, 2);
 }
 
@@ -379,6 +380,144 @@ group('心得按讚與精選');
     global.recordLike_({ script: '年輪', date: '2026/2/1', author: '' }).ok, false);
   check('缺劇本會被拒絕',
     global.recordLike_({ script: '', date: '2026/2/1', author: '小明' }).ok, false);
+}
+
+/* ============================================================
+   每月任務
+   ============================================================ */
+group('每月任務');
+{
+  // 場次目標 3、心得 2、新本 1、揪團 1
+  freshEnv([
+    ['2026/5/1', '海星', '2026/5/1', '年輪', '甲', '5', LONG, ''],
+    ['2026/5/2', '海星', '2026/5/2', '上路', '乙', '5', LONG, ''],
+    ['2026/5/3', '海星', '2026/5/3', '左左', '丙', '5', SHORT, ''],
+    // 小明只玩一場，達不到場次目標
+    ['2026/5/4', '小明', '2026/5/4', '群星', '丁', '5', LONG, '']
+  ], { quests: true });
+
+  const payload = global.buildPublicPayload_();
+  check('payload 帶出任務定義', payload.quests.length, 4);
+  check('任務有點數', payload.quests.every((quest) => quest.points > 0), true);
+  check('說明裡的 {目標} 已替換成數字',
+    payload.quests.find((quest) => quest.id === '場次').label, '本月完成 3 場');
+
+  const questRows = sheetRows('點數帳本')
+    .filter((row) => String(row[8]).trim() === '任務');
+  const earned = (name, id) => questRows.find((row) =>
+    String(row[2]) === name && String(row[5]).indexOf(
+      payload.quests.find((quest) => quest.id === id).label) === 0);
+
+  check('海星達成場次任務', Boolean(earned('海星', '場次')), true);
+  check('場次任務發 20 點', Number(earned('海星', '場次')[4]), 20);
+  check('海星達成心得任務（2 篇長心得）', Boolean(earned('海星', '心得')), true);
+  check('海星達成新本任務', Boolean(earned('海星', '新本')), true);
+  check('沒人介紹就沒有揪團任務', Boolean(earned('海星', '揪團')), false);
+
+  check('小明沒達成場次任務', Boolean(earned('小明', '場次')), false);
+  check('小明達成新本任務', Boolean(earned('小明', '新本')), true);
+
+  // 基本 50+30+25(短心得) = 105，加上場次20+心得15+新本15 = 155
+  check('海星總分含任務點數', summaryOf('海星').earned, 105 + 50);
+
+  check('進度寫進分頁',
+    sheetRows('任務進度').some((row) =>
+      String(row[1]) === '海星' && String(row[2]) === '場次' && Number(row[3]) === 3), true);
+  check('未達成的也寫進度',
+    sheetRows('任務進度').some((row) =>
+      String(row[1]) === '小明' && String(row[2]) === '場次' && Number(row[3]) === 1), true);
+
+  global.rebuildPoints_();
+  global.rebuildPoints_();
+  check('重複重算不會重複發任務點', summaryOf('海星').earned, 105 + 50);
+  check('重複重算不會重複寫進度',
+    sheetRows('任務進度').filter((row) =>
+      String(row[1]) === '海星' && String(row[2]) === '場次').length, 1);
+
+  // GM 停用某個任務 → 點數要跟著消失
+  const questSheet = spreadsheet.getSheetByName('任務');
+  const rows = questSheet.getRange(2, 1, questSheet.getLastRow() - 1, 5).getValues();
+  const target = rows.findIndex((row) => String(row[0]).trim() === '場次') + 2;
+  questSheet.getRange(target, 5).setValue('FALSE');
+  global.rebuildPoints_();
+  check('停用任務後點數消失', summaryOf('海星').earned, 105 + 30);
+
+  // 改目標也要立刻生效
+  questSheet.getRange(target, 5).setValue('TRUE');
+  questSheet.getRange(target, 3).setValue(10);
+  global.rebuildPoints_();
+  check('目標拉高後變成未達成', summaryOf('海星').earned, 105 + 30);
+  check('說明跟著目標走',
+    global.buildPublicPayload_().quests.find((q) => q.id === '場次').label, '本月完成 10 場');
+}
+
+group('每月任務：揪團與跨月');
+{
+  freshEnv([
+    ['2026/5/1', '海星', '2026/5/1', '年輪', '甲', '5', LONG, ''],
+    ['2026/6/1', '小明', '2026/6/1', '上路', '乙', '5', LONG, '海星']
+  ], { quests: true });
+
+  const questRows = sheetRows('點數帳本')
+    .filter((row) => String(row[8]).trim() === '任務');
+
+  const juggle = questRows.find((row) =>
+    String(row[2]) === '海星' && /介紹/.test(String(row[5])));
+  check('介紹人在被介紹者那一場的月份達成揪團', Boolean(juggle), true);
+  check('揪團記在 6 月而不是 5 月', String(juggle[7]), '2026/06');
+  check('揪團任務發 30 點', Number(juggle[4]), 30);
+
+  // 5 月與 6 月各自結算，跨月之後舊的任務點數不會消失
+  const months = new Set(questRows
+    .filter((row) => String(row[2]) === '海星')
+    .map((row) => String(row[7])));
+  check('海星在兩個月份都有任務記錄', months.size, 2);
+}
+
+group('重算時哪些列會被重建');
+{
+  // 這組鎖住「哪些來源是系統產生的」這個分界。
+  // 任務與心得讚要能重建（改設定後生效），
+  // LINE 回歸禮與 GM 手動列則是一次性的，重算絕對不能清掉。
+  freshEnv([
+    ['2026/5/1', '海星', '2026/5/1', '年輪', '甲', '5', LONG, ''],
+    ['2026/5/2', '海星', '2026/5/2', '上路', '乙', '5', LONG, ''],
+    ['2026/5/3', '海星', '2026/5/3', '左左', '丙', '5', LONG, '']
+  ], { quests: true });
+
+  const ledger = spreadsheet.getSheetByName('點數帳本');
+  ledger.appendRow([new Date(), '海星', '海星', 'bonus', 100, '老玩家回歸禮（LINE 綁定）',
+    '', '', 'LINE', '有效', '', 'return-bonus|海星']);
+  ledger.appendRow([new Date(), '海星', '海星', 'adjust', 50, 'GM 補登',
+    '', '2026/5/4', '手動', '有效', '', '']);
+  global.recordLike_({ script: '年輪', date: '2026/5/1', author: '海星' });
+
+  const sourcesAfter = () => {
+    const counts = {};
+    sheetRows('點數帳本').forEach((row) => {
+      const source = String(row[8]).trim();
+      counts[source] = (counts[source] || 0) + 1;
+    });
+    return counts;
+  };
+
+  const before = sourcesAfter();
+  check('四種來源都在帳本裡',
+    ['表單', '任務', 'LINE', '手動', '心得讚'].every((source) => before[source] > 0), true);
+
+  global.rebuildPoints_();
+  global.rebuildPoints_();
+  const after = sourcesAfter();
+
+  check('LINE 回歸禮重算後只有一列（不會被重建或清掉）', after['LINE'], 1);
+  check('GM 手動列重算後只有一列', after['手動'], 1);
+  check('任務列不會每次重算就疊加', after['任務'], before['任務']);
+  check('心得讚列不會每次重算就疊加', after['心得讚'], before['心得讚']);
+
+  const bonus = sheetRows('點數帳本').find((row) => String(row[8]).trim() === 'LINE');
+  check('回歸禮點數原封不動', Number(bonus[4]), 100);
+  check('回歸禮仍算進累積點',
+    summaryOf('海星').earned > 100, true);
 }
 
 /* ============================================================

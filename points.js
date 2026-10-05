@@ -21,6 +21,8 @@
         summary: new Map(),   // 歸戶名 → { agent, earned, redeemed, balance, monthEarned, plays, last }
         rewards: [],
         mystery: [],
+        quests: [],
+        rules: [],
         doubleDayNote: '',
         monthKey: ''
     };
@@ -149,6 +151,44 @@
         background: linear-gradient(90deg, #8f6424, #e9b94f);
     }
     .pts-quest.done .pts-quest-bar i { background: linear-gradient(90deg, #3f8a5c, #8ee0a1); }
+
+    .pts-section-note {
+        float: right; text-transform: none; letter-spacing: .04em;
+        color: #ffd978; font-size: .8rem;
+    }
+
+    .pts-quest-reward {
+        display: inline-block; margin-left: 8px; padding: 1px 7px;
+        border-radius: 3px; background: rgba(233, 185, 79, .18);
+        color: #ffd978; font-size: .74rem; font-style: normal; font-weight: 700;
+        vertical-align: middle;
+    }
+    .pts-quest.done .pts-quest-reward { background: rgba(142, 224, 161, .2); color: #8ee0a1; }
+
+    /* 點數規則：玩家要看得到「做什麼拿幾點」 */
+    .pts-rules { margin-bottom: 20px; }
+    .pts-rules summary {
+        cursor: pointer; list-style: none;
+        padding: 11px 15px; border-radius: 10px;
+        border: 1px solid rgba(233, 185, 79, .26);
+        background: rgba(0, 0, 0, .26);
+        color: #ffd978; font-size: .9rem; font-weight: 700;
+    }
+    .pts-rules summary::-webkit-details-marker { display: none; }
+    .pts-rules summary::after { content: ' ▾'; color: #b9aa91; }
+    .pts-rules[open] summary::after { content: ' ▴'; }
+    .pts-rules summary:hover { border-color: rgba(233, 185, 79, .55); }
+    .pts-rule-list { display: grid; gap: 1px; margin-top: 10px; }
+    .pts-rule {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+        padding: 9px 15px; background: rgba(0, 0, 0, .2);
+        font-size: .9rem;
+    }
+    .pts-rule span { flex: 1; min-width: 150px; }
+    .pts-rule b { color: #ffd978; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pts-rule small { width: 100%; color: #8d8272; font-size: .76rem; }
+    .pts-rule.boost { background: rgba(141, 91, 26, .26); }
+    .pts-rule.boost b { color: #ffe9a8; }
 
     /* 同場戰友 */
     .pts-mates { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
@@ -385,6 +425,8 @@
                     state.monthKey = payload.monthKey || '';
                     state.rewards = Array.isArray(payload.rewards) ? payload.rewards : [];
                     state.mystery = Array.isArray(payload.mystery) ? payload.mystery : [];
+                    state.quests = Array.isArray(payload.quests) ? payload.quests : [];
+                    state.rules = Array.isArray(payload.rules) ? payload.rules : [];
                     payload.summary.forEach((item) => {
                         state.summary.set(normalizeName(item.name), item);
                     });
@@ -574,49 +616,16 @@
         return { year: now.getFullYear(), month: now.getMonth() };
     }
 
-    function computeQuests(playerName, playRecords) {
-        const records = playRecords[playerName];
-        if (!records) return [];
+    function computeQuests(playerName) {
+        const player = getPlayer(playerName);
+        const progress = (player && player.questProgress) || {};
 
-        const meta = scriptMetaMap();
-        const { year, month } = currentMonth();
-
-        const thisMonth = [];
-        const priorScripts = new Set();
-        const priorTypes = new Set();
-
-        Object.keys(records).forEach((scriptId) => {
-            records[scriptId].forEach((record) => {
-                const date = parseDate(record.date);
-                const inMonth = date && date.getFullYear() === year && date.getMonth() === month;
-
-                if (inMonth) {
-                    thisMonth.push({ scriptId, ...record });
-                } else if (date) {
-                    priorScripts.add(scriptId);
-                    const info = meta.get(scriptId);
-                    if (info) info.types.forEach((type) => priorTypes.add(type));
-                }
-            });
-        });
-
-        const freshScripts = new Set();
-        const freshTypes = new Set();
-        thisMonth.forEach((play) => {
-            if (!priorScripts.has(play.scriptId)) freshScripts.add(play.scriptId);
-            const info = meta.get(play.scriptId);
-            if (info) info.types.forEach((type) => { if (!priorTypes.has(type)) freshTypes.add(type); });
-        });
-
-        const longComments = thisMonth.filter((play) =>
-            Array.from(String(play.comment || '').replace(/\s+/g, '')).length >= 15).length;
-
-        return [
-            { label: '本月完成 3 場', now: thisMonth.length, goal: 3 },
-            { label: '本月寫 2 篇 15 字以上的心得', now: longComments, goal: 2 },
-            { label: '本月開一本沒玩過的劇本', now: freshScripts.size, goal: 1 },
-            { label: '本月碰一種沒玩過的類型', now: freshTypes.size, goal: 1 }
-        ];
+        return state.quests.map((quest) => ({
+            label: quest.label,
+            points: quest.points,
+            goal: quest.goal,
+            now: Number(progress[quest.id]) || 0
+        }));
     }
 
     /* ── 管家效應：記得玩家上次來是什麼時候 ─────────────────── */
@@ -1049,7 +1058,7 @@
 
         const greeting = greetingFor(playerName, playRecords);
         const mates = computeTeammates(playerName, playRecords);
-        const quests = computeQuests(playerName, playRecords);
+        const quests = computeQuests(playerName);
         const opened = state.mystery.filter((item) => normalizeName(item.name) === normalizeName(playerName));
 
         container.innerHTML =
@@ -1062,6 +1071,7 @@
             '</div>' +
             (greeting ? '<p class="pts-greeting">' + greeting + '</p>' : '') +
             statsHtml +
+            renderRules() +
             renderQuests(quests) +
             rewardsHtml +
             renderMystery(opened) +
@@ -1165,15 +1175,45 @@
             const percent = Math.min(quest.now / quest.goal, 1) * 100;
             return '<div class="pts-quest' + (done ? ' done' : '') + '">' +
                 '<div class="pts-quest-top">' +
-                    '<b>' + (done ? '✓ ' : '') + escapeHtml(quest.label) + '</b>' +
+                    '<b>' + (done ? '✓ ' : '') + escapeHtml(quest.label) +
+                        '<i class="pts-quest-reward">+' + quest.points + ' 點</i></b>' +
                     '<span>' + Math.min(quest.now, quest.goal) + ' / ' + quest.goal + '</span>' +
                 '</div>' +
                 '<div class="pts-quest-bar"><i style="width:' + percent.toFixed(0) + '%"></i></div>' +
             '</div>';
         }).join('');
 
-        return '<p class="pts-section-title">本月任務</p>' +
+        const total = quests.reduce((sum, quest) => sum + quest.points, 0);
+        const got = quests
+            .filter((quest) => quest.now >= quest.goal)
+            .reduce((sum, quest) => sum + quest.points, 0);
+
+        return '<p class="pts-section-title">本月任務' +
+            '<span class="pts-section-note">已拿 ' + got + ' / ' + total + ' 點</span></p>' +
             '<div class="pts-quests">' + items + '</div>';
+    }
+
+    /**
+     * 點數規則。數值一律由 Apps Script 從「設定」分頁現算後送來，
+     * 不在前端寫死——GM 改了數字，這裡立刻跟著變。
+     */
+    function renderRules() {
+        if (!state.rules.length) return '';
+
+        const items = state.rules.map((rule) => {
+            const boost = rule.multiplier ? ' boost' : '';
+            const value = rule.multiplier ? '×' + rule.multiplier : '+' + rule.points + ' 點';
+            return '<div class="pts-rule' + boost + '">' +
+                '<span>' + (rule.multiplier ? '⚡ ' : '') + escapeHtml(rule.label) + '</span>' +
+                '<b>' + value + '</b>' +
+                (rule.note ? '<small>' + escapeHtml(rule.note) + '</small>' : '') +
+            '</div>';
+        }).join('');
+
+        return '<details class="pts-rules">' +
+            '<summary>點數怎麼來？</summary>' +
+            '<div class="pts-rule-list">' + items + '</div>' +
+        '</details>';
     }
 
     function renderMates(mates) {

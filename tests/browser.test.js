@@ -80,6 +80,7 @@ const SUMMARY = {
   summary: [
     { name: '海星', agent: '#001', earned: 145, redeemed: 50, balance: 95,
       monthEarned: 60, plays: 3, last: inMonth(9),
+      questProgress: { '場次': 2, '心得': 2, '新本': 2, '揪團': 0 },
       gilded: true, title: '兔子剋星', legend: true },
     { name: '小明', agent: '#002', earned: 120, redeemed: 0, balance: 120,
       monthEarned: 120, plays: 2, last: inMonth(15),
@@ -94,6 +95,23 @@ const SUMMARY = {
     { track: '特權', name: '優先選角權', cost: 80, note: '開本前先挑角色', active: true },
     { track: '榮耀', name: '榮譽牆名字鍍金', cost: 100, note: '名字變成金色', active: true },
     { track: '榮耀', name: '傳奇殿堂留名', cost: 500, note: '永久留名', active: true }
+  ],
+  quests: [
+    { id: '場次', label: '本月完成 3 場', goal: 3, points: 20 },
+    { id: '心得', label: '本月寫 2 篇長心得', goal: 2, points: 15 },
+    { id: '新本', label: '本月開 1 本沒玩過的劇本', goal: 1, points: 15 },
+    { id: '揪團', label: '本月介紹 1 位新朋友', goal: 1, points: 30 }
+  ],
+  rules: [
+    { label: '完成一筆玩本記錄', points: 10 },
+    { label: '心得寫滿 15 字', points: 5 },
+    { label: '第一次玩這個劇本', points: 5 },
+    { label: '全店第一個玩這個劇本', points: 10 },
+    { label: '生涯第一筆記錄（新手好運）', points: 20 },
+    { label: '介紹新朋友來（雙方各得）', points: 10 },
+    { label: '心得每被按一個讚', points: 2, note: '單則最多 10 點' },
+    { label: '心得被選為精選', points: 20 },
+    { label: '平日開本，點數兩倍', multiplier: 2, note: '當天所有點數加倍' }
   ],
   mystery: [{ name: '海星', prize: '免費飲料一杯', date: inMonth(9) }],
   interactions: [{ script: '年輪', date: inMonth(9), author: '海星', likes: 4, featured: true }]
@@ -224,6 +242,23 @@ async function launchBrowser() {
   check('未達標的獎勵上鎖', cardText.includes('🔒'));
   check('有管家問候', cardText.includes('歡迎回來') || cardText.includes('好久不見'));
   check('有本月任務', cardText.includes('本月任務'));
+  check('任務標出可得點數', cardText.includes('+20 點'));
+  check('任務顯示本月已拿多少 / 總共多少', /已拿\s*30\s*\/\s*80\s*點/.test(cardText), true);
+  check('達標的任務打勾', await page.locator('#pointsCard .pts-quest.done').count(), 2);
+  check('未達標的不打勾',
+    await page.locator('#pointsCard .pts-quest:not(.done)').count(), 2);
+
+  check('有點數規則面板', cardText.includes('點數怎麼來'));
+  check('規則列出基本點數', cardText.includes('完成一筆玩本記錄'));
+  check('規則數字來自設定而非寫死', cardText.includes('心得寫滿 15 字'));
+  check('規則列出雙倍日', cardText.includes('×2'));
+  check('規則面板預設收合',
+    await page.locator('#pointsCard .pts-rules').evaluate((el) => el.open), false);
+
+  await page.locator('#pointsCard .pts-rules summary').click();
+  await page.waitForTimeout(200);
+  check('點了會展開',
+    await page.locator('#pointsCard .pts-rules').evaluate((el) => el.open), true);
   check('有同場戰友', cardText.includes('同場戰友'));
   check('有神秘盒紀錄', cardText.includes('免費飲料一杯'));
   check('有彩蛋徽章區', cardText.includes('彩蛋徽章'));

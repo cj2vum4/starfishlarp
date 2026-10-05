@@ -58,6 +58,8 @@ const SUMMARY_SHEET = '點數總覽';
 const MYSTERY_SHEET = '神秘盒';
 const INTERACTION_SHEET = '心得互動';
 const REPORT_SHEET = '月報';
+const QUEST_SHEET = '任務';
+const QUEST_PROGRESS_SHEET = '任務進度';
 
 const REQUIRED_HEADERS = [
   '時間戳記',
@@ -82,6 +84,8 @@ const CONFIG_HEADERS = ['設定項', '值', '說明'];
 const REWARD_HEADERS = ['軌道', '品項', '所需點數', '說明', '是否上架'];
 const MYSTERY_HEADERS = ['獎品', '權重', '剩餘數量', '是否啟用'];
 const INTERACTION_HEADERS = ['劇本', '日期', '作者', '讚數', '精選', '最後更新'];
+const QUEST_HEADERS = ['任務ID', '說明', '目標', '點數', '是否啟用'];
+const QUEST_PROGRESS_HEADERS = ['月份', '歸戶名', '任務ID', '進度', '目標', '已達成'];
 const REPORT_HEADERS = [
   '月份', '場次', '填表人次', '每場平均填表', '平日場次', '假日場次', '平日佔比',
   '活躍玩家', '新玩家', '平均回訪間隔(天)', '介紹人筆數', '發出點數', '兌換點數'
@@ -92,8 +96,9 @@ const SOURCE_FORM = '表單';
 const SOURCE_MANUAL = '手動';
 const SOURCE_LIKE = '心得讚';
 const SOURCE_LINE = 'LINE';
+const SOURCE_QUEST = '任務';
 // 系統會整批重建的來源。其餘一律當成 GM 手動輸入而保留。
-const GENERATED_SOURCES = [SOURCE_FORM, SOURCE_LIKE];
+const GENERATED_SOURCES = [SOURCE_FORM, SOURCE_LIKE, SOURCE_QUEST];
 const STATUS_VOID = '作廢';
 
 const DEFAULT_CONFIG = [
@@ -124,6 +129,16 @@ const DEFAULT_REWARDS = [
   ['榮耀', '自訂專屬稱號', 200, '自己取一個稱號，審核後掛在名字旁', 'TRUE'],
   ['榮耀', '傳奇殿堂留名', 500, '永久列入榮譽牆傳奇殿堂', 'TRUE'],
   ['神秘', '神秘盒 ???', 30, '內容隨機，開了才知道', 'TRUE']
+];
+
+// 每月任務。四項都只用「表單回應 1」就能判定，不需要劇本類型等
+// 試算表沒有的資料——所以計分仍然只有 rebuildPoints_ 一套實作。
+// 說明裡的 {目標} 會被實際數字取代，改目標不用再改文案。
+const DEFAULT_QUESTS = [
+  ['場次', '本月完成 {目標} 場', 3, 20, 'TRUE'],
+  ['心得', '本月寫 {目標} 篇長心得', 2, 15, 'TRUE'],
+  ['新本', '本月開 {目標} 本沒玩過的劇本', 1, 15, 'TRUE'],
+  ['揪團', '本月介紹 {目標} 位新朋友', 1, 30, 'TRUE']
 ];
 
 // 神秘盒的內容。權重越大越容易抽到；剩餘數量填 -1 代表無限。
@@ -640,6 +655,10 @@ function setupSheets_() {
 
   ensureSheetWithHeaders_(ss, INTERACTION_SHEET, INTERACTION_HEADERS);
   ensureSheetWithHeaders_(ss, REPORT_SHEET, REPORT_HEADERS);
+  ensureSheetWithHeaders_(ss, QUEST_PROGRESS_SHEET, QUEST_PROGRESS_HEADERS);
+
+  const questSheet = ensureSheetWithHeaders_(ss, QUEST_SHEET, QUEST_HEADERS);
+  seedIfEmpty_(questSheet, DEFAULT_QUESTS);
 
   return ss;
 }
@@ -731,6 +750,13 @@ function rebuildPoints_() {
   const scriptExplored = {};    // 劇本 → 已有人玩過
   const playerSeen = {};        // 歸戶名 → 已有記錄
   const dailyCount = {};        // 歸戶名|日期 → 當日已計點筆數
+  const monthly = {};           // 歸戶名|YYYY/MM → 每月任務的進度累計
+  const monthBucket = function (canon, date) {
+    if (!date) return null;
+    const key = canon + '|' + date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2);
+    if (!monthly[key]) monthly[key] = { 場次: 0, 心得: 0, 新本: 0, 揪團: 0 };
+    return monthly[key];
+  };
   const lastAwardByPlayer = {};
 
   const generated = [];
@@ -776,12 +802,15 @@ function rebuildPoints_() {
 
     // ── 計分 ──────────────────────────────────────────────
     const parts = [];
+    const month = monthBucket(canon, item.dateValue);
     let points = config['基本點數'];
     parts.push('基本' + config['基本點數']);
+    if (month) month['場次'] += 1;
 
     if (charLength_(item.comment) >= config['心得字數門檻']) {
       points += config['心得點數'];
       parts.push('心得' + config['心得點數']);
+      if (month) month['心得'] += 1;
     }
 
     const scriptKey = canon + '|' + item.script;
@@ -789,6 +818,7 @@ function rebuildPoints_() {
       playerScripts[scriptKey] = true;
       points += config['首玩點數'];
       parts.push('首玩' + config['首玩點數']);
+      if (month) month['新本'] += 1;
     }
 
     if (!scriptExplored[item.script]) {
@@ -823,6 +853,9 @@ function rebuildPoints_() {
       if (referrerCanon && referrerCanon !== canon) {
         if (!voided) totalEarned += config['被介紹點數'] + config['介紹人點數'];
 
+        const referrerMonth = monthBucket(referrerCanon, item.dateValue);
+        if (referrerMonth) referrerMonth['揪團'] += 1;
+
         generated.push([
           item.stamp || new Date(), item.name, canon, 'earn',
           voided ? 0 : config['被介紹點數'],
@@ -843,6 +876,37 @@ function rebuildPoints_() {
       }
     }
   });
+
+  // ── 每月任務：達標就發點 ──────────────────────────────────
+  // 逐月結算而不是只算當月，跨月之後既有的任務點數才不會消失。
+  const quests = readQuests_(ss);
+  const progressRows = [];
+
+  Object.keys(monthly).sort().forEach(function (key) {
+    const split = key.lastIndexOf('|');
+    const canon = key.slice(0, split);
+    const monthKey = key.slice(split + 1);
+    const stats = monthly[key];
+
+    quests.forEach(function (quest) {
+      const progress = stats[quest.id] || 0;
+      const done = progress >= quest.goal;
+
+      progressRows.push([monthKey, canon, quest.id, progress, quest.goal, done ? 'TRUE' : '']);
+      if (!done || quest.points <= 0) return;
+
+      totalEarned += quest.points;
+      generated.push([
+        new Date(), canon, canon, 'earn', quest.points,
+        quest.label + ' +' + quest.points,
+        '', monthKey, SOURCE_QUEST, '有效',
+        '每月任務達成（' + progress + '/' + quest.goal + '）',
+        'quest|' + canon + '|' + monthKey + '|' + quest.id
+      ]);
+    });
+  });
+
+  writeQuestProgress_(ss, progressRows);
 
   // ── 心得互動：被按讚與被選為精選的作者得點 ────────────────
   // 這些列的來源標成「心得讚」，跟表單列一樣每次重算都會重建，
@@ -1077,6 +1141,42 @@ function buildPublicPayload_() {
     monthEarned[name] = (monthEarned[name] || 0) + points;
   });
 
+  // 任務定義與各人當月進度。進度在 rebuildPoints_ 算好寫進分頁，
+  // 前端直接讀，避免兩邊各寫一套判定而對不起來。
+  const quests = readQuests_(ss).map(function (quest) {
+    return { id: quest.id, label: quest.label, goal: quest.goal, points: quest.points };
+  });
+
+  const questProgress = {};
+  readRows_(ss.getSheetByName(QUEST_PROGRESS_SHEET)).forEach(function (row) {
+    if (String(row['月份'] || '').trim() !== monthKey) return;
+    const name = String(row['歸戶名'] || '').trim();
+    if (!name) return;
+    if (!questProgress[name]) questProgress[name] = {};
+    questProgress[name][String(row['任務ID'] || '').trim()] = Number(row['進度']) || 0;
+  });
+
+  // 點數規則一律從「設定」現算，GM 改了數字文案就跟著變，不會有兩套說法。
+  const rules = [
+    { label: '完成一筆玩本記錄', points: config['基本點數'] },
+    { label: '心得寫滿 ' + config['心得字數門檻'] + ' 字', points: config['心得點數'] },
+    { label: '第一次玩這個劇本', points: config['首玩點數'] },
+    { label: '全店第一個玩這個劇本', points: config['首探點數'] },
+    { label: '生涯第一筆記錄（新手好運）', points: config['新手好運點數'] },
+    { label: '介紹新朋友來（雙方各得）', points: config['介紹人點數'] },
+    { label: '心得每被按一個讚', points: config['讚點數'],
+      note: '單則最多 ' + config['讚點數上限'] + ' 點' },
+    { label: '心得被選為精選', points: config['精選點數'] }
+  ].filter(function (rule) { return rule.points > 0; });
+
+  if (String(config['雙倍日'] || '').trim()) {
+    rules.push({
+      label: config['雙倍日文案'] || '雙倍點數日',
+      multiplier: 2,
+      note: '當天所有點數加倍'
+    });
+  }
+
   // 榮耀軌：GM 在「玩家」分頁核銷後打勾，這裡帶給前端渲染。
   const decorations = {};
   readRows_(ss.getSheetByName(PLAYER_SHEET)).forEach(function (row) {
@@ -1101,6 +1201,7 @@ function buildPublicPayload_() {
       monthEarned: monthEarned[name] || 0,
       plays: Number(row['場次']) || 0,
       last: String(row['最後遊玩日'] || '').trim(),
+      questProgress: questProgress[name] || {},
       gilded: !!decoration.gilded,
       title: decoration.title || '',
       legend: !!decoration.legend
@@ -1135,7 +1236,9 @@ function buildPublicPayload_() {
     summary: summary,
     rewards: rewards,
     mystery: mystery,
-    interactions: interactions
+    interactions: interactions,
+    quests: quests,
+    rules: rules
   };
 }
 
@@ -1191,6 +1294,33 @@ function readConfig_(ss) {
   if (!config['每日上限筆數']) config['每日上限筆數'] = 99;
 
   return config;
+}
+
+/**
+ * 任務定義。說明裡的 {目標} 會被實際數字取代，
+ * GM 改目標時不用同時改文案。
+ */
+function readQuests_(ss) {
+  return readRows_(ss.getSheetByName(QUEST_SHEET)).map(function (row) {
+    const goal = Number(row['目標']) || 0;
+    return {
+      id: String(row['任務ID'] || '').trim(),
+      label: String(row['說明'] || '').trim().replace(/\{目標\}/g, goal),
+      goal: goal,
+      points: Number(row['點數']) || 0,
+      active: String(row['是否啟用'] || '').trim().toUpperCase() !== 'FALSE'
+    };
+  }).filter(function (quest) { return quest.id && quest.goal > 0 && quest.active; });
+}
+
+function writeQuestProgress_(ss, rows) {
+  const sheet = ss.getSheetByName(QUEST_PROGRESS_SHEET);
+  if (sheet.getLastRow() > 1) {
+    sheet.getRange(2, 1, sheet.getLastRow() - 1, QUEST_PROGRESS_HEADERS.length).clearContent();
+  }
+  if (rows.length) {
+    sheet.getRange(2, 1, rows.length, QUEST_PROGRESS_HEADERS.length).setValues(rows);
+  }
 }
 
 /**

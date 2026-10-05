@@ -141,12 +141,24 @@ function freshEnv(rows, options) {
 
   global.setupSheets_();
 
-  // 計分斷言預設要跟雙倍日脫鉤，否則預設值一改測試就全垮。
-  // 雙倍日本身另外用 isDoubleDay_ 單獨測。
+  // 計分斷言預設要跟雙倍日、每月任務脫鉤，否則預設值一改測試就全垮。
+  // 這兩項各自有專屬的測試群組。
   setConfig('雙倍日', settings.doubleDay == null ? '' : settings.doubleDay);
+  // 不能用清空的——rebuildPoints_ 會再呼叫 setupSheets_，
+  // seedIfEmpty_ 看到空分頁就把預設任務補回去了。改成逐列停用。
+  if (!settings.quests) disableQuests();
 
   global.rebuildPoints_();
   return { responses, spreadsheet };
+}
+
+/** 把「任務」分頁所有列設成停用，讓計分測試不受每月任務影響。 */
+function disableQuests() {
+  const sheet = spreadsheet.getSheetByName('任務');
+  if (!sheet || sheet.getLastRow() < 2) return;
+  for (let row = 2; row <= sheet.getLastRow(); row++) {
+    sheet.getRange(row, 5).setValue('FALSE');
+  }
 }
 
 function setConfig(key, value) {
@@ -170,5 +182,5 @@ function sheetRows(name) {
 
 module.exports = {
   sheets, spreadsheet, makeSheet,
-  resetSheets, freshEnv, setConfig, summaryOf, sheetRows
+  resetSheets, freshEnv, setConfig, disableQuests, summaryOf, sheetRows
 };
