@@ -209,9 +209,10 @@ async function listChannelIds(channelId, tab) {
 
 async function fetchVideoInfo(id, shorts) {
     const html = await fetchText(`https://www.youtube.com/watch?v=${id}`);
-    const details = html.slice(html.indexOf('"videoDetails"'));
-    const title = jsonString((details.match(/"title":"((?:\\.|[^"\\])*)"/) || [])[1] || '');
-    const description = jsonString((details.match(/"shortDescription":"((?:\\.|[^"\\])*)"/) || [])[1] || '');
+    // shortDescription 只出現在播放器資料裡；標題用 og:title，比在 JSON 裡找 "title" 可靠
+    const title = decodeXml((html.match(/<meta property="og:title" content="([^"]*)"/) || [])[1] ||
+        (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '').replace(/ - YouTube$/, '');
+    const description = jsonString((html.match(/"shortDescription":"((?:\\.|[^"\\])*)"/) || [])[1] || '');
     const published = (html.match(/"publishDate":"([^"]+)"/) || [])[1] || '';
     return { id, title, description, published, shorts };
 }
