@@ -117,7 +117,8 @@ const DEFAULT_CONFIG = [
   ['雙倍日', '平日', '可填「平日」「假日」、星期（例：二,三）或指定日期（例：2026/08/15），逗號分隔。當天所有點數 x2'],
   ['雙倍日文案', '平日開本，點數兩倍', '顯示在表單與榮譽牆上的活動說明，留空則不顯示'],
   ['回歸禮資格日', '2026/10/06', 'LINE 綁定回歸禮：玩家的「加入日期」早於這天才發（老玩家）。留空則所有綁定的玩家都發'],
-  ['LINE上線日', '', '店家確認後填 YYYY/MM/DD；此日之後補填、遊玩日在此日前的紀錄只記錄不給點，既有紀錄不受影響']
+  ['LINE上線日', '', '填 YYYY/MM/DD 啟用補登規則：此日之後送出、且送出日比遊玩日晚超過「補登寬限天數」的紀錄只記錄不給點；此日之前的紀錄不受影響，留空則不啟用'],
+  ['補登寬限天數', 7, '遊玩後幾天內送出都照常給點（例：7 = 10/3 玩、10/10 前送出都算）']
 ];
 
 const DEFAULT_REWARDS = [
@@ -482,10 +483,6 @@ function doPost(e) {
       return jsonResponse_(grantReturnBonus_(data));
     }
 
-    if (String(data.action || '').trim() === 'line_record') {
-      return jsonResponse_(submitLineRecord_(data));
-    }
-
     const record = {
       '時間戳記': new Date(),
       '怎麼稱呼你呢': clean_(data.name, 30),
@@ -542,61 +539,6 @@ function doPost(e) {
       error: String(error && error.message ? error.message : error)
     });
   }
-}
-
-/** Only the booking backend supplies identity and attendance. Retry keys live on the response row. */
-function submitLineRecord_(data) {
-  const expected = PropertiesService.getScriptProperties().getProperty('BOOKING_SECRET');
-  if (!expected || !sameSecret_(String(data.secret || ''), expected)) return { ok: false, error: 'INVALID_SECRET' };
-  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-  if (!uuid.test(String(data.actor || '')) || !uuid.test(String(data.event || ''))) return { ok: false, error: 'INVALID_RECORD' };
-  const lock = LockService.getScriptLock();
-  lock.waitLock(20000);
-  try {
-    const ss = setupSheets_();
-    const identities = ensureSheetWithHeaders_(ss, 'LINE身分', ['系統帳號', '歸戶名']);
-    const identitySheet = ss.getSheetByName('LINE身分');
-    const existing = readRows_(identitySheet).find(function (r) { return r['系統帳號'] === data.actor; });
-    let name = clean_(data.name, 60);
-    if (existing && name && existing['歸戶名'] !== name) return { ok: false, error: 'IDENTITY_MERGE_REQUIRED' };
-    if (existing) name = existing['歸戶名'];
-    if (!name) {
-      // Same LINE display name must never inherit someone else's balance.
-      const display = clean_(data.displayName, 16) || 'LINE玩家';
-      name = display;
-      const aliases = readAliasMap_(ss);
-      const occupied = function (candidate) {
-        return readRows_(identitySheet).some(function (r) { return r['歸戶名'] === candidate; }) ||
-          readResponses_().some(function (r) { return canonicalName_(r['怎麼稱呼你呢'], aliases) === canonicalName_(candidate, aliases); }) ||
-          readRows_(ss.getSheetByName(PLAYER_SHEET)).some(function (r) { return r['顯示名'] === candidate; });
-      };
-      if (occupied(name)) name = display + '・' + String(data.actor).replace(/-/g, '').slice(0, 12);
-      if (occupied(name)) return { ok: false, error: 'IDENTITY_MERGE_REQUIRED' };
-    }
-    const key = 'line|' + data.actor + '|' + data.event;
-    const sheet = getTargetSheet_();
-    let headers = ensureHeaders_(sheet);
-    if (headers.indexOf('LINE提交鍵') < 0) {
-      sheet.getRange(1, headers.length + 1).setValue('LINE提交鍵');
-      headers = ensureHeaders_(sheet);
-    }
-    const duplicate = readResponses_().some(function (r) { return r['LINE提交鍵'] === key; });
-    if (!duplicate) {
-      const record = { '時間戳記': new Date(), '怎麼稱呼你呢': name, '日期': clean_(data.date, 20),
-        '劇本': clean_(data.script, 100), '角色': clean_(data.character, 100), '給予評價': clean_(data.rating, 10),
-        '50字以內的心得推薦': clean_(data.comment, 50), '介紹人': '', 'LINE提交鍵': key };
-      validate_(record);
-      let roleWritten = false;
-      sheet.appendRow(headers.map(function (header) {
-        if (String(header).indexOf('角色') === 0) { if (roleWritten) return ''; roleWritten = true; return record['角色']; }
-        return Object.prototype.hasOwnProperty.call(record, header) ? record[header] : '';
-      }));
-    }
-    if (!existing) identitySheet.appendRow([data.actor, name]);
-    // If rebuilding failed after the append, retry rebuilds without adding another response.
-    rebuildPoints_();
-    return { ok: true, duplicate: duplicate, name: name };
-  } finally { lock.releaseLock(); }
 }
 
 /**
@@ -818,12 +760,14 @@ function rebuildPoints_() {
     return monthly[key];
   };
   const lastAwardByPlayer = {};
+  // 補登：上線日之後送出、送出日比遊玩日晚超過寬限天數 → 只記錄不給點。
   const launch = parseDate_(config['LINE上線日']);
   const backfillKeys = {};
   const eligibleKeys = {};
   ordered.forEach(function (item) {
     const key = canonicalName_(item.name, aliasMap) + '|' + item.script + '|' + item.dateText;
-    item.backfill = !!(launch && item.dateValue && item.dateValue < launch && item.stamp && item.stamp >= launch);
+    item.backfill = !!(launch && item.dateValue && item.stamp && item.stamp >= launch &&
+      daysBetween_(item.dateValue, item.stamp) > config['補登寬限天數']);
     if (item.backfill) backfillKeys[key] = true;
     else eligibleKeys[key] = true;
   });
@@ -858,7 +802,7 @@ function rebuildPoints_() {
 
     // ── 不給點但仍要留下記錄的情況 ────────────────────────
     if (item.backfill) {
-      push('skip', 0, '', '上線前遊玩、上線後補登：只記錄不給點');
+      push('skip', 0, '', '遊玩後超過 ' + config['補登寬限天數'] + ' 天才送出（補登）：只記錄不給點');
       return; // Does not consume first exploration, first player, referral, daily or monthly counters.
     }
     if (seenKeys[key]) {
@@ -1401,7 +1345,7 @@ function readConfig_(ss) {
 
   // 數值型設定一律轉成數字，避免試算表存成文字造成字串相加。
   ['基本點數', '心得點數', '心得字數門檻', '首玩點數', '首探點數',
-   '新手好運點數', '介紹人點數', '被介紹點數', '每日上限筆數',
+   '新手好運點數', '介紹人點數', '被介紹點數', '每日上限筆數', '補登寬限天數',
    '讚點數', '讚點數上限', '精選點數'].forEach(function (key) {
     const value = Number(config[key]);
     config[key] = isNaN(value) ? 0 : value;
@@ -1493,6 +1437,13 @@ function truthy_(value) {
 /* ============================================================
    日期與雙倍日
    ============================================================ */
+
+/** 兩個日期相差幾個日曆天（只看年月日）。 */
+function daysBetween_(from, to) {
+  const a = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  const b = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+  return Math.round((b - a) / 86400000);
+}
 
 function parseDate_(value) {
   if (value instanceof Date && !isNaN(value.getTime())) return value;

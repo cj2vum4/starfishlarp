@@ -691,25 +691,6 @@ group('LINE 綁定回歸禮');
 }
 
 /* ============================================================ */
-group('LINE 身分與重送保護');
-{
-  freshEnv([['2026/1/1', '同名玩家', '2026/1/1', '舊本', '甲', '5', LONG, '']]);
-  setScriptProperty('BOOKING_SECRET', 'test-only');
-  const base = { secret: 'test-only', actor: '11111111-1111-4111-8111-111111111111',
-    event: '22222222-2222-4222-8222-222222222222', displayName: '同名玩家', name: '',
-    date: '2026-10-05', script: '新本', character: '甲', rating: '5', comment: LONG };
-  check('錯誤密碼不寫入', submitLineRecord_({ ...base, secret: 'wrong' }).error, 'INVALID_SECRET');
-  const result = submitLineRecord_(base);
-  check('新玩家同名不繼承老玩家帳戶', result.name !== '同名玩家');
-  check('第一次寫入成功', result.ok, true);
-  const count = sheetRows('表單回應 1').length;
-  check('同場重送會辨識', submitLineRecord_(base).duplicate, true);
-  check('重送不增加列數', sheetRows('表單回應 1').length, count);
-  const renamed = submitLineRecord_({ ...base, displayName: '改名', event: '33333333-3333-4333-8333-333333333333' });
-  check('LINE 改名不切換點數帳戶', renamed.name, result.name);
-  check('事後綁另一名字要求店家處理', submitLineRecord_({ ...base, name: '老玩家' }).error, 'IDENTITY_MERGE_REQUIRED');
-}
-
 group('上線前補登：不改既有點數與首探');
 {
   freshEnv([
@@ -727,6 +708,23 @@ group('上線前補登：不改既有點數與首探');
   check('正常玩家仍取得首探', ledger.some(r => r[1] === '正常玩家' && /首探/.test(r[5])), true);
   check('補登者之後正式遊玩仍有新手獎', ledger.some(r => r[1] === '補登者' && /新手好運/.test(r[5])), true);
   check('補登不給介紹人點數', ledger.some(r => r[1] === '介紹人'), false);
+}
+
+group('補登寬限：遊玩後 7 天內送出照常給點');
+{
+  freshEnv([
+    ['2026/10/10', '準時者', '2026/10/3', '甲本', '甲', '5', LONG, ''],
+    ['2026/10/11', '遲到者', '2026/10/3', '乙本', '乙', '5', LONG, ''],
+    ['2026/10/9 23:59', '當天邊界', '2026/10/2', '丙本', '丙', '5', LONG, '']
+  ]);
+  setConfig('LINE上線日', '2026/10/06');
+  rebuildPoints_();
+  check('第 7 天送出照常給點', summaryOf('準時者').earned > 0, true);
+  check('第 8 天送出只記錄 0 點', summaryOf('遲到者') ? summaryOf('遲到者').earned : 0, 0);
+  check('看日曆天、不看幾點送出', summaryOf('當天邊界').earned > 0, true);
+  setConfig('補登寬限天數', 10);
+  rebuildPoints_();
+  check('寬限天數可在設定調整', summaryOf('遲到者').earned > 0, true);
 }
 console.log('\n' + '─'.repeat(52));
 if (fail) {
