@@ -22,7 +22,8 @@
  *   任一題可加 showIf: { title: '某題題目', in: ['選項A'] }，該題答案在清單內才顯示（分支題組）；
  *   隱藏的題目不檢查必填、也不送出。
  *   assign: function (answers) { return { '建議角色': '…' }; },  // 選填：依答案算角色，結果一起存進總表
- *   done: { title: '…', text: '…', link?: { href, text } },   // 送出後畫面
+ *   done: { title: '…', text: '…', back?: { href, text }, link?: { href, text } },
+ *                                    // 送出後畫面；back＝回劇本介紹頁的按鈕，link＝次要連結（IG）
  * };
  * answers 以題目文字為鍵：answers['您的生理性別是？'] === '男'
  */
@@ -73,6 +74,11 @@
     done.appendChild(doneTitle);
     done.appendChild(doneExtra);
     done.appendChild(doneText);
+    if (config.done && config.done.back) {
+        var back = el('a', 'sv-done-back', config.done.back.text);
+        back.href = config.done.back.href;
+        done.appendChild(back);
+    }
     if (config.done && config.done.link) {
         var doneLink = el('a', 'sv-done-link', config.done.link.text);
         doneLink.href = config.done.link.href;
@@ -390,6 +396,9 @@
             '.sv-status:empty{display:none}',
             '.sv-done{padding:32px 24px;text-align:center;border:1px solid var(--sv-border);border-radius:14px;background:var(--sv-card)}',
             '.sv-done-title{margin:0 0 12px;color:var(--sv-accent)}',
+            '.sv-done-back{display:block;max-width:320px;margin:22px auto 0;padding:14px 20px;border-radius:999px;text-decoration:none;',
+            'font-weight:700;letter-spacing:.08em;color:var(--sv-on-accent,#1a1208);background:var(--sv-accent);transition:transform .15s}',
+            '.sv-done-back:hover{transform:translateY(-1px)}',
             '.sv-done-link{display:inline-block;margin-top:16px;color:var(--sv-accent)}',
             '.sv-done-text{margin:12px 0 0;color:var(--sv-muted);line-height:1.8;white-space:pre-line}',
             '[hidden]{display:none!important}'
