@@ -42,7 +42,7 @@
   手填的值永遠不會被自動覆蓋；不想自動填某個劇本就填 `"-"`。
 - **`scripts.js?v=` 與劇本頁的 `video.js?v=` 共用同一個版號**（video.js 用自己的版號去載 scripts.js），
   進版時一起全站替換
-- **預約一律走 LINE OA**：劇本頁只在最下方 CTA 放預約按鈕、連到 LINE OA；
+- **預約一律走 LINE OA**（`https://line.me/R/ti/p/@825gdzws`）：劇本頁只在最下方 CTA 放預約按鈕、連到 LINE OA；
   右下浮動按鈕只放「玩家評價」與「▶ 介紹影片」，**不要再加預約浮動按鈕**（舊的 booking.js 已移除）
 - 卡片、榮譽牆清單、badges 全部自動產生，**不需手動改 index.html 或 榮譽牆.html**
 
@@ -68,7 +68,8 @@
    - **角色介紹卡**：每個角色含 emoji（或頭像）、姓名/身份、性別年齡、一句描述
    - **故事背景卡**（`.card.description`，跨 2 欄）
    - **劇本介紹卡**（`.card.description`，跨 2 欄）
-5. **CTA 按鈕** — `立即預約…`
+5. **CTA 按鈕** — `立即預約…`，連到 LINE OA：`<a href="https://line.me/R/ti/p/@825gdzws" class="cta-button" target="_blank">`
+   （**不要用主持人個人 LINE**）
 6. **BGM** — `<audio preload="none" id="bgm" src="劇本名稱.mp3" loop muted>`
    （**不要加 `autoplay`**：mp3 動輒數 MB，autoplay 會讓手機一進頁就整首下載；
    `bgm-control.js` 會在第一次點擊時開始播放，頁面自己的「點擊解除靜音」照寫即可）
