@@ -1,28 +1,13 @@
 /* 劇本資料：單一來源 window.SCRIPTS（定義於 scripts.js）。
    新增/修改劇本請改 scripts.js，不要在這裡維護資料。 */
 
-/* 標籤同義詞：同一個概念在 scripts.js 裡有不同寫法，
-   篩選是精確字串比對，不對齊就會漏本
-   （例：篩「新手」會漏掉 5 本標為「新手友善」的劇本）。
-   卡片上仍顯示原始標籤文字，這裡只影響篩選比對。 */
-const TYPE_ALIASES = {
-    '新手友善': ['新手'],
-    '繁化': ['繁體'],
-    '進階可玩': ['進階'],
-    '硬核推理': ['硬核', '推理'],
-    '日式推理': ['日式', '推理'],
-    // 恐怖程度不再分級，恐怖／微恐／微恐怖一律歸到驚悚
-    '恐怖': ['驚悚'],
-    '微恐': ['驚悚'],
-    '微恐怖': ['驚悚']
-};
+/* 篩選只用這 7 個核心標籤（必須與 index.html 的 typeFilter／.ftag 一致）。
+   scripts.js 每本 types 至少要有其中一個，且寫法要完全相同
+   （不要寫「新手友善」「繁化」「恐怖」這類變體）；其餘標籤只顯示在卡片上。 */
+const FILTER_TYPES = ['情感', '推理', '陣營', '歡樂', '微恐', '新手', '繁體'];
 
 function normalizeTypes(types) {
-    const normalized = new Set();
-    (types || []).forEach(type => {
-        (TYPE_ALIASES[type] || [type]).forEach(t => normalized.add(t));
-    });
-    return Array.from(normalized);
+    return FILTER_TYPES.filter(t => (types || []).includes(t));
 }
 
 const scripts = (window.SCRIPTS || []).map(script => Object.assign({}, script, {

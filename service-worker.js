@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '20261006-linename';
+const CACHE_VERSION = '20261006-tags';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -16,8 +16,8 @@ const APP_SHELL = [
     './index.css?v=20261005-logo',
     './img/logo.webp',
     './honor-form.css?v=20260730-safearea',
-    './scripts.js?v=20261006-a',
-    './scripts-data.js?v=20261002-ytbadge',
+    './scripts.js?v=20261006-tags',
+    './scripts-data.js?v=20261006-tags',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20261006-noreload',
