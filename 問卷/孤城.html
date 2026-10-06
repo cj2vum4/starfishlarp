@@ -4,33 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>心動信號問卷 · 那一束月光</title>
+    <title>客棧旅客登記表 · 孤城</title>
     <style>
         :root {
-            --veil-top: rgba(0, 0, 0, .35);
-            --backdrop-opacity: .55;
-            --shadow: rgba(0, 0, 0, .55);
-            --error: #ff8a7a;
-            --on-accent: #14100c;
-            --field: rgba(255, 255, 255, .06);
-            --bg: #06163a;
-            --text: #e6eeff;
-            --title: #ffffff;
-            --muted: rgba(230, 238, 255, .62);
-            --accent: #bcd4ff;
-            --line: rgba(188, 212, 255, .22);
-            --chip: rgba(188, 212, 255, .1);
-            --card: rgba(8, 26, 66, .8);
+            --veil-top: rgba(255, 255, 255, .35);
+            --backdrop-opacity: .5;
+            --shadow: rgba(40, 30, 20, .25);
+            --error: #c0392b;
+            --on-accent: #ffffff;
+            --field: rgba(255, 255, 255, .7);
+            --bg: #e9dcc4;
+            --text: #3a2a1c;
+            --title: #2e1f12;
+            --muted: #7a6550;
+            --accent: #a8551f;
+            --line: rgba(58, 42, 28, .18);
+            --chip: rgba(168, 85, 31, .1);
+            --card: rgba(250, 243, 230, .84);
         }
         * { box-sizing: border-box; }
-        html { color-scheme: dark; }
+        html { color-scheme: light; }
         body {
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
             color: var(--text);
             background: var(--bg);
-            font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+            font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
             -webkit-font-smoothing: antialiased;
         }
         /* 海報本身當整頁的霧面背景，跟劇本主頁同一套視覺 */
@@ -39,7 +39,7 @@
             inset: -40px;
             z-index: 0;
             pointer-events: none;
-            background: url("../img/劇本/那一束月光/那一束月光海報1.webp") center / cover no-repeat;
+            background: url("../img/劇本/孤城/孤城劇本殺封面1.webp") center / cover no-repeat;
             filter: blur(38px) saturate(1.15);
             opacity: var(--backdrop-opacity);
             transform: scale(1.1);
@@ -173,7 +173,7 @@
         /* ── 問卷 ─────────────────────────────── */
         .survey-box { max-width: 680px; margin: 0 auto; }
         #survey {
-            --sv-scheme: dark;
+            --sv-scheme: light;
             --sv-accent: var(--accent);
             --sv-on-accent: var(--on-accent);
             --sv-text: var(--text);
@@ -192,32 +192,33 @@
     <main class="wrap container">
         <header class="hero">
             <figure class="poster">
-                <img src="../img/劇本/那一束月光/那一束月光海報1.webp" alt="那一束月光 海報" fetchpriority="high" decoding="async">
+                <img src="../img/劇本/孤城/孤城劇本殺封面1.webp" alt="孤城 海報" fetchpriority="high" decoding="async">
             </figure>
             <div class="intro">
                 <span class="eyebrow">角色分配問卷</span>
-                <h1>那一束月光</h1>
-                <p class="form-title">心動信號問卷</p>
+                <h1>孤城</h1>
+                <p class="form-title">客棧旅客登記表</p>
                 <ul class="chips">
-                    <li>👥 3男3女</li>
-                    <li>⏰ 5小時</li>
-                    <li>#現代</li>
+                    <li>👥 4男3女</li>
+                    <li>⏰ 4.5小時</li>
+                    <li>#陣營</li>
+                    <li>#機制</li>
                     <li>#情感</li>
-                    <li>#歡樂</li>
                 </ul>
-                <p class="lead">請依照自己真實的經驗或第一直覺作答<br>你的回答只有主持人看得到 🌙</p>
+                <p class="lead">客官，聊聊您自己吧😎</p>
             </div>
         </header>
 
         <section class="cast" aria-label="登場角色">
             <h2>登場角色</h2>
             <ul>
-                <li class="ch"><img src="../img/劇本/那一束月光/縮圖/姜安心.webp" data-full="../img/劇本/那一束月光/姜安心.webp" alt="姜安心" loading="lazy" decoding="async"><span class="ch-name">姜安心</span></li>
-                <li class="ch"><img src="../img/劇本/那一束月光/縮圖/宋一嶼.webp" data-full="../img/劇本/那一束月光/宋一嶼.webp" alt="宋一嶼" loading="lazy" decoding="async"><span class="ch-name">宋一嶼</span></li>
-                <li class="ch"><img src="../img/劇本/那一束月光/縮圖/吳倩尹.webp" data-full="../img/劇本/那一束月光/吳倩尹.webp" alt="吳倩尹" loading="lazy" decoding="async"><span class="ch-name">吳倩尹</span></li>
-                <li class="ch"><img src="../img/劇本/那一束月光/縮圖/顧諾.webp" data-full="../img/劇本/那一束月光/顧諾.webp" alt="顧諾" loading="lazy" decoding="async"><span class="ch-name">顧諾</span></li>
-                <li class="ch"><img src="../img/劇本/那一束月光/縮圖/林沐陽.webp" data-full="../img/劇本/那一束月光/林沐陽.webp" alt="林沐陽" loading="lazy" decoding="async"><span class="ch-name">林沐陽</span></li>
-                <li class="ch"><img src="../img/劇本/那一束月光/縮圖/許知言.webp" data-full="../img/劇本/那一束月光/許知言.webp" alt="許知言" loading="lazy" decoding="async"><span class="ch-name">許知言</span></li>
+                <li class="ch"><img src="../img/劇本/孤城/縮圖/陳懷安.webp" data-full="../img/劇本/孤城/陳懷安.webp" alt="陳懷安" loading="lazy" decoding="async"><span class="ch-name">陳懷安</span></li>
+                <li class="ch"><img src="../img/劇本/孤城/縮圖/樓小蘭.webp" data-full="../img/劇本/孤城/樓小蘭.webp" alt="樓小蘭" loading="lazy" decoding="async"><span class="ch-name">樓小蘭</span></li>
+                <li class="ch"><img src="../img/劇本/孤城/縮圖/柳湘人.webp" data-full="../img/劇本/孤城/柳湘人.webp" alt="柳湘人" loading="lazy" decoding="async"><span class="ch-name">柳湘人</span></li>
+                <li class="ch"><img src="../img/劇本/孤城/縮圖/鐵男.webp" data-full="../img/劇本/孤城/鐵男.webp" alt="鐵男" loading="lazy" decoding="async"><span class="ch-name">鐵男</span></li>
+                <li class="ch"><img src="../img/劇本/孤城/縮圖/蔣古城.webp" data-full="../img/劇本/孤城/蔣古城.webp" alt="蔣古城" loading="lazy" decoding="async"><span class="ch-name">蔣古城</span></li>
+                <li class="ch"><img src="../img/劇本/孤城/縮圖/麗麗娜依.webp" data-full="../img/劇本/孤城/麗麗娜依.webp" alt="麗麗娜依" loading="lazy" decoding="async"><span class="ch-name">麗麗娜依</span></li>
+                <li class="ch"><img src="../img/劇本/孤城/縮圖/夜神.webp" data-full="../img/劇本/孤城/夜神.webp" alt="夜神" loading="lazy" decoding="async"><span class="ch-name">夜神</span></li>
             </ul>
         </section>
         <p class="note">依直覺作答就好，角色由主持人綜合大家的回覆分配 🎭</p>
@@ -229,27 +230,27 @@
 
     <script>
     window.SURVEY = {
-        script: '那一束月光',
-        submitText: '送出・等月光',
+        script: '孤城',
+        submitText: '登記・入住客棧',
         questions: [
-            {"type": "radio", "title": "性別", "desc": "指本次劇本想體驗的角色性別", "required": true, "options": ["男生", "女生"]},
-            {"type": "text", "title": "姓名／暱稱", "desc": "LINE 上的名字", "required": true},
-            {"type": "date", "title": "遊玩日期", "required": true},
-            {"type": "radio", "title": "劇本殺經驗", "required": true, "options": ["第一次", "1-3", "4-10", "11-30", "30+"]},
-            {"type": "text", "title": "現場喜歡的對象", "desc": "同場玩家中有喜歡的人嗎？沒有就填「沒有」，回應只有主持人看得到"},
-            {"type": "textarea", "title": "Q1 最難忘的一段戀情", "desc": "聊聊你最難忘的一段戀情，或一段難忘的心動", "required": true},
-            {"type": "textarea", "title": "Q2 異地戀", "desc": "你談過異地戀嗎？結果如何？\n沒談過的話，你怎麼看異地戀？", "required": true},
-            {"type": "textarea", "title": "Q3 信任感", "required": true, "placeholder": "1.\n2.\n3.", "desc": "1. 信任感在感情裡對你重要嗎？\n2. 你最不能接受另一半做什麼事？\n3. 你在感情裡容易敏感、沒有安全感嗎？"},
-            {"type": "textarea", "title": "Q4 愛你的還是你愛的", "required": true, "placeholder": "1.\n2.\n3.", "desc": "1. 你會選擇愛你的人，還是你愛的人？\n2. 面對喜歡的人，你會主動告白嗎？\n3. 你願意為喜歡的人付出嗎？"}
+            {"type": "text", "title": "您在社群(DC/LINE)裡的名字是？", "required": true},
+            {"type": "radio", "title": "您的生理性別是？", "required": true, "options": ["男", "女", "男，可接受玩女角", "女，可接受玩男角"]},
+            {"type": "text", "title": "一同入住的旅客中有您的另一半嗎？如有請留下他/她在LINE裡的名字"},
+            {"type": "radio", "title": "您玩過多少劇本呢？", "required": true, "options": ["1~5本", "6~20本", "20本以上", "這是第一次"]},
+            {"type": "radio", "title": "您抽中了七天六夜豪華遊輪之旅，並且可以帶一位旅伴出席，您會想找誰一起呢？", "required": true, "options": ["想找機會告白的曖昧對象", "辛辛苦苦養大我們的家人", "充滿革命情感的隔壁同事", "當我們垃圾桶的摯友閨蜜", "我想自己一個人享受旅行"], "other": true},
+            {"type": "radio", "title": "您抵達了港口準備登船，此時在排隊人龍的最後方，有個人悠悠哉哉越過隊伍直接上船，您認為他/她可以插隊的原因是？", "required": true, "options": ["因為額外多付錢", "是個遲到的船員", "旅伴已經在船上", "其他人都看不到"], "other": true},
+            {"type": "radio", "title": "順利上了船準備前往房間，您希望自己的房間可以離什麼設施最近？", "required": true, "options": ["甲板，隨時能去吹吹海風", "餐廳，我這個人不能餓到", "賭場，小賭怡情大賭刺激", "酒吧，誰不期待一場邂逅"], "other": true},
+            {"type": "text", "title": "走著走著，您發現走廊上掛著一幅《諾亞方舟》，方舟上載著各式各樣的動物，如果要找一個最像您的動物，您覺得是？", "required": true},
+            {"type": "text", "title": "有任何特殊需求需要我幫您服務的嗎？"}
         ],
         done: {
-            title: '🌙 已收到你的心動信號',
-            text: '角色將由主持人分配\n當天見！'
+            title: '🐫 客官，房已備好',
+            text: '大漠風沙大，當天見！'
         }
     };
     </script>
     <script src="../survey.js?v=20261006c"></script>
     <script src="../lightbox.js?v=20261006"></script>
-    <script src="../fx3d.js?v=20260714" data-fx="fireflies" data-tint="#cfe0ff" data-density="0.8"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="sand" data-tint="#c9944a"></script>
 </body>
 </html>
