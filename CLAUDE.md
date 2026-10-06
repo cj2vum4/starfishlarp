@@ -40,9 +40,10 @@
   **通常不用手填**：上傳影片的流程見下方「六、上傳劇本介紹影片」；另有 GitHub Action
   「同步 YouTube 影片」每 2 小時讀頻道 RSS 當備援（說明欄有劇本頁網址、或標題用《劇本名》就對得到）。
   手填的值永遠不會被自動覆蓋；不想自動填某個劇本就填 `"-"`。
-- **`scripts.js?v=` 與劇本頁的 `video.js?v=`、`booking.js?v=` 共用同一個版號**（兩者都用自己的版號去載 scripts.js），
+- **`scripts.js?v=` 與劇本頁的 `video.js?v=` 共用同一個版號**（video.js 用自己的版號去載 scripts.js），
   進版時一起全站替換
-- 劇本頁的 `booking.js` 會出現「📅 預約這本」，連到 LINE 預約系統並帶入該劇本的 `id`；新劇本頁記得也要掛上
+- **預約一律走 LINE OA**：劇本頁只在最下方 CTA 放預約按鈕、連到 LINE OA；
+  右下浮動按鈕只放「玩家評價」與「▶ 介紹影片」，**不要再加預約浮動按鈕**（舊的 booking.js 已移除）
 - 卡片、榮譽牆清單、badges 全部自動產生，**不需手動改 index.html 或 榮譽牆.html**
 
 ---
@@ -76,7 +77,6 @@
    `<script src="../reviews.js?v=日期">`（玩家評價按鈕，劇本名以檔名自動對應；
    若檔名與評價表單名不同，加 `data-script="評價用名稱"`）、
    `<script src="../video.js?v=日期">`（YT 介紹影片按鈕，依頁面路徑對應 `scripts.js` 的 `file`）、
-   `<script src="../booking.js?v=日期">`、
    `<script src="../lightbox.js?v=日期">`（點海報／角色圖在原頁跳出全螢幕大圖，可縮放、左右滑換張；
    自動套用在 `img/劇本/` 底下的圖，**圖片不用再包 `<a href="圖檔">`**，不想被放大的圖加 `data-no-zoom`）。
    **共用 JS 一律帶 `?v=` 版本號**（GitHub Pages 快取 10 分鐘）；
