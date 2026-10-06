@@ -691,6 +691,43 @@ group('LINE 綁定回歸禮');
 }
 
 /* ============================================================ */
+group('LINE 身分與重送保護');
+{
+  freshEnv([['2026/1/1', '同名玩家', '2026/1/1', '舊本', '甲', '5', LONG, '']]);
+  setScriptProperty('BOOKING_SECRET', 'test-only');
+  const base = { secret: 'test-only', actor: '11111111-1111-4111-8111-111111111111',
+    event: '22222222-2222-4222-8222-222222222222', displayName: '同名玩家', name: '',
+    date: '2026-10-05', script: '新本', character: '甲', rating: '5', comment: LONG };
+  check('錯誤密碼不寫入', submitLineRecord_({ ...base, secret: 'wrong' }).error, 'INVALID_SECRET');
+  const result = submitLineRecord_(base);
+  check('新玩家同名不繼承老玩家帳戶', result.name !== '同名玩家');
+  check('第一次寫入成功', result.ok, true);
+  const count = sheetRows('表單回應 1').length;
+  check('同場重送會辨識', submitLineRecord_(base).duplicate, true);
+  check('重送不增加列數', sheetRows('表單回應 1').length, count);
+  const renamed = submitLineRecord_({ ...base, displayName: '改名', event: '33333333-3333-4333-8333-333333333333' });
+  check('LINE 改名不切換點數帳戶', renamed.name, result.name);
+  check('事後綁另一名字要求店家處理', submitLineRecord_({ ...base, name: '老玩家' }).error, 'IDENTITY_MERGE_REQUIRED');
+}
+
+group('上線前補登：不改既有點數與首探');
+{
+  freshEnv([
+    ['2026/10/5', '既有玩家', '2026/9/1', '原本', '甲', '5', LONG, ''],
+    ['2026/10/7', '補登者', '2026/8/1', '新本', '乙', '5', LONG, '介紹人'],
+    ['2026/10/6', '正常玩家', '2026/10/6', '新本', '丙', '5', LONG, ''],
+    ['2026/10/8', '補登者', '2026/10/8', '原本', '丁', '5', LONG, '']
+  ]);
+  setConfig('LINE上線日', '2026/10/06');
+  rebuildPoints_();
+  const ledger = sheetRows('點數帳本');
+  const backfill = ledger.find(r => r[1] === '補登者' && r[7] === '2026/8/1');
+  check('補登 0 點', backfill && backfill[4], 0);
+  check('上線前已填的舊紀錄維持 50 點', summaryOf('既有玩家').earned, 50);
+  check('正常玩家仍取得首探', ledger.some(r => r[1] === '正常玩家' && /首探/.test(r[5])), true);
+  check('補登者之後正式遊玩仍有新手獎', ledger.some(r => r[1] === '補登者' && /新手好運/.test(r[5])), true);
+  check('補登不給介紹人點數', ledger.some(r => r[1] === '介紹人'), false);
+}
 console.log('\n' + '─'.repeat(52));
 if (fail) {
   console.log('失敗項目：');
