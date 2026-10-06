@@ -6,70 +6,225 @@
     <meta name="robots" content="noindex, nofollow">
     <title>演唱會VIP嘉賓審核 · 晴天神社</title>
     <style>
+        :root {
+            --veil-top: rgba(255, 255, 255, .35);
+            --backdrop-opacity: .5;
+            --shadow: rgba(40, 30, 20, .25);
+            --error: #c0392b;
+            --on-accent: #ffffff;
+            --field: rgba(255, 255, 255, .7);
+            --bg: #f6eedf;
+            --text: #33402f;
+            --title: #2f4a2c;
+            --muted: #6e7666;
+            --accent: #d0583f;
+            --line: rgba(51, 64, 47, .16);
+            --chip: rgba(208, 88, 63, .1);
+            --card: rgba(255, 251, 243, .85);
+        }
         * { box-sizing: border-box; }
+        html { color-scheme: light; }
         body {
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            color: #fff0f7;
-            font-family: "Noto Sans TC", system-ui, sans-serif;
-            background: #150820;
+            color: var(--text);
+            background: var(--bg);
+            font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* 海報本身當整頁的霧面背景，跟劇本主頁同一套視覺 */
+        .backdrop {
+            position: fixed;
+            inset: -40px;
+            z-index: 0;
+            pointer-events: none;
+            background: url("../img/劇本/晴天神社/晴天神社劇本殺封面1.webp") center / cover no-repeat;
+            filter: blur(38px) saturate(1.15);
+            opacity: var(--backdrop-opacity);
+            transform: scale(1.1);
+        }
+        .backdrop::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, var(--veil-top) 0%, var(--bg) 78%);
         }
         .wrap {
             position: relative;
             z-index: 1;
-            max-width: 640px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 32px 16px 64px;
+            padding: 28px 16px 72px;
         }
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: radial-gradient(ellipse at 50% 0%, #6b2a63 0%, #2b1035 55%, #150820 100%);
+
+        /* ── 主視覺 ───────────────────────────── */
+        .hero {
+            display: grid;
+            gap: 26px;
+            align-items: center;
+            margin-bottom: 30px;
         }
-        .pass {
-            position: relative; margin: 6px auto 26px; max-width: 420px;
-            padding: 26px 22px 22px; text-align: center;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #ff7eb6, #ffc56e 55%, #8fd3ff);
-            color: #3a0f35;
-            box-shadow: 0 20px 50px rgba(255, 126, 182, .35);
+        .poster {
+            justify-self: center;
+            width: min(78vw, 340px);
+            margin: 0;
+            border-radius: 14px;
             overflow: hidden;
+            box-shadow: 0 24px 60px var(--shadow), 0 0 0 1px var(--line);
+            animation: rise .9s cubic-bezier(.2, .8, .2, 1) both;
         }
-        .pass::after {
-            content: ""; position: absolute; inset: 0;
-            background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, .55) 50%, transparent 65%);
-            transform: translateX(-100%); animation: shine 4s ease-in-out infinite;
+        .poster img { display: block; width: 100%; height: auto; }
+        @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+        .intro { text-align: center; animation: rise .9s .12s cubic-bezier(.2, .8, .2, 1) both; }
+        .eyebrow {
+            display: inline-block;
+            padding: 5px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: .78rem;
+            letter-spacing: .35em;
+            color: var(--accent);
         }
-        @keyframes shine { 60%, 100% { transform: translateX(100%); } }
-        @media (prefers-reduced-motion: reduce) { .pass::after { animation: none; } }
-        .pass .vip { display: inline-block; padding: 4px 14px; border-radius: 999px; background: #3a0f35; color: #ffd6ea; font: 800 .8rem/1.4 system-ui; letter-spacing: .3em; }
-        .pass h1 { margin: 12px 0 8px; font-size: clamp(1.4rem, 6vw, 1.9rem); }
-        .pass p { margin: 0; line-height: 1.8; font-weight: 500; }
-        .hole { width: 46px; height: 10px; margin: 0 auto 14px; border-radius: 6px; background: #2b1035; }
+        .intro h1 {
+            margin: 14px 0 4px;
+            font-size: clamp(2rem, 9vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: .12em;
+            color: var(--title);
+        }
+        .form-title { margin: 0; font-size: 1.05rem; letter-spacing: .2em; color: var(--muted); }
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .chips li {
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: var(--chip);
+            font-size: .85rem;
+            color: var(--text);
+        }
+        .lead {
+            margin: 20px auto 0;
+            max-width: 34em;
+            line-height: 1.9;
+            color: var(--text);
+        }
+        .lead:empty { display: none; }
+
+        /* ── 登場角色 ─────────────────────────── */
+        .cast { margin: 0 0 30px; }
+        .cast h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 14px;
+            font-size: .95rem;
+            letter-spacing: .3em;
+            color: var(--accent);
+        }
+        .cast h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+        .cast ul {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 92px;
+            gap: 12px;
+            margin: 0;
+            padding: 2px 2px 10px;
+            list-style: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+        .ch { scroll-snap-align: start; text-align: center; }
+        .ch img, .ch-ph {
+            display: grid;
+            place-items: center;
+            width: 92px;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 10px;
+            background: var(--chip);
+            box-shadow: 0 0 0 1px var(--line);
+            font-size: 1.6rem;
+            color: var(--accent);
+            cursor: zoom-in;
+        }
+        .ch-name { display: block; margin-top: 6px; font-size: .8rem; line-height: 1.3; color: var(--muted); }
+        .note { margin: -6px 0 22px; text-align: center; font-size: .85rem; color: var(--muted); }
+
+        @media (min-width: 860px) {
+            .hero { grid-template-columns: 340px 1fr; gap: 44px; }
+            .intro { text-align: left; }
+            .chips { justify-content: flex-start; }
+            .lead { margin-left: 0; }
+            .cast ul { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); overflow: visible; }
+            .ch img, .ch-ph { width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) { .poster, .intro { animation: none; } }
+
+        /* ── 問卷 ─────────────────────────────── */
+        .survey-box { max-width: 680px; margin: 0 auto; }
         #survey {
-            --sv-accent: #ff9cc8;
-            --sv-text: #fff0f7;
-            --sv-muted: rgba(255, 240, 247, .65);
-            --sv-card: rgba(60, 20, 70, .72);
-            --sv-border: rgba(255, 156, 200, .35);
+            --sv-scheme: light;
+            --sv-accent: var(--accent);
+            --sv-on-accent: var(--on-accent);
+            --sv-text: var(--text);
+            --sv-muted: var(--muted);
+            --sv-card: var(--card);
+            --sv-border: var(--line);
+            --sv-field: var(--field);
+            --sv-error: var(--error);
         }
+
     </style>
 </head>
 <body>
+    <div class="backdrop" aria-hidden="true"></div>
 
-    <main class="wrap">
-        <header class="pass">
-            <div class="hole" aria-hidden="true"></div>
-            <span class="vip">VIP PASS</span>
-            <h1>🌸 小櫻演唱會 嘉賓審核</h1>
-            <p>嗨！！！咪納桑！要成為小櫻小姐演唱會VIP嘉賓也不是這麼簡單的事爹斯！<br>請各位嘉賓填寫以下資料讓馬內甲審核呦～～</p>
+    <main class="wrap container">
+        <header class="hero">
+            <figure class="poster">
+                <img src="../img/劇本/晴天神社/晴天神社劇本殺封面1.webp" alt="晴天神社 海報" fetchpriority="high" decoding="async">
+            </figure>
+            <div class="intro">
+                <span class="eyebrow">角色分配問卷</span>
+                <h1>晴天神社</h1>
+                <p class="form-title">演唱會VIP嘉賓審核</p>
+                <ul class="chips">
+                    <li>👥 4男2女</li>
+                    <li>⏰ 4小時</li>
+                    <li>#情感</li>
+                    <li>#日式</li>
+                    <li>#沉浸</li>
+                </ul>
+                <p class="lead">嗨！！！咪納桑！要成為小櫻小姐演唱會VIP嘉賓也不是這麼簡單的事爹斯！<br>請各位嘉賓填寫以下資料讓馬內甲審核呦～～</p>
+            </div>
         </header>
 
-        <div id="survey"></div>
+        <section class="cast" aria-label="登場角色">
+            <h2>登場角色</h2>
+            <ul>
+                <li class="ch"><img src="../img/劇本/晴天神社/縮圖/木村聖也.webp" data-full="../img/劇本/晴天神社/木村聖也.webp" alt="木村聖也" loading="lazy" decoding="async"><span class="ch-name">木村聖也</span></li>
+                <li class="ch"><img src="../img/劇本/晴天神社/縮圖/清水琉奈.webp" data-full="../img/劇本/晴天神社/清水琉奈.webp" alt="清水琉奈" loading="lazy" decoding="async"><span class="ch-name">清水琉奈</span></li>
+                <li class="ch"><img src="../img/劇本/晴天神社/縮圖/秋元英樹.webp" data-full="../img/劇本/晴天神社/秋元英樹.webp" alt="秋元英樹" loading="lazy" decoding="async"><span class="ch-name">秋元英樹</span></li>
+                <li class="ch"><img src="../img/劇本/晴天神社/縮圖/長澤龍之介.webp" data-full="../img/劇本/晴天神社/長澤龍之介.webp" alt="長澤龍之介" loading="lazy" decoding="async"><span class="ch-name">長澤龍之介</span></li>
+                <li class="ch"><img src="../img/劇本/晴天神社/縮圖/小野光夫.webp" data-full="../img/劇本/晴天神社/小野光夫.webp" alt="小野光夫" loading="lazy" decoding="async"><span class="ch-name">小野光夫</span></li>
+                <li class="ch"><img src="../img/劇本/晴天神社/縮圖/木村一郎.webp" data-full="../img/劇本/晴天神社/木村一郎.webp" alt="木村一郎" loading="lazy" decoding="async"><span class="ch-name">木村一郎</span></li>
+            </ul>
+        </section>
+        <p class="note">依直覺作答就好，角色由主持人綜合大家的回覆分配 🎭</p>
+
+        <div class="survey-box">
+            <div id="survey"></div>
+        </div>
     </main>
 
     <script>
@@ -92,7 +247,8 @@
         }
     };
     </script>
-    <script src="../survey.js?v=20261006b"></script>
-    <script src="../fx3d.js?v=20260714" data-fx="petals" data-tint="#ffb7d5"></script>
+    <script src="../survey.js?v=20261006c"></script>
+    <script src="../lightbox.js?v=20261006"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="petals" data-tint="#f2a6a0" data-density="0.8"></script>
 </body>
 </html>

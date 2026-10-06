@@ -6,72 +6,226 @@
     <meta name="robots" content="noindex, nofollow">
     <title>角色適性測驗 · 純白少年的慢性死亡</title>
     <style>
+        :root {
+            --veil-top: rgba(0, 0, 0, .35);
+            --backdrop-opacity: .55;
+            --shadow: rgba(0, 0, 0, .55);
+            --error: #ff8a7a;
+            --on-accent: #ffffff;
+            --field: rgba(255, 255, 255, .06);
+            --bg: #081013;
+            --text: #e4eef0;
+            --title: #ffffff;
+            --muted: rgba(228, 238, 240, .6);
+            --accent: #e33b44;
+            --line: rgba(159, 211, 214, .2);
+            --chip: rgba(159, 211, 214, .1);
+            --card: rgba(12, 24, 28, .82);
+        }
         * { box-sizing: border-box; }
+        html { color-scheme: dark; }
         body {
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            color: #1f2733;
-            font-family: "Noto Sans TC", system-ui, sans-serif;
-            background: #eef1f5;
+            color: var(--text);
+            background: var(--bg);
+            font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* 海報本身當整頁的霧面背景，跟劇本主頁同一套視覺 */
+        .backdrop {
+            position: fixed;
+            inset: -40px;
+            z-index: 0;
+            pointer-events: none;
+            background: url("../img/劇本/純白少年的慢性死亡/純白少年的慢性死亡_海報1.webp") center / cover no-repeat;
+            filter: blur(38px) saturate(1.15);
+            opacity: var(--backdrop-opacity);
+            transform: scale(1.1);
+        }
+        .backdrop::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, var(--veil-top) 0%, var(--bg) 78%);
         }
         .wrap {
             position: relative;
             z-index: 1;
-            max-width: 640px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 32px 16px 64px;
+            padding: 28px 16px 72px;
         }
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: linear-gradient(180deg, #ffffff 0%, #eef1f5 100%);
+
+        /* ── 主視覺 ───────────────────────────── */
+        .hero {
+            display: grid;
+            gap: 26px;
+            align-items: center;
+            margin-bottom: 30px;
         }
-        html { color-scheme: light; }
-        .chart {
-            margin-bottom: 26px; padding: 24px 22px;
-            background: #fff;
-            border: 1px solid #d9dee6;
-            border-left: 6px solid #1f2733;
-            border-radius: 6px;
-            box-shadow: 0 10px 30px rgba(31, 39, 51, .08);
+        .poster {
+            justify-self: center;
+            width: min(78vw, 340px);
+            margin: 0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px var(--shadow), 0 0 0 1px var(--line);
+            animation: rise .9s cubic-bezier(.2, .8, .2, 1) both;
         }
-        .chart-row { display: flex; justify-content: space-between; font: 600 .72rem/1 ui-monospace, monospace; letter-spacing: .2em; color: #8a94a3; }
-        .chart h1 { margin: 16px 0 6px; font-size: clamp(1.4rem, 6vw, 1.9rem); font-weight: 300; letter-spacing: .1em; }
-        .chart h1 b { font-weight: 800; }
-        .chart p { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid #e6e9ee; color: #5b6573; line-height: 1.8; }
-        .pulse { height: 28px; margin-top: 14px; background:
-            linear-gradient(90deg, transparent, #fff 60%) , url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 28'%3E%3Cpath d='M0 14h70l6-10 8 20 6-14 4 4h106' fill='none' stroke='%23c23b3b' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 200px 28px repeat-x;
-            animation: beat 3s linear infinite; }
-        @keyframes beat { to { background-position: 0 0, 200px 0; } }
-        @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+        .poster img { display: block; width: 100%; height: auto; }
+        @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+        .intro { text-align: center; animation: rise .9s .12s cubic-bezier(.2, .8, .2, 1) both; }
+        .eyebrow {
+            display: inline-block;
+            padding: 5px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: .78rem;
+            letter-spacing: .35em;
+            color: var(--accent);
+        }
+        .intro h1 {
+            margin: 14px 0 4px;
+            font-size: clamp(2rem, 9vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: .12em;
+            color: var(--title);
+        }
+        .form-title { margin: 0; font-size: 1.05rem; letter-spacing: .2em; color: var(--muted); }
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .chips li {
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: var(--chip);
+            font-size: .85rem;
+            color: var(--text);
+        }
+        .lead {
+            margin: 20px auto 0;
+            max-width: 34em;
+            line-height: 1.9;
+            color: var(--text);
+        }
+        .lead:empty { display: none; }
+
+        /* ── 登場角色 ─────────────────────────── */
+        .cast { margin: 0 0 30px; }
+        .cast h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 14px;
+            font-size: .95rem;
+            letter-spacing: .3em;
+            color: var(--accent);
+        }
+        .cast h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+        .cast ul {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 92px;
+            gap: 12px;
+            margin: 0;
+            padding: 2px 2px 10px;
+            list-style: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+        .ch { scroll-snap-align: start; text-align: center; }
+        .ch img, .ch-ph {
+            display: grid;
+            place-items: center;
+            width: 92px;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 10px;
+            background: var(--chip);
+            box-shadow: 0 0 0 1px var(--line);
+            font-size: 1.6rem;
+            color: var(--accent);
+            cursor: zoom-in;
+        }
+        .ch-name { display: block; margin-top: 6px; font-size: .8rem; line-height: 1.3; color: var(--muted); }
+        .note { margin: -6px 0 22px; text-align: center; font-size: .85rem; color: var(--muted); }
+
+        @media (min-width: 860px) {
+            .hero { grid-template-columns: 340px 1fr; gap: 44px; }
+            .intro { text-align: left; }
+            .chips { justify-content: flex-start; }
+            .lead { margin-left: 0; }
+            .cast ul { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); overflow: visible; }
+            .ch img, .ch-ph { width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) { .poster, .intro { animation: none; } }
+
+        /* ── 問卷 ─────────────────────────────── */
+        .survey-box { max-width: 680px; margin: 0 auto; }
         #survey {
-            --sv-scheme: light;
-            --sv-accent: #1f2733;
-            --sv-text: #1f2733;
-            --sv-muted: #6b7584;
-            --sv-card: rgba(255, 255, 255, .9);
-            --sv-border: #d9dee6;
-            --sv-field: #f4f6f9;
-            --sv-error: #c23b3b;
+            --sv-scheme: dark;
+            --sv-accent: var(--accent);
+            --sv-on-accent: var(--on-accent);
+            --sv-text: var(--text);
+            --sv-muted: var(--muted);
+            --sv-card: var(--card);
+            --sv-border: var(--line);
+            --sv-field: var(--field);
+            --sv-error: var(--error);
         }
+
     </style>
 </head>
 <body>
+    <div class="backdrop" aria-hidden="true"></div>
 
-    <main class="wrap">
-        <header class="chart">
-            <div class="chart-row"><span>PATIENT FILE</span><span>No. 0707</span></div>
-            <h1>純白少年的<b>慢性死亡</b></h1>
-            <div class="chart-row"><span>角色適性測驗</span><span>CONFIDENTIAL</span></div>
-            <div class="pulse" aria-hidden="true"></div>
-            <p>請依直覺作答，這不是心理測驗，而是角色適性篩選。</p>
+    <main class="wrap container">
+        <header class="hero">
+            <figure class="poster">
+                <img src="../img/劇本/純白少年的慢性死亡/純白少年的慢性死亡_海報1.webp" alt="純白少年的慢性死亡 海報" fetchpriority="high" decoding="async">
+            </figure>
+            <div class="intro">
+                <span class="eyebrow">角色分配問卷</span>
+                <h1>純白少年的慢性死亡</h1>
+                <p class="form-title">角色適性測驗</p>
+                <ul class="chips">
+                    <li>👥 3男4女</li>
+                    <li>⏰ 4.5小時</li>
+                    <li>#懸疑</li>
+                    <li>#病態</li>
+                    <li>#還原</li>
+                </ul>
+                <p class="lead">請依直覺作答，這不是心理測驗，而是角色適性篩選。</p>
+            </div>
         </header>
 
-        <div id="survey"></div>
+        <section class="cast" aria-label="登場角色">
+            <h2>登場角色</h2>
+            <ul>
+                <li class="ch"><img src="../img/劇本/純白少年的慢性死亡/縮圖/紅色角色.webp" data-full="../img/劇本/純白少年的慢性死亡/紅色角色.webp" alt="紅色" loading="lazy" decoding="async"><span class="ch-name">紅色</span></li>
+                <li class="ch"><img src="../img/劇本/純白少年的慢性死亡/縮圖/橙色角色.webp" data-full="../img/劇本/純白少年的慢性死亡/橙色角色.webp" alt="橙色" loading="lazy" decoding="async"><span class="ch-name">橙色</span></li>
+                <li class="ch"><img src="../img/劇本/純白少年的慢性死亡/縮圖/黃色角色.webp" data-full="../img/劇本/純白少年的慢性死亡/黃色角色.webp" alt="黃色" loading="lazy" decoding="async"><span class="ch-name">黃色</span></li>
+                <li class="ch"><img src="../img/劇本/純白少年的慢性死亡/縮圖/綠色角色.webp" data-full="../img/劇本/純白少年的慢性死亡/綠色角色.webp" alt="綠色" loading="lazy" decoding="async"><span class="ch-name">綠色</span></li>
+                <li class="ch"><img src="../img/劇本/純白少年的慢性死亡/縮圖/青色角色.webp" data-full="../img/劇本/純白少年的慢性死亡/青色角色.webp" alt="青色" loading="lazy" decoding="async"><span class="ch-name">青色</span></li>
+                <li class="ch"><img src="../img/劇本/純白少年的慢性死亡/縮圖/藍色角色.webp" data-full="../img/劇本/純白少年的慢性死亡/藍色角色.webp" alt="藍色" loading="lazy" decoding="async"><span class="ch-name">藍色</span></li>
+                <li class="ch"><img src="../img/劇本/純白少年的慢性死亡/縮圖/紫色角色.webp" data-full="../img/劇本/純白少年的慢性死亡/紫色角色.webp" alt="紫色" loading="lazy" decoding="async"><span class="ch-name">紫色</span></li>
+            </ul>
+        </section>
+        <p class="note">依直覺作答就好，角色由主持人綜合大家的回覆分配 🎭</p>
+
+        <div class="survey-box">
+            <div id="survey"></div>
+        </div>
     </main>
 
     <script>
@@ -103,7 +257,8 @@
         }
     };
     </script>
-    <script src="../survey.js?v=20261006b"></script>
-    <script src="../fx3d.js?v=20260714" data-fx="dust" data-tint="#9aa7b8" data-density="0.6"></script>
+    <script src="../survey.js?v=20261006c"></script>
+    <script src="../lightbox.js?v=20261006"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="dust" data-tint="#9fd3d6" data-density="0.8"></script>
 </body>
 </html>

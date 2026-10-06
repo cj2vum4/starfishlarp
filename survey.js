@@ -379,7 +379,7 @@
             '.sv-error:empty{display:none}',
             '.sv-trap{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}',
             '.sv-submit{margin-top:8px;padding:15px;border:none;border-radius:999px;font:inherit;font-size:1.1rem;font-weight:700;',
-            'letter-spacing:.1em;cursor:pointer;color:#1a1208;background:var(--sv-accent);transition:transform .15s,opacity .15s}',
+            'letter-spacing:.1em;cursor:pointer;color:var(--sv-on-accent,#1a1208);background:var(--sv-accent);transition:transform .15s,opacity .15s}',
             '.sv-submit:hover{transform:translateY(-1px)}',
             '.sv-submit:disabled{opacity:.6;cursor:wait;transform:none}',
             '.sv-status{margin:0;text-align:center;color:var(--sv-error)}',

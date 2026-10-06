@@ -6,63 +6,225 @@
     <meta name="robots" content="noindex, nofollow">
     <title>別來無恙問卷 · 別來無恙</title>
     <style>
+        :root {
+            --veil-top: rgba(255, 255, 255, .35);
+            --backdrop-opacity: .5;
+            --shadow: rgba(40, 30, 20, .25);
+            --error: #c0392b;
+            --on-accent: #ffffff;
+            --field: rgba(255, 255, 255, .7);
+            --bg: #efede8;
+            --text: #26262a;
+            --title: #151518;
+            --muted: #6c6c72;
+            --accent: #26262a;
+            --line: rgba(38, 38, 42, .16);
+            --chip: rgba(38, 38, 42, .07);
+            --card: rgba(255, 255, 255, .82);
+        }
         * { box-sizing: border-box; }
+        html { color-scheme: light; }
         body {
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            color: #fbf3e6;
-            font-family: "Noto Serif TC", serif;
-            background: #1d1820;
+            color: var(--text);
+            background: var(--bg);
+            font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* 海報本身當整頁的霧面背景，跟劇本主頁同一套視覺 */
+        .backdrop {
+            position: fixed;
+            inset: -40px;
+            z-index: 0;
+            pointer-events: none;
+            background: url("../img/劇本/別來無恙/別來無恙劇本殺海報1.webp") center / cover no-repeat;
+            filter: blur(38px) saturate(1.15);
+            opacity: var(--backdrop-opacity);
+            transform: scale(1.1);
+        }
+        .backdrop::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, var(--veil-top) 0%, var(--bg) 78%);
         }
         .wrap {
             position: relative;
             z-index: 1;
-            max-width: 640px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 32px 16px 64px;
+            padding: 28px 16px 72px;
         }
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: linear-gradient(180deg, #2a2230 0%, #3a2a2e 50%, #1d1820 100%);
+
+        /* ── 主視覺 ───────────────────────────── */
+        .hero {
+            display: grid;
+            gap: 26px;
+            align-items: center;
+            margin-bottom: 30px;
         }
-        .yearbook {
-            position: relative; margin-bottom: 26px; padding: 28px 22px 22px 40px;
-            color: #4a3528;
-            background: repeating-linear-gradient(180deg, #fbf3e6 0 31px, #e9d9c2 31px 32px);
-            border-radius: 4px 12px 12px 4px;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, .4);
-            transform: rotate(-.6deg);
+        .poster {
+            justify-self: center;
+            width: min(78vw, 340px);
+            margin: 0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px var(--shadow), 0 0 0 1px var(--line);
+            animation: rise .9s cubic-bezier(.2, .8, .2, 1) both;
         }
-        .yearbook::before { content: ""; position: absolute; left: 22px; top: 0; bottom: 0; width: 2px; background: #e58a8a; }
-        .yearbook small { letter-spacing: .3em; color: #b06a5a; }
-        .yearbook h1 { margin: 6px 0 8px; font-size: clamp(1.6rem, 7vw, 2.1rem); letter-spacing: .2em; }
-        .yearbook p { margin: 0; line-height: 32px; }
-        .clip { position: absolute; top: -12px; right: 26px; width: 22px; height: 46px; border: 3px solid #b8b8c0; border-radius: 12px; }
+        .poster img { display: block; width: 100%; height: auto; }
+        @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+        .intro { text-align: center; animation: rise .9s .12s cubic-bezier(.2, .8, .2, 1) both; }
+        .eyebrow {
+            display: inline-block;
+            padding: 5px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: .78rem;
+            letter-spacing: .35em;
+            color: var(--accent);
+        }
+        .intro h1 {
+            margin: 14px 0 4px;
+            font-size: clamp(2rem, 9vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: .12em;
+            color: var(--title);
+        }
+        .form-title { margin: 0; font-size: 1.05rem; letter-spacing: .2em; color: var(--muted); }
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .chips li {
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: var(--chip);
+            font-size: .85rem;
+            color: var(--text);
+        }
+        .lead {
+            margin: 20px auto 0;
+            max-width: 34em;
+            line-height: 1.9;
+            color: var(--text);
+        }
+        .lead:empty { display: none; }
+
+        /* ── 登場角色 ─────────────────────────── */
+        .cast { margin: 0 0 30px; }
+        .cast h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 14px;
+            font-size: .95rem;
+            letter-spacing: .3em;
+            color: var(--accent);
+        }
+        .cast h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+        .cast ul {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 92px;
+            gap: 12px;
+            margin: 0;
+            padding: 2px 2px 10px;
+            list-style: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+        .ch { scroll-snap-align: start; text-align: center; }
+        .ch img, .ch-ph {
+            display: grid;
+            place-items: center;
+            width: 92px;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 10px;
+            background: var(--chip);
+            box-shadow: 0 0 0 1px var(--line);
+            font-size: 1.6rem;
+            color: var(--accent);
+            cursor: zoom-in;
+        }
+        .ch-name { display: block; margin-top: 6px; font-size: .8rem; line-height: 1.3; color: var(--muted); }
+        .note { margin: -6px 0 22px; text-align: center; font-size: .85rem; color: var(--muted); }
+
+        @media (min-width: 860px) {
+            .hero { grid-template-columns: 340px 1fr; gap: 44px; }
+            .intro { text-align: left; }
+            .chips { justify-content: flex-start; }
+            .lead { margin-left: 0; }
+            .cast ul { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); overflow: visible; }
+            .ch img, .ch-ph { width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) { .poster, .intro { animation: none; } }
+
+        /* ── 問卷 ─────────────────────────────── */
+        .survey-box { max-width: 680px; margin: 0 auto; }
         #survey {
-            --sv-accent: #f3a6a0;
-            --sv-text: #fbf3e6;
-            --sv-muted: rgba(251, 243, 230, .62);
-            --sv-card: rgba(42, 32, 44, .8);
-            --sv-border: rgba(243, 166, 160, .3);
+            --sv-scheme: light;
+            --sv-accent: var(--accent);
+            --sv-on-accent: var(--on-accent);
+            --sv-text: var(--text);
+            --sv-muted: var(--muted);
+            --sv-card: var(--card);
+            --sv-border: var(--line);
+            --sv-field: var(--field);
+            --sv-error: var(--error);
         }
+
     </style>
 </head>
 <body>
+    <div class="backdrop" aria-hidden="true"></div>
 
-    <main class="wrap">
-        <header class="yearbook">
-            <div class="clip" aria-hidden="true"></div>
-            <small>同學錄・好久不見</small>
-            <h1>別來無恙</h1>
-            <p>請依照個人真實經驗或第一直覺回答問題</p>
+    <main class="wrap container">
+        <header class="hero">
+            <figure class="poster">
+                <img src="../img/劇本/別來無恙/別來無恙劇本殺海報1.webp" alt="別來無恙 海報" fetchpriority="high" decoding="async">
+            </figure>
+            <div class="intro">
+                <span class="eyebrow">角色分配問卷</span>
+                <h1>別來無恙</h1>
+                <p class="form-title">別來無恙問卷</p>
+                <ul class="chips">
+                    <li>👥 3男3女</li>
+                    <li>⏰ 4小時</li>
+                    <li>#情感</li>
+                    <li>#現代</li>
+                    <li>#新手</li>
+                </ul>
+                <p class="lead">請依照個人真實經驗或第一直覺回答問題</p>
+            </div>
         </header>
 
-        <div id="survey"></div>
+        <section class="cast" aria-label="登場角色">
+            <h2>登場角色</h2>
+            <ul>
+                <li class="ch"><img src="../img/劇本/別來無恙/縮圖/夏藍.webp" data-full="../img/劇本/別來無恙/夏藍.webp" alt="夏藍" loading="lazy" decoding="async"><span class="ch-name">夏藍</span></li>
+                <li class="ch"><img src="../img/劇本/別來無恙/縮圖/顧夢嬌.webp" data-full="../img/劇本/別來無恙/顧夢嬌.webp" alt="顧夢嬌" loading="lazy" decoding="async"><span class="ch-name">顧夢嬌</span></li>
+                <li class="ch"><img src="../img/劇本/別來無恙/縮圖/梁白.webp" data-full="../img/劇本/別來無恙/梁白.webp" alt="梁白" loading="lazy" decoding="async"><span class="ch-name">梁白</span></li>
+                <li class="ch"><img src="../img/劇本/別來無恙/縮圖/陳久然.webp" data-full="../img/劇本/別來無恙/陳久然.webp" alt="陳久然" loading="lazy" decoding="async"><span class="ch-name">陳久然</span></li>
+                <li class="ch"><img src="../img/劇本/別來無恙/縮圖/李斯哲.webp" data-full="../img/劇本/別來無恙/李斯哲.webp" alt="李斯哲" loading="lazy" decoding="async"><span class="ch-name">李斯哲</span></li>
+                <li class="ch"><img src="../img/劇本/別來無恙/縮圖/簡珩.webp" data-full="../img/劇本/別來無恙/簡珩.webp" alt="簡珩" loading="lazy" decoding="async"><span class="ch-name">簡珩</span></li>
+            </ul>
+        </section>
+        <p class="note">依直覺作答就好，角色由主持人綜合大家的回覆分配 🎭</p>
+
+        <div class="survey-box">
+            <div id="survey"></div>
+        </div>
     </main>
 
     <script>
@@ -101,7 +263,8 @@
         }
     };
     </script>
-    <script src="../survey.js?v=20261006b"></script>
-    <script src="../fx3d.js?v=20260714" data-fx="fireflies" data-tint="#ffcf8a" data-density="0.7"></script>
+    <script src="../survey.js?v=20261006c"></script>
+    <script src="../lightbox.js?v=20261006"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="snow" data-tint="#b8bcc4" data-density="0.6"></script>
 </body>
 </html>

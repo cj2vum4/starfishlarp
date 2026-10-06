@@ -6,68 +6,225 @@
     <meta name="robots" content="noindex, nofollow">
     <title>歡迎進入李家大宅 · 陰緣</title>
     <style>
+        :root {
+            --veil-top: rgba(0, 0, 0, .35);
+            --backdrop-opacity: .55;
+            --shadow: rgba(0, 0, 0, .55);
+            --error: #ff8a7a;
+            --on-accent: #14100c;
+            --field: rgba(255, 255, 255, .06);
+            --bg: #160707;
+            --text: #f4e2c8;
+            --title: #ffd99a;
+            --muted: rgba(244, 226, 200, .62);
+            --accent: #e3a13b;
+            --line: rgba(227, 161, 59, .24);
+            --chip: rgba(227, 161, 59, .12);
+            --card: rgba(32, 10, 9, .84);
+        }
         * { box-sizing: border-box; }
+        html { color-scheme: dark; }
         body {
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            color: #f3e3cf;
-            font-family: "Noto Serif TC", serif;
-            background: #0a0203;
+            color: var(--text);
+            background: var(--bg);
+            font-family: "華文楷體", "KaiTi", "BiauKai", "DFKai-SB", serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* 海報本身當整頁的霧面背景，跟劇本主頁同一套視覺 */
+        .backdrop {
+            position: fixed;
+            inset: -40px;
+            z-index: 0;
+            pointer-events: none;
+            background: url("../img/劇本/陰緣/陰緣劇本殺海報1.webp") center / cover no-repeat;
+            filter: blur(38px) saturate(1.15);
+            opacity: var(--backdrop-opacity);
+            transform: scale(1.1);
+        }
+        .backdrop::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, var(--veil-top) 0%, var(--bg) 78%);
         }
         .wrap {
             position: relative;
             z-index: 1;
-            max-width: 640px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 32px 16px 64px;
+            padding: 28px 16px 72px;
         }
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: radial-gradient(ellipse at 50% 0%, #3a0a0e 0%, #160406 60%, #0a0203 100%);
+
+        /* ── 主視覺 ───────────────────────────── */
+        .hero {
+            display: grid;
+            gap: 26px;
+            align-items: center;
+            margin-bottom: 30px;
         }
-        .invite {
-            position: relative; margin: 8px auto 28px; max-width: 460px;
-            padding: 30px 24px 24px; text-align: center;
-            background: linear-gradient(180deg, #a3141d, #6e0b12);
-            border: 2px solid #d4a64a; border-radius: 6px;
-            box-shadow: 0 0 0 6px #6e0b12, 0 0 0 8px #d4a64a, 0 24px 50px rgba(0, 0, 0, .6);
-            color: #f7dfae;
+        .poster {
+            justify-self: center;
+            width: min(78vw, 340px);
+            margin: 0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px var(--shadow), 0 0 0 1px var(--line);
+            animation: rise .9s cubic-bezier(.2, .8, .2, 1) both;
         }
-        .seal {
-            width: 70px; height: 70px; margin: 0 auto 12px;
-            display: grid; place-items: center;
-            border: 2px solid #f7dfae; border-radius: 50%;
-            font-size: 2rem; font-weight: 900;
-            animation: breathe 5s ease-in-out infinite;
+        .poster img { display: block; width: 100%; height: auto; }
+        @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+        .intro { text-align: center; animation: rise .9s .12s cubic-bezier(.2, .8, .2, 1) both; }
+        .eyebrow {
+            display: inline-block;
+            padding: 5px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: .78rem;
+            letter-spacing: .35em;
+            color: var(--accent);
         }
-        @keyframes breathe { 50% { box-shadow: 0 0 24px rgba(247, 223, 174, .5); } }
-        @media (prefers-reduced-motion: reduce) { .seal { animation: none; } }
-        .invite h1 { margin: 0 0 12px; font-size: clamp(1.4rem, 6vw, 1.9rem); letter-spacing: .4em; }
-        .invite p { margin: 0; line-height: 1.9; }
+        .intro h1 {
+            margin: 14px 0 4px;
+            font-size: clamp(2rem, 9vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: .12em;
+            color: var(--title);
+        }
+        .form-title { margin: 0; font-size: 1.05rem; letter-spacing: .2em; color: var(--muted); }
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .chips li {
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: var(--chip);
+            font-size: .85rem;
+            color: var(--text);
+        }
+        .lead {
+            margin: 20px auto 0;
+            max-width: 34em;
+            line-height: 1.9;
+            color: var(--text);
+        }
+        .lead:empty { display: none; }
+
+        /* ── 登場角色 ─────────────────────────── */
+        .cast { margin: 0 0 30px; }
+        .cast h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 14px;
+            font-size: .95rem;
+            letter-spacing: .3em;
+            color: var(--accent);
+        }
+        .cast h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+        .cast ul {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 92px;
+            gap: 12px;
+            margin: 0;
+            padding: 2px 2px 10px;
+            list-style: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+        .ch { scroll-snap-align: start; text-align: center; }
+        .ch img, .ch-ph {
+            display: grid;
+            place-items: center;
+            width: 92px;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 10px;
+            background: var(--chip);
+            box-shadow: 0 0 0 1px var(--line);
+            font-size: 1.6rem;
+            color: var(--accent);
+            cursor: zoom-in;
+        }
+        .ch-name { display: block; margin-top: 6px; font-size: .8rem; line-height: 1.3; color: var(--muted); }
+        .note { margin: -6px 0 22px; text-align: center; font-size: .85rem; color: var(--muted); }
+
+        @media (min-width: 860px) {
+            .hero { grid-template-columns: 340px 1fr; gap: 44px; }
+            .intro { text-align: left; }
+            .chips { justify-content: flex-start; }
+            .lead { margin-left: 0; }
+            .cast ul { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); overflow: visible; }
+            .ch img, .ch-ph { width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) { .poster, .intro { animation: none; } }
+
+        /* ── 問卷 ─────────────────────────────── */
+        .survey-box { max-width: 680px; margin: 0 auto; }
         #survey {
-            --sv-accent: #d4a64a;
-            --sv-text: #f3e3cf;
-            --sv-muted: rgba(243, 227, 207, .6);
-            --sv-card: rgba(30, 6, 9, .82);
-            --sv-border: rgba(212, 166, 74, .3);
+            --sv-scheme: dark;
+            --sv-accent: var(--accent);
+            --sv-on-accent: var(--on-accent);
+            --sv-text: var(--text);
+            --sv-muted: var(--muted);
+            --sv-card: var(--card);
+            --sv-border: var(--line);
+            --sv-field: var(--field);
+            --sv-error: var(--error);
         }
+
     </style>
 </head>
 <body>
+    <div class="backdrop" aria-hidden="true"></div>
 
-    <main class="wrap">
-        <header class="invite">
-            <div class="seal" aria-hidden="true">李</div>
-            <h1>李家大宅</h1>
-            <p>歡迎來到李家大宅！請填寫以下資訊。</p>
+    <main class="wrap container">
+        <header class="hero">
+            <figure class="poster">
+                <img src="../img/劇本/陰緣/陰緣劇本殺海報1.webp" alt="陰緣 海報" fetchpriority="high" decoding="async">
+            </figure>
+            <div class="intro">
+                <span class="eyebrow">角色分配問卷</span>
+                <h1>陰緣</h1>
+                <p class="form-title">歡迎進入李家大宅</p>
+                <ul class="chips">
+                    <li>👥 3男3女</li>
+                    <li>⏰ 4小時</li>
+                    <li>#古風</li>
+                    <li>#情感</li>
+                    <li>#恐怖</li>
+                </ul>
+                <p class="lead">歡迎來到李家大宅！請填寫以下資訊。</p>
+            </div>
         </header>
 
-        <div id="survey"></div>
+        <section class="cast" aria-label="登場角色">
+            <h2>登場角色</h2>
+            <ul>
+                <li class="ch"><img src="../img/劇本/陰緣/縮圖/李天青.webp" data-full="../img/劇本/陰緣/李天青.webp" alt="李天青" loading="lazy" decoding="async"><span class="ch-name">李天青</span></li>
+                <li class="ch"><img src="../img/劇本/陰緣/縮圖/李康節.webp" data-full="../img/劇本/陰緣/李康節.webp" alt="李康節" loading="lazy" decoding="async"><span class="ch-name">李康節</span></li>
+                <li class="ch"><img src="../img/劇本/陰緣/縮圖/程遠常.webp" data-full="../img/劇本/陰緣/程遠常.webp" alt="程遠常" loading="lazy" decoding="async"><span class="ch-name">程遠常</span></li>
+                <li class="ch"><img src="../img/劇本/陰緣/縮圖/程小宛.webp" data-full="../img/劇本/陰緣/程小宛.webp" alt="程小宛" loading="lazy" decoding="async"><span class="ch-name">程小宛</span></li>
+                <li class="ch"><img src="../img/劇本/陰緣/縮圖/海棠.webp" data-full="../img/劇本/陰緣/海棠.webp" alt="海棠" loading="lazy" decoding="async"><span class="ch-name">海棠</span></li>
+                <li class="ch"><img src="../img/劇本/陰緣/縮圖/夏雲煙.webp" data-full="../img/劇本/陰緣/夏雲煙.webp" alt="夏雲煙" loading="lazy" decoding="async"><span class="ch-name">夏雲煙</span></li>
+            </ul>
+        </section>
+        <p class="note">依直覺作答就好，角色由主持人綜合大家的回覆分配 🎭</p>
+
+        <div class="survey-box">
+            <div id="survey"></div>
+        </div>
     </main>
 
     <script>
@@ -94,7 +251,8 @@
         }
     };
     </script>
-    <script src="../survey.js?v=20261006b"></script>
-    <script src="../fx3d.js?v=20260714" data-fx="fog" data-tint="#b3202a" data-density="0.8"></script>
+    <script src="../survey.js?v=20261006c"></script>
+    <script src="../lightbox.js?v=20261006"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="embers" data-tint="#ff8a3d" data-density="0.8"></script>
 </body>
 </html>

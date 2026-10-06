@@ -186,9 +186,12 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
   格式與 Google 表單匯出相同，舊表單回應可直接貼進同名分頁。
 - 後端只有一支 `GoogleAppsScript_角色問卷.gs`，部署後的 `/exec` 網址填在 `survey.js` 的
   `SURVEY_ENDPOINT`。新增問卷**不用改後端、不用重新部署**。
-- 新增一份問卷：複製 `問卷/奉天1928.html` 改成 `問卷/<劇本名>.html`，
-  改 `window.SURVEY` 的 `script`（分頁名，通常＝`reviewKey`）與 `questions`，
-  頁首與配色依劇本主題自己設計。Google 表單公開連結可用 `FB_PUBLIC_LOAD_DATA_` 解析出題目，題目文字照抄原表單。
+- 新增一份問卷：複製一頁同色調的 `問卷/*.html` 改成 `問卷/<劇本名>.html`，
+  主視覺一律沿用劇本主頁素材：`scripts.js` 的海報（同時當霧面背景）、人數／時長／標籤 chips、
+  「登場角色」縮圖列（`img/劇本/<劇本>/縮圖/`，沒有縮圖就照四、的規則做），
+  `:root` 色票從海報取色，`fx3d` 用該劇本主頁同一種效果。
+  再改 `window.SURVEY` 的 `script`（分頁名，通常＝`reviewKey`）與 `questions`。
+  `<main>` 要帶 `container` class，否則 fx3d 會把純中文的角色名當成 emoji 特效隱藏。Google 表單公開連結可用 `FB_PUBLIC_LOAD_DATA_` 解析出題目，題目文字照抄原表單。
 - 題型：`text` / `textarea` / `date` / `radio` / `checkbox`（可加 `other: true`）/ `scale`（`min`/`max`/`minLabel`/`maxLabel`）/
   `info`（純說明文字、分段標題）。分支題組用 `showIf: { title: '某題', in: ['選項'] }`（例：`問卷/別來無恙.html` 依性別分男女題組）。
   需要依答案自動推薦角色時加 `assign(answers)`，回傳的欄位（如 `建議角色`）會一起存進總表。
