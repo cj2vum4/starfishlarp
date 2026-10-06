@@ -680,8 +680,6 @@
         </div>
     </div>
 
-
-</script>
     <audio preload="none" id="bgm" src="賣快樂的人.mp3" loop muted></audio>
 <script>
   // 點擊頁面解除靜音
@@ -703,7 +701,55 @@
                         if (i <= index) {
                             s.style.color = '#9370DB';
                             s.style.textShadow = '0 0 15px rgba(138, 43, 226, 0.8)';
-</script>
+                        } else {
+                            s.style.color = '#ffd700';
+                            s.style.textShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        s.style.color = '';
+                        s.style.textShadow = '';
+                    });
+                });
+            });
+
+            // 標籤點擊效果
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        tag.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // 角色卡片懸停光暈
+            document.querySelectorAll('.character-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.boxShadow = '0 10px 25px rgba(138, 43, 226, 0.4)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.boxShadow = '';
+                });
+            });
+
+            // 卡片跟隨滑鼠的紫色光效
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(138, 43, 226, 0.22) 0%, rgba(0, 0, 0, 0.4) 100%)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.background = '';
+                });
+            });
+        });
+    </script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

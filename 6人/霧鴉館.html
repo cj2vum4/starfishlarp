@@ -805,6 +805,81 @@
             }, 300);
         }
 
+        // ── 點擊特效：符文、霧氣漩渦、烏鴉 ──
+        // 出現在最後一次點擊的位置；尊重「減少動態」設定
+        const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let lastPoint = { x: innerWidth / 2, y: innerHeight / 2 };
+        document.addEventListener('pointerdown', (e) => {
+            lastPoint = { x: e.clientX, y: e.clientY };
+        }, { capture: true, passive: true });
+
+        // 注意：fx3d.js 會隱藏背景中「純 emoji」的元素，所以霧與烏鴉用 CSS／SVG 畫，不用 emoji
+        function spawnFx(text, style, html) {
+            const el = document.createElement('div');
+            if (html) el.innerHTML = html; else el.textContent = text;
+            el.setAttribute('aria-hidden', 'true');
+            el.style.cssText = 'position:fixed;pointer-events:none;z-index:9000;user-select:none;' +
+                'left:' + lastPoint.x + 'px;top:' + lastPoint.y + 'px;' + style;
+            document.body.appendChild(el);
+            return el;
+        }
+
+        function createMysticalRune() {
+            if (reduceMotion) return;
+            const runes = ['ᚱ', 'ᚨ', 'ᚹ', 'ᛟ', 'ᛉ', 'ᛞ', 'ᚦ'];
+            const rune = spawnFx(runes[Math.floor(Math.random() * runes.length)],
+                'font-size:4.2rem;color:#eef3fb;font-family:serif;font-weight:700;' +
+                'text-shadow:0 0 10px #fff,0 0 24px rgba(154,168,184,1),0 0 48px rgba(108,99,255,0.9);');
+            rune.animate([
+                { transform: 'translate(-50%,-50%) scale(0.4) rotate(-20deg)', opacity: 0 },
+                { transform: 'translate(-50%,-60%) scale(1.1) rotate(0deg)', opacity: 1, offset: 0.3 },
+                { transform: 'translate(-50%,-120%) scale(1.4) rotate(15deg)', opacity: 0 }
+            ], { duration: 1400, easing: 'ease-out' }).onfinish = () => rune.remove();
+        }
+
+        function createFogVortex() {
+            if (reduceMotion) return;
+            for (let i = 0; i < 7; i++) {
+                const puff = spawnFx('', 'width:70px;height:70px;border-radius:50%;opacity:0;' +
+                    'background:radial-gradient(circle, rgba(214,222,235,0.75) 0%, rgba(154,168,184,0.35) 45%, transparent 70%);' +
+                    'filter:blur(2px);');
+                const a0 = (i / 7) * Math.PI * 2;
+                const frames = [];
+                for (let k = 0; k <= 4; k++) {
+                    const a = a0 + k * 0.9;
+                    const r = 10 + k * 20;
+                    frames.push({
+                        transform: `translate(-50%, -50%) translate(${(Math.cos(a) * r).toFixed(1)}px, ${(Math.sin(a) * r).toFixed(1)}px) scale(${(0.5 + k * 0.3).toFixed(2)})`,
+                        opacity: k === 0 || k === 4 ? 0 : 0.9
+                    });
+                }
+                puff.animate(frames, { duration: 1700, delay: i * 40, easing: 'ease-out', fill: 'both' })
+                    .onfinish = () => puff.remove();
+            }
+        }
+
+        const CROW_SVG = '<svg viewBox="0 0 64 40" width="64" height="40" fill="#14141f">' +
+            '<path d="M2 22 C14 8 24 6 30 16 C33 12 36 11 40 12 L48 9 L44 15 C50 14 56 16 62 21 ' +
+            'C54 20 48 21 43 24 C40 30 34 33 28 32 L22 38 L22 31 C14 30 8 26 2 22 Z"/></svg>';
+
+        function createCrowEffect() {
+            if (reduceMotion) return;
+            const fromLeft = Math.random() < 0.5;
+            const y = Math.random() * innerHeight * 0.4 + 40;
+            const crow = spawnFx('', 'left:0;top:' + y + 'px;line-height:0;' +
+                'filter:drop-shadow(0 0 6px rgba(220,228,240,0.85));', CROW_SVG);
+            const startX = fromLeft ? -80 : innerWidth + 80;
+            const endX = fromLeft ? innerWidth + 80 : -80;
+            const flip = fromLeft ? 1 : -1; // SVG 頭朝右
+            crow.animate([
+                { transform: `translate(${startX}px, 0) scaleX(${flip}) scaleY(1)` },
+                { transform: `translate(${(startX + endX) * 0.25}px, -18px) scaleX(${flip}) scaleY(0.7)`, offset: 0.25 },
+                { transform: `translate(${(startX + endX) / 2}px, -40px) scaleX(${flip}) scaleY(1)`, offset: 0.5 },
+                { transform: `translate(${(startX + endX) * 0.75}px, -24px) scaleX(${flip}) scaleY(0.7)`, offset: 0.75 },
+                { transform: `translate(${endX}px, -10px) scaleX(${flip}) scaleY(1)` }
+            ], { duration: 2600, easing: 'ease-in-out' }).onfinish = () => crow.remove();
+        }
+
         // 每15-25秒隨機閃爍一次
         setInterval(() => {
             if (Math.random() < 0.2) {
