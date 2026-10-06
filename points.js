@@ -1,7 +1,8 @@
 /* ============================================================
    海星劇本殺｜集點系統（榮譽牆共用元件）
 
-   資料來源：Apps Script 的 ?action=summary 端點（JSONP）。
+   資料來源：預約系統的快速副本（play-record-config.js 的 starfishFetchSummary），
+   讀不到時改走 Apps Script 的 ?action=summary 端點（JSONP）。
    走 JSONP 而不是 CSV，是因為發布的 CSV 有 5–10 分鐘快取，
    玩家剛送出記錄就會看不到自己的點數。
 
@@ -402,11 +403,28 @@
 
         if (!ENDPOINT) return Promise.resolve(state);
 
-        // Apps Script 偶爾要 10 秒以上才回應。第一次 8 秒沒回來就再試一次
-        // （再等 10 秒），兩次都失敗才當作讀不到點數。
-        return requestSummary(8000)
+        // 先讀預約系統的快速副本；讀不到再走 Apps Script。Apps Script 偶爾要
+        // 10 秒以上才回應，第一次 8 秒沒回來就再試一次（再等 10 秒）。
+        const fast = typeof window.starfishFetchSummary === 'function'
+            ? window.starfishFetchSummary(4000) : Promise.resolve(null);
+        return fast
+            .then((payload) => { if (payload) applySummary(payload); return state.ok; })
+            .then((done) => done || requestSummary(8000))
             .then((done) => done || requestSummary(10000))
             .then(() => state);
+    }
+
+    function applySummary(payload) {
+        state.ok = true;
+        state.doubleDayNote = payload.doubleDayNote || '';
+        state.monthKey = payload.monthKey || '';
+        state.rewards = Array.isArray(payload.rewards) ? payload.rewards : [];
+        state.mystery = Array.isArray(payload.mystery) ? payload.mystery : [];
+        state.quests = Array.isArray(payload.quests) ? payload.quests : [];
+        state.rules = Array.isArray(payload.rules) ? payload.rules : [];
+        payload.summary.forEach((item) => {
+            state.summary.set(normalizeName(item.name), item);
+        });
     }
 
     /** 送一次 JSONP；有拿到可用的資料回傳 true。 */
@@ -431,16 +449,7 @@
                 // { ok: true, service: ... } 但不帶 summary。只看 ok 會把
                 // 「部署沒更新」誤判成「這個玩家沒有記錄」，所以要認 summary。
                 if (payload && payload.ok && Array.isArray(payload.summary)) {
-                    state.ok = true;
-                    state.doubleDayNote = payload.doubleDayNote || '';
-                    state.monthKey = payload.monthKey || '';
-                    state.rewards = Array.isArray(payload.rewards) ? payload.rewards : [];
-                    state.mystery = Array.isArray(payload.mystery) ? payload.mystery : [];
-                    state.quests = Array.isArray(payload.quests) ? payload.quests : [];
-                    state.rules = Array.isArray(payload.rules) ? payload.rules : [];
-                    payload.summary.forEach((item) => {
-                        state.summary.set(normalizeName(item.name), item);
-                    });
+                    applySummary(payload);
                 } else if (payload && payload.ok) {
                     state.stale = true;
                 }

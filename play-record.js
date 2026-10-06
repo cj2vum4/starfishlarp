@@ -241,6 +241,22 @@
     /** 用 JSONP 讀雙倍點數日文案：靜態網站跨網域讀 Apps Script 最穩的方式。 */
     function loadDoubleDayNote() {
         if (!endpoint) return;
+        // 先讀預約系統的快速副本，讀不到再走 Apps Script。
+        const fast = typeof window.starfishFetchSummary === 'function'
+            ? window.starfishFetchSummary(4000) : Promise.resolve(null);
+        fast.then((payload) => {
+            if (payload) showDoubleDayNote(payload.doubleDayNote);
+            else loadDoubleDayNoteJsonp();
+        });
+    }
+
+    function showDoubleDayNote(note) {
+        if (!note) return;
+        doubleDayNote.textContent = '⚡ ' + note;
+        doubleDayNote.hidden = false;
+    }
+
+    function loadDoubleDayNoteJsonp() {
 
         const callbackName = 'starfishPoints' + Date.now().toString(36);
         const script = document.createElement('script');
@@ -251,10 +267,7 @@
 
         window[callbackName] = (payload) => {
             cleanup();
-            const note = payload && payload.doubleDayNote;
-            if (!note) return;
-            doubleDayNote.textContent = '⚡ ' + note;
-            doubleDayNote.hidden = false;
+            showDoubleDayNote(payload && payload.doubleDayNote);
         };
 
         script.src = endpoint +

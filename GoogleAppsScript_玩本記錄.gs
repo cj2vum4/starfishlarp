@@ -973,6 +973,7 @@ function rebuildPoints_() {
 
   const summary = writeSummary_(ss, allRows, ordered, aliasMap);
   clearSummaryCache_();
+  notifyBookingSystem_();
 
   return {
     players: summary.length,
@@ -1131,6 +1132,25 @@ function assignAgentNumbers_(ss, ordered, aliasMap) {
  * 重算點數（送出記錄、按讚、回歸禮、選單的重算）時立刻清掉，
  * GM 直接改試算表但沒有重算的話，最多 10 分鐘後也會更新。
  */
+/*
+ * 預約系統（Supabase）保存一份點數總覽，網站與 LINE 會員卡從那裡讀（約 0.2 秒）。
+ * 每次重算完通知它來更新；需要「連線到外部服務」授權，沒授權或失敗都不影響記點。
+ */
+const BOOKING_RECORDS_HOOK = 'https://qrcpmxejhqrvvpnjehri.supabase.co/functions/v1/api/hooks/records-changed';
+
+function notifyBookingSystem_() {
+  try {
+    const secret = PropertiesService.getScriptProperties().getProperty('BOOKING_SECRET');
+    if (!secret || typeof UrlFetchApp === 'undefined') return;
+    if (typeof SpreadsheetApp.flush === 'function') SpreadsheetApp.flush();  // 預約系統讀到的要是寫完的資料
+    UrlFetchApp.fetch(BOOKING_RECORDS_HOOK, {
+      method: 'post', headers: { 'X-Play-Record-Secret': secret }, muteHttpExceptions: true
+    });
+  } catch (error) {
+    console.warn('通知預約系統更新點數失敗：' + error);
+  }
+}
+
 const SUMMARY_CACHE_KEY = 'public-summary';
 const SUMMARY_CACHE_SECONDS = 600;
 

@@ -20,7 +20,7 @@
     // 四十幾個劇本頁就不用各自多加一行 script 標籤。
     function configUrl() {
         if (!SELF_SCRIPT || !SELF_SCRIPT.src) return '';
-        return SELF_SCRIPT.src.replace(/reviews\.js(\?.*)?$/, 'play-record-config.js?v=20260729-w3');
+        return SELF_SCRIPT.src.replace(/reviews\.js(\?.*)?$/, 'play-record-config.js?v=20261006-fast');
     }
 
     function loadEndpoint() {
@@ -257,6 +257,12 @@
     async function loadInteractions() {
         endpoint = await loadEndpoint();
         if (!endpoint) return [];
+
+        // 先讀預約系統的快速副本，讀不到再走 Apps Script。
+        if (typeof window.starfishFetchSummary === 'function') {
+            const fast = await window.starfishFetchSummary(4000);
+            if (fast) return Array.isArray(fast.interactions) ? fast.interactions : [];
+        }
 
         return new Promise((resolve) => {
             const callbackName = 'rvLikes' + Date.now().toString(36);

@@ -726,6 +726,28 @@ group('補登寬限：遊玩後 7 天內送出照常給點');
   rebuildPoints_();
   check('寬限天數可在設定調整', summaryOf('遲到者').earned > 0, true);
 }
+
+group('重算後通知預約系統更新點數副本');
+{
+  freshEnv([['2026/10/6', '甲', '2026/10/6', '甲本', '甲', '5', LONG, '']]);
+  const calls = [];
+  global.UrlFetchApp = { fetch: (url, opts) => { calls.push({ url, opts }); return {}; } };
+  setScriptProperty('BOOKING_SECRET', 'test-only');
+  rebuildPoints_();
+  check('重算後通知一次', calls.length, 1);
+  check('帶共用密碼', calls[0] && calls[0].opts.headers['X-Play-Record-Secret'], 'test-only');
+  check('打到預約系統', calls[0] && /\/hooks\/records-changed$/.test(calls[0].url), true);
+  global.UrlFetchApp = { fetch: () => { throw new Error('沒有授權'); } };
+  let ok = true;
+  try { rebuildPoints_(); } catch (_) { ok = false; }
+  check('通知失敗不影響記點', ok && summaryOf('甲').earned > 0, true);
+  calls.length = 0;
+  global.UrlFetchApp = { fetch: (url) => { calls.push(url); return {}; } };
+  setScriptProperty('BOOKING_SECRET', null);
+  rebuildPoints_();
+  check('沒設密碼就不通知', calls.length, 0);
+  delete global.UrlFetchApp;
+}
 console.log('\n' + '─'.repeat(52));
 if (fail) {
   console.log('失敗項目：');
