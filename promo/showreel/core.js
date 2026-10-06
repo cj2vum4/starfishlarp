@@ -159,39 +159,38 @@ function buildLogo() {
   A.logoWork = mk(S, S);
 }
 
-/* ---------- cards (57 劇本卡，3D 牆用的貼圖) ---------- */
-function cardCanvas(s, i) {
-  const cw = 480, ch = 720, c = mk(cw, ch), x = c.ctx, th = THEME[s.theme] || THEME.modern, r = rng(500 + i);
-  x.fillStyle = lgrad(x, 0, 0, 0, ch, [[0, th.c1], [1, th.c2]]); x.fillRect(0, 0, cw, ch);
-  const g = x.createRadialGradient(240, 260, 0, 240, 260, 340); g.addColorStop(0, th.acc + '55'); g.addColorStop(1, th.acc + '00'); x.fillStyle = g; x.fillRect(0, 0, cw, ch);
-  // motif
-  x.save(); x.strokeStyle = th.acc; x.fillStyle = th.acc; x.globalAlpha = .22; x.lineWidth = 2;
-  const m = s.theme;
-  if (m === 'horror') { x.lineWidth = 10; for (let k = 0; k < 3; k++) { x.beginPath(); x.moveTo(90 + k * 70, 120); x.lineTo(300 + k * 70, 560); x.stroke(); } }
-  else if (m === 'mystery') { for (let k = 1; k < 7; k++) { x.beginPath(); x.arc(240, 330, k * 34, 0, TAU); x.stroke(); } }
-  else if (m === 'love') { for (let k = 0; k < 14; k++) { x.save(); x.translate(r() * cw, r() * ch); x.rotate(r() * TAU); x.scale(.5 + r(), .5 + r()); x.drawImage(A.petal, -32, -32); x.restore(); } }
-  else if (m === 'space') { for (let k = 0; k < 90; k++) { x.fillRect(r() * cw, r() * ch, 2, 2); } x.beginPath(); x.ellipse(240, 330, 190, 46, -.3, 0, TAU); x.stroke(); x.beginPath(); x.arc(240, 330, 90, 0, TAU); x.stroke(); }
-  else if (m === 'happy') { x.translate(240, 330); for (let k = 0; k < 16; k++) { x.rotate(TAU / 16); x.beginPath(); x.moveTo(0, 0); x.lineTo(-20, -420); x.lineTo(20, -420); x.fill(); } }
-  else if (m === 'shrine') { x.globalAlpha = .3; x.fillRect(80, 170, 320, 18); x.fillRect(110, 220, 260, 12); x.fillRect(140, 170, 18, 420); x.fillRect(322, 170, 18, 420); }
-  else if (m === 'mytho') { x.lineWidth = 5; x.beginPath(); x.moveTo(300, 90); x.lineTo(200, 300); x.lineTo(280, 300); x.lineTo(170, 600); x.stroke(); }
-  else if (m === 'modern') { for (let k = 0; k < 12; k++) { x.beginPath(); x.moveTo(0, k * 60); x.lineTo(cw, k * 60); x.stroke(); x.beginPath(); x.moveTo(k * 48, 0); x.lineTo(k * 48, ch); x.stroke(); } }
-  else { x.beginPath(); x.arc(240, 300, 130, 0, TAU); x.fill(); for (let k = 0; k < 6; k++) x.fillRect(60, 470 + k * 14, 360, 3); }
-  x.restore();
-  // frame
-  x.strokeStyle = 'rgba(236,208,138,.85)'; x.lineWidth = 2.5; x.strokeRect(18, 18, cw - 36, ch - 36);
-  x.strokeStyle = 'rgba(236,208,138,.35)'; x.lineWidth = 1; x.strokeRect(28, 28, cw - 56, ch - 56);
-  // title — 直書，長名分兩欄（右欄先讀）
-  const nm = mainName(s.name), chars = [...nm], cols = chars.length > 6 ? 2 : 1, per = Math.ceil(chars.length / cols);
-  const px = Math.min(cols === 1 ? 112 : 84, 400 / per), top = 300 - per * px / 2 + px / 2 - 20;
-  x.save(); x.shadowColor = th.acc; x.shadowBlur = 26;
-  for (let k = 0; k < chars.length; k++) { const col = Math.floor(k / per), row = k % per, cx = cols === 1 ? 240 : 240 + (col === 0 ? px * .62 : -px * .62); txt(x, chars[k], cx, top + row * px * 1.02, { px, fill: '#fffaf0' }); }
-  x.restore();
-  const sub = s.name.slice(nm.length).replace(/^[：，]/, '');
-  if (sub) txt(x, sub.length > 14 ? sub.slice(0, 13) + '…' : sub, 240, 548, { fam: F.serif, wt: 700, px: 20, fill: 'rgba(255,250,240,.75)' });
-  txt(x, th.en, 240, 596, { fam: F.cin, wt: 700, px: 22, ls: .38, fill: th.acc });
-  stars(x, 240, 634, s.difficulty, 10, GOLDL, 'rgba(236,208,138,.25)', 'center');
-  txt(x, `${s.players}人 · ${s.timeLabel}`, 240, 672, { fam: F.sans, wt: 500, px: 19, fill: 'rgba(236,227,207,.8)', ls: .1 });
-  txt(x, 'No.' + String(i + 1).padStart(2, '0'), 46, 54, { fam: F.cin, wt: 700, px: 16, ls: .15, fill: 'rgba(236,208,138,.7)', align: 'left' });
+/* ---------- 海報 ---------- */
+/* cover 裁切：img 填滿 w×h，比例不合時裁掉多的那一邊（fy＝直向裁切的位置，0 上、.5 中） */
+function coverDraw(c, img, x, y, w, h, fy = .5) {
+  const ir = img.width / img.height, r = w / h; let sx = 0, sy = 0, sw = img.width, sh = img.height;
+  if (ir > r) { sw = sh * r; sx = (img.width - sw) / 2; } else { sh = sw / r; sy = (img.height - sh) * fy; }
+  c.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+}
+const poster = id => A.posters[id];
+/* 一張實體海報：陰影＋海報＋金框；aspect 預設用海報原比例，傳 2/3 會跟 3D 劇本卡同一個裁切 */
+function posterCard(c, img, cx, cy, h, o = {}) {
+  const { aspect = img.width / img.height, alpha = 1, sc = 1, rot = 0, frame = GOLDL, shadow = .65 } = o;
+  if (alpha <= 0 || sc <= 0) return;
+  const w = h * aspect;
+  c.save(); c.globalAlpha *= alpha; c.translate(cx, cy); c.rotate(rot); c.scale(sc, sc);
+  if (shadow) { c.save(); c.shadowColor = `rgba(0,0,0,${shadow})`; c.shadowBlur = h * .08; c.shadowOffsetY = h * .03; c.fillStyle = '#000'; c.fillRect(-w / 2, -h / 2, w, h); c.restore(); }
+  coverDraw(c, img, -w / 2, -h / 2, w, h);
+  if (frame) {
+    c.strokeStyle = frame; c.lineWidth = 2.5; c.strokeRect(-w / 2 - 9, -h / 2 - 9, w + 18, h + 18);
+    c.globalAlpha *= .45; c.lineWidth = 1; c.strokeRect(-w / 2 - 18, -h / 2 - 18, w + 36, h + 36);
+  }
+  c.restore();
+}
+
+/* ---------- cards (57 劇本卡＝各劇本的實際海報，3D 牆用的貼圖) ---------- */
+function cardCanvas(s) {
+  const cw = 600, ch = 900, c = mk(cw, ch), x = c.ctx, img = poster(s.id), ir = img.width / img.height;
+  if (ir > .6 && ir < .8) coverDraw(x, img, 0, 0, cw, ch);   // 一般直式海報：裁成 2:3 填滿
+  else {   // 方形／橫式海報：模糊放大當底，完整海報置中
+    x.filter = 'blur(26px) brightness(.5)'; coverDraw(x, img, -60, -60, cw + 120, ch + 120); x.filter = 'none';
+    const w = ir > cw / ch ? cw : ch * ir, h = w / ir; x.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+  x.strokeStyle = 'rgba(236,208,138,.9)'; x.lineWidth = 4; x.strokeRect(2, 2, cw - 4, ch - 4);
   return c;
 }
 
@@ -214,7 +213,7 @@ function build3D(opt = {}) {
   if (boil >= 0) order.unshift(boil);
   const cards = [];
   order.forEach((si, n) => {
-    const s = SCRIPTS[si], tex = new T.CanvasTexture(cardCanvas(s, si)); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 8;
+    const s = SCRIPTS[si], tex = new T.CanvasTexture(cardCanvas(s)); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 8;
     const mat = new T.MeshBasicMaterial({ map: tex, side: T.DoubleSide }), m = new T.Mesh(geo, mat); S.add(m);
     const q = rng(900 + n);
     let a; if (n === 0) a = { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, sc: 1 };
@@ -321,7 +320,8 @@ async function start() {
   await Promise.all([...document.fonts].map(f => f.load()));  // 每個 unicode-range 子集都先載入
   await document.fonts.ready;
   A.logoImg = await loadImg('../../pwa/icon-512.png');
-  A.rabbit = await loadImg('../../劇本資料/角色海報/《疯兔子》—主海报.jpg');
+  A.posters = {};   // 每部劇本的海報（scripts.js 的 poster，repo 內 img/劇本/…）
+  await Promise.all(SCRIPTS.map(async s => { if (!s.poster) throw new Error(`scripts.js：${s.name} 沒有 poster`); A.posters[s.id] = await loadImg('../../' + s.poster); }));
   buildSprites(); buildLogo(); await S.init();
   return true;
 }
@@ -331,7 +331,7 @@ window.Reel = {
   mk, SCN, ACC, TA, TB, F, setFont, txt, tw, lgrad, goldText, starPath, stars, charRow,
   SCRIPTS, byId, THEME, mainName, NS, zhNum,
   checkIds(ids) { const miss = [...new Set(ids)].filter(id => !SCRIPTS.some(s => s.id === id)); if (miss.length) throw new Error('scripts.js 找不到影片要用的劇本 id：' + miss.join(', ')); },
-  A, loadImg, glow, petalShape, boltPts, keyholePath, cardCanvas, build3D, W3, ARM_ROWS, armPose, P, buildParticles,
+  A, loadImg, coverDraw, poster, posterCard, glow, petalShape, boltPts, keyholePath, cardCanvas, build3D, W3, ARM_ROWS, armPose, P, buildParticles,
   use(scene) { S = scene; window.reelReady = start(); return window.reelReady; },
 };
 })();

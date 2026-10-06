@@ -24,7 +24,7 @@ const {
   W, H, FPS, DUR, TAU, GOLD, GOLDL, TXT,
   clamp, lerp, inv, E, rng, hash, vnoise, pulse,
   mk, TA, TB, F, setFont, txt, tw, lgrad, goldText, stars, charRow,
-  SCRIPTS, byId, NS, zhNum, A, boltPts, keyholePath, build3D, W3, P, buildParticles,
+  SCRIPTS, byId, NS, zhNum, A, poster, posterCard, boltPts, keyholePath, build3D, W3, P, buildParticles,
 } = window.Reel;
 const CX = W / 2, CY = H / 2;
 
@@ -172,6 +172,13 @@ function label(c, s, x, y, u, o = {}) {
 function bigIndex(c, n, x, y, u, col, align = 'right', px = 520) {
   txt(c, String(n).padStart(2, '0'), x + u * 50 * (align === 'right' ? -1 : 1), y, { fam: F.cin, wt: 900, px, fill: null, stroke: col, lw: 2.5, align, alpha: inv(0, .08, u) });
 }
+/* 直式世界的共同版面：上方英文標＋劇名，中間海報，下方標籤資訊（都在 IG 安全區內） */
+const LBL_Y = 300, TTL_Y = 450, P_Y = 985, P_H = 760, INF_Y = 1425;
+/* 每個世界的海報：重拍前（穿鑰匙孔、轉場中）就在畫面上，落地時從 1.1 倍收回、之後緩慢推近 */
+function hero(c, s, u, o = {}) {
+  const q = E.outExpo(inv(0, .22, u)), sc = lerp(1.1, 1, q) * (1 + Math.max(0, u) * .04);
+  posterCard(c, poster(s.id), o.x || CX, o.y || P_Y, o.h || P_H, { sc, ...o });
+}
 function cutThrone(c, u, s) {
   const g = c.createRadialGradient(540, 760, 0, 540, 900, 1350); g.addColorStop(0, '#22407e'); g.addColorStop(.45, '#0b1736'); g.addColorStop(1, '#03060f');
   c.fillStyle = g; c.fillRect(0, 0, W, H);
@@ -179,12 +186,11 @@ function cutThrone(c, u, s) {
   for (let k = 0; k < 12; k++) { c.globalAlpha = .13; c.drawImage(A.cloud, ((hash(k * 3.1) * 1700 + u * (60 + k * 30)) % 1900) - 600, 40 + hash(k) * 1600, 1000, 400); }
   c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
   bigIndex(c, 1, 1020, 1560, u, 'rgba(220,188,114,.12)');
-  c.save(); c.translate(540, 880); c.rotate(u * .45 - .3);
+  c.save(); c.translate(540, P_Y); c.rotate(u * .45 - .3);
   c.strokeStyle = 'rgba(220,188,114,.55)'; c.lineWidth = 1.6; c.beginPath(); c.arc(0, 0, 440, 0, TAU); c.stroke(); c.beginPath(); c.arc(0, 0, 396, 0, TAU); c.stroke();
   c.lineWidth = 2.4; for (let i = 0; i < A.runes.length; i++) { c.save(); c.rotate(i / A.runes.length * TAU); c.translate(0, -418); c.beginPath(); for (const l of A.runes[i]) { c.moveTo(l[0], l[1]); c.lineTo(l[2], l[3]); } c.stroke(); c.restore(); }
   c.restore();
   const fs = [[.05, .15, 0], [.3, .36, 1], [.56, .62, 2]], fl = Math.max(pulse(u, .05, 24), pulse(u, .3, 28) * .7, pulse(u, .56, 28) * .6);
-  if (u > -.2) { c.fillStyle = `rgba(170,195,255,${fl * .3})`; c.fillRect(0, 0, W, H); }
   const on = fs.find(([a, b]) => u >= a && u < b);
   if (on) {
     const b = A.boltsV[on[2]]; c.lineCap = 'round'; c.lineJoin = 'round'; c.globalCompositeOperation = 'lighter';
@@ -192,15 +198,17 @@ function cutThrone(c, u, s) {
     c.strokeStyle = 'rgba(140,170,255,.35)'; c.lineWidth = 22; path(b.pts); c.lineWidth = 9; c.strokeStyle = 'rgba(190,210,255,.6)'; path(b.pts); b.branches.forEach(path);
     c.strokeStyle = '#fff'; c.lineWidth = 3; path(b.pts); c.lineWidth = 1.5; b.branches.forEach(path); c.globalCompositeOperation = 'source-over';
   }
+  hero(c, s, u);
+  if (u > -.2) { c.fillStyle = `rgba(170,195,255,${fl * .3})`; c.fillRect(0, 0, W, H); }
   const q = E.outExpo(inv(0, .2, u)), sc = lerp(1.32, 1, q) * (1 + u * .05), a = u >= 0 ? 1 : 0;
   if (a > 0) {
-    c.save(); c.translate(540, 880); c.scale(sc, sc);
-    c.globalCompositeOperation = 'lighter'; c.globalAlpha = .2; c.drawImage(A.gGold, -520, -300, 1040, 600); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
-    txt(c, '王座', 0, 0, { px: 320, ls: .12, fill: goldText(c, 0, -170, 0, 170) });
+    c.save(); c.translate(540, TTL_Y); c.scale(sc, sc);
+    c.globalCompositeOperation = 'lighter'; c.globalAlpha = .2; c.drawImage(A.gGold, -420, -200, 840, 400); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
+    txt(c, '王座', 0, 0, { px: 200, ls: .12, fill: goldText(c, 0, -105, 0, 105) });
     c.restore();
   }
-  label(c, 'MYTHOLOGY', 540, 600, u);
-  infoStack(c, s, 540, 1370, { u, tags: '神話 · 陣營 · 身份轉換' });
+  label(c, 'MYTHOLOGY', 540, LBL_Y, u);
+  infoStack(c, s, 540, INF_Y, { u, tags: '神話 · 陣營 · 身份轉換' });
 }
 const PETALS = Array.from({ length: 140 }, (_, i) => { const r = rng(700 + i); return { x: r() * 1500 - 300, y: r() * 2400 - 500, z: .3 + r() * 1.3, rs: (r() - .5) * 6, ph: r() * TAU, sp: .6 + r() * .8 }; });
 function cutSpring(c, u, s) {
@@ -209,15 +217,16 @@ function cutSpring(c, u, s) {
   bigIndex(c, 2, 1030, 1580, u, 'rgba(255,255,255,.25)');
   const petal = big => { for (const p of PETALS) { if ((p.z > 1.15) !== big) continue; const tt = u + 1; const x = p.x + tt * (big ? 300 : 260) * p.sp * p.z + (big ? 0 : Math.sin(tt * 2 + p.ph) * 40), y = p.y + tt * (big ? 340 : 300) * p.sp * p.z; c.save(); c.translate(x, y); c.rotate(p.ph + tt * p.rs); const k = big ? p.z * 2.4 : p.z; c.scale(k, k * Math.cos(tt * 3 + p.ph)); c.globalAlpha = big ? .7 : .85; c.drawImage(big ? A.petalB : A.petal, big ? -48 : -32, big ? -48 : -32); c.restore(); } };
   petal(false);
-  // 直書標題：一字一字落下
-  [...'春晝短'].forEach((ch, i) => { const q = E.outExpo(inv(i * .05, .22 + i * .05, u)); if (q <= 0) return; const y = 620 + i * 280 - (1 - q) * 120; txt(c, ch, 338 + 9, y + 9, { px: 266, fill: 'rgba(80,8,34,.45)', alpha: q }); txt(c, ch, 338, y, { px: 266, fill: '#fffaf6', alpha: q }); });
-  label(c, 'ROMANCE', 560, 760, u, { align: 'left', fill: '#fff' });
-  infoStack(c, s, 560, 870, { u, align: 'left', col: '#fff8f4', acc: '#fff', tags: '情感 · 沉浸 · 治癒', px: 30 });
+  hero(c, s, u, { rot: .025, frame: '#fff4ee' });
+  // 標題：一字一字上浮
+  charRow('春晝短', 540, 190, .1).forEach((o, i) => { const q = E.outExpo(inv(i * .05, .22 + i * .05, u)); if (q <= 0) return; const y = TTL_Y + (1 - q) * 100; txt(c, o.ch, o.x + 7, y + 7, { px: 190, fill: 'rgba(80,8,34,.45)', alpha: q }); txt(c, o.ch, o.x, y, { px: 190, fill: '#fffaf6', alpha: q }); });
+  label(c, 'ROMANCE', 540, LBL_Y, u, { fill: '#fff' });
+  infoStack(c, s, 540, INF_Y, { u, col: '#fff8f4', acc: '#fff', tags: '情感 · 沉浸 · 治癒', px: 30 });
   petal(true);
 }
 function cutRabbit(c, u, s) {
   c.fillStyle = '#070000'; c.fillRect(0, 0, W, H);
-  const img = A.rabbit, step = Math.floor(u * 30), st10 = Math.floor(u * 10), glitch = (u < .06) || (u > .3 && u < .35) || hash(st10 * 7.7) > .78;   // 故障狀態 10Hz 切換，不會紅光頻閃
+  const img = poster(s.id), step = Math.floor(u * 30), st10 = Math.floor(u * 10), glitch = (u < .06) || (u > .3 && u < .35) || hash(st10 * 7.7) > .78;   // 故障狀態 10Hz 切換，不會紅光頻閃
   const pw = W + 140, ph = pw * img.height / img.width, px0 = -70, py0 = 40 - u * 60, strips = 24;
   for (let k = 0; k < strips; k++) {
     const sy = img.height * k / strips, sh = img.height / strips, off = glitch ? (hash(k * 13.1 + step) - .5) * 120 * (hash(k + step * 3) > .55 ? 1 : 0) : 0;
@@ -249,7 +258,7 @@ function cutStars(c, u, s) {
   const sp = lerp(2.6, .12, E.outExpo(inv(-.05, .3, u))), tt = u + 2;
   for (const st of WARP) {
     const z = ((st.z - tt * .18) % 1 + 1) % 1 + .02, z2 = z + sp * .08;
-    const x1 = 540 + st.x / z * 300, y1 = 820 + st.y / z * 300, x2 = 540 + st.x / z2 * 300, y2 = 820 + st.y / z2 * 300;
+    const x1 = 540 + st.x / z * 300, y1 = P_Y + st.y / z * 300, x2 = 540 + st.x / z2 * 300, y2 = P_Y + st.y / z2 * 300;
     c.strokeStyle = st.c > .7 ? 'rgba(160,220,255,.9)' : 'rgba(255,255,255,.85)'; c.lineWidth = Math.min(3.2, .6 / z); c.globalAlpha = clamp(1.2 - z); c.beginPath(); c.moveTo(x2, y2); c.lineTo(x1, y1); c.stroke();
   }
   c.globalAlpha = 1;
@@ -257,25 +266,26 @@ function cutStars(c, u, s) {
   c.fillStyle = pg; c.fillRect(0, 1400, W, 520); c.globalCompositeOperation = 'source-over';
   c.fillStyle = '#020109'; c.beginPath(); c.arc(540, 3150, 1575, 0, TAU); c.fill();
   bigIndex(c, 4, 60, 1520, u, 'rgba(150,215,255,.14)', 'left');
-  const q = E.outExpo(inv(0, .26, u)), ls = lerp(1.25, .45, q), a = inv(0, .06, u);
+  hero(c, s, u, { frame: '#bfe6ff' });
+  const q = E.outExpo(inv(0, .26, u)), ls = lerp(1.0, .4, q), a = inv(0, .06, u);
   if (a > 0) {
-    c.globalCompositeOperation = 'lighter'; c.globalAlpha = .55 * a; c.drawImage(A.gCyan, 540 - 500, 820 - 260, 1000, 520); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
-    txt(c, '群星', 540, 820, { px: 290, ls, wt: 900, fill: '#f4fbff', alpha: a });
+    c.globalCompositeOperation = 'lighter'; c.globalAlpha = .55 * a; c.drawImage(A.gCyan, 540 - 420, TTL_Y - 200, 840, 400); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+    txt(c, '群星', 540, TTL_Y, { px: 200, ls, wt: 900, fill: '#f4fbff', alpha: a });
   }
-  label(c, 'SCI-FI', 540, 570, u, { fill: '#9fdcff' });
-  infoStack(c, s, 540, 1090, { u, col: '#e6f4ff', acc: '#9fdcff', tags: '太空 · 機制 · 情感 · 沉浸' });
+  label(c, 'SCI-FI', 540, LBL_Y, u, { fill: '#9fdcff' });
+  infoStack(c, s, 540, INF_Y, { u, col: '#e6f4ff', acc: '#9fdcff', tags: '太空 · 機制 · 情感 · 沉浸' });
 }
 function cutTianjin(c, u, s) {
   c.fillStyle = lgrad(c, 0, 0, W, H, [[0, '#3a2812'], [1, '#120b04']]); c.fillRect(0, 0, W, H);
   c.globalAlpha = .18; c.globalCompositeOperation = 'overlay'; c.drawImage(A.grain[2], 0, 0, W, H); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   const bq = E.outExpo(inv(0, .1, u));
   c.save(); c.beginPath(); c.rect(0, 0, W * bq + 40, H); c.clip(); c.drawImage(A.brush, -260 - u * 90, 560, 2300 * .92, 420 * .92); c.restore();
-  [...'津門遺雲'].forEach((ch, i) => { const q = E.outExpo(inv(.01 + i * .02, .12 + i * .02, u)); if (q <= 0) return; txt(c, ch, 760, 400 + i * 196 - (1 - q) * 60, { px: 184, fill: goldText(c, 0, 300, 0, 1100), alpha: q }); });
+  hero(c, s, u, { rot: -.02 });
+  charRow('津門遺雲', 540, 150, .08).forEach((o, i) => { const q = E.outExpo(inv(.01 + i * .02, .12 + i * .02, u)); if (q <= 0) return; txt(c, o.ch, o.x, TTL_Y - (1 - q) * 60, { px: 150, fill: goldText(c, 0, TTL_Y - 80, 0, TTL_Y + 80), alpha: q }); });
   const ss = lerp(2.4, 1, E.outExpo(inv(.04, .1, u))), sa = inv(.04, .06, u);
-  if (sa > 0) { c.save(); c.translate(850, 1230); c.rotate(-.06); c.scale(ss, ss); c.globalAlpha = sa; c.drawImage(A.seal, -88, -88, 176, 176); c.restore(); }
-  label(c, 'REPUBLIC ERA', 92, 640, u * 1.6, { align: 'left', px: 27 });
-  txt(c, '民國・天津衛', 92, 748, { px: 60, wt: 900, align: 'left', fill: '#f3e6c8', alpha: inv(.02, .07, u), ls: .1 });
-  infoStack(c, s, 92, 858, { u: u * 1.6, align: 'left', tags: '民國 · 歡樂 · 嘴砲', px: 30 });
+  if (sa > 0) { c.save(); c.translate(800, 1300); c.rotate(-.06); c.scale(ss, ss); c.globalAlpha = sa; c.drawImage(A.seal, -80, -80, 160, 160); c.restore(); }
+  label(c, 'REPUBLIC ERA', 540, LBL_Y, u * 1.6, { px: 27 });
+  infoStack(c, s, 540, INF_Y, { u: u * 1.6, tags: '民國 · 歡樂 · 嘴砲', px: 30 });
   bigIndex(c, 5, 60, 1500, u, 'rgba(236,208,138,.12)', 'left');
 }
 function cutShrine(c, u, s) {
@@ -283,11 +293,12 @@ function cutShrine(c, u, s) {
   c.globalCompositeOperation = 'lighter'; c.globalAlpha = .95; c.drawImage(A.gWhite, 820 - 520, 250 - 520, 1040, 1040); c.globalAlpha = 1;
   for (let k = 0; k < 7; k++) { c.globalAlpha = .35; c.drawImage(A.cloud, ((hash(k * 5.3) * 1800 - u * 300 * (1 + k * .2)) % 2000 + 2000) % 2000 - 500, 1000 + hash(k + 2) * 600, 900, 300); }
   c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
-  const ts = 1.06 - u * .15; c.save(); c.translate(540, 900); c.scale(ts, ts); c.drawImage(A.toriiV, -540, -900); c.restore();
+  const ts = 1.06 - u * .15; c.save(); c.translate(540, 1060); c.scale(ts, ts); c.drawImage(A.toriiV, -540, -900); c.restore();   // 鳥居往下移，橫樑躲到海報後面、不壓標題
+  hero(c, s, u, { frame: '#c7331f', shadow: .35 });
   const q = E.outExpo(inv(0, .12, u));
-  txt(c, '晴天神社', 540, 960 + (1 - q) * 40, { px: 156, ls: .08, fill: '#10233f', alpha: q });
-  label(c, 'SHRINE', 540, 800, u * 1.5, { fill: '#c7331f' });
-  infoStack(c, s, 540, 1130, { u: u * 1.5, col: '#10233f', acc: '#c7331f', off: 'rgba(16,35,63,.25)', tags: '日式 · 情感 · 沉浸 · 無兇手' });
+  txt(c, '晴天神社', 540, TTL_Y + (1 - q) * 40, { px: 150, ls: .08, fill: '#10233f', alpha: q });
+  label(c, 'SHRINE', 540, LBL_Y, u * 1.5, { fill: '#c7331f' });
+  infoStack(c, s, 540, INF_Y, { u: u * 1.5, col: '#10233f', acc: '#c7331f', off: 'rgba(16,35,63,.25)', tags: '日式 · 情感 · 沉浸 · 無兇手' });
 }
 const WISP = Array.from({ length: 24 }, (_, i) => { const r = rng(1600 + i); return { x: 70 + r() * 940, y: 260 + r() * 1500, s: 40 + r() * 90, ph: r() * TAU }; });
 function cutLichuan(c, u, s) {
@@ -296,34 +307,31 @@ function cutLichuan(c, u, s) {
   for (let k = 0; k < 9; k++) { c.globalAlpha = .12; c.drawImage(A.cloud, ((hash(k * 2.7) * 1800 + u * 200 * (k % 2 ? 1 : -1)) % 2000 + 2000) % 2000 - 600, 300 + hash(k + 9) * 1300, 1300, 380); }
   for (const w of WISP) { const f = .7 + .3 * Math.sin(u * 40 + w.ph); c.globalAlpha = .6 * f; const y = w.y - u * 120; c.drawImage(A.gTeal, w.x - w.s, y - w.s * 1.3, w.s * 2, w.s * 2.6); c.globalAlpha = .9 * f; c.drawImage(A.gWhite, w.x - w.s * .18, y - w.s * .1, w.s * .36, w.s * .5); }
   c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
-  const a = inv(0, .04, u), T = '漓川怪談簿', TY = 880, o = { px: 166, ls: .06 };
+  hero(c, s, u, { frame: '#7ff5e2' });
+  const a = inv(0, .04, u), T = '漓川怪談簿', TY = TTL_Y, o = { px: 140, ls: .06 };
   txt(c, T, 540, TY, { ...o, fill: '#eafffb', alpha: a });
-  const lx = lerp(170, 865, E.inOutCubic(inv(.15, .4, u))), lr = 150;
+  const lx = lerp(200, 880, E.inOutCubic(inv(.15, .4, u))), lr = 115;
   if (a > 0) {
     c.save(); c.beginPath(); c.arc(lx, TY, lr, 0, TAU); c.clip(); c.fillStyle = 'rgba(2,20,20,.9)'; c.fillRect(0, 0, W, H);
     c.translate(lx, TY); c.scale(1.35, 1.35); c.translate(-lx, -TY); txt(c, T, 540, TY, { ...o, fill: '#7ff5e2' }); c.restore();
     c.strokeStyle = '#bff8ee'; c.lineWidth = 6; c.beginPath(); c.arc(lx, TY, lr, 0, TAU); c.stroke();
     c.lineWidth = 16; c.lineCap = 'round'; c.beginPath(); c.moveTo(lx + lr * .72, TY + lr * .72); c.lineTo(lx + lr * 1.2, TY + lr * 1.2); c.stroke();
   }
-  label(c, 'MYSTERY', 540, 660, u * 1.5, { fill: '#7ff5e2' });
-  infoStack(c, s, 540, 1100, { u: u * 1.5, col: '#dffbf6', acc: '#7ff5e2', tags: '日式 · 硬核推理 · 密室' });
+  label(c, 'MYSTERY', 540, LBL_Y, u * 1.5, { fill: '#7ff5e2' });
+  infoStack(c, s, 540, INF_Y, { u: u * 1.5, col: '#dffbf6', acc: '#7ff5e2', tags: '日式 · 硬核推理 · 密室' });
 }
 const CONF = Array.from({ length: 200 }, (_, i) => { const r = rng(1900 + i); const a = r() * TAU, v = 500 + r() * 1500; return { vx: Math.cos(a) * v * .75, vy: Math.sin(a) * v * 1.2 - 500, w: 12 + r() * 18, h: 7 + r() * 11, c: ['#ffffff', '#ffe14a', '#2ad1ff', '#ff3b7f', '#7c4dff', '#3cff9a'][r() * 6 | 0], rs: (r() - .5) * 30, ph: r() * TAU }; });
+const BOIL_H = 900; let boilNoPoster = false;   // 海報置中、2:3（＝3D 劇本卡同一個裁切）；縮成卡片時海報另外畫
 function cutBoil(c, u, s) {
   const g = c.createRadialGradient(540, 900, 0, 540, 900, 1300); g.addColorStop(0, '#ffc93a'); g.addColorStop(.55, '#ff8a1f'); g.addColorStop(1, '#e8401f');
   c.fillStyle = g; c.fillRect(0, 0, W, H);
   c.save(); c.translate(540, 900); c.rotate(u * .8); c.fillStyle = 'rgba(255,255,255,.12)';
   for (let k = 0; k < 18; k++) { c.rotate(TAU / 18); c.beginPath(); c.moveTo(0, 0); c.lineTo(-210, -1700); c.lineTo(210, -1700); c.closePath(); c.fill(); } c.restore();
   for (const f of CONF) { const tt = Math.max(0, u) + .02, x = 540 + f.vx * tt * Math.exp(-tt * 1.5), y = 900 + f.vy * tt * Math.exp(-tt * 1.5) + 900 * tt * tt; c.save(); c.translate(x, y); c.rotate(f.ph + f.rs * tt); c.scale(1, Math.cos(f.ph + tt * 18)); c.fillStyle = f.c; c.fillRect(-f.w / 2, -f.h / 2, f.w, f.h); c.restore(); }
-  const q = E.outBack(inv(0, .14, u)), sc = lerp(.3, 1, q);
-  if (q > 0) {
-    c.save(); c.translate(540, 900); c.rotate(-.04); c.scale(sc, sc);
-    txt(c, '沸騰跨世紀', 12, 14, { px: 168, fill: '#5a1500', ls: .03 });
-    txt(c, '沸騰跨世紀', 0, 0, { px: 168, fill: '#ffffff', stroke: '#5a1500', lw: 14, ls: .03 });
-    c.restore();
-  }
-  label(c, 'COMEDY', 540, 700, u * 1.5, { fill: '#5a1500' });
-  infoStack(c, s, 540, 1110, { u: u * 1.5, col: '#5a1500', acc: '#5a1500', off: 'rgba(90,21,0,.25)', tags: '歡樂 · 懷舊 · 團建 · 無兇手' });
+  if (!boilNoPoster) posterCard(c, poster(s.id), CX, CY, BOIL_H, { aspect: 2 / 3, sc: lerp(.3, 1, E.outBack(inv(0, .14, u))), shadow: .45 });
+  label(c, 'COMEDY', 540, LBL_Y, u * 1.5, { fill: '#5a1500' });
+  txt(c, '沸騰跨世紀', 540, 400, { px: 76, wt: 900, fill: '#fff', stroke: '#5a1500', lw: 9, alpha: inv(.02, .06, u), ls: .06 });
+  infoStack(c, s, 540, 1440, { u: u * 1.5, col: '#5a1500', acc: '#5a1500', off: 'rgba(90,21,0,.25)', tags: '歡樂 · 懷舊 · 團建 · 無兇手' });
 }
 function drawCut(c, i, u) { const k = CUTS[i]; c.save(); k.draw(c, u, byId(k.id)); c.restore(); }
 function montage(c, t) {
@@ -390,11 +398,11 @@ function wall(c, t) {
     c.drawImage(A.kh, -130, -160); c.restore();
   }
   // 快剪最後一格縮成卡片（直式畫面裁成 2:3）
-  if (t < 6.6) {
-    const p = E.inOutQuart(inv(6.4, 6.6, t)), ch = lerp(H, CARD_PX, p), cw = lerp(W, CARD_PX / 1.5, p), sh = lerp(H, W * 1.5, p);
-    TA.ctx.setTransform(1, 0, 0, 1, 0, 0); drawCut(TA.ctx, 7, t - 5.8);
-    c.save(); c.globalAlpha = 1 - inv(.85, 1, p); c.drawImage(TA, 0, (H - sh) / 2, W, sh, CX - cw / 2, CY - ch / 2, cw, ch); c.restore();
-    c.strokeStyle = `rgba(236,208,138,${p})`; c.lineWidth = 2; c.strokeRect(CX - cw / 2, CY - ch / 2, cw, ch);
+  if (t < 6.6) {   // 背景淡出，中間的海報縮成同一張 3D 劇本卡
+    const p = E.inOutQuart(inv(6.4, 6.6, t)), k = lerp(1, .6, p);
+    TA.ctx.setTransform(1, 0, 0, 1, 0, 0); boilNoPoster = true; drawCut(TA.ctx, 7, t - 5.8); boilNoPoster = false;
+    c.save(); c.globalAlpha = 1 - p; c.translate(CX, CY); c.scale(k, k); c.drawImage(TA, -CX, -CY); c.restore();
+    posterCard(c, poster('feiteng'), CX, CY, lerp(BOIL_H, CARD_PX, p), { aspect: 2 / 3, alpha: 1 - inv(.7, 1, p), shadow: .45 * (1 - p), frame: `rgba(236,208,138,${1 - p})` });
   }
   // 計數器（下方安全區內）
   const cq = inv(6.7, 6.85, t);
