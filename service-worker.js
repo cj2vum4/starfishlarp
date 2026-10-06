@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-10-06-lineoa';
+const CACHE_VERSION = '2026-10-06-noprecache';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -12,7 +12,6 @@ const APP_SHELL = [
     './offline.html',
     './榮譽牆.html',
     './新增玩本記錄.html',
-    './7人/津門遺雲.html',
     './manifest.webmanifest',
     './index.css?v=20261005-logo',
     './img/logo.webp',
