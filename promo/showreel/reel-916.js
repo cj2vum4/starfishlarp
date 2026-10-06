@@ -35,9 +35,9 @@ const CUTS = [
   { t: 2.8, d: .6, id: 'chunzhou', draw: cutSpring, tr: 'iris' },
   { t: 3.4, d: .6, id: 'fengtuz', draw: cutRabbit, tr: 'glitch' },
   { t: 4.0, d: .6, id: 'qunxing', draw: cutStars, tr: 'zoom' },
-  { t: 4.6, d: .4, id: 'jinmen', draw: cutTianjin, tr: 'slats' },
-  { t: 5.0, d: .4, id: 'qingtian', draw: cutShrine, tr: 'swipe' },
-  { t: 5.4, d: .4, id: 'lichuan', draw: cutLichuan, tr: 'shutter' },
+  { t: 4.6, d: .4, id: 'lichuan', draw: cutLichuan, tr: 'shutter' },   // 快剪段亮度單向往上：漓川（暗）→津門（米白海報）→神社→沸騰（WCAG 2.3.1）
+  { t: 5.0, d: .4, id: 'jinmen', draw: cutTianjin, tr: 'slats' },
+  { t: 5.4, d: .4, id: 'qingtian', draw: cutShrine, tr: 'swipe' },
   { t: 5.8, d: .6, id: 'feiteng', draw: cutBoil, tr: 'punch' },
 ];
 const IMPACTS = [
@@ -286,7 +286,7 @@ function cutTianjin(c, u, s) {
   if (sa > 0) { c.save(); c.translate(800, 1300); c.rotate(-.06); c.scale(ss, ss); c.globalAlpha = sa; c.drawImage(A.seal, -80, -80, 160, 160); c.restore(); }
   label(c, 'REPUBLIC ERA', 540, LBL_Y, u * 1.6, { px: 27 });
   infoStack(c, s, 540, INF_Y, { u: u * 1.6, tags: '民國 · 歡樂 · 嘴砲', px: 30 });
-  bigIndex(c, 5, 60, 1500, u, 'rgba(236,208,138,.12)', 'left');
+  bigIndex(c, 6, 60, 1500, u, 'rgba(236,208,138,.12)', 'left');
 }
 function cutShrine(c, u, s) {
   c.fillStyle = lgrad(c, 0, 0, 0, H, [[0, '#2f7fd0'], [.55, '#a6d6f6'], [1, '#fff3e2']]); c.fillRect(0, 0, W, H);
@@ -632,7 +632,8 @@ function hud(c, t) {
 const subN = t => (t > 1.7 && t < 2.02) || (t > 6.38 && t < 7.7) || (t > 9.3 && t < 10.42) || (t > 11.15 && t < 11.7) ? 7 : (t > 12.3 && t < T_LOOP) ? 3 : 5;
 function bloomAmt(t) {
   if (t >= 2.0 && t < 2.8) return .26;
-  if (t >= 5.0 && t < 5.4) return .1;
+  if (t >= 5.0 && t < 5.4) return .2;    // 津門：米白海報，光暈收一點才看得清楚
+  if (t >= 5.4 && t < 5.8) return .1;    // 神社：整格最亮
   if (t >= 5.8 && t < 6.6) return lerp(.1, .42, E.inOutCubic(inv(6.42, 6.6, t)));   // 漸變，不跳格
   if (t >= 2.8 && t < 3.4) return .14;
   if (t >= 9.2 && t < 10.4) return lerp(.16, .42, inv(10.2, 10.4, t));

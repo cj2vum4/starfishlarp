@@ -597,6 +597,7 @@ function hud(c, t) {
 const subN = t => (t > 1.3 && t < 1.62) || (t > 3.98 && t < 5.1) || (t > 6.1 && t < 7.0) || (t > 7.55 && t < 8.1) ? 7 : t > 8.6 ? 3 : 5;
 function bloomAmt(t) {
   if (t >= 1.6 && t < 2.0) return .26;
+  if (t >= 3.4 && t < 3.6) return .2;    // 津門：米白海報，光暈收一點才看得清楚
   if (t >= 3.6 && t < 3.8) return .1;
   if (t >= 3.8 && t < 4.25) return lerp(.1, .42, E.inOutCubic(inv(4.05, 4.25, t)));   // 漸變，不跳格
   if (t >= 2.0 && t < 2.4) return .14;
