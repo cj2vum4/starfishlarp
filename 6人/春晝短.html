@@ -379,7 +379,7 @@
 
         <!-- 海報 -->
         <section class="poster-section">
-            <img src="../img/劇本/春晝短/春晝短_劇本殺封面.webp" alt="春晝短 劇本殺封面" class="poster-image">
+            <img fetchpriority="high" src="../img/劇本/春晝短/春晝短_劇本殺封面.webp" alt="春晝短 劇本殺封面" class="poster-image">
         </section>
 
         <main class="main-content">
@@ -431,42 +431,42 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img class="character-poster" src="../img/劇本/春晝短/何西西.webp" alt="何西西">
+                        <img loading="lazy" decoding="async" class="character-poster" src="../img/劇本/春晝短/何西西.webp" alt="何西西">
                         <div class="character-card-body">
                             <div class="character-name">何西西</div>
                             <div class="character-info">女 · 26歲<br>圓框眼鏡、背帶褲的短髮女生</div>
                         </div>
                     </div>
                     <div class="character-card">
-                        <img class="character-poster" src="../img/劇本/春晝短/喬齊.webp" alt="喬齊">
+                        <img loading="lazy" decoding="async" class="character-poster" src="../img/劇本/春晝短/喬齊.webp" alt="喬齊">
                         <div class="character-card-body">
                             <div class="character-name">喬齊</div>
                             <div class="character-info">男 · 26歲<br>簡約帥氣、陽光開朗的男生</div>
                         </div>
                     </div>
                     <div class="character-card">
-                        <img class="character-poster" src="../img/劇本/春晝短/楊夢詩.webp" alt="楊夢詩">
+                        <img loading="lazy" decoding="async" class="character-poster" src="../img/劇本/春晝短/楊夢詩.webp" alt="楊夢詩">
                         <div class="character-card-body">
                             <div class="character-name">楊夢詩</div>
                             <div class="character-info">女 · 26歲<br>身形嬌小、長髮及腰的旗袍女生</div>
                         </div>
                     </div>
                     <div class="character-card">
-                        <img class="character-poster" src="../img/劇本/春晝短/林宇白.webp" alt="林宇白">
+                        <img loading="lazy" decoding="async" class="character-poster" src="../img/劇本/春晝短/林宇白.webp" alt="林宇白">
                         <div class="character-card-body">
                             <div class="character-name">林宇白</div>
                             <div class="character-info">男 · 26歲<br>手指乾淨修長、性格內斂的男生</div>
                         </div>
                     </div>
                     <div class="character-card">
-                        <img class="character-poster" src="../img/劇本/春晝短/余想.webp" alt="余想">
+                        <img loading="lazy" decoding="async" class="character-poster" src="../img/劇本/春晝短/余想.webp" alt="余想">
                         <div class="character-card-body">
                             <div class="character-name">余想</div>
                             <div class="character-info">女 · 26歲<br>手臂彩色紋身、酷酷的女生</div>
                         </div>
                     </div>
                     <div class="character-card">
-                        <img class="character-poster" src="../img/劇本/春晝短/陳鏡.webp" alt="陳鏡">
+                        <img loading="lazy" decoding="async" class="character-poster" src="../img/劇本/春晝短/陳鏡.webp" alt="陳鏡">
                         <div class="character-card-body">
                             <div class="character-name">陳鏡</div>
                             <div class="character-info">男 · 26歲<br>耳釘眉釘、玩世不恭的男生</div>
@@ -478,7 +478,7 @@
             <!-- 故事背景卡片 -->
             <div class="card description">
                 <h2 class="card-title">故事背景</h2>
-                <img class="description-media" src="../img/劇本/春晝短/春晝短_故事背景.webp" alt="春晝短 故事背景">
+                <img loading="lazy" decoding="async" class="description-media" src="../img/劇本/春晝短/春晝短_故事背景.webp" alt="春晝短 故事背景">
                 <div class="description-text">
                     在鶴山西江之中，有一座名為<span class="highlight">海壽島</span>的小島，島上佇立著一座神秘的
                     <span class="highlight">「春晝失戀博物館」</span>。晶瑩剔透的玻璃館四周爬滿了藤蔓，
@@ -569,13 +569,13 @@
         });
     </script>
 
-    <audio id="bgm" src="春晝短.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="春晝短.mp3" loop muted></audio>
     <script>
         document.addEventListener('click', function () {
             document.getElementById('bgm').muted = false;
         }, { once: true });
     </script>
-    <script src="../bgm-control.js?v=20260727"></script>
+    <script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

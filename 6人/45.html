@@ -633,8 +633,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/45/劇本殺45海報1.webp" alt="劇本殺45海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/45/劇本殺45海報2.webp" alt="劇本殺45海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/45/劇本殺45海報1.webp" alt="劇本殺45海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/45/劇本殺45海報2.webp" alt="劇本殺45海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -702,32 +702,32 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/45/李瀚明角色海報.webp" alt="李瀚明角色海報" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/45/李瀚明角色海報.webp" alt="李瀚明角色海報" class="character-image">
                         <div class="character-name">李瀚明</div>
                         <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/45/林明角色海報.webp" alt="林明角色海報" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/45/林明角色海報.webp" alt="林明角色海報" class="character-image">
                         <div class="character-name">林明</div>
                         <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/45/秦蒼角色海報.webp" alt="秦蒼角色海報" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/45/秦蒼角色海報.webp" alt="秦蒼角色海報" class="character-image">
                         <div class="character-name">秦蒼</div>
                         <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/45/秦花語角色海報.webp" alt="秦花語角色海報" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/45/秦花語角色海報.webp" alt="秦花語角色海報" class="character-image">
                         <div class="character-name">秦花語</div>
                         <div class="character-info">女性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/45/楊星彩角色海報.webp" alt="楊星彩角色海報" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/45/楊星彩角色海報.webp" alt="楊星彩角色海報" class="character-image">
                         <div class="character-name">楊星彩</div>
                         <div class="character-info">女性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/45/張耀雲角色海報.webp" alt="張耀雲角色海報" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/45/張耀雲角色海報.webp" alt="張耀雲角色海報" class="character-image">
                         <div class="character-name">張耀雲</div>
                         <div class="character-info">男性角色<br></div>
                     </div>
@@ -1108,9 +1108,9 @@
     </script>
 
     <!-- 背景音樂 -->
-    <audio id="bgm" src="45.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="45.mp3" loop muted></audio>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

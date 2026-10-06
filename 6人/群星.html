@@ -522,8 +522,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/群星/群星劇本殺海報1.webp" alt="群星劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/群星/群星劇本殺海報2.webp" alt="群星劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/群星/群星劇本殺海報1.webp" alt="群星劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/群星/群星劇本殺海報2.webp" alt="群星劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -583,32 +583,32 @@
                 <h2 class="card-title">太空人介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/群星/張北斗.webp" alt="張北斗" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/群星/張北斗.webp" alt="張北斗" class="character-image">
                         <div class="character-name">張北斗</div>
                         <div class="character-info">男 | 中國人</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/群星/達莉婭.webp" alt="達莉婭" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/群星/達莉婭.webp" alt="達莉婭" class="character-image">
                         <div class="character-name">達莉婭</div>
                         <div class="character-info">女 | 英國人</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/群星/索菲亞.webp" alt="索菲亞" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/群星/索菲亞.webp" alt="索菲亞" class="character-image">
                         <div class="character-name">索菲亞</div>
                         <div class="character-info">女 | 蘇聯人</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/群星/貝斯.webp" alt="貝斯" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/群星/貝斯.webp" alt="貝斯" class="character-image">
                         <div class="character-name">貝斯</div>
                         <div class="character-info">女 | 美國人</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/群星/馬斯克.webp" alt="馬斯克" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/群星/馬斯克.webp" alt="馬斯克" class="character-image">
                         <div class="character-name">馬斯克</div>
                         <div class="character-info">男 | 美國人</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/群星/伊萬.webp" alt="伊萬" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/群星/伊萬.webp" alt="伊萬" class="character-image">
                         <div class="character-name">伊萬</div>
                         <div class="character-info">男 | 蘇聯人</div>
                     </div>
@@ -721,7 +721,7 @@
     </script>
 
 </script>
-    <audio id="bgm" src="群星.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="群星.mp3" loop muted></audio>
 <script>
   // 點擊頁面解除靜音
   document.addEventListener('click', function(){
@@ -730,7 +730,7 @@
 </script>
 
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

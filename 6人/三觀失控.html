@@ -215,7 +215,7 @@
         </header>
 
         <div class="poster-gallery">
-            <a href="../img/劇本/三觀失控/海報.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/海報.webp" alt="三觀失控 劇本海報" loading="lazy"></a>
+            <a href="../img/劇本/三觀失控/海報.webp" target="_blank" rel="noopener"><img fetchpriority="high" src="../img/劇本/三觀失控/海報.webp" alt="三觀失控 劇本海報"></a>
             <a href="../img/劇本/三觀失控/介紹.webp" target="_blank" rel="noopener"><img src="../img/劇本/三觀失控/介紹.webp" alt="三觀失控 劇本介紹" loading="lazy"></a>
         </div>
 
@@ -290,7 +290,7 @@
         </div>
     </main>
 
-    <audio id="bgm" src="三觀失控.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="三觀失控.mp3" loop muted></audio>
     <script>
         document.addEventListener('click', function () {
             var audio = document.getElementById('bgm');
@@ -347,7 +347,7 @@
             draw();
         })();
     </script>
-    <script src="../bgm-control.js?v=20260727"></script>
+    <script src="../bgm-control.js?v=20261006-lazy"></script>
     <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

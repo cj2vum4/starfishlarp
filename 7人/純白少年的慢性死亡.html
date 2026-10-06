@@ -666,8 +666,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/純白少年的慢性死亡/純白少年的慢性死亡_海報1.webp" alt="純白少年的慢性死亡 海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/純白少年的慢性死亡/純白少年的慢性死亡_海報2.webp" alt="純白少年的慢性死亡 海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/純白少年的慢性死亡/純白少年的慢性死亡_海報1.webp" alt="純白少年的慢性死亡 海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/純白少年的慢性死亡_海報2.webp" alt="純白少年的慢性死亡 海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -733,37 +733,37 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/純白少年的慢性死亡/紅色角色.webp" alt="紅色角色" class="character-emoji">
+                        <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/紅色角色.webp" alt="紅色角色" class="character-emoji">
                         <div class="character-name">紅色</div>
                         <div class="character-info">童話女巫的蘋果</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/純白少年的慢性死亡/橙色角色.webp" alt="橙色角色" class="character-emoji">
+                        <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/橙色角色.webp" alt="橙色角色" class="character-emoji">
                         <div class="character-name">橙色</div>
                         <div class="character-info">夏日魔法的氣泡</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/純白少年的慢性死亡/黃色角色.webp" alt="黃色角色" class="character-emoji">
+                        <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/黃色角色.webp" alt="黃色角色" class="character-emoji">
                         <div class="character-name">黃色</div>
                         <div class="character-info">掌心飛逝的沙礫</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/純白少年的慢性死亡/綠色角色.webp" alt="綠色角色" class="character-emoji">
+                        <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/綠色角色.webp" alt="綠色角色" class="character-emoji">
                         <div class="character-name">綠色</div>
                         <div class="character-info">枝蔓纏繞的廢墟</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/純白少年的慢性死亡/青色角色.webp" alt="青色角色" class="character-emoji">
+                        <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/青色角色.webp" alt="青色角色" class="character-emoji">
                         <div class="character-name">青色</div>
                         <div class="character-info">雲中墜落的煙雨</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/純白少年的慢性死亡/藍色角色.webp" alt="藍色角色" class="character-emoji">
+                        <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/藍色角色.webp" alt="藍色角色" class="character-emoji">
                         <div class="character-name">藍色</div>
                         <div class="character-info">星空深處的夢境</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/純白少年的慢性死亡/紫色角色.webp" alt="紫色角色" class="character-emoji">
+                        <img loading="lazy" decoding="async" src="../img/劇本/純白少年的慢性死亡/紫色角色.webp" alt="紫色角色" class="character-emoji">
                         <div class="character-name">紫色</div>
                         <div class="character-info">隨風而去的晚霞</div>
                     </div>
@@ -1170,7 +1170,7 @@
         document.head.appendChild(gentleBounceStyle);
     </script>
 
-<audio id="bgm" src="純白少年的慢性死亡.mp3" autoplay loop muted></audio>
+<audio preload="none" id="bgm" src="純白少年的慢性死亡.mp3" loop muted></audio>
     <script>
         // 點擊頁面解除靜音
         document.addEventListener('click', function(){
@@ -1179,7 +1179,7 @@
     </script>
 
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

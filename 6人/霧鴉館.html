@@ -525,8 +525,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/霧鴉館/霧鴉館劇本殺海報1.webp" alt="霧鴉館劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/霧鴉館/霧鴉館劇本殺海報2.webp" alt="霧鴉館劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/霧鴉館/霧鴉館劇本殺海報1.webp" alt="霧鴉館劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/霧鴉館/霧鴉館劇本殺海報2.webp" alt="霧鴉館劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -586,32 +586,32 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card mystical">
-                        <img src="../img/劇本/霧鴉館/陽光帥氣男生.webp" alt="陽光帥氣男生" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/霧鴉館/陽光帥氣男生.webp" alt="陽光帥氣男生" class="character-image">
                         <div class="character-name">陽光帥氣男生</div>
                         <div class="character-info">男性角色<br>充滿活力的年輕人</div>
                     </div>
                     <div class="character-card mystical">
-                        <img src="../img/劇本/霧鴉館/綁著繃帶男子.webp" alt="綁著繃帶男子" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/霧鴉館/綁著繃帶男子.webp" alt="綁著繃帶男子" class="character-image">
                         <div class="character-name">綁著繃帶男子</div>
                         <div class="character-info">男性角色<br>神秘的受傷男子</div>
                     </div>
                     <div class="character-card mystical">
-                        <img src="../img/劇本/霧鴉館/黑瘦中年男人.webp" alt="黑瘦中年男人" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/霧鴉館/黑瘦中年男人.webp" alt="黑瘦中年男人" class="character-image">
                         <div class="character-name">黑瘦中年男人</div>
                         <div class="character-info">男性角色<br>沉默寡言的中年人</div>
                     </div>
                     <div class="character-card mystical">
-                        <img src="../img/劇本/霧鴉館/儒雅眼鏡男子.webp" alt="儒雅眼鏡男子" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/霧鴉館/儒雅眼鏡男子.webp" alt="儒雅眼鏡男子" class="character-image">
                         <div class="character-name">儒雅眼鏡男子</div>
                         <div class="character-info">男性角色<br>知識分子形象</div>
                     </div>
                     <div class="character-card mystical">
-                        <img src="../img/劇本/霧鴉館/幹練短髮女人.webp" alt="幹練短髮女人" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/霧鴉館/幹練短髮女人.webp" alt="幹練短髮女人" class="character-image">
                         <div class="character-name">幹練短髮女人</div>
                         <div class="character-info">女性角色<br>職場精英女性</div>
                     </div>
                     <div class="character-card mystical">
-                        <img src="../img/劇本/霧鴉館/微胖婦女.webp" alt="微胖婦女" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/霧鴉館/微胖婦女.webp" alt="微胖婦女" class="character-image">
                         <div class="character-name">微胖婦女</div>
                         <div class="character-info">女性角色<br>慈祥的中年女性</div>
                     </div>
@@ -813,7 +813,7 @@
         }, Math.random() * 10000 + 15000);
     </script>
 
-    <audio id="bgm" src="霧鴉館.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="霧鴉館.mp3" loop muted></audio>
     <script>
         // 點擊頁面解除靜音
         document.addEventListener('click', function(){
@@ -821,7 +821,7 @@
         }, {once:true});
     </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

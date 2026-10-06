@@ -506,8 +506,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/王座/王座劇本殺海報1.webp" alt="王座劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/王座/王座劇本殺海報2.webp" alt="王座劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/王座/王座劇本殺海報1.webp" alt="王座劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/王座/王座劇本殺海報2.webp" alt="王座劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -566,37 +566,37 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/王座/巨狼芬里爾.webp" alt="巨狼芬里爾" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/王座/巨狼芬里爾.webp" alt="巨狼芬里爾" class="character-image">
                         <div class="character-name">巨狼芬里爾</div>
                         <div class="character-info">男性角色<br>毀滅之狼，諸神黃昏的預言者</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/王座/守護神海姆達爾.webp" alt="守護神海姆達爾" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/王座/守護神海姆達爾.webp" alt="守護神海姆達爾" class="character-image">
                         <div class="character-name">守護神海姆達爾</div>
                         <div class="character-info">男性角色<br>彩虹橋守護者，擁有敏銳視聽</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/王座/神后弗麗嘉.webp" alt="神后弗麗嘉" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/王座/神后弗麗嘉.webp" alt="神后弗麗嘉" class="character-image">
                         <div class="character-name">神后弗麗嘉</div>
                         <div class="character-info">女性角色<br>奧丁之妻，預言與保護女神</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/王座/雷神托爾.webp" alt="雷神托爾" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/王座/雷神托爾.webp" alt="雷神托爾" class="character-image">
                         <div class="character-name">雷神托爾</div>
                         <div class="character-info">男性角色<br>雷電之神，力量與勇氣的象徵</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/王座/詭計之神洛基.webp" alt="詭計之神洛基" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/王座/詭計之神洛基.webp" alt="詭計之神洛基" class="character-image">
                         <div class="character-name">詭計之神洛基</div>
                         <div class="character-info">男性角色<br>火神與詭計之神，變化莫測</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/王座/女武神瓦基里.webp" alt="女武神瓦基里" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/王座/女武神瓦基里.webp" alt="女武神瓦基里" class="character-image">
                         <div class="character-name">女武神瓦基里</div>
                         <div class="character-info">女性角色<br>戰場上的使者，引導英靈</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/王座/青春女神希芙.webp" alt="青春女神希芙" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/王座/青春女神希芙.webp" alt="青春女神希芙" class="character-image">
                         <div class="character-name">青春女神希芙</div>
                         <div class="character-info">女性角色<br>青春與美麗之神，托爾之妻</div>
                     </div>
@@ -774,7 +774,7 @@
     </script>
 
 
-    <audio id="bgm" src="王座.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="王座.mp3" loop muted></audio>
 <script>
   // 點擊頁面解除靜音
   document.addEventListener('click', function(){
@@ -784,7 +784,7 @@
 
 
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

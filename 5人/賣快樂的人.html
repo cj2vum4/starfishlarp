@@ -558,8 +558,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/賣快樂的人/賣快樂的人劇本殺封面1.webp" alt="賣快樂的人劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/賣快樂的人/賣快樂的人劇本殺封面2.webp" alt="賣快樂的人劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/賣快樂的人/賣快樂的人劇本殺封面1.webp" alt="賣快樂的人劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/賣快樂的人/賣快樂的人劇本殺封面2.webp" alt="賣快樂的人劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -621,27 +621,27 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/賣快樂的人/偷月亮的人.webp" alt="偷月亮的人" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/賣快樂的人/偷月亮的人.webp" alt="偷月亮的人" class="character-image">
                         <div class="character-name">偷月亮的人</div>
                         <div class="character-info">男性角色<br>神秘而詩意的存在</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/賣快樂的人/靜止的人.webp" alt="靜止的人" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/賣快樂的人/靜止的人.webp" alt="靜止的人" class="character-image">
                         <div class="character-name">靜止的人</div>
                         <div class="character-info">男性角色<br>內心深沉的靈魂</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/賣快樂的人/藍色的人.webp" alt="藍色的人" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/賣快樂的人/藍色的人.webp" alt="藍色的人" class="character-image">
                         <div class="character-name">藍色的人</div>
                         <div class="character-info">女性角色<br>憂鬱而美麗的心境</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/賣快樂的人/霧氣騰騰的人.webp" alt="霧氣騰騰的人" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/賣快樂的人/霧氣騰騰的人.webp" alt="霧氣騰騰的人" class="character-image">
                         <div class="character-name">霧氣騰騰的人</div>
                         <div class="character-info">女性角色<br>朦朧而溫柔的靈魂</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/賣快樂的人/踩影子的人.webp" alt="踩影子的人" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/賣快樂的人/踩影子的人.webp" alt="踩影子的人" class="character-image">
                         <div class="character-name">踩影子的人</div>
                         <div class="character-info">女性角色<br>追尋自我的旅人</div>
                     </div>
@@ -682,14 +682,14 @@
 
 
 </script>
-    <audio id="bgm" src="賣快樂的人.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="賣快樂的人.mp3" loop muted></audio>
 <script>
   // 點擊頁面解除靜音
   document.addEventListener('click', function(){
     document.getElementById('bgm').muted = false;
   }, {once:true});
 </script>
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 
 
     <script>

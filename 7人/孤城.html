@@ -552,8 +552,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/孤城/孤城劇本殺封面1.webp" alt="孤城劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/孤城/孤城劇本殺封面2.webp" alt="孤城劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/孤城/孤城劇本殺封面1.webp" alt="孤城劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/孤城/孤城劇本殺封面2.webp" alt="孤城劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -741,7 +741,7 @@
 
 
     </script>
-    <audio id="bgm" src="孤城.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="孤城.mp3" loop muted></audio>
     <script>
       // 點擊頁面解除靜音
       document.addEventListener('click', function(){
@@ -751,7 +751,7 @@
 
 
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

@@ -587,8 +587,8 @@
 
         <div class="poster-section">
             <div class="poster-slider">
-                <img src="../img/劇本/眠夢不老泉/眠夢不老泉封面一.webp" class="poster-image active" alt="眠夢不老泉封面一">
-                <img src="../img/劇本/眠夢不老泉/眠夢不老泉封面二.webp" class="poster-image" alt="眠夢不老泉封面二">
+                <img fetchpriority="high" src="../img/劇本/眠夢不老泉/眠夢不老泉封面一.webp" class="poster-image active" alt="眠夢不老泉封面一">
+                <img loading="lazy" decoding="async" src="../img/劇本/眠夢不老泉/眠夢不老泉封面二.webp" class="poster-image" alt="眠夢不老泉封面二">
             </div>
         </div>
 
@@ -639,42 +639,42 @@
                 <div class="quote">"六位人物因為同一事件而緊密聯繫，每一幕的主線都匯聚在同一條線上"</div>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/眠夢不老泉/阿杉.webp" alt="阿杉" class="character-avatar">
+                        <img loading="lazy" decoding="async" src="../img/劇本/眠夢不老泉/阿杉.webp" alt="阿杉" class="character-avatar">
                         <div class="character-name">阿杉</div>
                         <div class="character-age">41歲</div>
                         <div class="character-gender">女性角色</div>
                         <div class="character-desc">踏實勤勞，待人和善</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/眠夢不老泉/邦迪.webp" alt="邦迪" class="character-avatar">
+                        <img loading="lazy" decoding="async" src="../img/劇本/眠夢不老泉/邦迪.webp" alt="邦迪" class="character-avatar">
                         <div class="character-name">邦迪</div>
                         <div class="character-age">47歲</div>
                         <div class="character-gender">男性角色</div>
                         <div class="character-desc">高大粗獷，專業可靠</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/眠夢不老泉/伊伊.webp" alt="伊伊" class="character-avatar">
+                        <img loading="lazy" decoding="async" src="../img/劇本/眠夢不老泉/伊伊.webp" alt="伊伊" class="character-avatar">
                         <div class="character-name">伊伊</div>
                         <div class="character-age">32歲</div>
                         <div class="character-gender">女性角色</div>
                         <div class="character-desc">容貌美麗，氣質端莊</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/眠夢不老泉/達文西.webp" alt="達文西" class="character-avatar">
+                        <img loading="lazy" decoding="async" src="../img/劇本/眠夢不老泉/達文西.webp" alt="達文西" class="character-avatar">
                         <div class="character-name">達文西</div>
                         <div class="character-age">45歲</div>
                         <div class="character-gender">男性角色</div>
                         <div class="character-desc">溫文爾雅，學識淵博</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/眠夢不老泉/蜜兒.webp" alt="蜜兒" class="character-avatar">
+                        <img loading="lazy" decoding="async" src="../img/劇本/眠夢不老泉/蜜兒.webp" alt="蜜兒" class="character-avatar">
                         <div class="character-name">蜜兒</div>
                         <div class="character-age">44歲</div>
                         <div class="character-gender">女性角色</div>
                         <div class="character-desc">見識廣博，開朗健美</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/眠夢不老泉/小喬.webp" alt="小喬" class="character-avatar">
+                        <img loading="lazy" decoding="async" src="../img/劇本/眠夢不老泉/小喬.webp" alt="小喬" class="character-avatar">
                         <div class="character-name">小喬</div>
                         <div class="character-age">45歲</div>
                         <div class="character-gender">男性角色</div>
@@ -712,7 +712,7 @@
         </div>
     </div>
     
-    <audio id="bgm" src="眠夢不老泉.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="眠夢不老泉.mp3" loop muted></audio>
     <script>
       // 點擊頁面解除靜音
       document.addEventListener('click', function(){
@@ -849,7 +849,7 @@
         document.head.appendChild(style);
     </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

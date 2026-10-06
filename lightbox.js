@@ -5,6 +5,7 @@
  * - 對象：src 位於 img/劇本/ 底下的 <img>（輪播、動態填入的圖也算）
  * - 不想被放大的圖：在 img 或其祖先加 data-no-zoom
  * - 原本包著 <a href="圖檔"> 的圖也會改用這裡開，不再跳新分頁
+ * - img 有 data-full 時（頁面顯示縮圖），放大載入 data-full 的原圖
  * 操作：兩指縮放／雙擊放大、放大後拖曳、左右滑或方向鍵換張、
  *       點背景／✕／Esc／手機返回鍵關閉
  */
@@ -38,11 +39,18 @@
         return best;
     }
 
+    // 頁面上可能放的是縮圖（img/劇本/X/縮圖/），data-full 指向原圖；放大時看原圖
+    function fullSrc(img) {
+        var f = img.getAttribute('data-full');
+        if (f) { try { return new URL(f, location.href).href; } catch (e) { /* ignore */ } }
+        return img.currentSrc || img.src;
+    }
+
     function collect() {
         var seen = {}, list = [];
         Array.prototype.forEach.call(document.images, function (img) {
             if (!isZoomable(img)) return;
-            var src = img.currentSrc || img.src;
+            var src = fullSrc(img);
             if (seen[src]) return;
             seen[src] = true;
             list.push({ src: src, alt: img.alt || '' });
@@ -156,7 +164,7 @@
     function open(img) {
         if (!root) build();
         items = collect();
-        var src = img.currentSrc || img.src;
+        var src = fullSrc(img);
         var i = items.map(function (x) { return x.src; }).indexOf(src);
         if (i < 0) { items.unshift({ src: src, alt: img.alt || '' }); i = 0; }
         root.classList.toggle('single', items.length < 2);

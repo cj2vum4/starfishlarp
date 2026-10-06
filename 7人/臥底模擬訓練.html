@@ -510,8 +510,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_劇本海報_1.webp" alt="臥底模擬訓練 劇本海報 1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_劇本海報_2.webp" alt="臥底模擬訓練 劇本海報 2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_劇本海報_1.webp" alt="臥底模擬訓練 劇本海報 1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_劇本海報_2.webp" alt="臥底模擬訓練 劇本海報 2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -572,37 +572,37 @@
                 <h2 class="card-title">特工候選人</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_1.webp" alt="臥底模擬訓練 角色海報 1" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_1.webp" alt="臥底模擬訓練 角色海報 1" class="character-image">
                         <div class="character-name">候選人 A</div>
                         <div class="character-info">身份待驗證</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_2.webp" alt="臥底模擬訓練 角色海報 2" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_2.webp" alt="臥底模擬訓練 角色海報 2" class="character-image">
                         <div class="character-name">候選人 B</div>
                         <div class="character-info">身份待驗證</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_3.webp" alt="臥底模擬訓練 角色海報 3" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_3.webp" alt="臥底模擬訓練 角色海報 3" class="character-image">
                         <div class="character-name">候選人 C</div>
                         <div class="character-info">身份待驗證</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_4.webp" alt="臥底模擬訓練 角色海報 4" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_4.webp" alt="臥底模擬訓練 角色海報 4" class="character-image">
                         <div class="character-name">候選人 D</div>
                         <div class="character-info">身份待驗證</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_5.webp" alt="臥底模擬訓練 角色海報 5" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_5.webp" alt="臥底模擬訓練 角色海報 5" class="character-image">
                         <div class="character-name">候選人 E</div>
                         <div class="character-info">身份待驗證</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_6.webp" alt="臥底模擬訓練 角色海報 6" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_6.webp" alt="臥底模擬訓練 角色海報 6" class="character-image">
                         <div class="character-name">候選人 F</div>
                         <div class="character-info">身份待驗證</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_7.webp" alt="臥底模擬訓練 角色海報 7" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/臥底模擬訓練/臥底模擬訓練_角色海報_7.webp" alt="臥底模擬訓練 角色海報 7" class="character-image">
                         <div class="character-name">候選人 G</div>
                         <div class="character-info">身份待驗證</div>
                     </div>
@@ -734,7 +734,7 @@
         });
     </script>
 
-    <audio id="bgm" src="臥底模擬訓練.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="臥底模擬訓練.mp3" loop muted></audio>
     <script>
       // 點擊頁面解除靜音
       document.addEventListener('click', function(){
@@ -742,7 +742,7 @@
       }, {once:true});
     </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

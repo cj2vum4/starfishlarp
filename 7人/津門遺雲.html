@@ -248,14 +248,14 @@
         </div>
     </main>
 
-    <audio id="bgm" src="津門遺雲.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="津門遺雲.mp3" loop muted></audio>
     <script>
         document.addEventListener('click', function () {
             var audio = document.getElementById('bgm');
             if (audio) audio.muted = false;
         }, { once: true });
     </script>
-    <script src="../bgm-control.js?v=20260727"></script>
+    <script src="../bgm-control.js?v=20261006-lazy"></script>
     <script src="../reviews.js?v=20260729-w3" data-script="津門遺雲"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

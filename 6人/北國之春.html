@@ -525,8 +525,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/北國之春/北國之春劇本殺海報1.webp" alt="北國之春劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/北國之春/北國之春劇本殺海報2.webp" alt="北國之春劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/北國之春/北國之春劇本殺海報1.webp" alt="北國之春劇本殺海報1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/北國之春/北國之春劇本殺海報2.webp" alt="北國之春劇本殺海報2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -584,32 +584,32 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/北國之春/娜塔莉.webp" alt="娜塔莉" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/北國之春/娜塔莉.webp" alt="娜塔莉" class="character-image">
                         <div class="character-name">娜塔莉</div>
                         <div class="character-info">女性角色<br>布魯斯酒館服務生，異域風情</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/北國之春/維克多.webp" alt="維克多" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/北國之春/維克多.webp" alt="維克多" class="character-image">
                         <div class="character-name">維克多</div>
                         <div class="character-info">男性角色<br>《真理報》特約記者，寡言少語</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/北國之春/尤里希.webp" alt="尤里希" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/北國之春/尤里希.webp" alt="尤里希" class="character-image">
                         <div class="character-name">尤里希</div>
                         <div class="character-info">女性角色<br>小鎮農婦，性格泼辣，擅使鋤頭</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/北國之春/索菲亞.webp" alt="索菲亞" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/北國之春/索菲亞.webp" alt="索菲亞" class="character-image">
                         <div class="character-name">索菲亞</div>
                         <div class="character-info">女性角色<br>布魯斯酒館老闆娘，溫柔賢惠</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/北國之春/康斯坦丁.webp" alt="康斯坦丁" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/北國之春/康斯坦丁.webp" alt="康斯坦丁" class="character-image">
                         <div class="character-name">康斯坦丁</div>
                         <div class="character-info">男性角色<br>布魯斯酒館酒保，調酒技術精湛</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/北國之春/鮑里斯.webp" alt="鮑里斯" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/北國之春/鮑里斯.webp" alt="鮑里斯" class="character-image">
                         <div class="character-name">鮑里斯</div>
                         <div class="character-info">男性角色<br>退伍軍人，集體農場驗收官</div>
                     </div>
@@ -719,7 +719,7 @@
     </script>
 
 </script>
-    <audio id="bgm" src="北國之春.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="北國之春.mp3" loop muted></audio>
 <script>
   // 點擊頁面解除靜音
   document.addEventListener('click', function(){
@@ -727,7 +727,7 @@
   }, {once:true});
 </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

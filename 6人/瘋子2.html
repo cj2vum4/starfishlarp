@@ -804,7 +804,7 @@
 
         <section class="poster-section">
             <div class="poster-container">
-                <img src="../img/劇本/瘋子2/瘋子2劇本殺海報.webp" alt="瘋子2劇本殺海報，展示分裂人世界的黑暗氛圍與法庭場景" class="poster-image" loading="lazy">
+                <img fetchpriority="high" src="../img/劇本/瘋子2/瘋子2劇本殺海報.webp" alt="瘋子2劇本殺海報，展示分裂人世界的黑暗氛圍與法庭場景" class="poster-image">
                 <img src="../img/劇本/瘋子2/瘋子2劇本殺第二張海報.webp" alt="瘋子2劇本殺第二張海報，突出角色分裂與社會偏見主題" class="poster-image" loading="lazy">
             </div>
         </section>
@@ -1454,7 +1454,7 @@
         }
     </script>
 
-    <audio id="bgm" src="瘋子2.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="瘋子2.mp3" loop muted></audio>
     <script>
         // 點擊頁面解除靜音
         document.addEventListener('click', function(){
@@ -1465,7 +1465,7 @@
         }, {once:true});
     </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

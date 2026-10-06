@@ -556,8 +556,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/奉天1928/奉天1928劇本殺封面1.webp" alt="奉天1928劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/奉天1928/奉天1928劇本殺封面2.webp" alt="奉天1928劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/奉天1928/奉天1928劇本殺封面1.webp" alt="奉天1928劇本殺封面1" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/奉天1928/奉天1928劇本殺封面2.webp" alt="奉天1928劇本殺封面2" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -617,27 +617,27 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/奉天1928/董制夷.webp" alt="董制夷" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/奉天1928/董制夷.webp" alt="董制夷" class="character-image">
                         <div class="character-name">董制夷</div>
                         <div class="character-info">北洋政府大帥<br>面目方正，氣勢逼人</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/奉天1928/董晴.webp" alt="董晴" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/奉天1928/董晴.webp" alt="董晴" class="character-image">
                         <div class="character-name">董晴</div>
                         <div class="character-info">大帥妹妹<br>嬌矜又漂亮的貴族小姐</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/奉天1928/魏聞聲.webp" alt="魏聞聲" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/奉天1928/魏聞聲.webp" alt="魏聞聲" class="character-image">
                         <div class="character-name">魏聞聲</div>
                         <div class="character-info">戲子<br>面目精緻秀氣</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/奉天1928/馮昊.webp" alt="馮昊" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/奉天1928/馮昊.webp" alt="馮昊" class="character-image">
                         <div class="character-name">馮昊</div>
                         <div class="character-info">大帥副官<br>氣質沉穩</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/奉天1928/赫連珊.webp" alt="赫連珊" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/奉天1928/赫連珊.webp" alt="赫連珊" class="character-image">
                         <div class="character-name">赫連珊</div>
                         <div class="character-info">留洋學生<br>攻氣十足的御姐</div>
                     </div>
@@ -750,7 +750,7 @@
     </script>
 
 </script>
-    <audio id="bgm" src="奉天1928.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="奉天1928.mp3" loop muted></audio>
 <script>
   // 點擊頁面解除靜音
   document.addEventListener('click', function(){
@@ -759,7 +759,7 @@
 </script>
 
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

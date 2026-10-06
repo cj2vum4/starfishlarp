@@ -564,8 +564,8 @@
 
         <div class="poster-section">
             <div class="poster-gallery">
-                <img src="../img/劇本/放棄生活去北極/放棄生活去北極海報1.webp" alt="放棄生活去北極海報1" class="poster-image">
-                <img src="../img/劇本/放棄生活去北極/放棄生活去北極海報2.webp" alt="放棄生活去北極海報2" class="poster-image">
+                <img fetchpriority="high" src="../img/劇本/放棄生活去北極/放棄生活去北極海報1.webp" alt="放棄生活去北極海報1" class="poster-image">
+                <img loading="lazy" decoding="async" src="../img/劇本/放棄生活去北極/放棄生活去北極海報2.webp" alt="放棄生活去北極海報2" class="poster-image">
             </div>
         </div>
 
@@ -627,32 +627,32 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <div class="character-avatar"><img src="../img/劇本/放棄生活去北極/木木警官.webp" alt="木木警官"></div>
+                        <div class="character-avatar"><img loading="lazy" decoding="async" src="../img/劇本/放棄生活去北極/木木警官.webp" alt="木木警官"></div>
                         <div class="character-name">木木警官</div>
                         <div class="character-detail">30歲男性</div>
                     </div>
                     <div class="character-card">
-                        <div class="character-avatar"><img src="../img/劇本/放棄生活去北極/娘口三三.webp" alt="娘口三三"></div>
+                        <div class="character-avatar"><img loading="lazy" decoding="async" src="../img/劇本/放棄生活去北極/娘口三三.webp" alt="娘口三三"></div>
                         <div class="character-name">娘口三三</div>
                         <div class="character-detail">25歲男性</div>
                     </div>
                     <div class="character-card">
-                        <div class="character-avatar"><img src="../img/劇本/放棄生活去北極/佐藤.webp" alt="佐藤"></div>
+                        <div class="character-avatar"><img loading="lazy" decoding="async" src="../img/劇本/放棄生活去北極/佐藤.webp" alt="佐藤"></div>
                         <div class="character-name">佐藤</div>
                         <div class="character-detail">24歲男性</div>
                     </div>
                     <div class="character-card">
-                        <div class="character-avatar"><img src="../img/劇本/放棄生活去北極/3_14159.webp" alt="3.14159"></div>
+                        <div class="character-avatar"><img loading="lazy" decoding="async" src="../img/劇本/放棄生活去北極/3_14159.webp" alt="3.14159"></div>
                         <div class="character-name">3.14159</div>
                         <div class="character-detail">26歲女性</div>
                     </div>
                     <div class="character-card">
-                        <div class="character-avatar"><img src="../img/劇本/放棄生活去北極/絕緣體.webp" alt="絕緣體"></div>
+                        <div class="character-avatar"><img loading="lazy" decoding="async" src="../img/劇本/放棄生活去北極/絕緣體.webp" alt="絕緣體"></div>
                         <div class="character-name">絕緣體</div>
                         <div class="character-detail">28歲女性</div>
                     </div>
                     <div class="character-card">
-                        <div class="character-avatar"><img src="../img/劇本/放棄生活去北極/方向盤.webp" alt="方向盤"></div>
+                        <div class="character-avatar"><img loading="lazy" decoding="async" src="../img/劇本/放棄生活去北極/方向盤.webp" alt="方向盤"></div>
                         <div class="character-name">方向盤</div>
                         <div class="character-detail">26歲女性</div>
                     </div>
@@ -835,7 +835,7 @@
         createAuroraEffect();
     </script>
 
-    <audio id="bgm" loop muted>
+    <audio preload="none" id="bgm" loop muted>
         <source src="放棄生活去北極.mp3" type="audio/mpeg">
     </audio>
     <script>
@@ -849,7 +849,7 @@
         }, {once:true});
     </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

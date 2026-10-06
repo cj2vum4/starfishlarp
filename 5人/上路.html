@@ -587,10 +587,10 @@
         <div class="poster-section">
             <div class="poster-images">
                 <div class="poster-image">
-                    <img src="../img/劇本/上路/上路劇本海報1.webp" alt="上路劇本海報1" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
+                    <img fetchpriority="high" src="../img/劇本/上路/上路劇本海報1.webp" alt="上路劇本海報1" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
                 </div>
                 <div class="poster-image">
-                    <img src="../img/劇本/上路/上路劇本海報2.webp" alt="上路劇本海報2" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
+                    <img loading="lazy" decoding="async" src="../img/劇本/上路/上路劇本海報2.webp" alt="上路劇本海報2" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">
                 </div>
             </div>
         </div>
@@ -653,35 +653,35 @@
                 <div class="characters-grid">
                     <div class="character-card">
                         <div class="character-avatar">
-                            <img src="../img/劇本/上路/達澤明.webp" alt="達澤明" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <img loading="lazy" decoding="async" src="../img/劇本/上路/達澤明.webp" alt="達澤明" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                         </div>
                         <div class="character-name">達澤明</div>
                         <div class="character-info">家裡的爸爸</div>
                     </div>
                     <div class="character-card">
                         <div class="character-avatar">
-                            <img src="../img/劇本/上路/張雅文.webp" alt="張雅文" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <img loading="lazy" decoding="async" src="../img/劇本/上路/張雅文.webp" alt="張雅文" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                         </div>
                         <div class="character-name">張雅文</div>
                         <div class="character-info">家裡的媽媽</div>
                     </div>
                     <div class="character-card">
                         <div class="character-avatar">
-                            <img src="../img/劇本/上路/張卓君.webp" alt="張卓君" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <img loading="lazy" decoding="async" src="../img/劇本/上路/張卓君.webp" alt="張卓君" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                         </div>
                         <div class="character-name">張卓君</div>
                         <div class="character-info">家裡的哥哥</div>
                     </div>
                     <div class="character-card">
                         <div class="character-avatar">
-                            <img src="../img/劇本/上路/阿花.webp" alt="阿花" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <img loading="lazy" decoding="async" src="../img/劇本/上路/阿花.webp" alt="阿花" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                         </div>
                         <div class="character-name">阿花</div>
                         <div class="character-info">家裡的姐姐</div>
                     </div>
                     <div class="character-card">
                         <div class="character-avatar">
-                            <img src="../img/劇本/上路/達雯菁.webp" alt="達雯菁" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <img loading="lazy" decoding="async" src="../img/劇本/上路/達雯菁.webp" alt="達雯菁" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                         </div>
                         <div class="character-name">達雯菁</div>
                         <div class="character-info">家裡的妹妹</div>
@@ -886,7 +886,7 @@
         });
     </script>
 
-    <audio id="bgm" loop muted>
+    <audio preload="none" id="bgm" loop muted>
         <source src="上路.mp3" type="audio/mpeg">
     </audio>
     <script>
@@ -901,7 +901,7 @@
         }, {once:true});
     </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>

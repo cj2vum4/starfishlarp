@@ -604,8 +604,8 @@
 
         <div class="poster-section">
             <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <img src="../img/劇本/風中有朵雨做的雲/風中有朵雨做的雲_劇本海報.webp" alt="風中有朵雨做的雲 - 劇本海報" class="poster-image" style="max-width: 45%; min-width: 300px;">
-                <img src="../img/劇本/風中有朵雨做的雲/風中有朵雨做的雲_角色海報.webp" alt="風中有朵雨做的雲 - 角色海報" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img fetchpriority="high" src="../img/劇本/風中有朵雨做的雲/風中有朵雨做的雲_劇本海報.webp" alt="風中有朵雨做的雲 - 劇本海報" class="poster-image" style="max-width: 45%; min-width: 300px;">
+                <img loading="lazy" decoding="async" src="../img/劇本/風中有朵雨做的雲/風中有朵雨做的雲_角色海報.webp" alt="風中有朵雨做的雲 - 角色海報" class="poster-image" style="max-width: 45%; min-width: 300px;">
             </div>
         </div>
 
@@ -665,27 +665,27 @@
                 <h2 class="card-title">角色介紹</h2>
                 <div class="characters-grid">
                     <div class="character-card">
-                        <img src="../img/劇本/風中有朵雨做的雲/陳韻.webp" alt="陳韻" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/風中有朵雨做的雲/陳韻.webp" alt="陳韻" class="character-image">
                         <div class="character-name">陳韻</div>
                         <div class="character-info">女性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/風中有朵雨做的雲/劉飛宇.webp" alt="劉飛宇" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/風中有朵雨做的雲/劉飛宇.webp" alt="劉飛宇" class="character-image">
                         <div class="character-name">劉飛宇</div>
                         <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/風中有朵雨做的雲/張龍.webp" alt="張龍" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/風中有朵雨做的雲/張龍.webp" alt="張龍" class="character-image">
                         <div class="character-name">張龍</div>
                         <div class="character-info">男性角色<br></div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/風中有朵雨做的雲/蘇金巧.webp" alt="蘇金巧" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/風中有朵雨做的雲/蘇金巧.webp" alt="蘇金巧" class="character-image">
                         <div class="character-name">蘇金巧</div>
                         <div class="character-info">女性角色</div>
                     </div>
                     <div class="character-card">
-                        <img src="../img/劇本/風中有朵雨做的雲/李曉峯.webp" alt="李曉峯" class="character-image">
+                        <img loading="lazy" decoding="async" src="../img/劇本/風中有朵雨做的雲/李曉峯.webp" alt="李曉峯" class="character-image">
                         <div class="character-name">李曉峯</div>
                         <div class="character-info">男性角色</div>
                     </div>
@@ -1066,7 +1066,7 @@
     </script>
 
     <!-- 背景音樂 -->
-    <audio id="bgm" src="風中有朵雨做的雲.mp3" autoplay loop muted></audio>
+    <audio preload="none" id="bgm" src="風中有朵雨做的雲.mp3" loop muted></audio>
     <script>
         // 點擊頁面解除靜音
         document.addEventListener('click', function(){
@@ -1077,7 +1077,7 @@
         }, {once: true});
     </script>
 
-<script src="../bgm-control.js?v=20260727"></script>
+<script src="../bgm-control.js?v=20261006-lazy"></script>
 <script src="../reviews.js?v=20260729-w3"></script>
 <script src="../video.js?v=20261005-yt165156"></script>
 <script src="../booking.js?v=20261005-yt1534"></script>
