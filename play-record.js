@@ -373,4 +373,13 @@
     } catch (_) {
         // 記住名稱是非必要功能。
     }
+
+    // 從 LINE 官方帳號打開時（預約系統帶 ?name=），名字固定用綁定在 LINE 上的那一個，
+    // 點數才不會因為打錯字分成兩份。
+    const lineName = new URLSearchParams(location.search).get('name');
+    if (lineName && lineName.trim()) {
+        playerName.value = lineName.trim().slice(0, 30);
+        playerName.readOnly = true;
+        document.getElementById('nameHint').textContent = '已用你的 LINE 帶入名字（要改名請聯絡店家）';
+    }
 })();
