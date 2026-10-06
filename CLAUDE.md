@@ -176,3 +176,19 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
 **付費劇本內容一旦進 repo 就等於公開散布**。這件事對分支同樣成立——
 把這些檔案 commit 到任何分支（哪怕永遠不合併進 main）都一樣是公開的。
 絕對不要為了「暫時放一下」而把劇本本體 commit 上去。
+
+---
+
+## 七、角色分配問卷（取代各帳號的 Google 表單）
+
+- 所有回覆寫進同一份「角色問卷總表」（試算表 ID 在 `GoogleAppsScript_角色問卷.gs`），
+  **一個劇本一個分頁**，第一次有人填自動建立；欄名＝題目文字，第一欄「時間戳記」，
+  格式與 Google 表單匯出相同，舊表單回應可直接貼進同名分頁。
+- 後端只有一支 `GoogleAppsScript_角色問卷.gs`，部署後的 `/exec` 網址填在 `survey.js` 的
+  `SURVEY_ENDPOINT`。新增問卷**不用改後端、不用重新部署**。
+- 新增一份問卷：複製 `問卷/奉天1928.html` 改成 `問卷/<劇本名>.html`，
+  改 `window.SURVEY` 的 `script`（分頁名，通常＝`reviewKey`）與 `questions`，
+  頁首與配色依劇本主題自己設計。Google 表單公開連結可用 `FB_PUBLIC_LOAD_DATA_` 解析出題目，題目文字照抄原表單。
+- 題型：`text` / `textarea` / `radio` / `checkbox`（可加 `other: true`）/ `scale`（`min`/`max`/`minLabel`/`maxLabel`）。
+  需要依答案自動推薦角色時加 `assign(answers)`，回傳的欄位（如 `建議角色`）會一起存進總表。
+- 問卷頁**不放入口**、不登記 `scripts.js`，用網址或 QR code 傳給玩家；頁面加 `noindex`。
