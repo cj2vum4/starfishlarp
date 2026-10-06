@@ -68,7 +68,9 @@
    - **故事背景卡**（`.card.description`，跨 2 欄）
    - **劇本介紹卡**（`.card.description`，跨 2 欄）
 5. **CTA 按鈕** — `立即預約…`
-6. **BGM** — `<audio id="bgm" src="劇本名稱.mp3" autoplay loop muted>`
+6. **BGM** — `<audio preload="none" id="bgm" src="劇本名稱.mp3" loop muted>`
+   （**不要加 `autoplay`**：mp3 動輒數 MB，autoplay 會讓手機一進頁就整首下載；
+   `bgm-control.js` 會在第一次點擊時開始播放，頁面自己的「點擊解除靜音」照寫即可）
 7. **JS 互動** — 背景動畫產生、星星 hover、卡片光效等（可各頁自訂）
 8. 結尾依序放：`<script src="../bgm-control.js?v=日期">`、
    `<script src="../reviews.js?v=日期">`（玩家評價按鈕，劇本名以檔名自動對應；
@@ -124,6 +126,12 @@
   - 檔名用中文說明用途：主海報、介紹圖、角色名（例：`img/劇本/青樓/莫懷.webp`）
   - 劇本頁內用相對路徑 `../img/劇本/...`；`scripts.js` 的 `poster` 用 `img/劇本/...`
   - 只放宣傳素材（海報、介紹、角色海報），劇本本體與線索卡不可放進 repo
+  - **頁面載入速度**（手機用戶多，務必遵守）：
+    - 每頁第一張主海報加 `fetchpriority="high"`，其餘 `<img>` 一律加 `loading="lazy" decoding="async"`
+    - 角色頭像這類「顯示得小」的圖，頁面上放縮圖、原圖給放大用：
+      `<img src="../img/劇本/X/縮圖/角色.webp" data-full="../img/劇本/X/角色.webp" loading="lazy" decoding="async">`
+      縮圖放 `img/劇本/<劇本>/縮圖/`，尺寸取「顯示尺寸 × 3」（手機 3 倍螢幕），短邊至少 200px，
+      例：`convert 角色.webp -resize 300x -strip -quality 78 縮圖/角色.webp`（約 5–30KB）
 
 ---
 

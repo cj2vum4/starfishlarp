@@ -22,9 +22,10 @@
         if (img.closest('[data-no-zoom], #sf-lb')) return false;
         var src = img.getAttribute('src') || '';
         if (src.indexOf('img/劇本/') === -1 && src.indexOf(encodeURI('img/劇本/')) === -1) return false;
-        // 小圖示不放大；還沒載入（lazy）或藏起來的圖量不到尺寸，照樣收進圖集
-        var r = img.getBoundingClientRect();
-        return !(r.width > 0 && (r.width < 40 || r.height < 40));
+        // 小圖示不放大；還沒載入（lazy）或藏起來的圖量不到尺寸，照樣收進圖集。
+        // 用 offset 尺寸（不受 transform 影響）：有些頁 hover 時圖片會從 scale(0.3) 彈出
+        var w = img.offsetWidth, h = img.offsetHeight;
+        return !(w > 0 && (w < 40 || h < 40));
     }
 
     // 疊放式輪播（以 opacity 切換）點到的可能是透明那張，改抓目前看得到的那張
@@ -308,6 +309,13 @@
     document.addEventListener('click', function (e) {
         if (isOpen || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
         var img = e.target.closest && e.target.closest('img');
+        // 有些角色卡在圖上疊了透明裝飾層，點到的是卡片：改找點擊位置底下的圖
+        if (!img && document.elementsFromPoint && !(e.target.closest && e.target.closest('a,button,input,select,textarea,label'))) {
+            img = document.elementsFromPoint(e.clientX, e.clientY).filter(function (el) {
+                return el.tagName === 'IMG' && el.closest('#sf-lb') === null;
+            })[0] || null;
+            if (img && !(e.target.contains && e.target.contains(img))) img = null; // 只認點擊目標裡面的圖
+        }
         if (!img || !isZoomable(img)) return;
         var a = img.closest('a[href]');
         // 連到別頁的連結（不是連到圖檔本身）就照原本行為
