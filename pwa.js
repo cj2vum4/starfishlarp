@@ -9,7 +9,6 @@
     var toastClose = document.getElementById('pwaToastClose');
     var deferredInstallPrompt = null;
     var toastTimer = null;
-    var refreshing = false;
     var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
     document.documentElement.dataset.pwaStatus = 'supported';
@@ -106,12 +105,11 @@
             });
         });
 
-        // 新版本裝好即自動接管並重整，不再詢問使用者。
+        // 新版 SW 接管時不重整頁面：首次進站與每次進版都會觸發 controllerchange，
+        // 以前在這裡 reload 會讓畫面無故刷新、開場動畫重播。
+        // 不需要重整也拿得到新內容：頁面導覽走 network-first，共用 JS/CSS 靠 ?v= 版號換新網址。
         navigator.serviceWorker.addEventListener('controllerchange', function () {
             document.documentElement.dataset.pwaStatus = 'controlled';
-            if (refreshing) return;
-            refreshing = true;
-            window.location.reload();
         });
     }
 })();

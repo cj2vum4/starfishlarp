@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '2026-10-05-nomp3';
+const CACHE_VERSION = '2026-10-06-noreload';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -21,7 +21,7 @@ const APP_SHELL = [
     './scripts-data.js?v=20261002-ytbadge',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
-    './pwa.js?v=20260730-noios',
+    './pwa.js?v=20261006-noreload',
     './play-record-config.js?v=20260729-w3',
     './play-record.js?v=20260729-nomood',
     './points.js?v=20261005-retry',
