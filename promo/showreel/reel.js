@@ -5,7 +5,7 @@
 
    分鏡（150 BPM，一拍 0.4s）
    0.0–1.6  SC.01 入口：羅盤環點亮、鑰匙孔、穿過鑰匙孔
-   1.6–4.0  SC.02 世界：八個劇本世界快剪（越剪越快）
+   1.6–4.0  SC.02 世界：八個劇本世界快剪（各一張實際海報，越剪越快）
    4.0–6.0  SC.03 群像：57 張劇本卡 3D 拉遠 → 排成海星
    6.0–7.6  SC.04 你　：推理／情感／驚悚／歡樂 甩鏡 → 這一次，你是誰？
    7.6–10.0 LOGO    ：文字粒子化 → 匯聚成海星 Logo → 品牌字定版
@@ -25,8 +25,8 @@ const CUTS = [
   { t: 2.0, d: .4, id: 'chunzhou', draw: cutSpring, tr: 'iris' },
   { t: 2.4, d: .4, id: 'fengtuz', draw: cutRabbit, tr: 'glitch' },
   { t: 2.8, d: .4, id: 'qunxing', draw: cutStars, tr: 'zoom' },
-  { t: 3.2, d: .2, id: 'jinmen', draw: cutTianjin, tr: 'slats' },
-  { t: 3.4, d: .2, id: 'lichuan', draw: cutLichuan, tr: 'shutter' },   // 0.2 秒快剪段排成 暗→暗→亮→亮，不會來回閃（WCAG 2.3.1）
+  { t: 3.2, d: .2, id: 'lichuan', draw: cutLichuan, tr: 'slats' },
+  { t: 3.4, d: .2, id: 'jinmen', draw: cutTianjin, tr: 'shutter' },   // 0.2 秒快剪段排成 暗→中（津門米白海報）→亮→亮，不會來回閃（WCAG 2.3.1）
   { t: 3.6, d: .2, id: 'qingtian', draw: cutShrine, tr: 'slide' },
   { t: 3.8, d: .2, id: 'feiteng', draw: cutBoil, tr: 'punch' },
 ];
@@ -274,7 +274,7 @@ function cutTianjin(c, u, s) {
   label(c, 'REPUBLIC ERA', 200, 420, u * 1.6, { align: 'left' });
   txt(c, '民國・天津衛', 200, 520, { px: 64, wt: 900, align: 'left', fill: '#f3e6c8', alpha: inv(.02, .07, u), ls: .12 });
   infoStack(c, s, 200, 640, { u: u * 1.6, align: 'left', tags: '民國 · 歡樂 · 嘴砲 · 陣營' });
-  bigIndex(c, 5, 120, 900, u, 'rgba(236,208,138,.12)', 'left');
+  bigIndex(c, 6, 120, 900, u, 'rgba(236,208,138,.12)', 'left');
 }
 function cutShrine(c, u, s) {
   c.fillStyle = lgrad(c, 0, 0, 0, H, [[0, '#2f7fd0'], [.6, '#a6d6f6'], [1, '#fff3e2']]); c.fillRect(0, 0, W, H);
