@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>遊戲前測 · 太陽可以是藍色嗎</title>
+    <style>
+        :root {
+            --veil-top: rgba(0, 0, 0, .35);
+            --backdrop-opacity: .55;
+            --shadow: rgba(0, 0, 0, .55);
+            --error: #ff8a7a;
+            --on-accent: #1a0c06;
+            --field: rgba(255, 255, 255, .06);
+            --bg: #0a1438;
+            --text: #eef3ff;
+            --title: #ffffff;
+            --muted: rgba(238, 243, 255, .64);
+            --accent: #ff8a4c;
+            --line: rgba(158, 200, 255, .24);
+            --chip: rgba(255, 138, 76, .12);
+            --card: rgba(12, 26, 70, .8);
+        }
+        * { box-sizing: border-box; }
+        html { color-scheme: dark; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text);
+            background: var(--bg);
+            font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* 海報本身當整頁的霧面背景，跟劇本主頁同一套視覺 */
+        .backdrop {
+            position: fixed;
+            inset: -40px;
+            z-index: 0;
+            pointer-events: none;
+            background: url("../img/劇本/太陽可以是藍色嗎/太陽可以是藍色嗎_劇本殺封面.webp") center / cover no-repeat;
+            filter: blur(38px) saturate(1.15);
+            opacity: var(--backdrop-opacity);
+            transform: scale(1.1);
+        }
+        .backdrop::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, var(--veil-top) 0%, var(--bg) 78%);
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 28px 16px 72px;
+        }
+
+        /* ── 主視覺 ───────────────────────────── */
+        .hero {
+            display: grid;
+            gap: 26px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .poster {
+            justify-self: center;
+            width: min(78vw, 340px);
+            margin: 0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px var(--shadow), 0 0 0 1px var(--line);
+            animation: rise .9s cubic-bezier(.2, .8, .2, 1) both;
+        }
+        .poster img { display: block; width: 100%; height: auto; }
+        @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+        .intro { text-align: center; animation: rise .9s .12s cubic-bezier(.2, .8, .2, 1) both; }
+        .eyebrow {
+            display: inline-block;
+            padding: 5px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: .78rem;
+            letter-spacing: .35em;
+            color: var(--accent);
+        }
+        .intro h1 {
+            margin: 14px 0 4px;
+            font-size: clamp(2rem, 9vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: .12em;
+            color: var(--title);
+        }
+        .form-title { margin: 0; font-size: 1.05rem; letter-spacing: .2em; color: var(--muted); }
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .chips li {
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: var(--chip);
+            font-size: .85rem;
+            color: var(--text);
+        }
+        .lead {
+            margin: 20px auto 0;
+            max-width: 34em;
+            line-height: 1.9;
+            color: var(--text);
+        }
+        .lead:empty { display: none; }
+
+        /* ── 登場角色 ─────────────────────────── */
+        .cast { margin: 0 0 30px; }
+        .cast h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 14px;
+            font-size: .95rem;
+            letter-spacing: .3em;
+            color: var(--accent);
+        }
+        .cast h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+        .cast ul {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 92px;
+            gap: 12px;
+            margin: 0;
+            padding: 2px 2px 10px;
+            list-style: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+        .ch { scroll-snap-align: start; text-align: center; }
+        .ch img, .ch-ph {
+            display: grid;
+            place-items: center;
+            width: 92px;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 10px;
+            background: var(--chip);
+            box-shadow: 0 0 0 1px var(--line);
+            font-size: 1.6rem;
+            color: var(--accent);
+            cursor: zoom-in;
+        }
+        .ch-name { display: block; margin-top: 6px; font-size: .8rem; line-height: 1.3; color: var(--muted); }
+        .note { margin: -6px 0 22px; text-align: center; font-size: .85rem; color: var(--muted); }
+
+        @media (min-width: 860px) {
+            .hero { grid-template-columns: 340px 1fr; gap: 44px; }
+            .intro { text-align: left; }
+            .chips { justify-content: flex-start; }
+            .lead { margin-left: 0; }
+            .cast ul { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); overflow: visible; }
+            .ch img, .ch-ph { width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) { .poster, .intro { animation: none; } }
+
+        /* ── 問卷 ─────────────────────────────── */
+        .survey-box { max-width: 680px; margin: 0 auto; }
+        #survey {
+            --sv-scheme: dark;
+            --sv-accent: var(--accent);
+            --sv-on-accent: var(--on-accent);
+            --sv-text: var(--text);
+            --sv-muted: var(--muted);
+            --sv-card: var(--card);
+            --sv-border: var(--line);
+            --sv-field: var(--field);
+            --sv-error: var(--error);
+        }
+        .match { margin: 4px auto 18px; max-width: 300px; }
+        .match small { display: block; margin-bottom: 12px; color: var(--muted); letter-spacing: .15em; }
+        .match img { width: 160px; border-radius: 12px; box-shadow: 0 14px 34px var(--shadow), 0 0 0 1px var(--line); }
+        .match b { display: block; margin-top: 12px; font-size: 1.6rem; letter-spacing: .2em; color: var(--accent); }
+        .match p { margin: 6px 0 0; color: var(--muted); line-height: 1.7; }
+        .match .second { margin-top: 10px; font-size: .9rem; }
+    </style>
+</head>
+<body>
+    <div class="backdrop" aria-hidden="true"></div>
+
+    <main class="wrap container">
+        <header class="hero">
+            <figure class="poster">
+                <img src="../img/劇本/太陽可以是藍色嗎/太陽可以是藍色嗎_劇本殺封面.webp" alt="太陽可以是藍色嗎 海報" fetchpriority="high" decoding="async">
+            </figure>
+            <div class="intro">
+                <span class="eyebrow">角色分配問卷</span>
+                <h1>太陽可以是藍色嗎</h1>
+                <p class="form-title">遊戲前測</p>
+                <ul class="chips">
+                    <li>👥 3男3女</li>
+                    <li>⏰ 4.5小時</li>
+                    <li>#現代</li>
+                    <li>#情感</li>
+                    <li>#純愛</li>
+                </ul>
+                <p class="lead">請依照個人真實經驗或第一直覺回答問題<br>你的回答只有主持人看得到</p>
+            </div>
+        </header>
+
+        <section class="cast" aria-label="登場角色">
+            <h2>登場角色</h2>
+            <ul>
+                <li class="ch"><img src="../img/劇本/太陽可以是藍色嗎/縮圖/清遙.webp" data-full="../img/劇本/太陽可以是藍色嗎/清遙.webp" alt="清遙" loading="lazy" decoding="async"><span class="ch-name">清遙</span></li>
+                <li class="ch"><img src="../img/劇本/太陽可以是藍色嗎/縮圖/步含光.webp" data-full="../img/劇本/太陽可以是藍色嗎/步含光.webp" alt="步含光" loading="lazy" decoding="async"><span class="ch-name">步含光</span></li>
+                <li class="ch"><img src="../img/劇本/太陽可以是藍色嗎/縮圖/胡蝶.webp" data-full="../img/劇本/太陽可以是藍色嗎/胡蝶.webp" alt="胡蝶" loading="lazy" decoding="async"><span class="ch-name">胡蝶</span></li>
+                <li class="ch"><img src="../img/劇本/太陽可以是藍色嗎/縮圖/余朝.webp" data-full="../img/劇本/太陽可以是藍色嗎/余朝.webp" alt="余朝" loading="lazy" decoding="async"><span class="ch-name">余朝</span></li>
+                <li class="ch"><img src="../img/劇本/太陽可以是藍色嗎/縮圖/池森.webp" data-full="../img/劇本/太陽可以是藍色嗎/池森.webp" alt="池森" loading="lazy" decoding="async"><span class="ch-name">池森</span></li>
+                <li class="ch"><img src="../img/劇本/太陽可以是藍色嗎/縮圖/初見.webp" data-full="../img/劇本/太陽可以是藍色嗎/初見.webp" alt="初見" loading="lazy" decoding="async"><span class="ch-name">初見</span></li>
+            </ul>
+        </section>
+        <p class="note">依直覺作答就好，角色由主持人綜合大家的回覆分配 🎭</p>
+
+        <div class="survey-box">
+            <div id="survey"></div>
+        </div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '太陽可以是藍色嗎',
+        submitText: '✨ 送出問卷',
+        questions: [
+            {"type": "text", "title": "你在 LINE 的名稱", "label": "Line名稱", "required": true, "placeholder": "請輸入你的 LINE 顯示名稱"},
+            {"type": "date", "title": "你預約玩本的日期", "label": "預約日期", "required": true},
+            {"type": "radio", "title": "性別", "required": true, "options": ["我是男生", "我是女生", "我是男生，想體驗女角", "我是女生，想體驗男角"]},
+            {"type": "text", "title": "本次同行玩家中是否有你喜歡的人，她是誰", "label": "同行喜歡的人", "desc": "可以放心和我說～回應只會有我看的到！", "placeholder": "（選填）"},
+            {"type": "radio", "title": "你認為愛情是無私的還是自私的", "label": "愛情觀（自私/無私）", "required": true, "desc": "優先優先優先，當下你的感情觀或直覺回答", "options": ["自私", "無私"]},
+            {"type": "radio", "title": "如果你與愛人在路上走丟了，找不到彼此你會採取怎麼樣的行動？", "label": "走失後的行動", "required": true, "options": ["站在原地等對方再找到你", "主動去找對方", "安心閒逛，等待再次相遇"]},
+            {"type": "checkbox", "title": "在愛情中，你往往選擇（可多選）", "label": "在愛情中往往選擇", "required": true, "join": "、", "options": ["付出比較多", "被付出比較多", "愛我的人", "我愛的人"]},
+            {"type": "checkbox", "title": "我認為我在感情中時的個性特質（可多選）", "label": "感情中的個性特質", "required": true, "join": "、", "options": ["果斷霸氣", "勇敢", "天真單純", "古靈精怪", "冷靜", "浪漫風趣", "成熟穩重", "悲觀", "敏感", "溫柔", "堅強", "小心翼翼"]},
+            {"type": "text", "title": "你認為最適合形容自己的一句話", "label": "最適合形容自己的一句話", "required": true, "placeholder": "請輸入…"},
+            {"type": "text", "title": "最想送給自己的一句話", "label": "最想送給自己的座右銘", "required": true, "desc": "也可以是自己最喜歡的座右銘～", "placeholder": "請輸入…"},
+            {"type": "text", "title": "🌊 許願池", "label": "許願池", "desc": "有任何需要都可以和我說唷～", "placeholder": "（選填）"}
+        ],
+        done: {
+            title: '🌤 謝謝你的回答！',
+            text: '最終角色分配仍由主持人決定 🎭\n期待和你一起探索太陽是什麼顏色',
+            back: { href: '../6人/太陽可以是藍色嗎.html', text: '← 回到《太陽可以是藍色嗎》劇本介紹' }
+        },
+        // 角色推薦（沿用舊版 太陽問卷 的演算法），結果寫進總表「角色建議／第二角色建議」
+        assign: function (a) {
+            var gender = a['性別'];
+            var selfless = a['你認為愛情是無私的還是自私的'] === '無私';
+            var lost = a['如果你與愛人在路上走丟了，找不到彼此你會採取怎麼樣的行動？'];
+            var isStay = lost.indexOf('站在原地') !== -1;
+            var isSearch = lost.indexOf('主動去找') !== -1;
+            var pick;
+            if (gender === '我是男生，想體驗女角' || gender === '我是女生，想體驗男角') {
+                if (isSearch) pick = selfless ? ['清遙', '步含光'] : ['余朝', '胡蝶'];
+                else if (isStay) pick = selfless ? ['步含光', '清遙'] : ['池森', '余朝'];
+                else pick = selfless ? ['初見', '步含光'] : ['胡蝶', '余朝'];
+            } else if (gender === '我是男生') {
+                if (isSearch) pick = ['余朝', '池森'];
+                else if (isStay) pick = selfless ? ['步含光', '池森'] : ['池森', '步含光'];
+                else pick = selfless ? ['步含光', '余朝'] : ['池森', '余朝'];
+            } else {
+                if (isStay) pick = ['清遙', '初見'];
+                else if (isSearch) pick = selfless ? ['初見', '清遙'] : ['胡蝶', '初見'];
+                else pick = selfless ? ['初見', '清遙'] : ['胡蝶', '初見'];
+            }
+            return { '角色建議': pick[0], '第二角色建議': pick[1] };
+        },
+        renderResult: function (box, r) {
+            var desc = {
+                '清遙': '某個清晨初雪蓋過的墳墓',
+                '步含光': '像鳥與晴空，從未分開，從未接近',
+                '池森': '一飲而盡後，醉生夢死',
+                '初見': '是躲入霧中的山，像靜默的昭示',
+                '余朝': '深情是悲劇，必得此生來句讀',
+                '胡蝶': '無關誰的離去與給予'
+            };
+            var name = r['角色建議'];
+            if (!name) return;
+            box.className += ' match';
+            box.innerHTML = '<small>根據你的回答，你最適合的角色是</small>' +
+                '<img src="../img/劇本/太陽可以是藍色嗎/縮圖/' + name + '.webp" data-full="../img/劇本/太陽可以是藍色嗎/' + name + '.webp" alt="' + name + '">' +
+                '<b>' + name + '</b><p>' + desc[name] + '</p>' +
+                '<p class="second">第二推薦：' + r['第二角色建議'] + '</p>';
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006f"></script>
+    <script src="../lightbox.js?v=20261006"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="stars" data-tint="#9ec8ff"></script>
+</body>
+</html>

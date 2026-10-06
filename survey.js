@@ -18,7 +18,7 @@
  *     { type: 'info', title, desc? },               // 純說明文字（情境敘述、分段標題），不收答案
  *   ],
  *   任一題可加 label: '總表欄名'（題目文字跟舊資料欄名不同時用，例：題目寫完整問句、欄名維持「Q3 信任感」），
- *   tag: 'Q 01'（題目上方的小編號）；
+ *   tag: 'Q 01'（題目上方的小編號），join: '、'（複選題存進總表的分隔符，預設「, 」）；
  *   任一題可加 showIf: { title: '某題題目', in: ['選項A'] }，該題答案在清單內才顯示（分支題組）；
  *   隱藏的題目不檢查必填、也不送出。
  *   assign: function (answers) { return { '建議角色': '…' }; },  // 選填：依答案算角色，結果一起存進總表
@@ -263,7 +263,9 @@
             if (!isAnswerable(q)) return;
             var value = readAnswer(q, i);
             answers[q.title] = value;
-            fields.push({ label: q.label || q.title, value: value });
+            // 複選預設由後端用「, 」串接（同 Google 表單）；舊資料用別的分隔符時設 join
+            var stored = q.join && Array.isArray(value) ? value.join(q.join) : value;
+            fields.push({ label: q.label || q.title, value: stored });
         });
 
         var extra = {};
