@@ -163,12 +163,14 @@
             animation: fadeInUp 1s ease-out 0.2s forwards;
         }
         
+        /* 海報有直有橫：兩張疊在同一格、完整顯示不裁切，框高跟著較高的那張 */
         .poster-slider {
             position: relative;
+            display: grid;
             width: 100%;
-            max-width: 900px; /* Adjust as needed */
-            aspect-ratio: 16 / 9;
+            max-width: 900px;
             margin: 0 auto;
+            background: radial-gradient(circle at 50% 40%, rgba(34, 197, 94, 0.12), rgba(5, 10, 8, 0.9) 70%);
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(34, 197, 94, 0.3), 0 0 80px rgba(34, 197, 94, 0.2);
@@ -176,12 +178,12 @@
         }
 
         .poster-image {
-            position: absolute;
-            top: 0;
-            left: 0;
+            grid-area: 1 / 1;
+            align-self: center;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
         }
@@ -423,8 +425,8 @@
                 gap: 5px;
             }
 
-            .poster-slider {
-                max-height: 400px;
+            .poster-image {
+                max-height: 70vh;
             }
 
             .back-to-overview {

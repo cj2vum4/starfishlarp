@@ -159,16 +159,17 @@
             position: relative;
             width: 100%;
             max-width: 900px;
-            aspect-ratio: 16 / 9;
+            min-height: 240px; /* 海報待上傳時 placeholder 的高度 */
             margin: 0 auto;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(180, 20, 20, 0.4), 0 0 80px rgba(180, 20, 20, 0.2);
             border: 2px solid rgba(180, 30, 30, 0.4);
             background: linear-gradient(145deg, #1a0505, #2a0a0a);
-            display: flex;
+            /* 海報疊在同一格、完整顯示不裁切（主海報是直式） */
+            display: grid;
             align-items: center;
-            justify-content: center;
+            justify-items: center;
         }
 
         .poster-placeholder {
@@ -184,10 +185,11 @@
         .poster-placeholder .hint { font-size: 0.85rem; }
 
         .poster-image {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
+            grid-area: 1 / 1;
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
         }
