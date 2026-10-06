@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>心動信號問卷 · 那一束月光</title>
+    <title>遊戲前問卷 · 那一束月光</title>
     <style>
         :root {
             --veil-top: rgba(0, 0, 0, .35);
@@ -197,7 +197,7 @@
             <div class="intro">
                 <span class="eyebrow">角色分配問卷</span>
                 <h1>那一束月光</h1>
-                <p class="form-title">心動信號問卷</p>
+                <p class="form-title">遊戲前問卷</p>
                 <ul class="chips">
                     <li>👥 3男3女</li>
                     <li>⏰ 5小時</li>
@@ -205,7 +205,7 @@
                     <li>#情感</li>
                     <li>#歡樂</li>
                 </ul>
-                <p class="lead">請依照自己真實的經驗或第一直覺作答<br>你的回答只有主持人看得到 🌙</p>
+                <p class="lead">遊戲開始前，請誠實填寫這份問卷<br>你的答案將幫助我們為你分配最適合的角色</p>
             </div>
         </header>
 
@@ -232,15 +232,20 @@
         script: '那一束月光',
         submitText: '送出・等月光',
         questions: [
-            {"type": "radio", "title": "性別", "desc": "指本次劇本想體驗的角色性別", "required": true, "options": ["男生", "女生"]},
-            {"type": "text", "title": "姓名／暱稱", "desc": "LINE 上的名字", "required": true},
+            {"type": "radio", "title": "你想填寫哪個版本？", "label": "性別", "required": true, "options": ["女生", "男生"], "desc": "依本次劇本想體驗的角色性別選擇"},
+            {"type": "info", "title": "基本資料"},
+            {"type": "text", "title": "姓名／暱稱", "required": true, "placeholder": "你希望大家怎麼稱呼你？"},
             {"type": "date", "title": "遊玩日期", "required": true},
-            {"type": "radio", "title": "劇本殺經驗", "required": true, "options": ["第一次", "1-3", "4-10", "11-30", "30+"]},
-            {"type": "text", "title": "現場喜歡的對象", "desc": "同場玩家中有喜歡的人嗎？沒有就填「沒有」，回應只有主持人看得到"},
-            {"type": "textarea", "title": "Q1 最難忘的一段戀情", "desc": "聊聊你最難忘的一段戀情，或一段難忘的心動", "required": true},
-            {"type": "textarea", "title": "Q2 異地戀", "desc": "你談過異地戀嗎？結果如何？\n沒談過的話，你怎麼看異地戀？", "required": true},
-            {"type": "textarea", "title": "Q3 信任感", "required": true, "placeholder": "1.\n2.\n3.", "desc": "1. 信任感在感情裡對你重要嗎？\n2. 你最不能接受另一半做什麼事？\n3. 你在感情裡容易敏感、沒有安全感嗎？"},
-            {"type": "textarea", "title": "Q4 愛你的還是你愛的", "required": true, "placeholder": "1.\n2.\n3.", "desc": "1. 你會選擇愛你的人，還是你愛的人？\n2. 面對喜歡的人，你會主動告白嗎？\n3. 你願意為喜歡的人付出嗎？"}
+            {"type": "radio", "title": "玩過劇本殺的次數", "label": "劇本殺經驗", "required": true, "options": ["第一次", "1-3", "4-10", "11-30", "30+"]},
+            {"type": "radio", "title": "現場是否有你喜歡的對象？", "label": "現場喜歡的對象", "required": true, "options": ["有的！", "沒有", "不說 🤫"]},
+            {"type": "info", "title": "女生專區問題", "showIf": {"title": "你想填寫哪個版本？", "in": ["女生"]}},
+            {"type": "info", "title": "男生專區問題", "showIf": {"title": "你想填寫哪個版本？", "in": ["男生"]}},
+            {"type": "textarea", "tag": "Q 01", "title": "你最深刻、最難忘的一段戀情是怎樣的？", "label": "Q1 最難忘的一段戀情", "required": true, "placeholder": "可以是甜蜜的，也可以是遺憾的…"},
+            {"type": "textarea", "tag": "Q 02", "title": "談過異地戀嗎？結果好嗎？為什麼？", "label": "Q2 異地戀", "required": true, "placeholder": "距離到底是考驗還是藉口？"},
+            {"type": "textarea", "tag": "Q 03", "label": "Q3 信任感", "required": true, "title": "你認為一段戀愛當中信任感重不重要？\n你最不接受男生什麼行為？\n你是一個很敏感、缺乏安全感的人嗎？", "placeholder": "說說你對信任與安全感的看法…", "showIf": {"title": "你想填寫哪個版本？", "in": ["女生"]}},
+            {"type": "textarea", "tag": "Q 04", "label": "Q4 愛你的還是你愛的", "required": true, "title": "你會選擇一個愛你的還是你愛的人？\n你是會主動喜歡別人並大膽表白的人嗎？\n你是付出型人格嗎？", "placeholder": "關於愛情裡的主動與被動…", "showIf": {"title": "你想填寫哪個版本？", "in": ["女生"]}},
+            {"type": "textarea", "tag": "Q 03", "label": "Q3 信任感", "required": true, "title": "你認為一段戀愛當中信任感重不重要？\n如果女生很「作」，你能接受嗎？", "placeholder": "說說你對信任與包容的看法…", "showIf": {"title": "你想填寫哪個版本？", "in": ["男生"]}},
+            {"type": "textarea", "tag": "Q 04", "label": "Q4 愛你的還是你愛的", "required": true, "title": "你會選擇一個愛你的人還是你愛的人？\n你會接受一個你不喜歡的女孩嗎？\n你會被感動嗎？", "placeholder": "關於選擇與被選擇…", "showIf": {"title": "你想填寫哪個版本？", "in": ["男生"]}}
         ],
         done: {
             title: '🌙 已收到你的心動信號',
@@ -248,7 +253,7 @@
         }
     };
     </script>
-    <script src="../survey.js?v=20261006c"></script>
+    <script src="../survey.js?v=20261006d"></script>
     <script src="../lightbox.js?v=20261006"></script>
     <script src="../fx3d.js?v=20260714" data-fx="fireflies" data-tint="#cfe0ff" data-density="0.8"></script>
 </body>

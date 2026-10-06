@@ -194,5 +194,6 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
   `<main>` 要帶 `container` class，否則 fx3d 會把純中文的角色名當成 emoji 特效隱藏。Google 表單公開連結可用 `FB_PUBLIC_LOAD_DATA_` 解析出題目，題目文字照抄原表單。
 - 題型：`text` / `textarea` / `date` / `radio` / `checkbox`（可加 `other: true`）/ `scale`（`min`/`max`/`minLabel`/`maxLabel`）/
   `info`（純說明文字、分段標題）。分支題組用 `showIf: { title: '某題', in: ['選項'] }`（例：`問卷/別來無恙.html` 依性別分男女題組）。
+  題目文字與總表欄名不同時加 `label: '欄名'`（例：`問卷/那一束月光.html` 題目是完整問句、欄名沿用舊資料的「Q3 信任感」）。
   需要依答案自動推薦角色時加 `assign(answers)`，回傳的欄位（如 `建議角色`）會一起存進總表。
 - 問卷頁**不放入口**、不登記 `scripts.js`，用網址或 QR code 傳給玩家；頁面加 `noindex`。

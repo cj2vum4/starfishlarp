@@ -17,6 +17,8 @@
  *     { type: 'date', title, required? },
  *     { type: 'info', title, desc? },               // 純說明文字（情境敘述、分段標題），不收答案
  *   ],
+ *   任一題可加 label: '總表欄名'（題目文字跟舊資料欄名不同時用，例：題目寫完整問句、欄名維持「Q3 信任感」），
+ *   tag: 'Q 01'（題目上方的小編號）；
  *   任一題可加 showIf: { title: '某題題目', in: ['選項A'] }，該題答案在清單內才顯示（分支題組）；
  *   隱藏的題目不檢查必填、也不送出。
  *   assign: function (answers) { return { '建議角色': '…' }; },  // 選填：依答案算角色，結果一起存進總表
@@ -101,6 +103,7 @@
         }
         var box = el('fieldset', 'sv-q');
         box.dataset.index = index;
+        if (q.tag) box.appendChild(el('span', 'sv-tag', q.tag));
         var legend = el('legend', 'sv-title', q.title);
         if (q.required) {
             var star = el('span', 'sv-required', ' *');
@@ -254,7 +257,7 @@
             if (!isAnswerable(q)) return;
             var value = readAnswer(q, i);
             answers[q.title] = value;
-            fields.push({ label: q.title, value: value });
+            fields.push({ label: q.label || q.title, value: value });
         });
 
         var extra = {};
@@ -349,7 +352,8 @@
             '.sv-q{margin:0;padding:20px 20px 14px;border:1px solid var(--sv-border);border-radius:14px;background:var(--sv-card);',
             'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);min-width:0;transition:border-color .2s}',
             '.sv-q.sv-invalid{border-color:var(--sv-error)}',
-            '.sv-title{padding:0;font-size:1.05rem;font-weight:600;line-height:1.5;float:left;width:100%;margin-bottom:12px}',
+            '.sv-title{padding:0;font-size:1.05rem;font-weight:600;line-height:1.7;float:left;width:100%;margin-bottom:12px;white-space:pre-line}',
+            '.sv-tag{display:block;margin-bottom:6px;font-size:.78rem;letter-spacing:.35em;color:var(--sv-accent)}',
             '.sv-title+*{clear:both}',
             '.sv-required{color:var(--sv-error)}',
             '.sv-info{border-style:dashed}',
