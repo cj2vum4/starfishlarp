@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>《王座》分角表單 · 王座</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #e8eefc;
+            font-family: "Noto Serif TC", serif;
+            background: #05070f;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(180deg, #0b1430 0%, #0a0f22 55%, #05070f 100%);
+        }
+        .throne { text-align: center; margin: 8px 0 28px; }
+        .shield {
+            width: 120px; height: 138px; margin: 0 auto 16px;
+            display: grid; place-items: center;
+            background: radial-gradient(circle at 50% 40%, #2a3f7a, #0e1838);
+            border: 3px solid #d8b45a;
+            clip-path: polygon(50% 0, 100% 14%, 100% 58%, 50% 100%, 0 58%, 0 14%);
+            font-size: 3rem; color: #d8b45a;
+            filter: drop-shadow(0 0 18px rgba(174, 203, 255, .35));
+        }
+        .runes { font-size: .9rem; letter-spacing: .6em; color: #aecbff; opacity: .8; }
+        .throne h1 { margin: 10px 0 0; font-size: clamp(1.7rem, 8vw, 2.4rem); letter-spacing: .3em; color: #f2dfa6; text-shadow: 0 0 20px rgba(216, 180, 90, .4); }
+        .throne h1 small { display: block; margin-top: 6px; font-size: .45em; letter-spacing: .5em; color: #aecbff; }
+        #survey {
+            --sv-accent: #d8b45a;
+            --sv-text: #e8eefc;
+            --sv-muted: rgba(232, 238, 252, .6);
+            --sv-card: rgba(12, 20, 46, .8);
+            --sv-border: rgba(174, 203, 255, .26);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="throne">
+            <div class="shield" aria-hidden="true">ᚦ</div>
+            <div class="runes" aria-hidden="true">ᚨᛊᚷᚨᚱᛞ</div>
+            <h1>王座<small>分角表單</small></h1>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '王座',
+        submitText: '立誓・登上王座',
+        questions: [
+            {"type": "text", "title": "Line名稱", "required": true},
+            {"type": "radio", "title": "生理性別", "desc": "非必要性別不會反串", "required": true, "options": ["我是男生", "我是女生", "我是男生，我也願意玩女角", "我是女生，我也願意玩男角"]},
+            {"type": "radio", "title": "玩過大約幾場劇本殺", "required": true, "options": ["這是第一次", "5本以內", "5~20之間", "20~50之間", "50up"]},
+            {"type": "scale", "title": "認為自己邏輯能力...", "required": true, "min": 1, "max": 5, "minLabel": "不太好", "maxLabel": "超好"},
+            {"type": "scale", "title": "團隊中常擔任領導者，主持全局", "required": true, "min": 1, "max": 5, "minLabel": "不符合", "maxLabel": "符合"},
+            {"type": "scale", "title": "團隊中擔任氣氛大師，搞笑擔當", "required": true, "min": 1, "max": 5, "minLabel": "不符合", "maxLabel": "符合"},
+            {"type": "scale", "title": "我是老騙子，玩遊戲總是能把別人騙得團團轉", "required": true, "min": 1, "max": 5, "minLabel": "不符合", "maxLabel": "符合"},
+            {"type": "textarea", "title": "若有喜歡的角色，請排序", "desc": "1. 雷神\n2. 洛基\n3. 守護神\n4. 巨狼\n5. 神后\n6. 青春女神\n7. 女武神"},
+            {"type": "textarea", "title": "留言板 / 許願池"}
+        ],
+        done: {
+            title: '⚡ 眾神已收到你的誓言',
+            text: '角色將由主持人分配\n阿斯嘉德見！'
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="storm" data-tint="#aecbff" data-density="0.7"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>別來無恙問卷 · 別來無恙</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fbf3e6;
+            font-family: "Noto Serif TC", serif;
+            background: #1d1820;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(180deg, #2a2230 0%, #3a2a2e 50%, #1d1820 100%);
+        }
+        .yearbook {
+            position: relative; margin-bottom: 26px; padding: 28px 22px 22px 40px;
+            color: #4a3528;
+            background: repeating-linear-gradient(180deg, #fbf3e6 0 31px, #e9d9c2 31px 32px);
+            border-radius: 4px 12px 12px 4px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, .4);
+            transform: rotate(-.6deg);
+        }
+        .yearbook::before { content: ""; position: absolute; left: 22px; top: 0; bottom: 0; width: 2px; background: #e58a8a; }
+        .yearbook small { letter-spacing: .3em; color: #b06a5a; }
+        .yearbook h1 { margin: 6px 0 8px; font-size: clamp(1.6rem, 7vw, 2.1rem); letter-spacing: .2em; }
+        .yearbook p { margin: 0; line-height: 32px; }
+        .clip { position: absolute; top: -12px; right: 26px; width: 22px; height: 46px; border: 3px solid #b8b8c0; border-radius: 12px; }
+        #survey {
+            --sv-accent: #f3a6a0;
+            --sv-text: #fbf3e6;
+            --sv-muted: rgba(251, 243, 230, .62);
+            --sv-card: rgba(42, 32, 44, .8);
+            --sv-border: rgba(243, 166, 160, .3);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="yearbook">
+            <div class="clip" aria-hidden="true"></div>
+            <small>同學錄・好久不見</small>
+            <h1>別來無恙</h1>
+            <p>請依照個人真實經驗或第一直覺回答問題</p>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '別來無恙',
+        submitText: '寫好了・交給你',
+        questions: [
+            {"type": "radio", "title": "你的性別", "desc": "是指本次劇本體驗的角色性別呦", "required": true, "options": ["男生", "女生"]},
+            {"type": "info", "title": "[女角]別來無恙問卷", "desc": "請依照個人真實經驗或第一直覺回答問題", "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "text", "title": "你在line的名稱", "desc": "不是line ID唷", "required": true, "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "date", "title": "你預約玩本的日期", "required": true, "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "text", "title": "本次同行玩家中是否有你喜歡的人，她是誰", "desc": "可以放心和我說~回應只會有我看的到！", "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "radio", "title": "請問你在感情關係裡，會優先選擇愛你的人還是你愛的人？", "desc": "優先優先優先，當下你的感情觀或直覺回答", "required": true, "options": ["愛你的人", "你愛的人"], "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "radio", "title": "請問你面對喜歡的人，會願意主動付出嗎？", "desc": "就是願意先告白或是對別人好", "required": true, "options": ["願意", "不會"], "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "radio", "title": "根據你的感情經歷，你的前任讓你念念不忘的特質是？", "desc": "如果沒有前任，請依照自己追過的電視劇男主角來做投射", "required": true, "options": ["陽光開朗風趣", "溫柔體貼", "霸氣十足大男人"], "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "radio", "title": "感情中你比較優先在乎對方感受，還是自己的情緒要優先被照顧？", "required": true, "options": ["在乎對方感受", "我的情緒為優先"], "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "radio", "title": "你能將就跟一個你並不是非常愛但很適合的人在一起，甚至結婚嗎？", "desc": "對你很好而且相處融洽，只是你就是沒有那種瘋狂喜歡對方的感覺", "required": true, "options": ["可以", "不可以，我只想跟我很愛的人結婚"], "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "radio", "title": "你是否曾經非常在乎前任與他的新歡，甚至知道前任對新歡更好？", "required": true, "options": ["曾經有過，但不太清楚他們相處", "曾經非常在乎，而且的確對方對後面的對象更好", "完全不在乎前任", "沒有前任"], "showIf": {"title": "你的性別", "in": ["女生"]}},
+            {"type": "info", "title": "[男角]別來無恙問卷", "desc": "請依照個人真實經驗或第一直覺回答問題", "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "date", "title": "你預約玩本的日期？", "required": true, "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "text", "title": "你在line的名稱", "desc": "不是line ID唷", "required": true, "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "text", "title": "本次同行玩家中是否有你喜歡的人，她是誰", "desc": "可以放心和我說~回應只會有我看的到！", "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "請問你有愛而不得的經驗嗎?", "desc": "就是你喜歡的人不喜歡你的意思啦", "required": true, "options": ["有", "沒有"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "請問你面對愛而不得的人會選擇...", "desc": "就是告白失敗後或是知道對方對你沒意思後，你的反應啦", "required": true, "options": ["默默守護", "果斷放棄"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "你願意為了你愛的人改變你自己的個性或是習慣嗎？", "desc": "只要你有意願去為了對方做出任何一丁點的改變，都選願意", "required": true, "options": ["願意", "不願意"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "曾經有過女友長時間不回覆訊息，而你的反應是？", "required": true, "options": ["跟對方生氣，問責對方", "信任對方並且會關心"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "有沒有人說過你在感情中很幼稚？", "required": true, "options": ["有人說過我在感情很幼稚", "沒有，大家都說我很成熟"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "你在感情關係裡，對待女友的態度是？", "desc": "我知道你三個都有做到，但請以最高比例的作為選擇", "required": true, "options": ["成熟穩重大方", "開朗風趣幽默", "溫柔體貼無微不至"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "面對被另一半誤會，或是有強烈的爭執時，你會選擇？", "required": true, "options": ["當下的誤會必須馬上講清楚說明白，不然睡不好", "沈默以對，希望冷靜後再聊聊", "懶得解釋"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "感情中你比較優先在乎對方感受，還是自己的情緒要優先被照顧？", "required": true, "options": ["在乎對方感受", "自己的情緒比較重要"], "showIf": {"title": "你的性別", "in": ["男生"]}},
+            {"type": "radio", "title": "你能跟一個你並不是非常愛但很適合的人在一起，甚至結婚嗎？", "desc": "對你很好而且相處融洽，只是你就是沒有那種瘋狂喜歡對方的感覺", "required": true, "options": ["可以", "不可以，我只想跟我很愛的人結婚"], "showIf": {"title": "你的性別", "in": ["男生"]}}
+        ],
+        done: {
+            title: '✉️ 已經收到囉',
+            text: '好久不見，別來無恙。\n當天見！'
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="fireflies" data-tint="#ffcf8a" data-density="0.7"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>布魯斯酒館登記表 · 北國之春</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #f2ede4;
+            font-family: "Noto Serif TC", serif;
+            background: #120c10;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(180deg, #0d1622 0%, #1a1418 60%, #120c10 100%);
+        }
+        .bar { text-align: center; margin: 10px 0 26px; }
+        .neon {
+            display: inline-block; padding: 14px 26px;
+            border: 3px solid #4fc3ff; border-radius: 14px;
+            font: 700 clamp(1.6rem, 8vw, 2.4rem)/1.1 "Georgia", serif; letter-spacing: .12em;
+            color: #fff; text-shadow: 0 0 6px #ff3d6e, 0 0 18px #ff3d6e, 0 0 36px #ff3d6e;
+            box-shadow: 0 0 10px #4fc3ff, inset 0 0 10px #4fc3ff;
+            animation: flicker 6s infinite;
+        }
+        .neon small { display: block; margin-top: 6px; font-size: .45em; letter-spacing: .5em; color: #bfe9ff; text-shadow: 0 0 8px #4fc3ff; }
+        @keyframes flicker { 0%, 18%, 22%, 62%, 64%, 100% { opacity: 1; } 20%, 63% { opacity: .45; } }
+        @media (prefers-reduced-motion: reduce) { .neon { animation: none; } }
+        .bar h1 { margin: 22px 0 10px; font-size: 1.15rem; letter-spacing: .4em; color: #ff8aa6; }
+        .bar p { margin: 0; color: rgba(242, 237, 228, .8); line-height: 1.9; font-size: .95rem; }
+        #survey {
+            --sv-accent: #ff6b8e;
+            --sv-text: #f2ede4;
+            --sv-muted: rgba(242, 237, 228, .62);
+            --sv-card: rgba(18, 22, 32, .78);
+            --sv-border: rgba(79, 195, 255, .28);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="bar">
+            <div class="neon">BLUES BAR<small>布魯斯酒館</small></div>
+            <h1>旅客登記表</h1>
+            <p>遠道而來的客人呀~<br>歡迎參加《北國之春》劇本殺<br>本次遊戲背景設定於1980年代的冷戰蘇聯，人數6人（3男/3女），全程約4小時。<br>請依照個人興趣與直覺，依序填寫下方問卷，我會在布魯斯酒館靜待您的到來。</p>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '北國之春',
+        submitText: '登記・推門入座',
+        questions: [
+            {"type": "text", "title": "該如何稱呼您", "desc": "社群軟體上的名稱", "required": true},
+            {"type": "radio", "title": "性別", "required": true, "options": ["男生", "女生", "我是男生，如果必要我願意反串", "我是女生，如果必要我願意反串"]},
+            {"type": "date", "title": "遊玩日期", "required": true},
+            {"type": "checkbox", "title": "如果今天工作一整天，回家後發現家裡遭小偷了，而且小偷好像躲在櫃子後面，你會", "required": true, "options": ["拔出腰上的長刀，怒氣沖沖大喊死小偷給我出來~", "我的天啊，關上門默默報警，把他堵在家裡~", "哈哈哈哈哈哈我怎麼可能會發現啦我那麼呆", "先默默觀察，也許對方不是小偷", "開什麼玩笑，我超級會講話，一定是直接跟他說理，感化他"], "other": true},
+            {"type": "checkbox", "title": "事後他被警察逮捕了，就是一個小偷，你會", "required": true, "options": ["哈哈哈哈看到了吧全世界，我幫社會大眾抓到壞人啦~", "嚇鼠@@沒有一個禮拜我是緩不過來的", "什麼大風大浪我沒見過 ? 不就一個小偷而已", "欸欸你知道嗎~前幾天我家遭小偷欸...!@#$%"], "other": true},
+            {"type": "checkbox", "title": "關於自己的一些標籤", "required": true, "options": ["沉穩", "直接", "獨立", "溫柔", "責任感", "歡樂", "老練", "可靠", "善於社交", "善推理", "善於觀察"], "other": true},
+            {"type": "checkbox", "title": "許願池", "desc": "單純給大家許願而已 ✧◝(⁰▿⁰)◜✧  不一定會納入角色分配的參考", "required": true, "options": ["我想拿兇手", "我要找人吵架", "我要當C位", "我要瘋狂推理", "我要當隱藏的boss"], "other": true},
+            {"type": "text", "title": "留言板", "desc": "如果當天有任何需要協助的事情都歡迎和我說~"}
+        ],
+        done: {
+            title: '🍸 已為您留好座位',
+            text: '期待當天的劇本~',
+            link: { href: 'https://www.instagram.com/larp_starfish', text: '📷 追蹤海星 IG' }
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="snow" data-tint="#dfe9ff" data-density="0.8"></script>
+</body>
+</html>

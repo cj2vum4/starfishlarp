@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>歡迎進入李家大宅 · 陰緣</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #f3e3cf;
+            font-family: "Noto Serif TC", serif;
+            background: #0a0203;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 0%, #3a0a0e 0%, #160406 60%, #0a0203 100%);
+        }
+        .invite {
+            position: relative; margin: 8px auto 28px; max-width: 460px;
+            padding: 30px 24px 24px; text-align: center;
+            background: linear-gradient(180deg, #a3141d, #6e0b12);
+            border: 2px solid #d4a64a; border-radius: 6px;
+            box-shadow: 0 0 0 6px #6e0b12, 0 0 0 8px #d4a64a, 0 24px 50px rgba(0, 0, 0, .6);
+            color: #f7dfae;
+        }
+        .seal {
+            width: 70px; height: 70px; margin: 0 auto 12px;
+            display: grid; place-items: center;
+            border: 2px solid #f7dfae; border-radius: 50%;
+            font-size: 2rem; font-weight: 900;
+            animation: breathe 5s ease-in-out infinite;
+        }
+        @keyframes breathe { 50% { box-shadow: 0 0 24px rgba(247, 223, 174, .5); } }
+        @media (prefers-reduced-motion: reduce) { .seal { animation: none; } }
+        .invite h1 { margin: 0 0 12px; font-size: clamp(1.4rem, 6vw, 1.9rem); letter-spacing: .4em; }
+        .invite p { margin: 0; line-height: 1.9; }
+        #survey {
+            --sv-accent: #d4a64a;
+            --sv-text: #f3e3cf;
+            --sv-muted: rgba(243, 227, 207, .6);
+            --sv-card: rgba(30, 6, 9, .82);
+            --sv-border: rgba(212, 166, 74, .3);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="invite">
+            <div class="seal" aria-hidden="true">李</div>
+            <h1>李家大宅</h1>
+            <p>歡迎來到李家大宅！請填寫以下資訊。</p>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '陰緣',
+        submitText: '遞上名帖',
+        questions: [
+            {"type": "date", "title": "進入李家的日期", "required": true},
+            {"type": "text", "title": "Line名字", "required": true},
+            {"type": "radio", "title": "性別", "required": true, "options": ["男", "女"]},
+            {"type": "textarea", "title": "對於伴侶，你期望你的伴侶是個什麼樣子的人？", "desc": "大致列出特質或性格即可，不用描述外貌唷~", "required": true},
+            {"type": "textarea", "title": "如果國家遇到困難，你會留下來支持國家嗎？又或者會直接離開？", "required": true},
+            {"type": "scale", "title": "對於國家情意的重視程度？", "required": true, "min": 1, "max": 5, "minLabel": "不重視", "maxLabel": "重視"},
+            {"type": "checkbox", "title": "你的個性", "required": true, "options": ["天真", "可愛", "沉穩", "獨立", "堅強", "依靠人", "優雅"], "other": true},
+            {"type": "scale", "title": "你是一個善於隱忍還是直話直說的人呢？", "required": true, "min": 1, "max": 5, "minLabel": "直話直說", "maxLabel": "善於隱忍"},
+            {"type": "textarea", "title": "愛情，親情，友情的重視比序", "desc": "例如：愛情>親情>友情", "required": true},
+            {"type": "textarea", "title": "有男女朋友在車上嗎~有的話是誰呢？"},
+            {"type": "textarea", "title": "還有什麼話想跟李家家僕說的嗎？"}
+        ],
+        done: {
+            title: '🏮 名帖已收',
+            text: '期待當天能在李家大宅伺候您',
+            link: { href: 'https://www.instagram.com/larp_starfish', text: '📷 追蹤海星 IG' }
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="fog" data-tint="#b3202a" data-density="0.8"></script>
+</body>
+</html>

@@ -14,9 +14,13 @@
  *     { type: 'text' | 'textarea', title, desc?, required?, placeholder? },
  *     { type: 'radio' | 'checkbox', title, options: [...], other?: true, required? },
  *     { type: 'scale', title, min: 1, max: 5, minLabel, maxLabel, required? },
+ *     { type: 'date', title, required? },
+ *     { type: 'info', title, desc? },               // 純說明文字（情境敘述、分段標題），不收答案
  *   ],
+ *   任一題可加 showIf: { title: '某題題目', in: ['選項A'] }，該題答案在清單內才顯示（分支題組）；
+ *   隱藏的題目不檢查必填、也不送出。
  *   assign: function (answers) { return { '建議角色': '…' }; },  // 選填：依答案算角色，結果一起存進總表
- *   done: { title: '…', text: '…' },                           // 送出後畫面
+ *   done: { title: '…', text: '…', link?: { href, text } },   // 送出後畫面
  * };
  * answers 以題目文字為鍵：answers['您的生理性別是？'] === '男'
  */
@@ -24,7 +28,7 @@
     'use strict';
 
     // 部署 GoogleAppsScript_角色問卷.gs 後，把 /exec 網址貼在這裡（所有問卷共用）
-    var SURVEY_ENDPOINT = '';
+    var SURVEY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx5Fyc528P0kL6sdNAdNcYElbQj8xhJb7dkIm0khATVeRizzouNcI04MGhcrmBUxiHM/exec';
 
     var config = window.SURVEY;
     var root = document.getElementById('survey');
@@ -67,18 +71,34 @@
     done.appendChild(doneTitle);
     done.appendChild(doneExtra);
     done.appendChild(doneText);
+    if (config.done && config.done.link) {
+        var doneLink = el('a', 'sv-done-link', config.done.link.text);
+        doneLink.href = config.done.link.href;
+        doneLink.target = '_blank';
+        doneLink.rel = 'noopener';
+        done.appendChild(doneLink);
+    }
 
     root.appendChild(form);
     root.appendChild(done);
 
     restoreDraft();
+    updateVisibility();
     form.addEventListener('input', saveDraft);
     form.addEventListener('change', saveDraft);
+    form.addEventListener('change', updateVisibility);
     form.addEventListener('submit', onSubmit);
 
     // ── 題目 ────────────────────────────────────────────────
 
     function renderQuestion(q, index) {
+        if (q.type === 'info') {
+            var info = el('section', 'sv-q sv-info');
+            info.dataset.index = index;
+            if (q.title) info.appendChild(el('h2', 'sv-info-title', q.title));
+            if (q.desc) info.appendChild(el('p', 'sv-desc', q.desc));
+            return info;
+        }
         var box = el('fieldset', 'sv-q');
         box.dataset.index = index;
         var legend = el('legend', 'sv-title', q.title);
@@ -91,12 +111,12 @@
         if (q.desc) box.appendChild(el('p', 'sv-desc', q.desc));
 
         var name = 'q' + index;
-        if (q.type === 'text' || q.type === 'textarea') {
-            var input = document.createElement(q.type === 'text' ? 'input' : 'textarea');
+        if (q.type === 'text' || q.type === 'textarea' || q.type === 'date') {
+            var input = document.createElement(q.type === 'textarea' ? 'textarea' : 'input');
             input.name = name;
             input.className = 'sv-input';
-            if (q.type === 'text') input.type = 'text';
-            else input.rows = 4;
+            if (q.type === 'textarea') input.rows = 4;
+            else input.type = q.type;
             input.placeholder = q.placeholder || '你的回答';
             input.setAttribute('aria-label', q.title);
             box.appendChild(input);
@@ -158,7 +178,7 @@
 
     function readAnswer(q, index) {
         var name = 'q' + index;
-        if (q.type === 'text' || q.type === 'textarea') {
+        if (q.type === 'text' || q.type === 'textarea' || q.type === 'date') {
             return form.elements[name].value.trim();
         }
         var checked = Array.prototype.filter.call(form.querySelectorAll('input[name="' + name + '"]'), function (i) {
@@ -174,6 +194,27 @@
         return checked;
     }
 
+    function isVisible(q) {
+        if (!q.showIf) return true;
+        var target = -1;
+        config.questions.forEach(function (other, i) { if (target === -1 && other.title === q.showIf.title) target = i; });
+        if (target === -1 || !isVisible(config.questions[target])) return false;
+        var value = readAnswer(config.questions[target], target);
+        var values = Array.isArray(value) ? value : [value];
+        return values.some(function (v) { return q.showIf.in.indexOf(v) !== -1; });
+    }
+
+    function isAnswerable(q) {
+        return q.type !== 'info' && isVisible(q);
+    }
+
+    function updateVisibility() {
+        config.questions.forEach(function (q, i) {
+            if (!q.showIf) return;
+            form.querySelector('.sv-q[data-index="' + i + '"]').hidden = !isVisible(q);
+        });
+    }
+
     function isEmpty(value) {
         return value === '' || (Array.isArray(value) && value.length === 0);
     }
@@ -182,6 +223,7 @@
         var firstBad = null;
         config.questions.forEach(function (q, i) {
             var box = form.querySelector('.sv-q[data-index="' + i + '"]');
+            if (!isAnswerable(q)) return;
             var bad = !!q.required && isEmpty(readAnswer(q, i));
             box.classList.toggle('sv-invalid', bad);
             box.querySelector('.sv-error').textContent = bad ? '這是必填問題' : '';
@@ -207,10 +249,12 @@
         }
 
         var answers = {};
-        var fields = config.questions.map(function (q, i) {
+        var fields = [];
+        config.questions.forEach(function (q, i) {
+            if (!isAnswerable(q)) return;
             var value = readAnswer(q, i);
             answers[q.title] = value;
-            return { label: q.title, value: value };
+            fields.push({ label: q.title, value: value });
         });
 
         var extra = {};
@@ -300,7 +344,7 @@
     function injectStyle() {
         var css = [
             '#survey{--sv-accent:#c9a227;--sv-text:#f5ecd9;--sv-muted:rgba(245,236,217,.65);',
-            '--sv-card:rgba(20,14,8,.72);--sv-border:rgba(201,162,39,.35);--sv-field:rgba(255,255,255,.06);--sv-error:#ff8a7a;color:var(--sv-text)}',
+            '--sv-card:rgba(20,14,8,.72);--sv-border:rgba(201,162,39,.35);--sv-field:rgba(255,255,255,.06);--sv-error:#ff8a7a;color:var(--sv-text);color-scheme:var(--sv-scheme,dark)}',
             '.sv-form{display:flex;flex-direction:column;gap:16px}',
             '.sv-q{margin:0;padding:20px 20px 14px;border:1px solid var(--sv-border);border-radius:14px;background:var(--sv-card);',
             'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);min-width:0;transition:border-color .2s}',
@@ -308,6 +352,11 @@
             '.sv-title{padding:0;font-size:1.05rem;font-weight:600;line-height:1.5;float:left;width:100%;margin-bottom:12px}',
             '.sv-title+*{clear:both}',
             '.sv-required{color:var(--sv-error)}',
+            '.sv-info{border-style:dashed}',
+            '.sv-info-title{margin:0 0 8px;font-size:1.1rem;color:var(--sv-accent);white-space:pre-line;line-height:1.6}',
+            '.sv-info .sv-desc{margin:0;color:var(--sv-text);line-height:1.8}',
+            '.sv-info-title+.sv-desc{color:var(--sv-muted)}',
+            'input[type=date].sv-input{min-height:48px}',
             '.sv-desc{margin:-4px 0 12px;color:var(--sv-muted);font-size:.9rem;white-space:pre-line;clear:both}',
             '.sv-input{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid var(--sv-border);border-radius:10px;',
             'background:var(--sv-field);color:var(--sv-text);font:inherit;font-size:16px;line-height:1.5;resize:vertical}',
@@ -337,6 +386,7 @@
             '.sv-status:empty{display:none}',
             '.sv-done{padding:32px 24px;text-align:center;border:1px solid var(--sv-border);border-radius:14px;background:var(--sv-card)}',
             '.sv-done-title{margin:0 0 12px;color:var(--sv-accent)}',
+            '.sv-done-link{display:inline-block;margin-top:16px;color:var(--sv-accent)}',
             '.sv-done-text{margin:12px 0 0;color:var(--sv-muted);line-height:1.8;white-space:pre-line}',
             '[hidden]{display:none!important}'
         ].join('');

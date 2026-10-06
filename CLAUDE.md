@@ -189,6 +189,7 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
 - 新增一份問卷：複製 `問卷/奉天1928.html` 改成 `問卷/<劇本名>.html`，
   改 `window.SURVEY` 的 `script`（分頁名，通常＝`reviewKey`）與 `questions`，
   頁首與配色依劇本主題自己設計。Google 表單公開連結可用 `FB_PUBLIC_LOAD_DATA_` 解析出題目，題目文字照抄原表單。
-- 題型：`text` / `textarea` / `radio` / `checkbox`（可加 `other: true`）/ `scale`（`min`/`max`/`minLabel`/`maxLabel`）。
+- 題型：`text` / `textarea` / `date` / `radio` / `checkbox`（可加 `other: true`）/ `scale`（`min`/`max`/`minLabel`/`maxLabel`）/
+  `info`（純說明文字、分段標題）。分支題組用 `showIf: { title: '某題', in: ['選項'] }`（例：`問卷/別來無恙.html` 依性別分男女題組）。
   需要依答案自動推薦角色時加 `assign(answers)`，回傳的欄位（如 `建議角色`）會一起存進總表。
 - 問卷頁**不放入口**、不登記 `scripts.js`，用網址或 QR code 傳給玩家；頁面加 `noindex`。

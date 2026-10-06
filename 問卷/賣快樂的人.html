@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>「賣快樂的人」分角問卷 · 賣快樂的人</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff6e8;
+            font-family: "Noto Sans TC", system-ui, sans-serif;
+            background: #2a1b4a;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(160deg, #3b1f5e 0%, #5a2a6e 40%, #2a1b4a 100%);
+        }
+        .shop { position: relative; margin-bottom: 26px; padding: 0 0 22px; text-align: center; }
+        .awning {
+            height: 38px; border-radius: 14px 14px 0 0;
+            background: repeating-linear-gradient(90deg, #ff8fb1 0 34px, #fff6e8 34px 68px);
+            -webkit-mask: radial-gradient(circle 17px at 17px 38px, transparent 98%, #000) 0 0 / 34px 100%;
+                    mask: radial-gradient(circle 17px at 17px 38px, transparent 98%, #000) 0 0 / 34px 100%;
+        }
+        .board {
+            margin: -6px 10px 0; padding: 22px 18px 20px;
+            background: #fff6e8; color: #5a2a6e;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
+        }
+        .board small { letter-spacing: .3em; color: #e0699a; font-weight: 700; }
+        .board h1 { margin: 8px 0 10px; font-size: clamp(1.5rem, 6.5vw, 2rem); }
+        .board p { margin: 0; line-height: 1.8; }
+        .sun { display: inline-block; animation: wobble 3s ease-in-out infinite; }
+        @keyframes wobble { 50% { transform: rotate(14deg) scale(1.1); } }
+        @media (prefers-reduced-motion: reduce) { .sun { animation: none; } }
+        #survey {
+            --sv-accent: #ffd36e;
+            --sv-text: #fff6e8;
+            --sv-muted: rgba(255, 246, 232, .65);
+            --sv-card: rgba(58, 28, 82, .78);
+            --sv-border: rgba(255, 143, 177, .35);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="shop">
+            <div class="awning" aria-hidden="true"></div>
+            <div class="board">
+                <small>HAPPY PLANET</small>
+                <h1><span class="sun">☀️</span> 快樂店 分角問卷</h1>
+                <p>歡迎大家來到快樂星球，祝願每個人在這裡都能找到你希冀的快樂。</p>
+            </div>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '賣快樂的人',
+        submitText: '送出・買一份快樂',
+        questions: [
+            {"type": "text", "title": "請問要怎麼稱呼你呢？ (line名)", "required": true},
+            {"type": "date", "title": "預約日期", "required": true},
+            {"type": "radio", "title": "你的性別是？", "required": true, "options": ["男", "女", "不愿透露"], "other": true},
+            {"type": "radio", "title": "你的年齡區段落在？", "required": true, "options": ["10-20", "21-30", "31-40", "41-50", "50+"]},
+            {"type": "radio", "title": "你的感情狀況？", "required": true, "options": ["單身", "戀愛中", "已婚"]},
+            {"type": "text", "title": "今天在場是否有跟你比較熟的人，如果有，他/他們的名字是？(請寫line名)", "required": true},
+            {"type": "textarea", "title": "承上題，如果有，請簡單描述一下你們的關係。"},
+            {"type": "text", "title": "如果一定要比較，請問「愛情、親情、友情」在你心中的重要程度是？\n請按重要程度進行排序或是填寫比例。", "desc": "ex. 愛>友>親      (愛70% 親20% 友10%)", "required": true},
+            {"type": "radio", "title": "喜歡小孩子嗎？", "required": true, "options": ["喜歡", "不喜歡", "一般喜歡"]},
+            {"type": "radio", "title": "你認為人的一生之中最重要的是？", "required": true, "options": ["所愛之人平安喜樂", "實現理想、足夠優秀", "和另一半開心快樂地生活", "堅持本心做自己"]},
+            {"type": "radio", "title": "如果遇到不開心的事情會選擇？", "required": true, "options": ["與朋友／家人傾訴", "自我消化，不表露出來"]},
+            {"type": "radio", "title": "如果在場的人有一個是你的家人，你希望他是你的？", "required": true, "options": ["爸爸", "媽媽", "弟弟／妹妹", "哥哥／姐姐"]},
+            {"type": "text", "title": "有其他想說的話可以寫在這～"},
+            {"type": "info", "title": "很重要的事情！！", "desc": "最後，跟各位自我介紹一下，我沒有名字，不過你們可以叫我「賣快樂的人」。從你們決定來到快樂星球的那一刻起，你們就與我的店鋪產生了羈絆，也正如我常說得那句話：「如果用錢能買到快樂，那就多買一點。」\n\n請各位在光臨快樂店的時候，『務必帶上一樣自己珍視的物品』，我會在這裡等待各位，不見不散。"}
+        ],
+        done: {
+            title: '🍬 快樂已打包',
+            text: '記得帶上一樣自己珍視的物品\n我們在快樂店等你，不見不散。'
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="bubbles" data-tint="#ffd36e" data-density="0.7"></script>
+</body>
+</html>

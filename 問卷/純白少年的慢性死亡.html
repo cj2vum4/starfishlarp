@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>角色適性測驗 · 純白少年的慢性死亡</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #1f2733;
+            font-family: "Noto Sans TC", system-ui, sans-serif;
+            background: #eef1f5;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(180deg, #ffffff 0%, #eef1f5 100%);
+        }
+        html { color-scheme: light; }
+        .chart {
+            margin-bottom: 26px; padding: 24px 22px;
+            background: #fff;
+            border: 1px solid #d9dee6;
+            border-left: 6px solid #1f2733;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(31, 39, 51, .08);
+        }
+        .chart-row { display: flex; justify-content: space-between; font: 600 .72rem/1 ui-monospace, monospace; letter-spacing: .2em; color: #8a94a3; }
+        .chart h1 { margin: 16px 0 6px; font-size: clamp(1.4rem, 6vw, 1.9rem); font-weight: 300; letter-spacing: .1em; }
+        .chart h1 b { font-weight: 800; }
+        .chart p { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid #e6e9ee; color: #5b6573; line-height: 1.8; }
+        .pulse { height: 28px; margin-top: 14px; background:
+            linear-gradient(90deg, transparent, #fff 60%) , url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 28'%3E%3Cpath d='M0 14h70l6-10 8 20 6-14 4 4h106' fill='none' stroke='%23c23b3b' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 200px 28px repeat-x;
+            animation: beat 3s linear infinite; }
+        @keyframes beat { to { background-position: 0 0, 200px 0; } }
+        @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+        #survey {
+            --sv-scheme: light;
+            --sv-accent: #1f2733;
+            --sv-text: #1f2733;
+            --sv-muted: #6b7584;
+            --sv-card: rgba(255, 255, 255, .9);
+            --sv-border: #d9dee6;
+            --sv-field: #f4f6f9;
+            --sv-error: #c23b3b;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="chart">
+            <div class="chart-row"><span>PATIENT FILE</span><span>No. 0707</span></div>
+            <h1>純白少年的<b>慢性死亡</b></h1>
+            <div class="chart-row"><span>角色適性測驗</span><span>CONFIDENTIAL</span></div>
+            <div class="pulse" aria-hidden="true"></div>
+            <p>請依直覺作答，這不是心理測驗，而是角色適性篩選。</p>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '純白少年的慢性死亡',
+        submitText: '提交測驗',
+        questions: [
+            {"type": "text", "title": "line上的名稱", "required": true},
+            {"type": "radio", "title": "玩過的劇本殺數量", "required": true, "options": ["0", "1-5", "6-20", "20up"]},
+            {"type": "date", "title": "遊玩日期", "required": true},
+            {"type": "text", "title": "同行玩家中是否有你的伴侶或喜歡的對象~他是誰"},
+            {"type": "radio", "title": "Q1. 當你很在意的人連續三天回訊息很冷淡，你比較可能？", "required": true, "options": ["A. 直接問清楚是不是發生什麼事", "B. 開始反省是不是自己哪裡做錯", "C. 裝沒事，但情緒會受影響", "D. 覺得算了，慢慢疏遠比較不痛"]},
+            {"type": "radio", "title": "Q2. 如果一段關係裡只有你在撐，你會？", "options": ["A. 再努力看看", "B. 等對方自己發現你的好", "C. 開始變得冷淡或暴躁", "D. 直接放掉"]},
+            {"type": "radio", "title": "Q3. 如果對方說：「你想太多了。」你通常會？", "required": true, "options": ["A. 覺得自己真的想太多", "B. 很受傷，但不想吵", "C. 想辦法證明自己沒錯", "D. 心裡記一筆，慢慢扣分"]},
+            {"type": "radio", "title": "Q4. 你比較接近哪一種？", "required": true, "options": ["A. 只要不被丟下，什麼都可以", "B. 關係一定要對等", "C. 寧願孤單也不要委屈", "D. 能撐就撐，撐不下去再說"]},
+            {"type": "radio", "title": "Q5. 吵架之後，你通常會？", "required": true, "options": ["A. 一定要馬上和好", "B. 會先低頭道歉", "C. 冷處理一陣子", "D. 當作沒發生過"]},
+            {"type": "radio", "title": "Q6. 如果對方常常讓你失望，你會？", "required": true, "options": ["A. 更努力對他好", "B. 開始懷疑是不是自己不夠好", "C. 逐漸降低期待", "D. 直接把情感抽走"]},
+            {"type": "radio", "title": "Q7. 你比較能接受哪一種關係狀態？", "required": true, "options": ["A. 對方是我生活的重心", "B. 彼此重要，但要平衡", "C. 各自獨立，偶爾依靠", "D. 各過各的比較自在"]},
+            {"type": "radio", "title": "Q8. 當你感到沒有安全感時，你通常會？", "required": true, "options": ["A. 變得很想確認對方的存在", "B. 默默觀察對方態度", "C. 表面沒事，但情緒會累積", "D. 告訴自己不要太在意"]},
+            {"type": "radio", "title": "Q9. 如果你發現自己付出比較多，你會？", "required": true, "options": ["A. 覺得這是應該的", "B. 希望對方有一天會懂", "C. 心裡不平衡，但不說", "D. 逐漸想退出這段關係"]},
+            {"type": "radio", "title": "Q10. 面對「可能會失去」的關係，你通常？", "required": true, "options": ["A. 會非常焦慮，想盡辦法抓住", "B. 會反覆檢討哪裡出了問題", "C. 表面冷靜，內心混亂", "D. 會先替自己準備退路"]},
+            {"type": "radio", "title": "Q11. 你在關係中比較常是？", "required": true, "options": ["A. 需要對方比較多的那個", "B. 配合對方比較多的那個", "C. 情緒被影響比較多的那個", "D. 保留距離比較多的那個"]},
+            {"type": "radio", "title": "Q12. 如果一段關係讓你很痛苦，但還沒結束，你會？", "required": true, "options": ["A. 撐到對方不要我為止", "B. 一邊痛一邊捨不得走", "C. 慢慢讓自己抽離", "D. 直接做出切割的決定"]},
+            {"type": "textarea", "title": "許願池", "desc": "有任何需要或幫助都可以跟我說唷~"}
+        ],
+        done: {
+            title: '測驗已提交',
+            text: '角色將由主持人依結果分配\n當天見。'
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="dust" data-tint="#9aa7b8" data-density="0.6"></script>
+</body>
+</html>

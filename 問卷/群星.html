@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>群星登入太空計畫 · 群星</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #e6f1ff;
+            font-family: "Noto Sans TC", system-ui, sans-serif;
+            background: #04060f;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 70% 0%, #1b2f5c 0%, #0a1024 45%, #04060f 100%);
+        }
+        .mission { text-align: center; margin-bottom: 28px; }
+        .patch {
+            width: 132px; height: 132px; margin: 0 auto 18px;
+            border-radius: 50%;
+            display: grid; place-items: center;
+            border: 3px solid #9fd8ff;
+            background: radial-gradient(circle at 50% 120%, #ff9a3c 0 18%, transparent 19%),
+                        radial-gradient(circle at 30% 30%, #2b4b8f, #0b1530 70%);
+            box-shadow: 0 0 0 6px rgba(159, 216, 255, .12), 0 0 40px rgba(110, 180, 255, .35);
+            font-size: 3rem;
+            animation: orbit 14s linear infinite;
+        }
+        .patch span { animation: orbit 14s linear infinite reverse; }
+        @keyframes orbit { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) { .patch, .patch span { animation: none; } }
+        .code { font: 600 .75rem/1 ui-monospace, monospace; letter-spacing: .4em; color: #9fd8ff; }
+        .mission h1 { margin: 10px 0 12px; font-size: clamp(1.6rem, 7vw, 2.2rem); letter-spacing: .12em; }
+        .mission p { margin: 0; color: rgba(230, 241, 255, .72); line-height: 1.8; }
+        #survey {
+            --sv-accent: #9fd8ff;
+            --sv-text: #e6f1ff;
+            --sv-muted: rgba(230, 241, 255, .6);
+            --sv-card: rgba(10, 18, 40, .72);
+            --sv-border: rgba(159, 216, 255, .28);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="mission">
+            <div class="patch" aria-hidden="true"><span>🪐</span></div>
+            <div class="code">MISSION · STARS</div>
+            <h1>群星登入太空計畫</h1>
+            <p>歡迎各位宇航員參與本次群星計畫，在計畫開始前，請簡單的介紹一下自己吧</p>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '群星',
+        submitText: '確認登記・點火升空',
+        questions: [
+            {"type": "text", "title": "您在社群裡的名字是？", "required": true},
+            {"type": "radio", "title": "您的性別是？", "required": true, "options": ["男", "女", "男，可接受玩女角", "女，可接受玩男角"]},
+            {"type": "text", "title": "群星計劃中有您的另一半嗎？如有請留下他/她在社群裡的名字"},
+            {"type": "radio", "title": "您玩過多少劇本呢？", "required": true, "options": ["1~5本", "6~20本", "20本以上", "這是第一次"]},
+            {"type": "info", "desc": "請想像以下情境\n你是一位即將前往遠方的旅人，遠方有著你的夢想和渴望，有著新奇與有趣的事物，你對遠方一直充滿著幻想。而就在出發的前一天晚上，你在自己的家中安然休息，並且作了一個十分甜美的夢。"},
+            {"type": "radio", "title": "你希望夢境內容是關於家鄉還是遠方", "required": true, "options": ["家鄉", "遠方"]},
+            {"type": "info", "desc": "第二天從美夢中醒來，你將伴隨著和煦的微風和清晨出發。一路上鳥語花香，景色優美，讓你感到心曠神怡。而就在你因為沿途風景而流連忘返的時候，你突然發現自己有些迷路。因此你打算抬頭看看天空"},
+            {"type": "radio", "title": "當你抬頭看向天空時，你希望看到的是太陽還是星空呢", "required": true, "options": ["太陽", "星空"]},
+            {"type": "info", "desc": "你終於找到了方向，經過一路艱難險阻、跋山涉水後，你抵達了此行的目的地，你達了你一直以來的夢想與渴望。就在這時，你收到了來自家鄉寄來的信件"},
+            {"type": "radio", "title": "當你拿著這封信時，你希望這是家人寄來的還是戀人寄來的呢?", "required": true, "options": ["家人", "戀人"]},
+            {"type": "text", "title": "期待當天見面^^有任何特殊需求需要我幫您服務的嗎？"}
+        ],
+        done: {
+            title: '🚀 登記完成',
+            text: '預祝計畫順利，群星永遠閃耀！'
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="stars" data-tint="#9fd8ff"></script>
+</body>
+</html>

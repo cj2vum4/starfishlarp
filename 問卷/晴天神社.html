@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>演唱會VIP嘉賓審核 · 晴天神社</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff0f7;
+            font-family: "Noto Sans TC", system-ui, sans-serif;
+            background: #150820;
+        }
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 16px 64px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 0%, #6b2a63 0%, #2b1035 55%, #150820 100%);
+        }
+        .pass {
+            position: relative; margin: 6px auto 26px; max-width: 420px;
+            padding: 26px 22px 22px; text-align: center;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #ff7eb6, #ffc56e 55%, #8fd3ff);
+            color: #3a0f35;
+            box-shadow: 0 20px 50px rgba(255, 126, 182, .35);
+            overflow: hidden;
+        }
+        .pass::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, .55) 50%, transparent 65%);
+            transform: translateX(-100%); animation: shine 4s ease-in-out infinite;
+        }
+        @keyframes shine { 60%, 100% { transform: translateX(100%); } }
+        @media (prefers-reduced-motion: reduce) { .pass::after { animation: none; } }
+        .pass .vip { display: inline-block; padding: 4px 14px; border-radius: 999px; background: #3a0f35; color: #ffd6ea; font: 800 .8rem/1.4 system-ui; letter-spacing: .3em; }
+        .pass h1 { margin: 12px 0 8px; font-size: clamp(1.4rem, 6vw, 1.9rem); }
+        .pass p { margin: 0; line-height: 1.8; font-weight: 500; }
+        .hole { width: 46px; height: 10px; margin: 0 auto 14px; border-radius: 6px; background: #2b1035; }
+        #survey {
+            --sv-accent: #ff9cc8;
+            --sv-text: #fff0f7;
+            --sv-muted: rgba(255, 240, 247, .65);
+            --sv-card: rgba(60, 20, 70, .72);
+            --sv-border: rgba(255, 156, 200, .35);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="wrap">
+        <header class="pass">
+            <div class="hole" aria-hidden="true"></div>
+            <span class="vip">VIP PASS</span>
+            <h1>🌸 小櫻演唱會 嘉賓審核</h1>
+            <p>嗨！！！咪納桑！要成為小櫻小姐演唱會VIP嘉賓也不是這麼簡單的事爹斯！<br>請各位嘉賓填寫以下資料讓馬內甲審核呦～～</p>
+        </header>
+
+        <div id="survey"></div>
+    </main>
+
+    <script>
+    window.SURVEY = {
+        script: '晴天神社',
+        submitText: '送出審核 ♡',
+        questions: [
+            {"type": "text", "title": "請問您在群組(LINE/DC)中的暱稱是？", "required": true},
+            {"type": "radio", "title": "請問您的生理性別是？", "required": true, "options": ["男", "女"]},
+            {"type": "radio", "title": "請問您的心理性別是？", "required": true, "options": ["男", "女", "才不想告訴你咧"]},
+            {"type": "radio", "title": "請問您的戀愛取向是？", "required": true, "options": ["我喜歡男孩紙！", "我喜歡女孩紙！", "男孩紙女孩紙都可以！", "才不想告訴你咧～～～"], "other": true},
+            {"type": "checkbox", "title": "請問下列情感哪個會讓您觸動？（可多選）", "required": true, "options": ["爺爺奶奶的關懷", "爸爸媽媽的付出", "孩子的體貼孝順", "奮不顧身的單戀", "雙向選擇的甜戀", "默默付出的守護", "青澀年少的愛情", "成熟溫暖的愛情", "真摯動人的友情"]},
+            {"type": "checkbox", "title": "請從下列形容詞選擇跟您相似的個性（可多選）", "required": true, "options": ["活潑", "堅強", "自卑", "溫柔", "穩重", "沉默", "叛逆", "木訥", "善良", "任性"]},
+            {"type": "text", "title": "除了上述形容詞，還有什麼能形容你的個性？（可自由選擇作答）"},
+            {"type": "text", "title": "還有什麼想跟馬內甲說的嗎？（可填任何備註事項，例：不吃什麼情感線等等…）"}
+        ],
+        done: {
+            title: '🎤 演唱會VIP審核中....',
+            text: '馬內甲收到你的資料了！\n當天見爹斯～'
+        }
+    };
+    </script>
+    <script src="../survey.js?v=20261006b"></script>
+    <script src="../fx3d.js?v=20260714" data-fx="petals" data-tint="#ffb7d5"></script>
+</body>
+</html>
