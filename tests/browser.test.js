@@ -452,6 +452,74 @@ async function launchBrowser() {
   check('有指出要重新部署', staleText.includes('重新部署'), true);
   await stale.close();
 
+  /* ================= 資料來源很慢或失敗時的載入 ================= */
+  console.log('\n=== 資料來源很慢或失敗時的載入 ===');
+  // 每個情境都用新的 context：localStorage 的 CSV 快取要能控制有沒有
+  const slowContext = await browser.newContext();
+  let csvRequests = 0;
+  let csvMode = 'first-hangs';  // first-hangs：第一個請求卡住、補發的正常回；fail：全部失敗
+  await slowContext.route('**/*', async (route) => {
+    const target = route.request().url();
+    if (target.includes('docs.google.com')) {
+      csvRequests += 1;
+      if (csvMode === 'fail') return route.abort();
+      if (csvRequests === 1) {
+        await new Promise((resolve) => setTimeout(resolve, 15000));
+        return route.abort().catch(() => {});
+      }
+      return route.fulfill({ status: 200, contentType: 'text/csv; charset=utf-8', body: CSV });
+    }
+    if (target.includes('script.google.com')) {
+      // 點數端點慢到 8 秒逾時：以前整頁會跟著卡住
+      await new Promise((resolve) => setTimeout(resolve, 9000));
+      return route.abort().catch(() => {});
+    }
+    if (target.includes('supabase.co') || target.includes('cdnjs.cloudflare.com')) return route.abort();
+    return route.continue();
+  });
+
+  const slow = await slowContext.newPage();
+  const slowStart = Date.now();
+  await slow.goto(url('榮譽牆.html'));
+  await slow.waitForFunction(
+    () => document.querySelectorAll('#playerSelector option').length > 1, null, { timeout: 8000 }
+  ).catch(() => {});
+  const slowElapsed = Date.now() - slowStart;
+  check('第一個 CSV 請求卡住時，補發的請求讓玩家選單在 6 秒內出現', slowElapsed < 6000, true);
+  check('有補發第二個 CSV 請求', csvRequests >= 2, true);
+  check('不用等點數端點就有排行榜', await slow.locator('#leaderboardList li').count() > 0, true);
+  await slow.selectOption('#playerSelector', '海星');
+  check('點數還在讀時顯示讀取中',
+    (await slow.locator('#pointsCard').textContent()).includes('讀取中'), true);
+  await slow.close();
+
+  // 同一個 context 再開一次：CSV 全部失敗，但有上次的快取可以秒開
+  csvMode = 'fail';
+  const cached = await slowContext.newPage();
+  await cached.goto(url('榮譽牆.html'));
+  await cached.waitForTimeout(1500);
+  check('CSV 讀不到時沿用上次的資料', await cached.locator('#playerSelector option').count() > 1, true);
+  check('有快取時不顯示錯誤', await cached.locator('.load-error').isHidden(), true);
+  await cached.close();
+  await slowContext.close();
+
+  // 完全沒有快取、CSV 又讀不到：要明確說失敗，而且劇本卡片不能被清掉
+  const failContext = await browser.newContext();
+  await failContext.route('**/*', (route) => {
+    const target = route.request().url();
+    if (target.includes('docs.google.com') || target.includes('script.google.com') ||
+        target.includes('supabase.co') || target.includes('cdnjs.cloudflare.com')) return route.abort();
+    return route.continue();
+  });
+  const failed = await failContext.newPage();
+  await failed.goto(url('榮譽牆.html'));
+  await failed.waitForSelector('.load-error:not([hidden])', { timeout: 5000 }).catch(() => {});
+  check('讀取失敗會顯示錯誤訊息', await failed.locator('.load-error').isVisible(), true);
+  check('讀取失敗時劇本卡片仍在', await failed.locator('.script-card').count() > 0, true);
+  check('玩家選單顯示讀取失敗',
+    (await failed.locator('#playerSelector').textContent()).includes('讀取失敗'), true);
+  await failContext.close();
+
   /* ================= 結果 ================= */
   console.log('\n=== JS 執行錯誤 ===');
   const realErrors = errors.filter((message) =>

@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>劇本殺榮譽牆 (數據連動版)</title>
-    <!-- 引入 PapaParse 用於正確解析 CSV -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- 引入 Tone.js 用於音效 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <!-- 一律 defer／async：不擋住頁面繪製。defer 依序執行、且在 DOMContentLoaded 之前跑完 -->
+    <!-- 引入 PapaParse 用於正確解析 CSV（載不到時有內建解析器） -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Tone.js 只負責點擊音效，用 async 背景載入，第一次點擊時才建立音效 -->
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <!-- 劇本資料單一來源（與 index.html 共用） -->
-    <script src="scripts.js?v=20261006-tags4"></script>
-    <script src="play-record-config.js?v=20261006-fast"></script>
-    <script src="points.js?v=20261006-fast"></script>
+    <script defer src="scripts.js?v=20261006-tags4"></script>
+    <script defer src="play-record-config.js?v=20261006-fast"></script>
+    <script defer src="points.js?v=20261007-load"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -941,8 +942,13 @@
             // 只有在直接請求被公司網路、瀏覽器擴充套件等環境擋下時才需要這個備援。
             // 部署方式可比照 GoogleAppsScript_玩本記錄.gs，另開一支 doGet 回傳 CSV 內容。
             const GAS_PROXY_URL = '';  // 例：'https://script.google.com/macros/s/你的部署ID/exec'
-            // 請求逾時（毫秒），避免網路異常時整頁卡住等很久
-            const FETCH_TIMEOUT_MS = 6000;
+            // Google 的發布 CSV 平常 1 秒內回來，但偶爾單一請求會卡十幾秒。
+            // 所以超過 HEDGE_DELAY_MS 還沒回來就再補發一次、誰先到用誰；
+            // 全部加起來超過 FETCH_TIMEOUT_MS 才算失敗。
+            const HEDGE_DELAY_MS = 3500;
+            const FETCH_TIMEOUT_MS = 20000;
+            // 上次成功讀到的 CSV 存在瀏覽器裡，下次打開先秒開舊資料，背景再換新的
+            const CSV_CACHE_KEY = 'starfishlarp-honor-csv';
             // 資料來源：直接請求為主，GAS_PROXY_URL 有設定時當作額外備援。
             //
             // 這裡曾經還有三個公共 CORS 代理（corsproxy.io / allorigins.win / codetabs.com）
@@ -976,11 +982,16 @@
             // 不可以讓裝飾性的音效庫中斷整頁初始化。
             const SILENT_SOUND = { triggerAttackRelease: function () {} };
             let isToneStarted = false;
+            let soundsReady = false;
             let clickSound = SILENT_SOUND;
             let popSound = SILENT_SOUND;
 
-            try {
-                if (window.Tone) {
+            // Tone.js 是 async 載入（約 300KB），不能擋住資料讀取，
+            // 所以等第一次點擊、而且它已經載好了才建立音效。還沒載好就先無聲。
+            function initSounds() {
+                if (soundsReady || !window.Tone) return;
+                soundsReady = true;
+                try {
                     clickSound = new Tone.MembraneSynth({
                         pitchDecay: 0.01,
                         octaves: 2,
@@ -991,14 +1002,14 @@
                         oscillator: { type: 'sine' },
                         envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
                     }).toDestination();
-                } else {
-                    console.warn('Tone.js 未載入，榮譽牆改以無音效模式運作。');
+                } catch (error) {
+                    clickSound = popSound = SILENT_SOUND;
+                    console.warn('音效初始化失敗，改以無音效模式運作：', error);
                 }
-            } catch (error) {
-                console.warn('音效初始化失敗，改以無音效模式運作：', error);
             }
 
             async function startAudio() {
+                initSounds();  // 同步建立，讓呼叫端緊接著的 triggerAttackRelease 就有聲音
                 if (isToneStarted || !window.Tone) return;
                 try {
                     await Tone.start();
@@ -1062,15 +1073,17 @@
 
             // --- 函式區 ---
 
-            // 帶逾時的 fetch（避免某個來源卡住導致等很久）
-            function fetchWithTimeout(url, opts, timeoutMs) {
-                const controller = new AbortController();
-                const id = setTimeout(() => controller.abort(), timeoutMs);
-                return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(id));
+            function readCachedCsv() {
+                try { return localStorage.getItem(CSV_CACHE_KEY) || ''; } catch (_) { return ''; }
             }
 
-            // 1. 從 Google Sheet 獲取並解析 CSV 資料（可選 GAS 代理 + 備援 + 逾時；Excel 儲存格內換行已由 PapaParse 正確處理）
-            async function fetchPlayData() {
+            function saveCachedCsv(text) {
+                try { localStorage.setItem(CSV_CACHE_KEY, text); } catch (_) { /* 無痕模式或空間不足，不影響顯示 */ }
+            }
+
+            // 1a. 下載 CSV：依序（間隔 HEDGE_DELAY_MS，或前一個失敗就立刻）發出請求，
+            // 第一個拿到有效 CSV 的勝出，其餘取消。
+            function downloadCsv() {
                 // 所有來源都只用 cache:'no-store'，不加任何自訂標頭。
                 //
                 // 這裡曾經對「直接請求」加上 Cache-Control / Pragma / Expires，
@@ -1079,52 +1092,69 @@
                 // 結果直接請求 100% 失敗、每次都被迫走公共代理，
                 // 代理再慢或掛掉整頁就讀不到資料。
                 // cache:'no-store' 本身就能繞過 HTTP 快取，且屬於簡單請求。
-                const directFetchOpts = { cache: 'no-store' };
-                const proxyFetchOpts = { cache: 'no-store' };
-                const sources = [];
-                const labels = [];
-                const isDirectSource = [];  // 標記是否為直接請求
+                const attempts = [];
                 if (GAS_PROXY_URL && GAS_PROXY_URL.trim()) {
                     const base = GAS_PROXY_URL.trim().replace(/\?.*$/, '');
-                    const sep = base.includes('?') ? '&' : '?';
-                    sources.push(() => base + sep + 'url=' + encodeURIComponent(GOOGLE_SHEET_URL));
-                    labels.push('GAS 代理');
-                    isDirectSource.push(false);
+                    attempts.push({ label: 'GAS 代理', url: base + '?url=' + encodeURIComponent(GOOGLE_SHEET_URL) });
                 }
-                // CORS_SOURCES 現在只有直接請求這一種來源
+                // 直接請求排兩次：第二次是給「第一次卡住」準備的補發
                 CORS_SOURCES.forEach((fn) => {
-                    sources.push(fn);
-                    labels.push('直接請求');
-                    isDirectSource.push(true);
+                    attempts.push({ label: '直接請求', url: fn() });
+                    attempts.push({ label: '直接請求（補發）', url: fn() });
                 });
-                let lastError = null;
-                let csvText = null;
-                for (let i = 0; i < sources.length; i++) {
-                    const url = sources[i]();
-                    const label = labels[i];
-                    const opts = isDirectSource[i] ? directFetchOpts : proxyFetchOpts;
-                    try {
-                        console.log(`🔄 讀取資料 (${label})...`);
-                        const response = await fetchWithTimeout(url, opts, FETCH_TIMEOUT_MS);
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}`);
-                        }
-                        csvText = await response.text();
-                        if (csvText.trim().startsWith('<')) {
-                            throw new Error('回應為 HTML，非 CSV');
-                        }
-                        console.log(`📥 收到資料長度: ${csvText.length} 字元 (${label})`);
-                        break;
-                    } catch (err) {
-                        lastError = err;
-                        const msg = err.name === 'AbortError' ? '逾時' : err.message;
-                        console.warn(`⚠️ ${label} 失敗:`, msg);
-                    }
-                }
-                if (!csvText) {
-                    throw lastError || new Error('無法取得資料，請檢查網路或 Google Sheet 是否已發布為 CSV');
-                }
 
+                return new Promise((resolve, reject) => {
+                    const controllers = [];
+                    let next = 0, running = 0, settled = false, lastError = null, hedgeTimer = null;
+
+                    const finish = (error, text) => {
+                        if (settled) return;
+                        settled = true;
+                        clearTimeout(hedgeTimer);
+                        clearTimeout(overallTimer);
+                        controllers.forEach((controller) => controller.abort());
+                        if (error) reject(error); else resolve(text);
+                    };
+
+                    const launch = () => {
+                        clearTimeout(hedgeTimer);
+                        if (settled || next >= attempts.length) return;
+                        const { label, url } = attempts[next++];
+                        const controller = new AbortController();
+                        controllers.push(controller);
+                        running++;
+                        console.log(`🔄 讀取資料 (${label})...`);
+                        fetch(url, { cache: 'no-store', signal: controller.signal })
+                            .then((response) => {
+                                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                                return response.text();
+                            })
+                            .then((text) => {
+                                if (text.trim().startsWith('<')) throw new Error('回應為 HTML，非 CSV');
+                                console.log(`📥 收到資料長度: ${text.length} 字元 (${label})`);
+                                finish(null, text);
+                            })
+                            .catch((error) => {
+                                running--;
+                                if (settled) return;
+                                lastError = error;
+                                console.warn(`⚠️ ${label} 失敗:`, error.message);
+                                if (next < attempts.length) launch();          // 失敗就馬上換下一個
+                                else if (!running) finish(lastError);          // 全部都失敗了
+                            });
+                        if (next < attempts.length) hedgeTimer = setTimeout(launch, HEDGE_DELAY_MS);
+                    };
+
+                    const overallTimer = setTimeout(() => {
+                        finish(new Error('連線逾時（Google 試算表回應太慢）'));
+                    }, FETCH_TIMEOUT_MS);
+
+                    launch();
+                });
+            }
+
+            // 1b. 解析 CSV 成 { playRecords, playerNames }（Excel 儲存格內換行已由 PapaParse 正確處理）
+            function parsePlayData(csvText) {
                 try {
 
                     // 正確解析 CSV（支援引號內的換行）；PapaParse 不可用時自動降級
@@ -1170,10 +1200,7 @@
 
                     return { playRecords, playerNames: Array.from(playerNames).sort() };
                 } catch (error) {
-                    console.error('❌ 無法獲取劇本資料:', error);
-                    console.error('錯誤詳情:', error.stack);
-                    honorWall.innerHTML = `<p style="text-align:center; color: #ffdddd; background: #5c2c2c; padding: 20px; border-radius: 8px;">讀取資料失敗。<br><br>${escapeHtml(error.message)}<br><br>請檢查：<br>1. Google Sheet 是否已發布為 CSV<br>2. 網路連線是否正常<br>3. 開啟開發者工具查看詳細錯誤</p>`;
-                    playerSelector.innerHTML = '<option value="">讀取失敗</option>';
+                    console.error('❌ CSV 解析失敗:', error);
                     return { playRecords: {}, playerNames: [] };
                 }
             }
@@ -1724,19 +1751,59 @@
             });
 
             // B. 獲取資料並設定互動功能
-            // 點數走 Apps Script 的 JSONP 端點，跟 CSV 平行載入。
-            // 點數讀不到時榮譽牆其餘功能照常運作，只是不顯示點數。
-            const [{ playRecords, playerNames }] = await Promise.all([
-                fetchPlayData(),
-                window.StarfishPoints ? window.StarfishPoints.load() : Promise.resolve()
-            ]);
+            // 劇本牆、排行榜、玩家選單只靠 CSV；點數（Apps Script／預約系統）另外慢慢來，
+            // 到了再補上。兩邊互不等待——以前用 Promise.all 綁在一起，
+            // 點數端點一慢（最壞要 4+8+10 秒），整頁就跟著卡在「讀取中」。
+            let playRecords = {};
+            let playerNames = [];
+            let hasPlayData = false;
+            let savedName = '';
+            try { savedName = localStorage.getItem('starfishlarp-player-name') || ''; } catch (_) {}
 
-            if (window.StarfishPoints) {
+            const loadErrorBox = document.createElement('p');
+            loadErrorBox.className = 'load-error';
+            loadErrorBox.hidden = true;
+            loadErrorBox.style.cssText = 'text-align:center; color:#ffdddd; background:#5c2c2c; padding:16px; border-radius:8px; margin:0 0 1rem;';
+            honorWall.parentNode.insertBefore(loadErrorBox, honorWall);
+
+            function renderPointsSections() {
+                if (!window.StarfishPoints) return;
                 window.StarfishPoints.renderDoubleDay(document.getElementById('doubleDayBanner'));
                 window.StarfishPoints.renderCollective(
                     document.getElementById('collectiveBanner'), playRecords);
                 window.StarfishPoints.renderLegendHall(document.getElementById('legendHall'));
+            }
 
+            // 拿到（或換新）CSV 資料時重畫所有依賴它的區塊，保留使用者目前選的玩家
+            function applyPlayData(data) {
+                playRecords = data.playRecords;
+                playerNames = data.playerNames;
+                hasPlayData = true;
+                const current = playerSelector.value || savedName;
+
+                // C. 填充玩家下拉選單
+                if (playerNames.length > 0) {
+                    playerSelector.innerHTML = '<option value="">-- 請選擇玩家 --</option>';
+                    playerNames.forEach(name => {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = name;
+                        playerSelector.appendChild(option);
+                    });
+                } else {
+                    playerSelector.innerHTML = '<option value="">無玩家資料</option>';
+                }
+
+                // D. 填充排行榜、D2. 更新劇本卡片徽章（推薦數、稀有標記）
+                updateLeaderboard(playRecords);
+                updateScriptBadges(playRecords);
+                renderPointsSections();
+
+                // E3. 記得上次登記的名字，回到榮譽牆直接看到自己的檔案
+                if (current && playRecords[current]) selectPlayer(current, playRecords);
+            }
+
+            if (window.StarfishPoints) {
                 // 探員檔案裡點戰友的名字，直接跳到對方的檔案
                 // 成就卡上的稱號沿用榮譽牆這一套六級制，不另外複製門檻
                 window.StarfishPoints.setTitleResolver((name) => {
@@ -1752,26 +1819,34 @@
                     if (!name || !playRecords[name]) return;
                     selectPlayer(name, playRecords, { scroll: true });
                 });
-            }
 
-            // C. 填充玩家下拉選單
-            if (playerNames.length > 0) {
-                playerSelector.innerHTML = '<option value="">-- 請選擇玩家 --</option>';
-                playerNames.forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    option.textContent = name;
-                    playerSelector.appendChild(option);
+                // 點數讀到之後補上點數相關的畫面；讀不到時榮譽牆其餘功能照常
+                window.StarfishPoints.load().then(() => {
+                    renderPointsSections();
+                    if (!hasPlayData) return;
+                    updateLeaderboard(playRecords);
+                    if (playerSelector.value) showPointsProfile(playerSelector.value, playRecords);
                 });
-            } else if (playerSelector.textContent.includes('讀取中')) {
-                playerSelector.innerHTML = '<option value="">無玩家資料</option>';
             }
-            
-            // D. 填充排行榜
-            updateLeaderboard(playRecords);
 
-            // D2. 更新劇本卡片徽章（推薦數、稀有標記）
-            updateScriptBadges(playRecords);
+            // 先用上次存下的 CSV 秒開，同時在背景抓最新的
+            const cachedCsv = readCachedCsv();
+            if (cachedCsv) {
+                const cachedData = parsePlayData(cachedCsv);
+                if (cachedData.playerNames.length) applyPlayData(cachedData);
+            }
+
+            downloadCsv().then((csvText) => {
+                saveCachedCsv(csvText);
+                loadErrorBox.hidden = true;
+                if (csvText !== cachedCsv || !hasPlayData) applyPlayData(parsePlayData(csvText));
+            }).catch((error) => {
+                console.error('❌ 無法獲取劇本資料:', error);
+                if (hasPlayData) return;  // 已經有上次的資料可看，安靜地沿用
+                loadErrorBox.innerHTML = `讀取玩家資料失敗：${escapeHtml(error.message)}<br>請檢查網路後重新整理頁面。`;
+                loadErrorBox.hidden = false;
+                playerSelector.innerHTML = '<option value="">讀取失敗</option>';
+            });
 
             // E. 監聽下拉選單的變化
             playerSelector.addEventListener('change', (event) => {
@@ -1817,16 +1892,6 @@
                 });
             });
 
-            // E3. 記得上次登記的名字，回到榮譽牆直接看到自己的檔案
-            try {
-                const savedName = localStorage.getItem('starfishlarp-player-name');
-                if (savedName && playerNames.includes(savedName)) {
-                    selectPlayer(savedName, playRecords);
-                }
-            } catch (_) {
-                // 無痕模式可能停用 localStorage，不影響其他功能。
-            }
-            
             // F. 監聽排行榜標題的點擊事件
             leaderboardHeader.addEventListener('click', () => {
                 startAudio();

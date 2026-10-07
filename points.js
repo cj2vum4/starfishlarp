@@ -17,6 +17,7 @@
 
     const state = {
         loaded: false,
+        pending: false,       // load() 進行中：榮譽牆不等點數就先畫，這段期間顯示「讀取中」
         ok: false,
         stale: false,         // 端點活著，但部署的是沒有 action=summary 的舊版
         summary: new Map(),   // 歸戶名 → { agent, earned, redeemed, balance, monthEarned, plays, last }
@@ -407,11 +408,12 @@
         // 10 秒以上才回應，第一次 8 秒沒回來就再試一次（再等 10 秒）。
         const fast = typeof window.starfishFetchSummary === 'function'
             ? window.starfishFetchSummary(4000) : Promise.resolve(null);
+        state.pending = true;
         return fast
             .then((payload) => { if (payload) applySummary(payload); return state.ok; })
             .then((done) => done || requestSummary(8000))
             .then((done) => done || requestSummary(10000))
-            .then(() => state);
+            .then(() => { state.pending = false; return state; });
     }
 
     function applySummary(payload) {
@@ -1063,6 +1065,9 @@
             statsHtml = '<p class="pts-empty">點數服務還是舊版本，' +
                 '請 GM 重新部署 Apps Script（管理部署作業 → 編輯 → 版本選「新版本」），' +
                 '再執行一次 setupAll。</p>';
+            rewardsHtml = '';
+        } else if (state.pending) {
+            statsHtml = '<p class="pts-empty">點數讀取中…</p>';
             rewardsHtml = '';
         } else {
             statsHtml = '<p class="pts-empty">點數服務暫時讀不到，稍後再試。' +
