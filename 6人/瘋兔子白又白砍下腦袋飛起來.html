@@ -627,7 +627,7 @@
         </div>
 
         <div class="cta-section">
-            <a href="#" class="cta-button">立即預約遊戲</a>
+            <a href="https://liff.line.me/2011840025-6cuU9x8P?view=create&amp;game=fengtuz" class="cta-button" target="_blank">立即預約遊戲</a>
         </div>
     </div>
 
@@ -722,7 +722,6 @@
         const ctaButton = document.querySelector('.cta-button');
         if (ctaButton) {
             ctaButton.addEventListener('click', (e) => {
-                e.preventDefault();
                 const ripple = document.createElement('div');
                 const rect = ctaButton.getBoundingClientRect();
                 const size = Math.max(rect.width, rect.height);
@@ -731,7 +730,6 @@
                 ctaButton.style.overflow = 'hidden';
                 ctaButton.appendChild(ripple);
                 setTimeout(() => ripple.remove(), 600);
-                alert('即將跳轉至預約頁面...');
             });
         }
 

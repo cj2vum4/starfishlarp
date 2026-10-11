@@ -26,6 +26,10 @@ echo "▶ Apps Script 計分邏輯"
 node tests/gas.test.js || exit 1
 
 echo
+echo "▶ 劇本頁預約按鈕"
+node tests/cta.test.js || exit 1
+
+echo
 echo "▶ 前端（需要 playwright，沒裝會自動跳過）"
 node tests/browser.test.js || exit 1
 
