@@ -521,6 +521,56 @@ async function launchBrowser() {
   await failContext.close();
 
   /* ================= 結果 ================= */
+  console.log('\n=== 角色問卷：送進預約系統，連不上才改送舊的 Apps Script ===');
+  // 每個情境開新的 context，各自決定預約系統（supabase.co）怎麼回應；其他外部請求一律擋掉。
+  for (const [label, supabase, wantLegacy, wantDone] of [
+    ['預約系統收到：不再送舊的 Apps Script', { status: 201, body: { ok: true } }, false, true],
+    ['預約系統還沒部署（404）：改送舊的', { status: 404, body: { error: 'ROUTE_NOT_FOUND' } }, true, true],
+    ['預約系統連不上：改送舊的', 'abort', true, true],
+    ['預約系統暫時錯誤（503）：改送舊的', { status: 503, body: { error: 'DATABASE_UNAVAILABLE' } }, true, true],
+    ['內容不合格（400）：直接顯示失敗、不改送', { status: 400, body: { error: 'INVALID_SURVEY' } }, false, false],
+  ]) {
+    const surveyContext = await browser.newContext();
+    const sent = [];
+    await surveyContext.route('**/*', (route) => {
+      const target = route.request().url();
+      const json = (status, body) => route.fulfill({ status, contentType: 'application/json',
+        headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+      if (target.includes('supabase.co')) {
+        sent.push({ to: 'supabase', body: route.request().postData() });
+        return supabase === 'abort' ? route.abort() : json(supabase.status, supabase.body);
+      }
+      if (target.includes('script.google.com')) {
+        sent.push({ to: 'legacy', body: route.request().postData() });
+        return json(200, { ok: true });
+      }
+      if (!target.startsWith(`http://localhost:${PORT}/`)) return route.abort();
+      return route.continue();
+    });
+    const surveyPage = await surveyContext.newPage();
+    await surveyPage.goto(`http://localhost:${PORT}/${encodeURIComponent('問卷')}/${encodeURIComponent('王座.html')}`);
+    await surveyPage.waitForSelector('.sv-form');
+    await surveyPage.evaluate(() => {
+      const form = document.querySelector('.sv-form');
+      form.querySelector('input[name="q0"]').value = '測試玩家';
+      const groups = new Set([...form.querySelectorAll('input[type="radio"]')].map((r) => r.name));
+      groups.forEach((name) => form.querySelector(`input[type="radio"][name="${name}"]`).click());
+    });
+    await surveyPage.click('.sv-submit');
+    await surveyPage.waitForFunction(() => !document.querySelector('.sv-done').hidden ||
+      document.querySelector('.sv-status').textContent.includes('送出失敗'), null, { timeout: 8000 }).catch(() => {});
+    const done = await surveyPage.evaluate(() => !document.querySelector('.sv-done').hidden);
+    check(label + '：先送預約系統', sent[0] && sent[0].to, 'supabase');
+    check(label + '：' + (wantLegacy ? '有' : '沒有') + '改送舊的', sent.some((x) => x.to === 'legacy'), wantLegacy);
+    check(label + '：' + (wantDone ? '顯示已收到' : '顯示送出失敗'), done, wantDone);
+    if (sent[0]) {
+      const payload = JSON.parse(sent[0].body);
+      check(label + '：送出的劇本與答案', payload.script === '王座' && payload.fields[0].label === 'Line名稱' &&
+        payload.fields[0].value === '測試玩家', true);
+    }
+    await surveyContext.close();
+  }
+
   console.log('\n=== JS 執行錯誤 ===');
   const realErrors = errors.filter((message) =>
     !/Failed to load resource|net::ERR|favicon|Tone|PapaParse|papaparse/i.test(message));

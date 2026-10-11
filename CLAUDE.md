@@ -188,21 +188,22 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
 
 ## 七、角色分配問卷（取代各帳號的 Google 表單）
 
-- 所有回覆寫進同一份「角色問卷總表」（試算表 ID 在 `GoogleAppsScript_角色問卷.gs`），
-  **一個劇本一個分頁**，第一次有人填自動建立；欄名＝題目文字，第一欄「時間戳記」，
-  格式與 Google 表單匯出相同，舊表單回應可直接貼進同名分頁。
-- 後端只有一支 `GoogleAppsScript_角色問卷.gs`，部署後的 `/exec` 網址填在 `survey.js` 的
-  `SURVEY_ENDPOINT`。新增問卷**不用改後端、不用重新部署**。
+- 回覆存進預約系統（Supabase 的 `role_survey_responses`，2026-10-11 起），店家在 **LINE 店家後台「角色問卷回覆」**看，
+  依 `window.SURVEY.script` 分本，可填「分配的角色」與備註、刪除垃圾回覆。回覆含感情狀況等個資，只有店家看得到。
+  `survey.js` 的 `SURVEY_ENDPOINT` 是預約系統的 `/public/role-survey`；新增問卷**不用改後端、不用重新部署**。
+- 過渡期：預約系統連不上（或還沒部署）時，`survey.js` 會改送舊的 `GoogleAppsScript_角色問卷.gs`（`LEGACY_ENDPOINT`，
+  寫進舊的「角色問卷總表」試算表）；店家後台「匯入舊回覆」可把總表各分頁搬進來，重複匯入不會變兩份。
+  全部移轉完成、關掉 Apps Script 後再把 `LEGACY_ENDPOINT` 清空（見預約系統 docs/PROGRESS.md 的 GAS 移除計畫）。
 - 新增一份問卷：複製一頁同色調的 `問卷/*.html` 改成 `問卷/<劇本名>.html`，
   主視覺一律沿用劇本主頁素材：`scripts.js` 的海報（同時當霧面背景）、人數／時長／標籤 chips、
   「登場角色」縮圖列（`img/劇本/<劇本>/縮圖/`，沒有縮圖就照四、的規則做），
   `:root` 色票從海報取色，`fx3d` 用該劇本主頁同一種效果。
-  再改 `window.SURVEY` 的 `script`（分頁名，通常＝`reviewKey`）與 `questions`。
+  再改 `window.SURVEY` 的 `script`（店家後台的分本名稱，通常＝`reviewKey`）與 `questions`。
   `<main>` 要帶 `container` class，否則 fx3d 會把純中文的角色名當成 emoji 特效隱藏。Google 表單公開連結可用 `FB_PUBLIC_LOAD_DATA_` 解析出題目，題目文字照抄原表單。
 - 題型：`text` / `textarea` / `date` / `radio` / `checkbox`（可加 `other: true`）/ `scale`（`min`/`max`/`minLabel`/`maxLabel`）/
   `info`（純說明文字、分段標題）。分支題組用 `showIf: { title: '某題', in: ['選項'] }`（例：`問卷/別來無恙.html` 依性別分男女題組）。
-  題目文字與總表欄名不同時加 `label: '欄名'`（例：`問卷/那一束月光.html` 題目是完整問句、欄名沿用舊資料的「Q3 信任感」）。
-  需要依答案自動推薦角色時加 `assign(answers)`，回傳的欄位（如 `角色建議`）會一起存進總表；
+  題目文字與存檔欄名不同時加 `label: '欄名'`（例：`問卷/那一束月光.html` 題目是完整問句、欄名沿用舊資料的「Q3 信任感」）。
+  需要依答案自動推薦角色時加 `assign(answers)`，回傳的欄位（如 `角色建議`）會一起存進回覆；
   `renderResult(box, 結果)` 可在送出後畫面顯示推薦角色（範例：`問卷/太陽可以是藍色嗎.html`）。
   複選題要沿用舊資料的分隔符時加 `join: '、'`。舊網址 `6人/太陽問卷.html` 只剩轉址到新問卷。
 - 問卷頁**不放入口**、不登記 `scripts.js`，用網址或 QR code 傳給玩家；頁面加 `noindex`。

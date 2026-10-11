@@ -30,8 +30,10 @@
 (function () {
     'use strict';
 
-    // 部署 GoogleAppsScript_角色問卷.gs 後，把 /exec 網址貼在這裡（所有問卷共用）
-    var SURVEY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx5Fyc528P0kL6sdNAdNcYElbQj8xhJb7dkIm0khATVeRizzouNcI04MGhcrmBUxiHM/exec';
+    // 回覆存進預約系統（Supabase），店家在 LINE 店家後台「角色問卷回覆」看（所有問卷共用）。
+    var SURVEY_ENDPOINT = 'https://qrcpmxejhqrvvpnjehri.supabase.co/functions/v1/api/public/role-survey';
+    // 過渡期備援：預約系統還沒部署或暫時連不上時，改送舊的 GoogleAppsScript_角色問卷.gs（之後可從 LINE 後台匯入）。
+    var LEGACY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx5Fyc528P0kL6sdNAdNcYElbQj8xhJb7dkIm0khATVeRizzouNcI04MGhcrmBUxiHM/exec';
 
     var config = window.SURVEY;
     var root = document.getElementById('survey');
@@ -283,13 +285,24 @@
         submit.disabled = true;
         submit.textContent = '送出中…';
 
-        // text/plain 是「簡單請求」，不會觸發 CORS 預檢；Apps Script 轉址後的回應允許跨網域讀取
-        fetch(endpoint, {
-            method: 'POST',
-            body: JSON.stringify({ script: config.script, fields: fields, website: trap.value })
-        }).then(function (res) {
-            return res.json();
-        }).then(function (data) {
+        // text/plain 是「簡單請求」，不會觸發 CORS 預檢（預約系統與 Apps Script 都收得到）
+        var body = JSON.stringify({ script: config.script, fields: fields, website: trap.value });
+        var post = function (url) {
+            return fetch(url, { method: 'POST', body: body }).then(function (res) {
+                return res.json().catch(function () { return null; }).then(function (data) {
+                    return { status: res.status, data: data };
+                });
+            });
+        };
+        var legacy = function () { return post(LEGACY_ENDPOINT); };
+        // 只有「預約系統連不上／還沒有這個網址／伺服器錯誤」才改送舊的；內容不合格（4xx）就直接顯示錯誤。
+        var primary = endpoint === SURVEY_ENDPOINT && LEGACY_ENDPOINT
+            ? post(endpoint).then(function (r) {
+                return (r.data && r.data.ok) || (r.status >= 400 && r.status < 500 && r.status !== 404) ? r : legacy();
+            }, legacy)
+            : post(endpoint);
+        primary.then(function (r) {
+            var data = r.data;
             if (!data || !data.ok) throw new Error((data && data.error) || 'failed');
             clearDraft();
             showDone(extra);
