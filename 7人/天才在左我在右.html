@@ -332,6 +332,51 @@
             box-shadow: 0 20px 40px rgba(255, 0, 0, 0.5), 0 0 60px rgba(255, 0, 0, 0.3);
         }
 
+        /* 線上遊玩入口：放在預約按鈕上方的內容裡。
+           原本固定在右下角，手機上會蓋住「立即預約」與「玩家評價」按鈕。 */
+        .online-entry {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 50px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .online-entry + .cta-section {
+            margin-top: 30px;
+        }
+
+        .online-entry a {
+            display: block;
+            padding: 12px 22px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.88rem;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            transition: transform 0.3s ease;
+        }
+
+        .online-entry a:hover {
+            transform: translateY(-3px);
+        }
+
+        .online-entry .online-host {
+            background: linear-gradient(135deg, #8b1010, #6b0808);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(139, 16, 16, 0.6);
+        }
+
+        .online-entry .online-join {
+            background: linear-gradient(135deg, #1a1030, #2a1848);
+            border: 1px solid rgba(200, 169, 126, 0.5);
+            color: #c8a97e;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
         .floating-elements {
             position: fixed;
             top: 0;
@@ -489,6 +534,11 @@
             .back-btn {
                 padding: 10px 15px;
                 font-size: 0.8rem;
+            }
+
+            /* 滑到底時，讓線上入口停在右下「介紹影片／玩家評價」浮動按鈕的上方 */
+            .online-entry + .cta-section {
+                margin-top: 110px;
             }
         }
 
@@ -689,6 +739,12 @@
             </div>
         </div>
 
+        <!-- 線上遊玩入口 -->
+        <div class="online-entry" aria-label="線上遊玩入口">
+            <a class="online-host" href="https://jiuye-yanglao.onrender.com/online/host?script=tiancai">⚖️ 審判者 — 主持人端</a>
+            <a class="online-join" href="https://jiuye-yanglao.onrender.com/online/join">🃏 卡牌持有者 — 玩家端</a>
+        </div>
+
         <div class="cta-section">
             <a href="https://liff.line.me/2011840025-6cuU9x8P?view=create&amp;game=tiancai" class="cta-button" target="_blank">立即預約遊戲</a>
         </div>
@@ -846,16 +902,6 @@
             });
         }, 15000);
     </script>
-
-    <!-- 線上遊玩入口 -->
-    <div style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;align-items:flex-end">
-        <a href="https://jiuye-yanglao.onrender.com/online/host?script=tiancai" style="display:block;padding:12px 22px;background:linear-gradient(135deg,#8b1010,#6b0808);color:#fff;border-radius:10px;text-decoration:none;font-size:0.88rem;letter-spacing:0.08em;box-shadow:0 4px 20px rgba(139,16,16,0.6);white-space:nowrap">
-            ⚖️ 審判者 — 主持人端
-        </a>
-        <a href="https://jiuye-yanglao.onrender.com/online/join" style="display:block;padding:12px 22px;background:linear-gradient(135deg,#1a1030,#2a1848);border:1px solid rgba(200,169,126,0.5);color:#c8a97e;border-radius:10px;text-decoration:none;font-size:0.88rem;letter-spacing:0.08em;box-shadow:0 4px 20px rgba(0,0,0,0.6);white-space:nowrap">
-            🃏 卡牌持有者 — 玩家端
-        </a>
-    </div>
 
     <audio preload="none" id="bgm" src="天才在左我在右.mp3" loop muted></audio>
     <script>
