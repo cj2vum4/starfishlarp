@@ -9,7 +9,7 @@
  * 每頁自己決定背景與氛圍。
  *
  * window.SURVEY = {
- *   script: '奉天1928',            // 總表分頁名稱（通常＝scripts.js 的 reviewKey）
+ *   script: '奉天1928',            // 必須＝scripts.js 的 reviewKey（店家後台依它分本；預約系統只收劇本目錄裡有的）
  *   questions: [
  *     { type: 'text' | 'textarea', title, desc?, required?, placeholder? },
  *     { type: 'radio' | 'checkbox', title, options: [...], other?: true, required? },
@@ -17,11 +17,11 @@
  *     { type: 'date', title, required? },
  *     { type: 'info', title, desc? },               // 純說明文字（情境敘述、分段標題），不收答案
  *   ],
- *   任一題可加 label: '總表欄名'（題目文字跟舊資料欄名不同時用，例：題目寫完整問句、欄名維持「Q3 信任感」），
- *   tag: 'Q 01'（題目上方的小編號），join: '、'（複選題存進總表的分隔符，預設「, 」）；
+ *   任一題可加 label: '存檔欄名'（題目文字跟舊資料欄名不同時用，例：題目寫完整問句、欄名維持「Q3 信任感」），
+ *   tag: 'Q 01'（題目上方的小編號），join: '、'（複選題存檔的分隔符，預設「, 」）；
  *   任一題可加 showIf: { title: '某題題目', in: ['選項A'] }，該題答案在清單內才顯示（分支題組）；
  *   隱藏的題目不檢查必填、也不送出。
- *   assign: function (answers) { return { '建議角色': '…' }; },  // 選填：依答案算角色，結果一起存進總表
+ *   assign: function (answers) { return { '建議角色': '…' }; },  // 選填：依答案算角色，結果一起存進回覆
  *   done: { title: '…', text: '…', back?: { href, text }, link?: { href, text } },
  *                                    // 送出後畫面；back＝回劇本介紹頁的按鈕，link＝次要連結（IG）
  * };
@@ -41,6 +41,9 @@
 
     var endpoint = config.endpoint || SURVEY_ENDPOINT;
     var draftKey = 'starfish-survey-draft:' + config.script;
+    // 送出編號：同一份回覆重送（例如回應沒收到、或重新整理後再按）時用同一個，預約系統與舊試算表的副本都靠它認出是同一份。
+    var idKey = draftKey + ':id';
+    var submissionId = storedId() || newId();
 
     injectStyle();
 
@@ -284,33 +287,67 @@
 
         submit.disabled = true;
         submit.textContent = '送出中…';
+        try { localStorage.setItem(idKey, submissionId); } catch (err) { /* 無痕模式等 */ }
 
         // text/plain 是「簡單請求」，不會觸發 CORS 預檢（預約系統與 Apps Script 都收得到）
-        var body = JSON.stringify({ script: config.script, fields: fields, website: trap.value });
-        var post = function (url) {
-            return fetch(url, { method: 'POST', body: body }).then(function (res) {
+        var post = function (url, payload) {
+            return fetch(url, { method: 'POST', body: JSON.stringify(payload) }).then(function (res) {
                 return res.json().catch(function () { return null; }).then(function (data) {
                     return { status: res.status, data: data };
                 });
             });
         };
-        var legacy = function () { return post(LEGACY_ENDPOINT); };
-        // 只有「預約系統連不上／還沒有這個網址／伺服器錯誤」才改送舊的；內容不合格（4xx）就直接顯示錯誤。
+        var payload = { script: config.script, fields: fields, website: trap.value, id: submissionId };
+        // 舊的 Apps Script 只認 fields：送出編號放成一欄，之後匯入時才認得出是同一份。
+        var legacy = function () {
+            return post(LEGACY_ENDPOINT, { script: config.script, website: trap.value,
+                fields: fields.concat([{ label: '送出編號', value: submissionId }]) });
+        };
+        // 預約系統連不上、還沒有這個網址（404）、伺服器錯誤（5xx）或暫時收太多（429）才改送舊的；
+        // 內容不合格（其他 4xx）直接顯示錯誤。
         var primary = endpoint === SURVEY_ENDPOINT && LEGACY_ENDPOINT
-            ? post(endpoint).then(function (r) {
-                return (r.data && r.data.ok) || (r.status >= 400 && r.status < 500 && r.status !== 404) ? r : legacy();
+            ? post(endpoint, payload).then(function (r) {
+                var final = r.status >= 400 && r.status < 500 && r.status !== 404 && r.status !== 429;
+                return (r.data && r.data.ok) || final ? r : legacy();
             }, legacy)
-            : post(endpoint);
+            : post(endpoint, payload);
         primary.then(function (r) {
             var data = r.data;
-            if (!data || !data.ok) throw new Error((data && data.error) || 'failed');
+            if (!data || !data.ok) {
+                var err = new Error((data && data.error) || 'failed');
+                err.status = r.status;
+                throw err;
+            }
             clearDraft();
+            try { localStorage.removeItem(idKey); } catch (err) { /* ignore */ }
+            submissionId = newId();
             showDone(extra);
-        }).catch(function () {
+        }).catch(function (err) {
             submit.disabled = false;
             submit.textContent = config.submitText || '送出';
-            status.textContent = '送出失敗，請檢查網路後再按一次；一直失敗的話請私訊海星 LINE。';
+            status.textContent = err && err.status === 429
+                ? '現在送出的人太多，請過幾分鐘再按一次；一直失敗的話請私訊海星 LINE。'
+                : err && err.status >= 400 && err.status < 500
+                    ? '問卷內容有問題送不出去，請私訊海星 LINE 告訴我們。'
+                    : '送出失敗，請檢查網路後再按一次；一直失敗的話請私訊海星 LINE。';
         });
+    }
+
+    function storedId() {
+        try {
+            var id = localStorage.getItem(idKey);
+            return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || '') ? id : null;
+        } catch (err) { return null; }
+    }
+
+    function newId() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+        var b = new Uint8Array(16);
+        (window.crypto || window.msCrypto).getRandomValues(b);
+        b[6] = (b[6] & 15) | 64;
+        b[8] = (b[8] & 63) | 128;
+        var h = Array.prototype.map.call(b, function (x) { return (x + 256).toString(16).slice(1); }).join('');
+        return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
     }
 
     function showDone(extra) {

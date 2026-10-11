@@ -523,12 +523,13 @@ async function launchBrowser() {
   /* ================= 結果 ================= */
   console.log('\n=== 角色問卷：送進預約系統，連不上才改送舊的 Apps Script ===');
   // 每個情境開新的 context，各自決定預約系統（supabase.co）怎麼回應；其他外部請求一律擋掉。
-  for (const [label, supabase, wantLegacy, wantDone] of [
+  for (const [label, supabase, wantLegacy, wantDone, wantMessage] of [
     ['預約系統收到：不再送舊的 Apps Script', { status: 201, body: { ok: true } }, false, true],
     ['預約系統還沒部署（404）：改送舊的', { status: 404, body: { error: 'ROUTE_NOT_FOUND' } }, true, true],
     ['預約系統連不上：改送舊的', 'abort', true, true],
     ['預約系統暫時錯誤（503）：改送舊的', { status: 503, body: { error: 'DATABASE_UNAVAILABLE' } }, true, true],
-    ['內容不合格（400）：直接顯示失敗、不改送', { status: 400, body: { error: 'INVALID_SURVEY' } }, false, false],
+    ['預約系統暫時收太多（429）：改送舊的', { status: 429, body: { error: 'TOO_MANY_REQUESTS' } }, true, true],
+    ['內容不合格（400）：直接顯示失敗、不改送', { status: 400, body: { error: 'INVALID_SURVEY' } }, false, false, '問卷內容有問題'],
   ]) {
     const surveyContext = await browser.newContext();
     const sent = [];
@@ -558,15 +559,26 @@ async function launchBrowser() {
     });
     await surveyPage.click('.sv-submit');
     await surveyPage.waitForFunction(() => !document.querySelector('.sv-done').hidden ||
-      document.querySelector('.sv-status').textContent.includes('送出失敗'), null, { timeout: 8000 }).catch(() => {});
+      document.querySelector('.sv-status').textContent !== '', null, { timeout: 8000 }).catch(() => {});
     const done = await surveyPage.evaluate(() => !document.querySelector('.sv-done').hidden);
+    const after = await surveyPage.evaluate(() => ({ status: document.querySelector('.sv-status').textContent,
+      disabled: document.querySelector('.sv-submit').disabled }));
     check(label + '：先送預約系統', sent[0] && sent[0].to, 'supabase');
     check(label + '：' + (wantLegacy ? '有' : '沒有') + '改送舊的', sent.some((x) => x.to === 'legacy'), wantLegacy);
     check(label + '：' + (wantDone ? '顯示已收到' : '顯示送出失敗'), done, wantDone);
+    if (!wantDone) {
+      check(label + '：說明原因、按鈕可以再按', after.status.includes(wantMessage) && !after.disabled, true);
+    }
     if (sent[0]) {
       const payload = JSON.parse(sent[0].body);
       check(label + '：送出的劇本與答案', payload.script === '王座' && payload.fields[0].label === 'Line名稱' &&
         payload.fields[0].value === '測試玩家', true);
+      check(label + '：帶送出編號', /^[0-9a-f-]{36}$/.test(payload.id), true);
+      const legacyPost = sent.find((x) => x.to === 'legacy');
+      if (legacyPost) {
+        const old = JSON.parse(legacyPost.body);
+        check(label + '：舊的收到同一個送出編號', old.fields.some((f) => f.label === '送出編號' && f.value === payload.id), true);
+      }
     }
     await surveyContext.close();
   }

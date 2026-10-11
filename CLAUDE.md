@@ -190,15 +190,19 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
 
 - 回覆存進預約系統（Supabase 的 `role_survey_responses`，2026-10-11 起），店家在 **LINE 店家後台「角色問卷回覆」**看，
   依 `window.SURVEY.script` 分本，可填「分配的角色」與備註、刪除垃圾回覆。回覆含感情狀況等個資，只有店家看得到。
-  `survey.js` 的 `SURVEY_ENDPOINT` 是預約系統的 `/public/role-survey`；新增問卷**不用改後端、不用重新部署**。
-- 過渡期：預約系統連不上（或還沒部署）時，`survey.js` 會改送舊的 `GoogleAppsScript_角色問卷.gs`（`LEGACY_ENDPOINT`，
-  寫進舊的「角色問卷總表」試算表）；店家後台「匯入舊回覆」可把總表各分頁搬進來，重複匯入不會變兩份。
-  全部移轉完成、關掉 Apps Script 後再把 `LEGACY_ENDPOINT` 清空（見預約系統 docs/PROGRESS.md 的 GAS 移除計畫）。
+  `survey.js` 的 `SURVEY_ENDPOINT` 是預約系統的 `/public/role-survey`；新增問卷**不用改後端、不用重新部署**，
+  但 `script` **必須等於 `scripts.js` 的 `reviewKey`**（預約系統只收劇本目錄裡有的名稱，擋垃圾分本）。
+- 每次送出帶一個「送出編號」（`id`，重新整理後重送也沿用），重送不會存兩份。
+- 過渡期：預約系統連不上、還沒部署、伺服器錯誤或暫時收太多（429）時，`survey.js` 改送舊的
+  `GoogleAppsScript_角色問卷.gs`（`LEGACY_ENDPOINT`，寫進舊的「角色問卷總表」，多一欄「送出編號」）。
+  店家把總表共用給預約系統的服務帳戶後，預約系統每 6 小時自動匯入新列；已匯入、已刪除或網站已收到的同一份都會略過。
+- 關掉這支 Apps Script 的順序（預約系統 `docs/GAS_MIGRATION.md` 第 4 階段）：清空 `LEGACY_ENDPOINT` 並進 `survey.js?v=` →
+  等快取過期（約 10 分鐘，再留一天給開著舊頁面的人）→ 店家後台按一次「匯入舊回覆」→ 停用 Apps Script 的網頁部署。
 - 新增一份問卷：複製一頁同色調的 `問卷/*.html` 改成 `問卷/<劇本名>.html`，
   主視覺一律沿用劇本主頁素材：`scripts.js` 的海報（同時當霧面背景）、人數／時長／標籤 chips、
   「登場角色」縮圖列（`img/劇本/<劇本>/縮圖/`，沒有縮圖就照四、的規則做），
   `:root` 色票從海報取色，`fx3d` 用該劇本主頁同一種效果。
-  再改 `window.SURVEY` 的 `script`（店家後台的分本名稱，通常＝`reviewKey`）與 `questions`。
+  再改 `window.SURVEY` 的 `script`（＝`reviewKey`）與 `questions`。
   `<main>` 要帶 `container` class，否則 fx3d 會把純中文的角色名當成 emoji 特效隱藏。Google 表單公開連結可用 `FB_PUBLIC_LOAD_DATA_` 解析出題目，題目文字照抄原表單。
 - 題型：`text` / `textarea` / `date` / `radio` / `checkbox`（可加 `other: true`）/ `scale`（`min`/`max`/`minLabel`/`maxLabel`）/
   `info`（純說明文字、分段標題）。分支題組用 `showIf: { title: '某題', in: ['選項'] }`（例：`問卷/別來無恙.html` 依性別分男女題組）。

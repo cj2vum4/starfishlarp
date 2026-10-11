@@ -1,6 +1,9 @@
 /**
  * 海星劇本殺｜角色分配問卷（所有劇本共用一支）
  *
+ * 2026-10-11 起問卷改存進預約系統（LINE 店家後台「角色問卷回覆」）；本檔只在預約系統連不上時
+ * 當備援（survey.js 的 LEGACY_ENDPOINT），店家後台會自動匯入這裡的新列。全部移轉完成後停用。
+ *
  * 目標試算表（角色問卷總表）：
  * https://docs.google.com/spreadsheets/d/1NrmyrSq3UqoU0m-2JWVJsvF18VKwW18n-P-w-iyYb5M/edit
  *
@@ -9,7 +12,7 @@
  * 2. 函式下拉選單選「checkSetup」，按「執行」並完成授權（確認讀得到總表）。
  * 3. 部署 → 新增部署作業 → 類型選「網頁應用程式」。
  *    執行身分：我；誰可以存取：所有人。
- * 4. 複製以 /exec 結尾的網址，貼到網站 survey.js 最上方的 SURVEY_ENDPOINT。
+ * 4. 複製以 /exec 結尾的網址，貼到網站 survey.js 的 LEGACY_ENDPOINT（過渡期備援；SURVEY_ENDPOINT 是預約系統，不要改）。
  *
  * 之後改了本檔要「管理部署作業 → 編輯 → 版本選新版本」，網址才會沿用。
  *
