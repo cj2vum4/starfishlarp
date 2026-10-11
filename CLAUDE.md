@@ -14,7 +14,7 @@
 
 ```js
 {
-    "id": "shortid",
+    "id": "shortid",                 // 小寫英數與 -（預約系統的劇本代碼；不符整批同步會失敗）
     "name": "劇本名稱",
     "file": "N人/劇本名稱.html",
     "players": N,
@@ -46,7 +46,7 @@
 - **`scripts.js?v=` 與劇本頁的 `video.js?v=` 共用同一個版號**（video.js 用自己的版號去載 scripts.js），
   進版時一起全站替換
 - **預約一律走 LINE 預約系統的開團頁**：劇本頁只在最下方 CTA 放預約按鈕，連到
-  `https://liff.line.me/2011840025-6cuU9x8P?view=create&amp;game=<scripts.js 的 id>`
+  `https://liff.line.me/2011840025-6cuU9x8P?view=create&game=<scripts.js 的 id>`（寫進 HTML 的 href 時 `&` 要寫成 `&amp;`）
   （在 LINE 打開開團頁並選好這本劇本；還沒加 OA 好友的會先被引導加好友。2026-10-11 店家同意，取代原本的 OA 加好友連結）；
   右下浮動按鈕只放「玩家評價」與「▶ 介紹影片」，**不要再加預約浮動按鈕**（舊的 booking.js 已移除）。
   `tests/cta.test.js` 會檢查每頁的連結與 id 是否對得上

@@ -29,7 +29,8 @@ for (const s of window.SCRIPTS) {
   if (!fs.existsSync(file)) { check(`${s.file}：找不到頁面`, false); continue; }
   const html = fs.readFileSync(file, 'utf8');
   const links = [...html.matchAll(/href="(https:\/\/liff\.line\.me\/[^"]*)"/g)].map(m => m[1]);
-  check(`${s.file}：id「${s.id}」LIFF 開團頁收得下（英數、-、_）`, /^[A-Za-z0-9_-]{1,64}$/.test(s.id));
+  // 預約系統資料庫的劇本代碼規則（不符的話整批劇本同步都會失敗）
+  check(`${s.file}：id「${s.id}」只能用小寫英數與 -，且不以 - 開頭`, /^[a-z0-9][a-z0-9-]{0,63}$/.test(s.id));
   check(`${s.file}：預約按鈕連到 LINE 開團頁並帶入 game=${s.id}`,
     links.length === 1 && links[0] === LIFF + s.id);
   check(`${s.file}：不再連到 OA 加好友頁（預約一律走開團頁）`, !html.includes('line.me/R/ti/p/'));
