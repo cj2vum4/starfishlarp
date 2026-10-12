@@ -30,7 +30,10 @@ window.starfishFetchSummary = function (timeoutMs) {
   if (!url || typeof fetch !== 'function') return Promise.resolve(null);
   return starfishTimedFetch(url, {}, timeoutMs || 4000)
     .then(function (response) { return response.ok ? response.json() : null; })
-    .then(function (payload) { return payload && payload.ok && Array.isArray(payload.summary) ? payload : null; })
+    .then(function (payload) {
+      if (payload && typeof payload.live === 'boolean') starfishRememberLive(payload.live);
+      return payload && payload.ok && Array.isArray(payload.summary) ? payload : null;
+    })
     .catch(function () { return null; });
 };
 
@@ -45,38 +48,49 @@ function starfishRememberLive(live) {
 function starfishLikelyLive() {
   try { return localStorage.getItem(STARFISH_LIVE_KEY) === '1'; } catch (_) { return false; }
 }
+/** '1'＝上次看到已切換、'0'＝上次看到還沒切換、''＝不知道。 */
+window.starfishRecordsHint = function () {
+  try { return localStorage.getItem(STARFISH_LIVE_KEY) || ''; } catch (_) { return ''; }
+};
 
 /**
  * 玩家心得清單（取代試算表 CSV）。script 省略＝全部（榮譽牆）。
  * 回傳與 CSV 相同欄位的列；切換前或讀不到回傳 null，由呼叫端改讀 CSV。
  */
-window.starfishFetchPlayRecords = function (script, timeoutMs) {
+// { rows }：讀到了；{ notLive: true }：預約系統說還沒切換；{ failed: true }：連不上或出錯（不代表還沒切換）。
+function starfishReadPlayRecords(script, timeoutMs) {
   var base = String(window.STARFISH_API_BASE || '').trim();
-  if (!base || typeof fetch !== 'function') return Promise.resolve(null);
+  if (!base || typeof fetch !== 'function') return Promise.resolve({ notLive: true });
   var url = base + '/public/play-records' + (script ? '?script=' + encodeURIComponent(script) : '');
   return starfishTimedFetch(url, {}, timeoutMs || 5000)
     .then(function (response) { return response.json().catch(function () { return null; }); })
     .then(function (payload) {
-      if (payload && payload.live === false) starfishRememberLive(false);
-      if (!payload || !payload.ok || payload.live === false || !Array.isArray(payload.records)) return null;
+      if (payload && payload.live === false) { starfishRememberLive(false); return { notLive: true }; }
+      if (!payload || !payload.ok || !Array.isArray(payload.records)) return { failed: true };
       starfishRememberLive(true);
-      return payload.records.map(function (r) {
+      return { rows: payload.records.map(function (r) {
         return { '怎麼稱呼你呢': r.name || '', '日期': r.date || '', '劇本': r.script || '', '角色': r.character || '',
           '給予評價': r.rating == null ? '' : String(r.rating), '50字以內的心得推薦': r.comment || '' };
-      });
+      }) };
     })
-    .catch(function () { return null; });
+    .catch(function () { return { failed: true }; });
+}
+window.starfishFetchPlayRecords = function (script, timeoutMs) {
+  return starfishReadPlayRecords(script, timeoutMs).then(function (r) { return r.rows || null; });
 };
 
 /**
  * 心得清單：預約系統有就用 { rows }，否則用 legacy()（舊的 CSV 讀法，回傳 Promise）的結果 { legacy }。
  * 還沒確定切換時 legacy() 立刻同時開始，不用等預約系統先回答。
+ * 已知切換過、這次只是讀不到：回 { unavailable: true }，由呼叫端沿用自己的快取（CSV 缺切換後的心得，不拿它蓋掉）。
  */
 window.starfishPlayRecordsOr = function (script, timeoutMs, legacy) {
-  var early = starfishLikelyLive() ? null : legacy();
+  var known = starfishLikelyLive();
+  var early = known ? null : legacy();
   if (early) early.catch(function () { /* 用到時才處理錯誤 */ });
-  return window.starfishFetchPlayRecords(script, timeoutMs).then(function (rows) {
-    if (rows) return { rows: rows };
+  return starfishReadPlayRecords(script, timeoutMs).then(function (r) {
+    if (r.rows) return { rows: r.rows };
+    if (r.failed && known) return { unavailable: true };
     return (early || legacy()).then(function (value) { return { legacy: value }; });
   });
 };
@@ -91,7 +105,10 @@ window.starfishPostJson = function (path, payload, timeoutMs) {
   return starfishTimedFetch(base + path, { method: 'POST', cache: 'no-store', body: JSON.stringify(payload) }, timeoutMs || 15000)
     .then(function (response) {
       return response.json().catch(function () { return null; })
-        .then(function (data) { return { status: response.status, data: data }; });
+        .then(function (data) {
+          if (data && typeof data.live === 'boolean') starfishRememberLive(data.live);
+          return { status: response.status, data: data };
+        });
     });
 };
 

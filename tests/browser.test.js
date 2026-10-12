@@ -599,6 +599,7 @@ async function launchBrowser() {
   const liveContext = await browser.newContext();
   const liveSent = [];
   let playMode = 'earn';
+  let failMode = '';  // 'read'：心得清單與點數總覽出錯；'like'：按讚出錯
   const API_ROWS = CSV.split('\n').slice(1).map((line) => {
     const c = line.split(',');
     return { name: c[1], date: c[2], script: c[3], character: c[4], rating: c[5], comment: c[6] };
@@ -610,8 +611,10 @@ async function launchBrowser() {
       headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
     if (target.includes('supabase.co')) {
       const p = new URL(target).pathname.replace(/^.*\/api/, '');
-      liveSent.push({ to: p, method, body: route.request().postData() });
-      if (p === '/public/records') return json(200, SUMMARY);
+      liveSent.push({ to: p, method, body: route.request().postData(), url: target });
+      if (failMode === 'read' && method === 'GET') return json(503, { ok: false, error: 'RECORDS_UNAVAILABLE' });
+      if (failMode === 'like' && p === '/public/likes') return json(500, { error: 'DATABASE_ERROR' });
+      if (p === '/public/records') return json(200, { ...SUMMARY, live: true });
       if (p === '/public/play-records' && method === 'GET') return json(200, { ok: true, live: true, records: API_ROWS });
       if (p === '/public/play-records') {
         if (playMode === 'abort') return route.abort();
@@ -655,6 +658,17 @@ async function launchBrowser() {
   await liveWall2.waitForTimeout(800);
   check('切換後再開榮譽牆：不再下載試算表 CSV', sentTo('csv').length - csvBefore, 0);
   await liveWall2.close();
+  // 切換後預約系統暫時讀不到：沿用上次的資料，不拿缺了新記錄的 CSV／Apps Script 點數蓋掉
+  failMode = 'read';
+  const gasGetsBefore = sentTo('gas', 'GET').length;
+  const liveWall3 = await liveContext.newPage();
+  await liveWall3.goto(url('榮譽牆.html'), { waitUntil: 'domcontentloaded' });
+  await liveWall3.waitForTimeout(2500);
+  check('切換後讀不到：榮譽牆沿用上次的資料', await liveWall3.locator('#playerSelector option').count() > 1, true);
+  check('切換後讀不到：不改下載 CSV', sentTo('csv').length - csvBefore, 0);
+  check('切換後讀不到：點數不改問 Apps Script', sentTo('gas', 'GET').length - gasGetsBefore, 0);
+  await liveWall3.close();
+  failMode = '';
 
   const livePage = await liveContext.newPage();
   await livePage.emulateMedia({ reducedMotion: 'reduce' });
@@ -663,7 +677,8 @@ async function launchBrowser() {
   await livePage.locator('.rv-fab').click();
   await livePage.waitForTimeout(1500);
   check('切換後：劇本頁心得來自預約系統', await livePage.locator('.rv-note').count(), 2);
-  check('切換後：劇本頁只問這本的心得', sentTo('/public/play-records', 'GET').some((x) => x.to && true), true);
+  check('切換後：劇本頁只問這本的心得', sentTo('/public/play-records', 'GET')
+    .some((x) => new URL(x.url).searchParams.get('script') === '年輪'), true);
   await livePage.locator('.rv-note.rv-featured .rv-like').click();
   await livePage.waitForTimeout(800);
   const likePost = sentTo('/public/likes', 'POST')[0];
@@ -674,6 +689,14 @@ async function launchBrowser() {
       like.date === inMonth(9) && /^[0-9a-f-]{36}$/.test(like.liker), true);
   }
   check('切換後：按讚不再送 Apps Script', sentTo('gas', 'POST').length, 0);
+  // 按讚失敗：讚收回來（之後可以再按），也不改送 Apps Script（送了也不會被匯入）
+  failMode = 'like';
+  const other = livePage.locator('.rv-note:not(.rv-featured) .rv-like');
+  await other.click();
+  await livePage.waitForTimeout(800);
+  check('切換後按讚失敗：讚收回來', await other.evaluate((b) => !b.classList.contains('rv-liked') && !b.disabled), true);
+  check('切換後按讚失敗：不改送 Apps Script', sentTo('gas', 'POST').length, 0);
+  failMode = '';
   await livePage.close();
 
   const form = await liveContext.newPage();
@@ -725,7 +748,8 @@ async function launchBrowser() {
   const tries = sentTo('/public/play-records', 'POST').slice(before).map((x) => JSON.parse(x.body).id);
   check('預約系統沒回應：用同一個送出編號再試一次', tries.length === 2 && tries[0] === tries[1], true);
   check('再不行才改送 Apps Script', sentTo('gas', 'POST').length, 1);
-  check('改送 Apps Script 後照樣顯示得點', (await form.locator('#awardPoints').textContent()).trim(), '+30');
+  check('切換後改送 Apps Script：不顯示 Apps Script 算的點數，說明稍後入帳',
+    await form.locator('#awardCard').isHidden() && (await form.locator('#successNote').textContent()).includes('10 分鐘內入帳'), true);
   await form.close();
   await liveContext.close();
 

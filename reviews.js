@@ -317,16 +317,26 @@
         button.innerHTML = '👍 ' + review.likes;
 
         // 先送預約系統；店家還沒切換或連不上才送 Apps Script。
+        // 429（按讚太多）只會在切換後出現：這時改送 Apps Script 也不會被匯入，就不送了。
         if (hasApi()) {
             try {
                 const result = await window.starfishPostJson('/public/likes', { script: review.script || SCRIPT_NAME,
                     date: review.date, author: review.name, liker: likerId() }, 8000);
                 const data = result.data || {};
                 if (data.ok || (result.status >= 400 && result.status < 500 && data.live !== false &&
-                    result.status !== 404 && result.status !== 429)) return;
+                    result.status !== 404)) return;
                 if (result.status === 404 && data.error === 'REVIEW_NOT_FOUND') return;
             } catch (error) {
-                console.warn('預約系統沒收到讚，改送 Apps Script:', error);
+                console.warn('預約系統沒收到讚:', error);
+            }
+            // 已經切換：讚只能記在預約系統（送 Apps Script 不會被匯入），收回這個讚，讓玩家之後可以再按。
+            if (typeof window.starfishRecordsHint === 'function' && window.starfishRecordsHint() === '1') {
+                try { localStorage.removeItem(likeKey(review)); } catch (_) {}
+                review.likes = Math.max(0, review.likes - 1);
+                button.classList.remove('rv-liked');
+                button.innerHTML = '👍 ' + review.likes;
+                button.disabled = false;
+                return;
             }
         }
         if (!endpoint) return;
@@ -395,12 +405,13 @@
     async function fetchRows() {
         await loadEndpoint();
         const ROWS_KEY = 'rv_rows_cache_v2:' + norm(SCRIPT_NAME);
-        try {
-            const cached = JSON.parse(sessionStorage.getItem(ROWS_KEY) || 'null');
-            if (cached && Date.now() - cached.t < 600000 && Array.isArray(cached.rows)) return cached.rows;
-        } catch (_) {}
+        let cached = null;
+        try { cached = JSON.parse(sessionStorage.getItem(ROWS_KEY) || 'null'); } catch (_) {}
+        if (cached && Date.now() - cached.t < 600000 && Array.isArray(cached.rows)) return cached.rows;
         if (typeof window.starfishPlayRecordsOr !== 'function') return fetchCsvRows();
-        const { rows, legacy } = await window.starfishPlayRecordsOr(SCRIPT_NAME, 5000, fetchCsvRows);
+        const { rows, legacy, unavailable } = await window.starfishPlayRecordsOr(SCRIPT_NAME, 5000, fetchCsvRows);
+        // 已切換、這次讀不到：沿用這次瀏覽的舊清單（再舊也比缺了切換後心得的 CSV 好）；完全沒有才讀 CSV。
+        if (unavailable) return cached && Array.isArray(cached.rows) ? cached.rows : fetchCsvRows();
         if (!rows) return legacy;
         try { sessionStorage.setItem(ROWS_KEY, JSON.stringify({ t: Date.now(), rows })); } catch (_) {}
         return rows;

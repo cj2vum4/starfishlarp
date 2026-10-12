@@ -1844,7 +1844,12 @@
             const latest = typeof window.starfishPlayRecordsOr === 'function'
                 ? window.starfishPlayRecordsOr(null, 6000, downloadCsv)
                 : downloadCsv().then((csvText) => ({ legacy: csvText }));
-            latest.then(({ rows, legacy: csvText }) => {
+            latest.then(({ rows, legacy: csvText, unavailable }) => {
+                // 已切換、這次讀不到預約系統：有上次的資料就沿用（CSV 缺切換後的記錄，不拿它蓋掉）；完全沒有才讀 CSV。
+                if (unavailable) {
+                    if (hasPlayData) return;
+                    return downloadCsv().then((text) => { loadErrorBox.hidden = true; applyPlayData(parsePlayData(text)); });
+                }
                 if (rows) {
                     const text = JSON.stringify(rows);
                     try { localStorage.setItem(ROWS_CACHE_KEY, text); } catch (_) { /* 無痕模式或空間不足 */ }

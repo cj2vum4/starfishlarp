@@ -224,7 +224,12 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
   - `play-record.js` 送出 → `POST /public/play-records`（text/plain JSON，帶送出編號 `id`；沒回應時用同一個編號重試一次）
     → 不行才送 Apps Script。內容不合格（其他 4xx）直接顯示錯誤，不改送。
   - `reviews.js` 心得清單 → `GET /public/play-records?script=` → 不行才讀試算表 CSV；按讚 → `POST /public/likes`
-    （帶這個瀏覽器的 `liker` 編號，localStorage `rv_liker_id`）→ 不行才送 Apps Script。
+    （帶這個瀏覽器的 `liker` 編號，localStorage `rv_liker_id`）→ 不行才送 Apps Script（按讚的 429 例外：只在切換後出現，改送也不會被匯入，直接放棄）。
+  - localStorage `starfish_records_live`（`starfishRecordsHint()`：'1' 已切換／'0' 還沒／'' 不知道）記住預約系統上次的回答，決定退路：
+    - 還沒切換：讀心得時 CSV 與預約系統同時讀（`starfishPlayRecordsOr()`，預約系統冷啟動要 1 秒多）；送出只等 5 秒、不重試就改送 Apps Script。
+    - 已切換：讀心得只讀預約系統；這次讀不到（回 503 但沒有 `live:false`）就沿用快取，完全沒快取才讀 CSV；
+      點數總覽不改走 Apps Script JSONP（它的點數停在切換那天）；按讚失敗收回、不送 Apps Script（不會被匯入）；
+      送出改送 Apps Script 時不顯示它算的點數，改說「約 10 分鐘內入帳」（預約系統每 10 分鐘補匯入）。
   - `榮譽牆.html` 玩家心得 → `GET /public/play-records` → 不行才下載 CSV；`points.js` 點數總覽 → `GET /public/records`
     （切換前是 Apps Script 的副本，切換後由預約系統算）→ 不行才走 Apps Script JSONP。
 - 預約系統回的心得欄位與 CSV 相同（`starfishFetchPlayRecords` 已轉成 `怎麼稱呼你呢`／`日期`／`劇本`／`角色`／`給予評價`／`50字以內的心得推薦`），

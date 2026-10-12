@@ -189,24 +189,29 @@
      * 先送預約系統。回傳 { award, status }；店家還沒切換（RECORDS_NOT_LIVE）、預約系統連不上、
      * 還沒有這個網址或暫時收太多時回傳 null，改送 Apps Script。內容不合格直接丟出錯誤。
      */
+    const recordsHint = () => (typeof window.starfishRecordsHint === 'function' ? window.starfishRecordsHint() : '');
+
     async function postToBookingSystem(payload) {
         if (typeof window.starfishPostJson !== 'function' || !window.STARFISH_API_BASE) return null;
         const body = Object.assign({}, payload, { id: submissionId });
-        for (let attempt = 0; attempt < 2; attempt++) {
+        // 上次看到還沒切換：預約系統只會回「還沒切換」，不必久等也不必重試，免得卡住真正收記錄的 Apps Script。
+        const notLiveYet = recordsHint() === '0';
+        const attempts = notLiveYet ? 1 : 2;
+        for (let attempt = 0; attempt < attempts; attempt++) {
             let result;
             try {
-                result = await window.starfishPostJson('/public/play-records', body, 15000);
+                result = await window.starfishPostJson('/public/play-records', body, notLiveYet ? 5000 : 15000);
             } catch (error) {
                 // 沒收到回應：可能根本沒送到，也可能已經記下了。用同一個送出編號再試一次（不會記兩筆），再不行才改送 Apps Script。
                 console.warn('預約系統沒有回應:', error);
-                if (attempt === 0) { await new Promise((resolve) => setTimeout(resolve, 1500)); continue; }
+                if (attempt + 1 < attempts) { await new Promise((resolve) => setTimeout(resolve, 1500)); continue; }
                 return null;
             }
             const data = result.data || {};
             if (data.ok) return { award: data.award || null, status: data.status || 'earn', viaBookingSystem: true };
             if (data.live === false || result.status === 404 || result.status === 429) return null;
             if (result.status >= 500) {
-                if (attempt === 0) { await new Promise((resolve) => setTimeout(resolve, 1500)); continue; }
+                if (attempt + 1 < attempts) { await new Promise((resolve) => setTimeout(resolve, 1500)); continue; }
                 return null;
             }
             throw new Error(API_ERRORS[data.error] || '送出失敗，請確認內容後再試一次；一直失敗的話請私訊海星 LINE。');
@@ -218,7 +223,10 @@
         const viaApi = await postToBookingSystem(payload);
         if (viaApi) return viaApi;
         if (!endpoint) throw new Error('目前無法送出，請稍後再試一次。');
-        return { award: await postToAppsScript(payload) };
+        const award = await postToAppsScript(payload);
+        // 已經切換、只是預約系統暫時連不上：記錄會由預約系統補匯入、以新規則計點，Apps Script 算的點數不準，不顯示。
+        if (recordsHint() === '1') return { award: null, deferred: true };
+        return { award };
     }
 
     async function postToAppsScript(payload) {
@@ -287,6 +295,7 @@
         } else {
             awardCard.hidden = true;
             successNote.textContent = (result && result.viaBookingSystem && NO_POINT_NOTES[result.status]) ||
+                (result && result.deferred && '記錄收到了。網站暫時連不上點數系統，點數會在約 10 分鐘內入帳，到時候榮譽牆就看得到。') ||
                 '謝謝你留下這次的角色與心得。點數與榮譽牆會在幾分鐘內同步。';
         }
 

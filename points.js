@@ -408,11 +408,13 @@
 
         // 先讀預約系統（切換前是 Apps Script 的快速副本，切換後由預約系統算）；讀不到再走 Apps Script。
         // Apps Script 偶爾要 10 秒以上才回應，第一次 8 秒沒回來就再試一次（再等 10 秒）。
+        // 已經切換過就不走 Apps Script：它的點數停在切換那天，寧可顯示讀不到也不顯示錯的餘額。
+        const live = () => typeof window.starfishRecordsHint === 'function' && window.starfishRecordsHint() === '1';
         state.pending = true;
         return fast
             .then((payload) => { if (payload) applySummary(payload); return state.ok; })
-            .then((done) => done || !ENDPOINT || requestSummary(8000))
-            .then((done) => done || !ENDPOINT || requestSummary(10000))
+            .then((done) => done || !ENDPOINT || live() || requestSummary(8000))
+            .then((done) => done || !ENDPOINT || live() || requestSummary(10000))
             .then(() => { state.pending = false; return state; });
     }
 
