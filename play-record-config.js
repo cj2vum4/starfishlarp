@@ -34,6 +34,18 @@ window.starfishFetchSummary = function (timeoutMs) {
     .catch(function () { return null; });
 };
 
+/*
+ * 記住上次預約系統是否已切換（這個瀏覽器）。還沒切換時預約系統常要冷啟動 1 秒多才回「還沒切換」，
+ * 讀心得的頁面就不必等它，同時開始下載 CSV；切換後才只等預約系統。
+ */
+var STARFISH_LIVE_KEY = 'starfish_records_live';
+function starfishRememberLive(live) {
+  try { localStorage.setItem(STARFISH_LIVE_KEY, live ? '1' : '0'); } catch (_) { /* 無痕模式 */ }
+}
+function starfishLikelyLive() {
+  try { return localStorage.getItem(STARFISH_LIVE_KEY) === '1'; } catch (_) { return false; }
+}
+
 /**
  * 玩家心得清單（取代試算表 CSV）。script 省略＝全部（榮譽牆）。
  * 回傳與 CSV 相同欄位的列；切換前或讀不到回傳 null，由呼叫端改讀 CSV。
@@ -43,15 +55,30 @@ window.starfishFetchPlayRecords = function (script, timeoutMs) {
   if (!base || typeof fetch !== 'function') return Promise.resolve(null);
   var url = base + '/public/play-records' + (script ? '?script=' + encodeURIComponent(script) : '');
   return starfishTimedFetch(url, {}, timeoutMs || 5000)
-    .then(function (response) { return response.ok ? response.json() : null; })
+    .then(function (response) { return response.json().catch(function () { return null; }); })
     .then(function (payload) {
+      if (payload && payload.live === false) starfishRememberLive(false);
       if (!payload || !payload.ok || payload.live === false || !Array.isArray(payload.records)) return null;
+      starfishRememberLive(true);
       return payload.records.map(function (r) {
         return { '怎麼稱呼你呢': r.name || '', '日期': r.date || '', '劇本': r.script || '', '角色': r.character || '',
           '給予評價': r.rating == null ? '' : String(r.rating), '50字以內的心得推薦': r.comment || '' };
       });
     })
     .catch(function () { return null; });
+};
+
+/**
+ * 心得清單：預約系統有就用 { rows }，否則用 legacy()（舊的 CSV 讀法，回傳 Promise）的結果 { legacy }。
+ * 還沒確定切換時 legacy() 立刻同時開始，不用等預約系統先回答。
+ */
+window.starfishPlayRecordsOr = function (script, timeoutMs, legacy) {
+  var early = starfishLikelyLive() ? null : legacy();
+  if (early) early.catch(function () { /* 用到時才處理錯誤 */ });
+  return window.starfishFetchPlayRecords(script, timeoutMs).then(function (rows) {
+    if (rows) return { rows: rows };
+    return (early || legacy()).then(function (value) { return { legacy: value }; });
+  });
 };
 
 /**

@@ -1841,9 +1841,10 @@
             if (!cachedData && cachedCsv) cachedData = parsePlayData(cachedCsv);
             if (cachedData && cachedData.playerNames.length) applyPlayData(cachedData);
 
-            const fromBookingSystem = typeof window.starfishFetchPlayRecords === 'function'
-                ? window.starfishFetchPlayRecords(null, 6000) : Promise.resolve(null);
-            fromBookingSystem.then((rows) => {
+            const latest = typeof window.starfishPlayRecordsOr === 'function'
+                ? window.starfishPlayRecordsOr(null, 6000, downloadCsv)
+                : downloadCsv().then((csvText) => ({ legacy: csvText }));
+            latest.then(({ rows, legacy: csvText }) => {
                 if (rows) {
                     const text = JSON.stringify(rows);
                     try { localStorage.setItem(ROWS_CACHE_KEY, text); } catch (_) { /* 無痕模式或空間不足 */ }
@@ -1851,12 +1852,10 @@
                     if (text !== cachedRows || !hasPlayData) applyPlayData(parsePlayData(rows));
                     return;
                 }
-                return downloadCsv().then((csvText) => {
-                    saveCachedCsv(csvText);
-                    try { localStorage.removeItem(ROWS_CACHE_KEY); } catch (_) { /* ignore */ }
-                    loadErrorBox.hidden = true;
-                    if (csvText !== cachedCsv || cachedRows || !hasPlayData) applyPlayData(parsePlayData(csvText));
-                });
+                saveCachedCsv(csvText);
+                try { localStorage.removeItem(ROWS_CACHE_KEY); } catch (_) { /* ignore */ }
+                loadErrorBox.hidden = true;
+                if (csvText !== cachedCsv || cachedRows || !hasPlayData) applyPlayData(parsePlayData(csvText));
             }).catch((error) => {
                 console.error('❌ 無法獲取劇本資料:', error);
                 if (hasPlayData) return;  // 已經有上次的資料可看，安靜地沿用

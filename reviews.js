@@ -399,13 +399,14 @@
             const cached = JSON.parse(sessionStorage.getItem(ROWS_KEY) || 'null');
             if (cached && Date.now() - cached.t < 600000 && Array.isArray(cached.rows)) return cached.rows;
         } catch (_) {}
-        if (typeof window.starfishFetchPlayRecords === 'function') {
-            const rows = await window.starfishFetchPlayRecords(SCRIPT_NAME, 5000);
-            if (rows) {
-                try { sessionStorage.setItem(ROWS_KEY, JSON.stringify({ t: Date.now(), rows })); } catch (_) {}
-                return rows;
-            }
-        }
+        if (typeof window.starfishPlayRecordsOr !== 'function') return fetchCsvRows();
+        const { rows, legacy } = await window.starfishPlayRecordsOr(SCRIPT_NAME, 5000, fetchCsvRows);
+        if (!rows) return legacy;
+        try { sessionStorage.setItem(ROWS_KEY, JSON.stringify({ t: Date.now(), rows })); } catch (_) {}
+        return rows;
+    }
+
+    async function fetchCsvRows() {
         const CACHE_KEY = 'rv_csv_cache_v1';
         try {
             const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');

@@ -490,7 +490,8 @@ async function launchBrowser() {
 
   const slow = await slowContext.newPage();
   const slowStart = Date.now();
-  await slow.goto(url('榮譽牆.html'));
+  // 只等 DOM：點數的 JSONP <script> 卡 9 秒，若在 load 事件前插入會拖住 load，量到的就不是選單出現的時間
+  await slow.goto(url('榮譽牆.html'), { waitUntil: 'domcontentloaded' });
   await slow.waitForFunction(
     () => document.querySelectorAll('#playerSelector option').length > 1, null, { timeout: 8000 }
   ).catch(() => {});
@@ -643,9 +644,17 @@ async function launchBrowser() {
   await liveWall.goto(url('榮譽牆.html'));
   await liveWall.waitForFunction(() => document.querySelectorAll('#playerSelector option').length > 1, null, { timeout: 8000 }).catch(() => {});
   check('切換後：榮譽牆的玩家選單來自預約系統', await liveWall.locator('#playerSelector option').count() > 1, true);
-  check('切換後：榮譽牆不再下載試算表 CSV', sentTo('csv').length, 0);
   check('切換後：榮譽牆讀了心得清單', sentTo('/public/play-records', 'GET').length > 0, true);
+  check('記住預約系統已切換', await liveWall.evaluate(() => localStorage.getItem('starfish_records_live')), '1');
   await liveWall.close();
+  // 這個瀏覽器已知切換過：不再同時下載試算表 CSV（第一次不知道，會和預約系統同時讀）
+  const csvBefore = sentTo('csv').length;
+  const liveWall2 = await liveContext.newPage();
+  await liveWall2.goto(url('榮譽牆.html'));
+  await liveWall2.waitForFunction(() => document.querySelectorAll('#playerSelector option').length > 1, null, { timeout: 8000 }).catch(() => {});
+  await liveWall2.waitForTimeout(800);
+  check('切換後再開榮譽牆：不再下載試算表 CSV', sentTo('csv').length - csvBefore, 0);
+  await liveWall2.close();
 
   const livePage = await liveContext.newPage();
   await livePage.emulateMedia({ reducedMotion: 'reduce' });

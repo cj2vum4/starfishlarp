@@ -38,8 +38,8 @@ npm install --no-save playwright && npx playwright install chromium
   主要的 context 讓預約系統回「還沒切換」（503 `{live:false}`），驗切換前的舊路線；
   另有「切換到預約系統之後」的情境（送出、按讚、心得清單、榮譽牆都走預約系統），
   以及預約系統沒回應時「同一個送出編號重試一次、再改送 Apps Script」。
-- 「第一個 CSV 請求卡住時，補發的請求讓玩家選單在 6 秒內出現」與「點數還在讀時顯示讀取中」是計時測試，
-  偶爾會失敗（2026-10-12 之前就是如此），失敗時單獨再跑一次 `node tests/browser.test.js`。
+- 計時的測試（例如「6 秒內出現玩家選單」）用 `waitUntil: 'domcontentloaded'` 開頁：
+  預設的 `load` 會被故意卡住的 JSONP `<script>` 拖住，量到的就不是玩家看到的時間（2026-10-12 修好的偶發失敗）。
 
 ## 加測試時注意
 
