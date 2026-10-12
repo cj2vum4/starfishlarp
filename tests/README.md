@@ -34,7 +34,12 @@ npm install --no-save playwright && npx playwright install chromium
 - `gas.test.js` 用 `gas-mock.js` 模擬 `SpreadsheetApp`，資料全在記憶體裡，
   不會連到真的 Google 試算表。
 - `browser.test.js` 起一個本機靜態伺服器，並攔截**所有**外部請求——
-  試算表 CSV、Apps Script 端點、CDN、圖床一律換成假資料。
+  試算表 CSV、Apps Script 端點、預約系統（`supabase.co`）、CDN、圖床一律換成假資料。
+  主要的 context 讓預約系統回「還沒切換」（503 `{live:false}`），驗切換前的舊路線；
+  另有「切換到預約系統之後」的情境（送出、按讚、心得清單、榮譽牆都走預約系統），
+  以及預約系統沒回應時「同一個送出編號重試一次、再改送 Apps Script」。
+- 「第一個 CSV 請求卡住時，補發的請求讓玩家選單在 6 秒內出現」與「點數還在讀時顯示讀取中」是計時測試，
+  偶爾會失敗（2026-10-12 之前就是如此），失敗時單獨再跑一次 `node tests/browser.test.js`。
 
 ## 加測試時注意
 

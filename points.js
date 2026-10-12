@@ -402,17 +402,17 @@
         if (state.loaded) return Promise.resolve(state);
         state.loaded = true;
 
-        if (!ENDPOINT) return Promise.resolve(state);
-
-        // 先讀預約系統的快速副本；讀不到再走 Apps Script。Apps Script 偶爾要
-        // 10 秒以上才回應，第一次 8 秒沒回來就再試一次（再等 10 秒）。
         const fast = typeof window.starfishFetchSummary === 'function'
             ? window.starfishFetchSummary(4000) : Promise.resolve(null);
+        if (!ENDPOINT && typeof window.starfishFetchSummary !== 'function') return Promise.resolve(state);
+
+        // 先讀預約系統（切換前是 Apps Script 的快速副本，切換後由預約系統算）；讀不到再走 Apps Script。
+        // Apps Script 偶爾要 10 秒以上才回應，第一次 8 秒沒回來就再試一次（再等 10 秒）。
         state.pending = true;
         return fast
             .then((payload) => { if (payload) applySummary(payload); return state.ok; })
-            .then((done) => done || requestSummary(8000))
-            .then((done) => done || requestSummary(10000))
+            .then((done) => done || !ENDPOINT || requestSummary(8000))
+            .then((done) => done || !ENDPOINT || requestSummary(10000))
             .then(() => { state.pending = false; return state; });
     }
 

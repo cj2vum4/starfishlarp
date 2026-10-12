@@ -306,6 +306,9 @@ textarea:focus {
 }
 
 /* ===== 送出後的得點卡 ===== */
+/* hidden 屬性要贏過下面的 display:flex，不然「這筆不給點」時舊的得點卡還會留著。 */
+.award-card[hidden] { display: none; }
+
 .award-card {
     display: flex;
     flex-wrap: wrap;

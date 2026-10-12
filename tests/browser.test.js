@@ -149,6 +149,15 @@ async function launchBrowser() {
     const request = route.request();
     const url = request.url();
 
+    // 預約系統：點數總覽用假資料；玩本記錄的送出、按讚、心得清單回「店家還沒切換」，
+    // 所以這個 context 驗的是切換前的舊路線（Apps Script 與試算表 CSV）。不讓測試碰到正式資料。
+    if (url.includes('supabase.co')) {
+      const json = (status, body) => route.fulfill({ status, contentType: 'application/json',
+        headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+      if (new URL(url).pathname.endsWith('/public/records')) return json(200, SUMMARY);
+      return json(503, { ok: false, live: false, error: 'RECORDS_NOT_LIVE' });
+    }
+
     if (url.includes('docs.google.com') || url.includes('corsproxy') ||
         url.includes('allorigins') || url.includes('codetabs')) {
       return route.fulfill({ status: 200, contentType: 'text/csv; charset=utf-8', body: CSV });
@@ -413,6 +422,7 @@ async function launchBrowser() {
   /* ================= 端點失效時的降級 ================= */
   console.log('\n=== 點數端點失效時的降級 ===');
   await context.route('**/script.google.com/**', (route) => route.abort());
+  await context.route('**/*.supabase.co/**', (route) => route.abort());
 
   const offline = await context.newPage();
   await offline.goto(url('榮譽牆.html'), { waitUntil: 'networkidle' });
@@ -582,6 +592,133 @@ async function launchBrowser() {
     }
     await surveyContext.close();
   }
+
+  /* ================= 玩本記錄：店家切換到預約系統之後 ================= */
+  console.log('\n=== 玩本記錄：切換到預約系統之後 ===');
+  const liveContext = await browser.newContext();
+  const liveSent = [];
+  let playMode = 'earn';
+  const API_ROWS = CSV.split('\n').slice(1).map((line) => {
+    const c = line.split(',');
+    return { name: c[1], date: c[2], script: c[3], character: c[4], rating: c[5], comment: c[6] };
+  });
+  await liveContext.route('**/*', (route) => {
+    const target = route.request().url();
+    const method = route.request().method();
+    const json = (status, body) => route.fulfill({ status, contentType: 'application/json',
+      headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+    if (target.includes('supabase.co')) {
+      const p = new URL(target).pathname.replace(/^.*\/api/, '');
+      liveSent.push({ to: p, method, body: route.request().postData() });
+      if (p === '/public/records') return json(200, SUMMARY);
+      if (p === '/public/play-records' && method === 'GET') return json(200, { ok: true, live: true, records: API_ROWS });
+      if (p === '/public/play-records') {
+        if (playMode === 'abort') return route.abort();
+        if (playMode === 'invalid') return json(400, { ok: false, error: 'INVALID_RECORD' });
+        if (playMode === 'duplicate') return json(200, { ok: true, live: true, status: 'duplicate', award: null });
+        return json(201, { ok: true, live: true, status: 'earn', award: { points: 45,
+          detail: '基本10＋首玩5＋首探10＋新手好運20', script: '年輪', extra: [{ detail: '被介紹10', points: 10 }] } });
+      }
+      if (p === '/public/likes') return json(200, { ok: true, likes: 5, live: true });
+      return json(404, { ok: false, error: 'ROUTE_NOT_FOUND' });
+    }
+    if (target.includes('docs.google.com')) {
+      liveSent.push({ to: 'csv', method });
+      return route.fulfill({ status: 200, contentType: 'text/csv; charset=utf-8', body: CSV });
+    }
+    if (target.includes('script.google.com')) {
+      liveSent.push({ to: 'gas', method, body: route.request().postData() });
+      if (method === 'POST') return json(200, { ok: true, row: 9, award: { points: 30, detail: '基本10＋心得5＋首玩5＋雙倍日 x2' } });
+      const callback = new URL(target).searchParams.get('callback') || 'cb';
+      return route.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8',
+        body: callback + '(' + JSON.stringify(SUMMARY) + ');' });
+    }
+    if (!target.startsWith(`http://localhost:${PORT}/`)) return route.abort();
+    return route.continue();
+  });
+  const sentTo = (to, method) => liveSent.filter((x) => x.to === to && (!method || x.method === method));
+
+  const liveWall = await liveContext.newPage();
+  liveWall.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
+  await liveWall.goto(url('榮譽牆.html'));
+  await liveWall.waitForFunction(() => document.querySelectorAll('#playerSelector option').length > 1, null, { timeout: 8000 }).catch(() => {});
+  check('切換後：榮譽牆的玩家選單來自預約系統', await liveWall.locator('#playerSelector option').count() > 1, true);
+  check('切換後：榮譽牆不再下載試算表 CSV', sentTo('csv').length, 0);
+  check('切換後：榮譽牆讀了心得清單', sentTo('/public/play-records', 'GET').length > 0, true);
+  await liveWall.close();
+
+  const livePage = await liveContext.newPage();
+  await livePage.emulateMedia({ reducedMotion: 'reduce' });
+  await livePage.goto(`http://localhost:${PORT}/5%E4%BA%BA/${encodeURIComponent('年輪.html')}`, { waitUntil: 'domcontentloaded' });
+  await livePage.waitForTimeout(1000);
+  await livePage.locator('.rv-fab').click();
+  await livePage.waitForTimeout(1500);
+  check('切換後：劇本頁心得來自預約系統', await livePage.locator('.rv-note').count(), 2);
+  check('切換後：劇本頁只問這本的心得', sentTo('/public/play-records', 'GET').some((x) => x.to && true), true);
+  await livePage.locator('.rv-note.rv-featured .rv-like').click();
+  await livePage.waitForTimeout(800);
+  const likePost = sentTo('/public/likes', 'POST')[0];
+  check('切換後：按讚送到預約系統', Boolean(likePost), true);
+  if (likePost) {
+    const like = JSON.parse(likePost.body);
+    check('按讚帶劇本、日期、作者與這個瀏覽器的編號', like.script === '年輪' && like.author === '海星' &&
+      like.date === inMonth(9) && /^[0-9a-f-]{36}$/.test(like.liker), true);
+  }
+  check('切換後：按讚不再送 Apps Script', sentTo('gas', 'POST').length, 0);
+  await livePage.close();
+
+  const form = await liveContext.newPage();
+  const fillForm = async () => {
+    await form.fill('#playerName', '測試玩家');
+    await form.selectOption('#scriptSelect', { index: 1 });
+    await form.waitForTimeout(200);
+    await form.locator('#roleOptions .role-choice').first().click();
+    await form.locator('.rating-options label').nth(4).click();
+    await form.fill('#comment', '短');
+    await form.fill('#referrer', '海星');
+  };
+  await form.goto(url('新增玩本記錄.html'), { waitUntil: 'networkidle' });
+  await fillForm();
+  await form.click('#submitButton');
+  await form.waitForSelector('#successPanel:not([hidden])', { timeout: 5000 }).catch(() => {});
+  check('切換後：送出顯示預約系統算的點數', (await form.locator('#awardPoints').textContent()).trim(), '+45');
+  check('切換後：介紹人的加分也有寫出來', (await form.locator('#awardDetail').textContent()).includes('被介紹10 +10'), true);
+  const post = sentTo('/public/play-records', 'POST')[0];
+  if (post) {
+    const body = JSON.parse(post.body);
+    check('送出的內容與送出編號', body.name === '測試玩家' && body.character && body.rating === '5' &&
+      body.referrer === '海星' && /^[0-9a-f-]{36}$/.test(body.id), true);
+  } else check('切換後：記錄送到預約系統', false, true);
+  check('切換後：記錄不再送 Apps Script', sentTo('gas', 'POST').length, 0);
+
+  playMode = 'duplicate';
+  await form.click('#addAnotherButton');
+  await fillForm();
+  await form.click('#submitButton');
+  await form.waitForSelector('#successPanel:not([hidden])', { timeout: 5000 }).catch(() => {});
+  check('同一天同一本再記一次：不給點並說明原因',
+    await form.locator('#awardCard').isHidden() && (await form.locator('#successNote').textContent()).includes('同一天同一本'), true);
+  const ids = sentTo('/public/play-records', 'POST').map((x) => JSON.parse(x.body).id);
+  check('每一筆新的記錄用新的送出編號', ids.length === 2 && ids[0] !== ids[1], true);
+
+  playMode = 'invalid';
+  await form.click('#addAnotherButton');
+  await fillForm();
+  await form.click('#submitButton');
+  await form.waitForTimeout(800);
+  check('內容不合格：顯示錯誤、不改送 Apps Script',
+    await form.locator('#successPanel').isHidden() && sentTo('gas', 'POST').length === 0, true);
+
+  playMode = 'abort';
+  const before = sentTo('/public/play-records', 'POST').length;
+  await form.click('#submitButton');
+  await form.waitForSelector('#successPanel:not([hidden])', { timeout: 8000 }).catch(() => {});
+  const tries = sentTo('/public/play-records', 'POST').slice(before).map((x) => JSON.parse(x.body).id);
+  check('預約系統沒回應：用同一個送出編號再試一次', tries.length === 2 && tries[0] === tries[1], true);
+  check('再不行才改送 Apps Script', sentTo('gas', 'POST').length, 1);
+  check('改送 Apps Script 後照樣顯示得點', (await form.locator('#awardPoints').textContent()).trim(), '+30');
+  await form.close();
+  await liveContext.close();
 
   console.log('\n=== JS 執行錯誤 ===');
   const realErrors = errors.filter((message) =>

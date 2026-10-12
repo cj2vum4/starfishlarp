@@ -174,7 +174,54 @@
         };
     }
 
+    // 送出編號：同一筆重送（例如回應沒收到）時用同一個，預約系統只會記一次。成功或「再新增一筆」後換新的。
+    let submissionId = newSubmissionId();
+    function newSubmissionId() {
+        return typeof window.starfishNewId === 'function' ? window.starfishNewId() : '';
+    }
+
+    const API_ERRORS = {
+        INVALID_RECORD: '還有必填欄位尚未完成，請檢查後再送出。',
+        TOO_MANY_REQUESTS: '現在送出的人太多，請過幾分鐘再按一次。'
+    };
+
+    /**
+     * 先送預約系統。回傳 { award, status }；店家還沒切換（RECORDS_NOT_LIVE）、預約系統連不上、
+     * 還沒有這個網址或暫時收太多時回傳 null，改送 Apps Script。內容不合格直接丟出錯誤。
+     */
+    async function postToBookingSystem(payload) {
+        if (typeof window.starfishPostJson !== 'function' || !window.STARFISH_API_BASE) return null;
+        const body = Object.assign({}, payload, { id: submissionId });
+        for (let attempt = 0; attempt < 2; attempt++) {
+            let result;
+            try {
+                result = await window.starfishPostJson('/public/play-records', body, 15000);
+            } catch (error) {
+                // 沒收到回應：可能根本沒送到，也可能已經記下了。用同一個送出編號再試一次（不會記兩筆），再不行才改送 Apps Script。
+                console.warn('預約系統沒有回應:', error);
+                if (attempt === 0) { await new Promise((resolve) => setTimeout(resolve, 1500)); continue; }
+                return null;
+            }
+            const data = result.data || {};
+            if (data.ok) return { award: data.award || null, status: data.status || 'earn', viaBookingSystem: true };
+            if (data.live === false || result.status === 404 || result.status === 429) return null;
+            if (result.status >= 500) {
+                if (attempt === 0) { await new Promise((resolve) => setTimeout(resolve, 1500)); continue; }
+                return null;
+            }
+            throw new Error(API_ERRORS[data.error] || '送出失敗，請確認內容後再試一次；一直失敗的話請私訊海星 LINE。');
+        }
+        return null;
+    }
+
     async function postRecord(payload) {
+        const viaApi = await postToBookingSystem(payload);
+        if (viaApi) return viaApi;
+        if (!endpoint) throw new Error('目前無法送出，請稍後再試一次。');
+        return { award: await postToAppsScript(payload) };
+    }
+
+    async function postToAppsScript(payload) {
         const body = new URLSearchParams();
         Object.entries(payload).forEach(([key, value]) => {
             body.set(key, String(value == null ? '' : value));
@@ -219,17 +266,27 @@
         return null;
     }
 
-    function completeSubmission(award) {
+    // 預約系統送出後才知道的「這筆不給點」原因（Apps Script 不會告訴我們）。
+    const NO_POINT_NOTES = {
+        duplicate: '記錄收到了。同一天同一本已經記過一次，這筆只留下記錄、不重複給點。',
+        daily_cap: '記錄收到了。今天能拿點數的筆數已經到上限，這筆只留下記錄、不給點。',
+        backfill: '記錄收到了。遊玩後隔太久才填寫，這筆只留下記錄、不給點；下次記得玩完一週內填喔！'
+    };
+
+    function completeSubmission(result) {
+        const award = result && result.award;
         const points = award ? Number(award.points) : 0;
+        const extra = award && Array.isArray(award.extra) ? award.extra.filter((x) => Number(x.points) > 0) : [];
 
         if (points > 0) {
             awardPoints.textContent = '+' + points;
-            awardDetail.textContent = award.detail ? award.detail.replace(/＋/g, '　＋　') : '';
+            awardDetail.textContent = (award.detail ? award.detail.replace(/＋/g, '　＋　') : '') +
+                (extra.length ? '　｜　另外：' + extra.map((x) => (x.detail || ('本月任務「' + x.quest + '」')) + ' +' + x.points).join('、') : '');
             awardCard.hidden = false;
             successNote.textContent = '點數已入帳，榮譽牆上的探員檔案同時更新了。';
         } else {
             awardCard.hidden = true;
-            successNote.textContent =
+            successNote.textContent = (result && result.viaBookingSystem && NO_POINT_NOTES[result.status]) ||
                 '謝謝你留下這次的角色與心得。點數與榮譽牆會在幾分鐘內同步。';
         }
 
@@ -240,13 +297,12 @@
 
     /** 用 JSONP 讀雙倍點數日文案：靜態網站跨網域讀 Apps Script 最穩的方式。 */
     function loadDoubleDayNote() {
-        if (!endpoint) return;
-        // 先讀預約系統的快速副本，讀不到再走 Apps Script。
+        // 先讀預約系統，讀不到再走 Apps Script。
         const fast = typeof window.starfishFetchSummary === 'function'
             ? window.starfishFetchSummary(4000) : Promise.resolve(null);
         fast.then((payload) => {
             if (payload) showDoubleDayNote(payload.doubleDayNote);
-            else loadDoubleDayNoteJsonp();
+            else if (endpoint) loadDoubleDayNoteJsonp();
         });
     }
 
@@ -292,7 +348,7 @@
         event.preventDefault();
         clearError();
 
-        if (!endpoint) {
+        if (!endpoint && !window.STARFISH_API_BASE) {
             showError('目前尚未設定試算表寫入網址，暫時無法送出。');
             setupNote.hidden = false;
             return;
@@ -332,13 +388,14 @@
         setSubmitting(true);
 
         try {
-            const award = await postRecord(payload);
+            const result = await postRecord(payload);
+            submissionId = newSubmissionId();
             try {
                 localStorage.setItem('starfishlarp-player-name', payload.name);
             } catch (_) {
                 // 無痕模式可能停用 localStorage，不影響送出。
             }
-            completeSubmission(award);
+            completeSubmission(result);
         } catch (error) {
             console.error('送出玩本記錄失敗:', error);
             showError(error.message || '送出失敗，請確認網路連線後再試一次。');
@@ -347,6 +404,7 @@
     });
 
     addAnotherButton.addEventListener('click', () => {
+        submissionId = newSubmissionId();
         const savedName = playerName.value;
         form.reset();
         resetRoleChoices();
@@ -366,7 +424,7 @@
     setDefaultDate();
     loadDoubleDayNote();
 
-    if (!endpoint) setupNote.hidden = false;
+    if (!endpoint && !window.STARFISH_API_BASE) setupNote.hidden = false;
 
     try {
         playerName.value = localStorage.getItem('starfishlarp-player-name') || '';

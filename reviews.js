@@ -1,7 +1,7 @@
 /* ============================================================
    玩家評價彈窗（共用元件）
    - 自動在頁面加一顆「💬 玩家評價」按鈕
-   - 點擊後讀取榮譽牆同一份 Google Sheet CSV
+   - 點擊後讀取玩家心得：先問預約系統，店家還沒切換或讀不到時改讀榮譽牆同一份 Google Sheet CSV
    - 篩出本劇本的歷史評論，以便利貼風格顯示
    劇本名稱判斷順序：
      1. <script src="reviews.js" data-script="名稱">
@@ -20,25 +20,29 @@
     // 四十幾個劇本頁就不用各自多加一行 script 標籤。
     function configUrl() {
         if (!SELF_SCRIPT || !SELF_SCRIPT.src) return '';
-        return SELF_SCRIPT.src.replace(/reviews\.js(\?.*)?$/, 'play-record-config.js?v=20261006-fast');
+        return SELF_SCRIPT.src.replace(/reviews\.js(\?.*)?$/, 'play-record-config.js?v=20261012-supabase');
     }
 
+    // 只載入一次；回傳 Apps Script 端點（可能是空字串）。預約系統的網址在 window.STARFISH_API_BASE。
+    let configLoading = null;
     function loadEndpoint() {
-        if (window.STARFISH_PLAY_RECORD_ENDPOINT) {
-            return Promise.resolve(String(window.STARFISH_PLAY_RECORD_ENDPOINT).trim());
+        if (window.STARFISH_PLAY_RECORD_ENDPOINT || window.STARFISH_API_BASE) {
+            return Promise.resolve(String(window.STARFISH_PLAY_RECORD_ENDPOINT || '').trim());
         }
 
         const url = configUrl();
         if (!url) return Promise.resolve('');
 
-        return new Promise((resolve) => {
+        configLoading = configLoading || new Promise((resolve) => {
             const tag = document.createElement('script');
             tag.src = url;
             tag.onload = () => resolve(String(window.STARFISH_PLAY_RECORD_ENDPOINT || '').trim());
             tag.onerror = () => resolve('');
             document.head.appendChild(tag);
         });
+        return configLoading;
     }
+    const hasApi = () => Boolean(window.STARFISH_API_BASE && typeof window.starfishPostJson === 'function');
 
     // ── 取得本頁劇本名稱 ──────────────────────────────────────
     function resolveScriptName() {
@@ -233,6 +237,7 @@
                 reviews.push({
                     name,
                     date,
+                    script: String(row['劇本'] || '').trim(),
                     comment,
                     rating: (row['給予評價'] || '').trim(),
                     character: chars.join('、'),
@@ -253,16 +258,15 @@
         }
     }
 
-    /** 讚數與精選走 Apps Script 的 JSONP，端點讀不到就只是沒有互動功能。 */
+    /** 讚數與精選：先讀預約系統，讀不到再走 Apps Script 的 JSONP；都讀不到就只是沒有互動功能。 */
     async function loadInteractions() {
         endpoint = await loadEndpoint();
-        if (!endpoint) return [];
 
-        // 先讀預約系統的快速副本，讀不到再走 Apps Script。
         if (typeof window.starfishFetchSummary === 'function') {
             const fast = await window.starfishFetchSummary(4000);
             if (fast) return Array.isArray(fast.interactions) ? fast.interactions : [];
         }
+        if (!endpoint) return [];
 
         return new Promise((resolve) => {
             const callbackName = 'rvLikes' + Date.now().toString(36);
@@ -290,8 +294,20 @@
         });
     }
 
+    // 這個瀏覽器的按讚編號：同一則心得、同一個瀏覽器只算一次（不需要登入，跟以前一樣）。
+    function likerId() {
+        try {
+            let id = localStorage.getItem('rv_liker_id');
+            if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || '')) {
+                id = window.starfishNewId();
+                localStorage.setItem('rv_liker_id', id);
+            }
+            return id;
+        } catch (_) { return window.starfishNewId(); }
+    }
+
     async function sendLike(review, button) {
-        if (!endpoint || alreadyLiked(review)) return;
+        if ((!endpoint && !hasApi()) || alreadyLiked(review)) return;
 
         button.disabled = true;
         try { localStorage.setItem(likeKey(review), '1'); } catch (_) {}
@@ -299,6 +315,21 @@
         review.likes += 1;
         button.classList.add('rv-liked');
         button.innerHTML = '👍 ' + review.likes;
+
+        // 先送預約系統；店家還沒切換或連不上才送 Apps Script。
+        if (hasApi()) {
+            try {
+                const result = await window.starfishPostJson('/public/likes', { script: review.script || SCRIPT_NAME,
+                    date: review.date, author: review.name, liker: likerId() }, 8000);
+                const data = result.data || {};
+                if (data.ok || (result.status >= 400 && result.status < 500 && data.live !== false &&
+                    result.status !== 404 && result.status !== 429)) return;
+                if (result.status === 404 && data.error === 'REVIEW_NOT_FOUND') return;
+            } catch (error) {
+                console.warn('預約系統沒收到讚，改送 Apps Script:', error);
+            }
+        }
+        if (!endpoint) return;
 
         const body = new URLSearchParams();
         body.set('action', 'like');
@@ -328,7 +359,7 @@
             // 匿名：不顯示是誰留的評論。作者名只留在 JS 裡供按讚使用，不寫進 HTML。
             const style = '--rot:' + rot + 'deg;--fdur:' + fdur + 's;--fdelay:' + fdelay + 's;background:' + bg;
             const liked = alreadyLiked(r);
-            const likeBtn = endpoint
+            const likeBtn = endpoint || hasApi()
                 ? '<button class="rv-like' + (liked ? ' rv-liked' : '') + '" data-index="' + i + '"' +
                   (liked ? ' disabled' : '') + '>👍 ' + r.likes + '</button>'
                 : '';
@@ -360,8 +391,21 @@
         return '★'.repeat(n) + '☆'.repeat(5 - n);
     }
 
-    // ── CSV 取得（sessionStorage 快取 10 分鐘）────────────────
+    // ── 心得列：先問預約系統（店家切換之後才有），否則讀 CSV（sessionStorage 快取 10 分鐘）────────
     async function fetchRows() {
+        await loadEndpoint();
+        const ROWS_KEY = 'rv_rows_cache_v2:' + norm(SCRIPT_NAME);
+        try {
+            const cached = JSON.parse(sessionStorage.getItem(ROWS_KEY) || 'null');
+            if (cached && Date.now() - cached.t < 600000 && Array.isArray(cached.rows)) return cached.rows;
+        } catch (_) {}
+        if (typeof window.starfishFetchPlayRecords === 'function') {
+            const rows = await window.starfishFetchPlayRecords(SCRIPT_NAME, 5000);
+            if (rows) {
+                try { sessionStorage.setItem(ROWS_KEY, JSON.stringify({ t: Date.now(), rows })); } catch (_) {}
+                return rows;
+            }
+        }
         const CACHE_KEY = 'rv_csv_cache_v1';
         try {
             const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');

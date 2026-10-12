@@ -11,8 +11,8 @@
     <script async src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <!-- 劇本資料單一來源（與 index.html 共用） -->
     <script defer src="scripts.js?v=20261006-tags4"></script>
-    <script defer src="play-record-config.js?v=20261006-fast"></script>
-    <script defer src="points.js?v=20261007-load"></script>
+    <script defer src="play-record-config.js?v=20261012-supabase"></script>
+    <script defer src="points.js?v=20261012-supabase"></script>
     <style>
         /* --- 網頁整體樣式 --- */
         body {
@@ -1153,12 +1153,13 @@
                 });
             }
 
-            // 1b. 解析 CSV 成 { playRecords, playerNames }（Excel 儲存格內換行已由 PapaParse 正確處理）
-            function parsePlayData(csvText) {
+            // 1b. 解析成 { playRecords, playerNames }。來源是 CSV 文字（Excel 儲存格內換行已由 PapaParse 正確處理），
+            // 或預約系統給的列（欄位名稱與 CSV 相同）。
+            function parsePlayData(source) {
                 try {
 
                     // 正確解析 CSV（支援引號內的換行）；PapaParse 不可用時自動降級
-                    const parseResult = parseCsv(csvText);
+                    const parseResult = typeof source === 'string' ? parseCsv(source) : { data: source, errors: [] };
 
                     if (parseResult.errors.length > 0) {
                         console.warn('CSV 解析警告:', parseResult.errors);
@@ -1829,17 +1830,33 @@
                 });
             }
 
-            // 先用上次存下的 CSV 秒開，同時在背景抓最新的
+            // 先用上次存下的資料秒開，同時在背景抓最新的。
+            // 玩家心得先問預約系統（店家在 LINE 切換之後才有）；還沒切換或讀不到時照舊下載試算表 CSV。
+            const ROWS_CACHE_KEY = 'starfishlarp-honor-rows';
+            const readCachedRows = () => { try { return localStorage.getItem(ROWS_CACHE_KEY) || ''; } catch (_) { return ''; } };
+            const cachedRows = readCachedRows();
             const cachedCsv = readCachedCsv();
-            if (cachedCsv) {
-                const cachedData = parsePlayData(cachedCsv);
-                if (cachedData.playerNames.length) applyPlayData(cachedData);
-            }
+            let cachedData = null;
+            try { if (cachedRows) cachedData = parsePlayData(JSON.parse(cachedRows)); } catch (_) { cachedData = null; }
+            if (!cachedData && cachedCsv) cachedData = parsePlayData(cachedCsv);
+            if (cachedData && cachedData.playerNames.length) applyPlayData(cachedData);
 
-            downloadCsv().then((csvText) => {
-                saveCachedCsv(csvText);
-                loadErrorBox.hidden = true;
-                if (csvText !== cachedCsv || !hasPlayData) applyPlayData(parsePlayData(csvText));
+            const fromBookingSystem = typeof window.starfishFetchPlayRecords === 'function'
+                ? window.starfishFetchPlayRecords(null, 6000) : Promise.resolve(null);
+            fromBookingSystem.then((rows) => {
+                if (rows) {
+                    const text = JSON.stringify(rows);
+                    try { localStorage.setItem(ROWS_CACHE_KEY, text); } catch (_) { /* 無痕模式或空間不足 */ }
+                    loadErrorBox.hidden = true;
+                    if (text !== cachedRows || !hasPlayData) applyPlayData(parsePlayData(rows));
+                    return;
+                }
+                return downloadCsv().then((csvText) => {
+                    saveCachedCsv(csvText);
+                    try { localStorage.removeItem(ROWS_CACHE_KEY); } catch (_) { /* ignore */ }
+                    loadErrorBox.hidden = true;
+                    if (csvText !== cachedCsv || cachedRows || !hasPlayData) applyPlayData(parsePlayData(csvText));
+                });
             }).catch((error) => {
                 console.error('❌ 無法獲取劇本資料:', error);
                 if (hasPlayData) return;  // 已經有上次的資料可看，安靜地沿用

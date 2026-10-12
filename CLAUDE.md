@@ -211,3 +211,24 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
   `renderResult(box, 結果)` 可在送出後畫面顯示推薦角色（範例：`問卷/太陽可以是藍色嗎.html`）。
   複選題要沿用舊資料的分隔符時加 `join: '、'`。舊網址 `6人/太陽問卷.html` 只剩轉址到新問卷。
 - 問卷頁**不放入口**、不登記 `scripts.js`，用網址或 QR code 傳給玩家；頁面加 `noindex`。
+
+---
+
+## 八、玩本記錄與點數搬到預約系統（2026-10-12 起，切換由店家決定）
+
+- 玩本記錄、按讚、榮譽牆／劇本頁心得、點數總覽正從 `GoogleAppsScript_玩本記錄.gs` 搬到預約系統（Supabase）。
+  店家在 **LINE 店家後台「玩本記錄與點數（搬家）」** 依序：共用試算表 → 匯入 → 對帳 → 切換。規則與數字跟 Apps Script 相同，
+  差別是點數在送出當下算好就固定（預約系統 `docs/GAS_MIGRATION.md`）。
+- 網站一律**先問預約系統**（網址在 `play-record-config.js` 的 `STARFISH_API_BASE`），回 503 `{live:false}`（還沒切換）、
+  連不上、404 或 429 時才走舊路線：
+  - `play-record.js` 送出 → `POST /public/play-records`（text/plain JSON，帶送出編號 `id`；沒回應時用同一個編號重試一次）
+    → 不行才送 Apps Script。內容不合格（其他 4xx）直接顯示錯誤，不改送。
+  - `reviews.js` 心得清單 → `GET /public/play-records?script=` → 不行才讀試算表 CSV；按讚 → `POST /public/likes`
+    （帶這個瀏覽器的 `liker` 編號，localStorage `rv_liker_id`）→ 不行才送 Apps Script。
+  - `榮譽牆.html` 玩家心得 → `GET /public/play-records` → 不行才下載 CSV；`points.js` 點數總覽 → `GET /public/records`
+    （切換前是 Apps Script 的副本，切換後由預約系統算）→ 不行才走 Apps Script JSONP。
+- 預約系統回的心得欄位與 CSV 相同（`starfishFetchPlayRecords` 已轉成 `怎麼稱呼你呢`／`日期`／`劇本`／`角色`／`給予評價`／`50字以內的心得推薦`），
+  不含填寫時間與介紹人。
+- 第 4 階段（關閉這支 Apps Script）之前，`STARFISH_PLAY_RECORD_ENDPOINT` 與 CSV 網址都要保留，當成退路。
+- 改這幾支 JS 時：`play-record-config.js` 的版號也寫死在 `reviews.js` 的 `configUrl()`，進版要一起改；
+  `tests/browser.test.js` 有「切換前」「切換後」「預約系統連不上」三種情境，推之前跑 `bash tests/run.sh`。
