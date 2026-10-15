@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'starfishlarp';
-const CACHE_VERSION = '20261012-supabase';
+const CACHE_VERSION = '20261015-referrer';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const MAX_RUNTIME_ENTRIES = 80;
@@ -15,14 +15,14 @@ const APP_SHELL = [
     './manifest.webmanifest',
     './index.css?v=20261005-logo',
     './img/logo.webp',
-    './honor-form.css?v=20261012-supabase',
+    './honor-form.css?v=20261015-referrer',
     './scripts.js?v=20261006-tags4',
     './scripts-data.js?v=20261006-tags',
     './hero.js?v=20260702a',
     './vendor/three.min.js',
     './pwa.js?v=20261006-noreload',
     './play-record-config.js?v=20261012-supabase',
-    './play-record.js?v=20261012-supabase',
+    './play-record.js?v=20261015-referrer',
     './points.js?v=20261012-supabase',
     './pwa/favicon-32.png',
     './pwa/apple-touch-icon.png',

@@ -398,6 +398,32 @@ async function launchBrowser() {
     (await page.locator('#doubleDayNote').textContent()).includes('平日開本'));
   check('心情欄位已移除', await page.locator('#moodOptions').count(), 0);
 
+  // 介紹人：老玩家不顯示；新名字才顯示，只能從玩家名單選
+  await page.fill('#playerName', ' 小 明 ');
+  check('老玩家（名字在名單裡，空白大小寫不同也算）不顯示介紹人',
+    await page.locator('#referrerField').isHidden() && await page.locator('#returningNote').isVisible(), true);
+  await page.fill('#playerName', '測試玩家');
+  check('新名字顯示介紹人', await page.locator('#referrerField').isVisible() && await page.locator('#returningNote').isHidden(), true);
+  await page.fill('#referrer', '海');
+  check('打字後出現符合的玩家名單',
+    (await page.locator('#referrerList [role="option"]').allTextContents()).join(','), '海星');
+  await page.locator('#referrerList [role="option"]').first().click();
+  check('點名單就填入介紹人', await page.locator('#referrer').inputValue(), '海星');
+  check('選好後名單收起來', await page.locator('#referrerList').isHidden(), true);
+  await page.fill('#referrer', '不存在的人');
+  check('名單外的名字顯示找不到',
+    (await page.locator('#referrerList').textContent()).includes('找不到'), true);
+  await page.selectOption('#scriptSelect', { index: 1 });
+  await page.waitForTimeout(300);
+  await page.locator('#roleOptions .role-choice').first().click();
+  await page.locator('.rating-options label').nth(4).click();
+  await page.click('#submitButton');
+  await page.waitForTimeout(300);
+  check('名單外的介紹人不能送出',
+    await page.locator('#successPanel').isHidden() && (await page.locator('#formStatus').textContent()).includes('從名單選'), true);
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(700);
+
   await page.fill('#playerName', '測試玩家');
   await page.selectOption('#scriptSelect', { index: 1 });
   await page.waitForTimeout(300);
@@ -418,6 +444,7 @@ async function launchBrowser() {
   await page.waitForTimeout(300);
   check('再新增一筆會收起得點卡', await page.locator('#awardCard').isHidden());
   check('再新增一筆保留名字', await page.locator('#playerName').inputValue(), '測試玩家');
+  check('送出過一筆後再新增：不再顯示介紹人', await page.locator('#referrerField').isHidden(), true);
 
   /* ================= 端點失效時的降級 ================= */
   console.log('\n=== 點數端點失效時的降級 ===');
@@ -707,7 +734,8 @@ async function launchBrowser() {
     await form.locator('#roleOptions .role-choice').first().click();
     await form.locator('.rating-options label').nth(4).click();
     await form.fill('#comment', '短');
-    await form.fill('#referrer', '海星');
+    // 送出過一筆後就是老玩家，「再新增一筆」不再顯示介紹人
+    if (await form.locator('#referrer').isVisible()) await form.fill('#referrer', '海星');
   };
   await form.goto(url('新增玩本記錄.html'), { waitUntil: 'networkidle' });
   await fillForm();

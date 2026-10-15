@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" type="image/png" sizes="32x32" href="pwa/favicon-32.png">
     <link rel="apple-touch-icon" href="pwa/apple-touch-icon.png">
-    <link rel="stylesheet" href="honor-form.css?v=20261012-supabase">
+    <link rel="stylesheet" href="honor-form.css?v=20261015-referrer">
 </head>
 <body>
     <div class="ambient" aria-hidden="true"></div>
@@ -101,17 +101,26 @@
                     <textarea id="comment" maxlength="50" rows="4" aria-describedby="commentHint" placeholder="哪個瞬間最讓你印象深刻？"></textarea>
                 </div>
 
-                <div class="field">
+                <div class="field referrer-field" id="referrerField">
                     <label for="referrer">是誰帶你來的？</label>
-                    <p class="field-hint" id="referrerHint">只有第一次登記時需要填。填了雙方各得 10 點</p>
-                    <input
-                        id="referrer"
-                        type="text"
-                        maxlength="30"
-                        autocomplete="off"
-                        aria-describedby="referrerHint"
-                    >
+                    <p class="field-hint" id="referrerHint">第一次來海星才需要填。打幾個字，從名單選出帶你來的朋友，雙方各得 10 點；沒有就留空</p>
+                    <div>
+                        <input
+                            id="referrer"
+                            type="text"
+                            maxlength="30"
+                            autocomplete="off"
+                            role="combobox"
+                            aria-autocomplete="list"
+                            aria-expanded="false"
+                            aria-controls="referrerList"
+                            aria-describedby="referrerHint"
+                            placeholder="輸入名字搜尋"
+                        >
+                        <ul class="combo-list" id="referrerList" role="listbox" aria-label="玩家名單" hidden></ul>
+                    </div>
                 </div>
+                <p class="field-hint returning-note" id="returningNote" hidden>歡迎回來！介紹人只有第一次來海星時填，這次不用填。</p>
 
                 <p class="form-status" id="formStatus" role="alert" hidden></p>
                 <button class="submit-button" id="submitButton" type="submit">
@@ -147,6 +156,6 @@
 
     <script src="scripts.js?v=20261006-tags4"></script>
     <script src="play-record-config.js?v=20261012-supabase"></script>
-    <script src="play-record.js?v=20261012-supabase"></script>
+    <script src="play-record.js?v=20261015-referrer"></script>
 </body>
 </html>

@@ -439,3 +439,27 @@ textarea:focus {
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
+
+/* 介紹人：打字搜尋、從玩家名單選 */
+/* 清單排在輸入框下方、把送出按鈕往下推：表單卡片會裁掉浮在外面的東西，也不會蓋住送出按鈕 */
+.combo-list {
+    max-height: 264px;
+    margin: 6px 0 0;
+    padding: 6px;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid rgba(233, 185, 79, 0.36);
+    border-radius: 12px;
+    background: #140e07;
+}
+.combo-list li {
+    padding: 11px 12px;
+    border-radius: 8px;
+    color: var(--cream);
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+.combo-list li[aria-selected="true"],
+.combo-list li:hover { background: rgba(233, 185, 79, 0.16); color: var(--gold-bright); }
+.combo-list li.combo-empty { color: var(--muted); cursor: default; background: none; }
+.returning-note { margin: -12px 0 27px; color: var(--success); }

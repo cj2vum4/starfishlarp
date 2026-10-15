@@ -47,6 +47,9 @@
     const comment = document.getElementById('comment');
     const commentCount = document.getElementById('commentCount');
     const referrer = document.getElementById('referrer');
+    const referrerField = document.getElementById('referrerField');
+    const referrerList = document.getElementById('referrerList');
+    const returningNote = document.getElementById('returningNote');
     const formStatus = document.getElementById('formStatus');
     const submitButton = document.getElementById('submitButton');
     const successPanel = document.getElementById('successPanel');
@@ -156,6 +159,128 @@
         }
     }
 
+    /* ---- 介紹人：只能從玩家名單選；名字已在名單裡（老玩家）就不顯示 ---- */
+    // 名字比對和預約系統一樣：去掉所有空白、不分大小寫。
+    const normName = (value) => String(value || '').replace(/\s+/g, '').toLowerCase();
+    let playerNames = null;  // 讀到點數總覽後才有；讀不到就照舊讓玩家自己打，由預約系統檢查
+    const knownNames = new Map();
+    let activeIndex = -1;
+
+    function setPlayerNames(names) {
+        playerNames = Array.from(new Set(names.map((name) => String(name || '').trim()).filter(Boolean)))
+            .sort((a, b) => a.localeCompare(b, 'zh-Hant', { sensitivity: 'base' }));
+        knownNames.clear();
+        playerNames.forEach((name) => knownNames.set(normName(name), name));
+        updateReferrerVisibility();
+    }
+
+    function isReturningPlayer() {
+        return Boolean(playerNames) && knownNames.has(normName(playerName.value));
+    }
+
+    function updateReferrerVisibility() {
+        const returning = isReturningPlayer();
+        referrerField.hidden = returning;
+        returningNote.hidden = !returning;
+        if (returning) {
+            referrer.value = '';
+            closeReferrerList();
+        }
+    }
+
+    function closeReferrerList() {
+        referrerList.hidden = true;
+        referrerList.replaceChildren();
+        referrer.setAttribute('aria-expanded', 'false');
+        referrer.removeAttribute('aria-activedescendant');
+        activeIndex = -1;
+    }
+
+    function referrerMatches(query) {
+        const q = normName(query);
+        const self = normName(playerName.value);
+        const pool = playerNames.filter((name) => normName(name) !== self);
+        if (!q) return pool.slice(0, 8);
+        const starts = pool.filter((name) => normName(name).startsWith(q));
+        const contains = pool.filter((name) => !normName(name).startsWith(q) && normName(name).includes(q));
+        return starts.concat(contains).slice(0, 8);
+    }
+
+    function openReferrerList() {
+        if (!playerNames) return;
+        const matches = referrerMatches(referrer.value);
+        // 已經打出完整的名字（而且只有這一個符合）：不必再擋住下面的送出按鈕
+        if (matches.length === 1 && normName(matches[0]) === normName(referrer.value)) {
+            closeReferrerList();
+            return;
+        }
+        referrerList.replaceChildren();
+        activeIndex = -1;
+        if (!matches.length) {
+            const empty = document.createElement('li');
+            empty.className = 'combo-empty';
+            empty.textContent = '名單裡找不到這個名字。介紹人要先填過玩本記錄；找不到就留空。';
+            referrerList.appendChild(empty);
+        }
+        matches.forEach((name, index) => {
+            const item = document.createElement('li');
+            item.id = `referrer-option-${index}`;
+            item.setAttribute('role', 'option');
+            item.setAttribute('aria-selected', 'false');
+            item.textContent = name;
+            // mousedown 先選：click 之前輸入框就會 blur、清單會被收起來
+            item.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                chooseReferrer(name);
+            });
+            referrerList.appendChild(item);
+        });
+        referrerList.hidden = false;
+        referrer.setAttribute('aria-expanded', 'true');
+    }
+
+    function chooseReferrer(name) {
+        referrer.value = name;
+        closeReferrerList();
+        clearError();
+    }
+
+    function moveActive(step) {
+        const items = Array.from(referrerList.querySelectorAll('[role="option"]'));
+        if (!items.length) return;
+        activeIndex = (activeIndex + step + items.length) % items.length;
+        items.forEach((item, index) => item.setAttribute('aria-selected', String(index === activeIndex)));
+        referrer.setAttribute('aria-activedescendant', items[activeIndex].id);
+        items[activeIndex].scrollIntoView({ block: 'nearest' });
+    }
+
+    /** 送出前檢查介紹人：空白或名單裡的名字才放行（寫法不同就換成名單上的寫法）。回傳錯誤訊息或空字串。 */
+    function checkReferrer() {
+        const value = referrer.value.trim();
+        if (!value || isReturningPlayer()) return '';
+        if (normName(value) === normName(playerName.value)) return '介紹人不能填自己喔。';
+        if (!playerNames) return '';
+        const listed = knownNames.get(normName(value));
+        if (!listed) return '介紹人要從名單選。打幾個字就會出現名單；找不到帶你來的朋友就留空。';
+        referrer.value = listed;
+        return '';
+    }
+
+    referrer.addEventListener('focus', openReferrerList);
+    referrer.addEventListener('input', openReferrerList);
+    referrer.addEventListener('blur', () => setTimeout(closeReferrerList, 120));
+    referrer.addEventListener('keydown', (event) => {
+        if (referrerList.hidden) return;
+        if (event.key === 'ArrowDown') { event.preventDefault(); moveActive(1); }
+        else if (event.key === 'ArrowUp') { event.preventDefault(); moveActive(-1); }
+        else if (event.key === 'Enter' && activeIndex >= 0) {
+            event.preventDefault();
+            const item = referrerList.querySelectorAll('[role="option"]')[activeIndex];
+            if (item) chooseReferrer(item.textContent);
+        } else if (event.key === 'Escape') closeReferrerList();
+    });
+    playerName.addEventListener('input', updateReferrerVisibility);
+
     function buildPayload(script) {
         const selectedRole = form.querySelector('input[name="character"]:checked');
         const selectedRating = form.querySelector('input[name="rating"]:checked');
@@ -169,7 +294,7 @@
             character: selectedRole ? selectedRole.value : '',
             rating: selectedRating ? selectedRating.value : '',
             comment: comment.value.trim(),
-            referrer: referrer.value.trim(),
+            referrer: isReturningPlayer() ? '' : referrer.value.trim(),
             website: website.value
         };
     }
@@ -182,6 +307,7 @@
 
     const API_ERRORS = {
         INVALID_RECORD: '還有必填欄位尚未完成，請檢查後再送出。',
+        REFERRER_NOT_FOUND: '玩家名單裡找不到這位介紹人，請從名單選；找不到就留空。',
         TOO_MANY_REQUESTS: '現在送出的人太多，請過幾分鐘再按一次。'
     };
 
@@ -310,9 +436,14 @@
         const fast = typeof window.starfishFetchSummary === 'function'
             ? window.starfishFetchSummary(4000) : Promise.resolve(null);
         fast.then((payload) => {
-            if (payload) showDoubleDayNote(payload.doubleDayNote);
+            if (payload) useSummary(payload);
             else if (endpoint) loadDoubleDayNoteJsonp();
         });
+    }
+
+    function useSummary(payload) {
+        showDoubleDayNote(payload && payload.doubleDayNote);
+        if (payload && Array.isArray(payload.summary)) setPlayerNames(payload.summary.map((row) => row && row.name));
     }
 
     function showDoubleDayNote(note) {
@@ -332,7 +463,7 @@
 
         window[callbackName] = (payload) => {
             cleanup();
-            showDoubleDayNote(payload && payload.doubleDayNote);
+            useSummary(payload);
         };
 
         script.src = endpoint +
@@ -393,12 +524,21 @@
             return;
         }
 
+        const referrerError = checkReferrer();
+        if (referrerError) {
+            showError(referrerError);
+            referrer.focus();
+            return;
+        }
+
         const payload = buildPayload(script);
         setSubmitting(true);
 
         try {
             const result = await postRecord(payload);
             submissionId = newSubmissionId();
+            // 送出後就是老玩家了：「再新增一筆」時不再顯示介紹人。
+            if (playerNames) setPlayerNames(playerNames.concat(payload.name));
             try {
                 localStorage.setItem('starfishlarp-player-name', payload.name);
             } catch (_) {
@@ -421,6 +561,7 @@
         clearError();
         setDefaultDate();
         playerName.value = savedName;
+        updateReferrerVisibility();
         setSubmitting(false);
         awardCard.hidden = true;
         successPanel.hidden = true;
