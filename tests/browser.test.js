@@ -559,10 +559,10 @@ async function launchBrowser() {
   await failContext.close();
 
   /* ================= 結果 ================= */
-  console.log('\n=== 角色問卷：送進預約系統，連不上才改送舊的 Apps Script ===');
+  console.log('\n=== 角色問卷：送進預約系統，另送一份到舊的試算表；連不上就只送舊的 ===');
   // 每個情境開新的 context，各自決定預約系統（supabase.co）怎麼回應；其他外部請求一律擋掉。
   for (const [label, supabase, wantLegacy, wantDone, wantMessage] of [
-    ['預約系統收到：不再送舊的 Apps Script', { status: 201, body: { ok: true } }, false, true],
+    ['預約系統收到：另送一份到舊的試算表', { status: 201, body: { ok: true } }, true, true],
     ['預約系統還沒部署（404）：改送舊的', { status: 404, body: { error: 'ROUTE_NOT_FOUND' } }, true, true],
     ['預約系統連不上：改送舊的', 'abort', true, true],
     ['預約系統暫時錯誤（503）：改送舊的', { status: 503, body: { error: 'DATABASE_UNAVAILABLE' } }, true, true],
@@ -602,7 +602,10 @@ async function launchBrowser() {
     const after = await surveyPage.evaluate(() => ({ status: document.querySelector('.sv-status').textContent,
       disabled: document.querySelector('.sv-submit').disabled }));
     check(label + '：先送預約系統', sent[0] && sent[0].to, 'supabase');
-    check(label + '：' + (wantLegacy ? '有' : '沒有') + '改送舊的', sent.some((x) => x.to === 'legacy'), wantLegacy);
+    // 試算表副本不等它回應，給它一點時間送出
+    if (wantLegacy) await new Promise((r) => setTimeout(r, 300));
+    check(label + '：' + (wantLegacy ? '有' : '沒有') + '送舊的', sent.some((x) => x.to === 'legacy'), wantLegacy);
+    check(label + '：舊的只送一次', sent.filter((x) => x.to === 'legacy').length <= 1, true);
     check(label + '：' + (wantDone ? '顯示已收到' : '顯示送出失敗'), done, wantDone);
     if (!wantDone) {
       check(label + '：說明原因、按鈕可以再按', after.status.includes(wantMessage) && !after.disabled, true);

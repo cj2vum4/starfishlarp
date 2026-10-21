@@ -32,7 +32,8 @@
 
     // 回覆存進預約系統（Supabase），店家在 LINE 店家後台「角色問卷回覆」看（所有問卷共用）。
     var SURVEY_ENDPOINT = 'https://qrcpmxejhqrvvpnjehri.supabase.co/functions/v1/api/public/role-survey';
-    // 過渡期備援：預約系統還沒部署或暫時連不上時，改送舊的 GoogleAppsScript_角色問卷.gs（之後可從 LINE 後台匯入）。
+    // 舊的 GoogleAppsScript_角色問卷.gs（「角色問卷總表」試算表）：每份回覆都另送一份過去給店家照舊看；
+    // 預約系統連不上時它就是唯一的一份，預約系統每 6 小時自動匯入（靠「送出編號」不會重複）。
     var LEGACY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx5Fyc528P0kL6sdNAdNcYElbQj8xhJb7dkIm0khATVeRizzouNcI04MGhcrmBUxiHM/exec';
 
     var config = window.SURVEY;
@@ -290,8 +291,9 @@
         try { localStorage.setItem(idKey, submissionId); } catch (err) { /* 無痕模式等 */ }
 
         // text/plain 是「簡單請求」，不會觸發 CORS 預檢（預約系統與 Apps Script 都收得到）
-        var post = function (url, payload) {
-            return fetch(url, { method: 'POST', body: JSON.stringify(payload) }).then(function (res) {
+        // keepalive：玩家看到「已收到」馬上關掉頁面，送往試算表的副本也照樣送完。
+        var post = function (url, payload, keepalive) {
+            return fetch(url, { method: 'POST', body: JSON.stringify(payload), keepalive: !!keepalive }).then(function (res) {
                 return res.json().catch(function () { return null; }).then(function (data) {
                     return { status: res.status, data: data };
                 });
@@ -299,17 +301,22 @@
         };
         var payload = { script: config.script, fields: fields, website: trap.value, id: submissionId };
         // 舊的 Apps Script 只認 fields：送出編號放成一欄，之後匯入時才認得出是同一份。
-        var legacy = function () {
+        var legacy = function (keepalive) {
             return post(LEGACY_ENDPOINT, { script: config.script, website: trap.value,
-                fields: fields.concat([{ label: '送出編號', value: submissionId }]) });
+                fields: fields.concat([{ label: '送出編號', value: submissionId }]) }, keepalive);
         };
-        // 預約系統連不上、還沒有這個網址（404）、伺服器錯誤（5xx）或暫時收太多（429）才改送舊的；
+        // 預約系統收到後，另送一份到舊的「角色問卷總表」給店家照舊看（不等它、失敗也不影響）；
+        // 預約系統連不上、還沒有這個網址（404）、伺服器錯誤（5xx）或暫時收太多（429）才改成只送舊的；
         // 內容不合格（其他 4xx）直接顯示錯誤。
         var primary = endpoint === SURVEY_ENDPOINT && LEGACY_ENDPOINT
             ? post(endpoint, payload).then(function (r) {
+                if (r.data && r.data.ok) {
+                    legacy(true).catch(function () { /* 試算表副本，預約系統已經收到 */ });
+                    return r;
+                }
                 var final = r.status >= 400 && r.status < 500 && r.status !== 404 && r.status !== 429;
-                return (r.data && r.data.ok) || final ? r : legacy();
-            }, legacy)
+                return final ? r : legacy();
+            }, function () { return legacy(); })
             : post(endpoint, payload);
         primary.then(function (r) {
             var data = r.data;
