@@ -592,6 +592,7 @@ async function launchBrowser() {
     await surveyPage.evaluate(() => {
       const form = document.querySelector('.sv-form');
       form.querySelector('input[name="q0"]').value = '測試玩家';
+      form.querySelectorAll('input[type="date"]').forEach((d) => { d.value = '2026-10-25'; });
       const groups = new Set([...form.querySelectorAll('input[type="radio"]')].map((r) => r.name));
       groups.forEach((name) => form.querySelector(`input[type="radio"][name="${name}"]`).click());
     });

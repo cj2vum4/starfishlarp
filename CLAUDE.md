@@ -200,7 +200,9 @@ Shorts 傳 `https://www.youtube.com/shorts/<ID>` 會自動用直式播放器。
   所以兩邊都送不會重複。**不要清空 `LEGACY_ENDPOINT`、不要停用這支 Apps Script**（預約系統 `docs/GAS_MIGRATION.md` 的問卷關閉步驟已取消）。
 - 智能配對角色：預約系統依「劇本＋遊玩日期」把回覆分成場次，份數到劇本人數就通知店家，並依劇本的配對規則建議角色
   （規則寫在預約系統 `supabase/functions/api/index.ts` 的 `ROLE_MATCH_RULES`，以 `reviewKey` 為鍵）。
-  所以問卷**要有日期題**（題目文字或 `label` 含「日期」）；要讓某本能自動配對，把 DM 本的角色分配表
+  所以**每份問卷都要有必填的遊玩日期題**（`type: 'date'`、`required: true`，`label` 或題目文字含「日期」，
+  建議 `{"type": "date", "title": "您預約遊玩的日期是？", "label": "遊玩日期", "required": true}` 放在名字題後面；
+  `tests/survey.test.js` 會檢查）；要讓某本能自動配對，把 DM 本的角色分配表
   （性別＋各題偏好）加進 `ROLE_MATCH_RULES`，題目文字（或 `label`）要和規則裡寫的一字不差。
 - 新增一份問卷：複製一頁同色調的 `問卷/*.html` 改成 `問卷/<劇本名>.html`，
   主視覺一律沿用劇本主頁素材：`scripts.js` 的海報（同時當霧面背景）、人數／時長／標籤 chips、
